@@ -1,0 +1,658 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dad's Social Media Cheat Sheet</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Jost:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --paper: #fbf9f4;
+    --ink: #22242c;
+    --soft: #5c6070;
+    --tiktok: #111318;
+    --insta: #c13584;
+    --fb: #1877f2;
+    --highlight: #e0332c;
+    --card: #ffffff;
+    --line: #e6e2d8;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--paper);
+    color: var(--ink);
+    font-family: 'Jost', sans-serif;
+    font-size: 19px;
+    line-height: 1.55;
+  }
+
+  header {
+    text-align: center;
+    padding: 56px 20px 28px;
+  }
+
+  header h1 {
+    font-size: clamp(2rem, 6vw, 3.2rem);
+    font-weight: 700;
+    letter-spacing: 0.01em;
+  }
+
+  header p {
+    margin-top: 10px;
+    color: var(--soft);
+    font-size: 1.05rem;
+  }
+
+  /* jump nav */
+  nav {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
+    padding: 8px 16px 40px;
+  }
+
+  nav a {
+    text-decoration: none;
+    color: #fff;
+    font-weight: 600;
+    font-size: 0.95rem;
+    padding: 10px 18px;
+    border-radius: 999px;
+  }
+
+  nav a.n1 { background: var(--tiktok); }
+  nav a.n2 { background: #4a4e5c; }
+  nav a.n3 { background: var(--insta); }
+  nav a.n4 { background: var(--fb); }
+
+  section {
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 0 20px 24px;
+  }
+
+  .part-title {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 34px 0 20px;
+    border-top: 3px solid var(--ink);
+  }
+
+  .part-num {
+    flex-shrink: 0;
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    color: #fff;
+    font-size: 1.5rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .part-title h2 {
+    font-size: clamp(1.3rem, 4vw, 1.8rem);
+    font-weight: 700;
+  }
+
+  .part-title small {
+    display: block;
+    font-weight: 400;
+    color: var(--soft);
+    font-size: 0.85rem;
+    letter-spacing: 0.04em;
+  }
+
+  .step {
+    display: grid;
+    grid-template-columns: 200px 1fr;
+    gap: 24px;
+    align-items: center;
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    padding: 22px;
+    margin-bottom: 18px;
+  }
+
+  .step svg {
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+
+  .step-text .step-tag {
+    display: inline-block;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--highlight);
+    margin-bottom: 6px;
+  }
+
+  .step-text h3 {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-bottom: 8px;
+  }
+
+  .step-text p { color: var(--soft); }
+
+  .step-text b { color: var(--ink); font-weight: 600; }
+
+  .tip {
+    background: #fff8e1;
+    border: 1px solid #f0e0a0;
+    border-radius: 12px;
+    padding: 16px 20px;
+    margin: 6px 0 26px;
+    font-size: 0.98rem;
+  }
+  .tip b { font-weight: 700; }
+
+  .explain {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    padding: 22px;
+    margin-bottom: 18px;
+  }
+  .explain b { font-weight: 600; }
+
+  .hashtag-card {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    padding: 18px 22px;
+    margin-bottom: 14px;
+  }
+
+  .hashtag-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+  }
+
+  .hashtag-head h3 {
+    font-size: 1.1rem;
+    font-weight: 600;
+  }
+
+  .copy-btn {
+    font-family: 'Jost', sans-serif;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #fff;
+    background: #2e8b6e;
+    border: none;
+    border-radius: 999px;
+    padding: 8px 20px;
+    cursor: pointer;
+  }
+  .copy-btn:active { transform: scale(0.97); }
+
+  .tags {
+    margin-top: 10px;
+    color: #2e8b6e;
+    font-weight: 500;
+    word-spacing: 6px;
+    line-height: 1.8;
+  }
+
+  footer {
+    text-align: center;
+    padding: 40px 20px 60px;
+    color: var(--soft);
+    font-size: 0.9rem;
+  }
+  footer a { color: var(--ink); }
+
+  @media (max-width: 620px) {
+    .step { grid-template-columns: 1fr; }
+    .step svg { max-width: 210px; margin: 0 auto; }
+    body { font-size: 18px; }
+  }
+
+  @media print {
+    nav { display: none; }
+    .step { break-inside: avoid; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Dad's Social Media Cheat Sheet</h1>
+  <p>Make a video once, post it three places. Follow the steps in order.</p>
+</header>
+
+<nav>
+  <a class="n1" href="#part1">1 &middot; Make &amp; save draft</a>
+  <a class="n2" href="#part2">2 &middot; Post the draft</a>
+  <a class="n3" href="#part3">3 &middot; Save &amp; post to Instagram</a>
+  <a class="n4" href="#part4">4 &middot; Post to Facebook</a>
+  <a class="n5" href="#part5" style="background: #2e8b6e;">5 &middot; Hashtags</a>
+</nav>
+
+<!-- ==================== PART 1 ==================== -->
+<section id="part1">
+  <div class="part-title">
+    <div class="part-num" style="background: var(--tiktok);">1</div>
+    <h2>Upload your video to TikTok and save it as a draft
+      <small>Film with your regular camera first. A draft is a video you've loaded into TikTok but haven't posted yet. It waits for you.</small>
+    </h2>
+  </div>
+
+  <div class="step">
+    <svg viewBox="0 0 200 400" xmlns="http://www.w3.org/2000/svg">
+      <rect x="4" y="4" width="192" height="392" rx="28" fill="#111318"/>
+      <rect x="12" y="12" width="176" height="376" rx="20" fill="#1c1f28"/>
+      <rect x="30" y="60" width="140" height="8" rx="4" fill="#3a3e4d"/>
+      <rect x="30" y="80" width="100" height="8" rx="4" fill="#3a3e4d"/>
+      <rect x="30" y="120" width="140" height="180" rx="10" fill="#2a2e3b"/>
+      <!-- bottom bar -->
+      <rect x="12" y="340" width="176" height="48" rx="0" fill="#111318"/>
+      <circle cx="40" cy="364" r="7" fill="#3a3e4d"/>
+      <circle cx="72" cy="364" r="7" fill="#3a3e4d"/>
+      <rect x="88" y="352" width="24" height="24" rx="6" fill="#fff"/>
+      <rect x="97" y="357" width="6" height="14" rx="2" fill="#111318"/>
+      <rect x="93" y="361" width="14" height="6" rx="2" fill="#111318"/>
+      <circle cx="132" cy="364" r="7" fill="#3a3e4d"/>
+      <circle cx="164" cy="364" r="7" fill="#3a3e4d"/>
+      <circle cx="100" cy="364" r="22" fill="none" stroke="#e0332c" stroke-width="4"/>
+    </svg>
+    <div class="step-text">
+      <span class="step-tag">Step 1</span>
+      <h3>Open TikTok and tap the plus [+]</h3>
+      <p>The <b>+ button</b> is the white square in the <b>middle of the bottom of the screen</b>. This opens the camera.</p>
+    </div>
+  </div>
+
+  <div class="step">
+    <svg viewBox="0 0 200 400" xmlns="http://www.w3.org/2000/svg">
+      <rect x="4" y="4" width="192" height="392" rx="28" fill="#111318"/>
+      <rect x="12" y="12" width="176" height="376" rx="20" fill="#2a2e3b"/>
+      <text x="100" y="180" fill="#565b6e" font-family="Jost, sans-serif" font-size="13" text-anchor="middle">camera view</text>
+      <!-- record button (not the one to press) -->
+      <circle cx="90" cy="330" r="26" fill="#e0332c" opacity="0.4"/>
+      <circle cx="90" cy="330" r="34" fill="none" stroke="#fff" stroke-width="3" opacity="0.4"/>
+      <!-- upload option -->
+      <rect x="140" y="308" width="40" height="40" rx="8" fill="#3a3e4d"/>
+      <rect x="148" y="318" width="24" height="16" rx="2" fill="#8a8fa3"/>
+      <text x="160" y="366" fill="#c8ccda" font-family="Jost, sans-serif" font-size="10" text-anchor="middle">Upload</text>
+      <circle cx="160" cy="330" r="30" fill="none" stroke="#e0332c" stroke-width="4"/>
+    </svg>
+    <div class="step-text">
+      <span class="step-tag">Step 2</span>
+      <h3>Tap Upload (NOT the red button)</h3>
+      <p>The camera will open, ignore it. Tap the small <b>Upload</b> square in the <b>bottom right corner</b>, next to the big red record button. This opens your phone's photos.</p>
+    </div>
+  </div>
+
+  <div class="step">
+    <svg viewBox="0 0 200 400" xmlns="http://www.w3.org/2000/svg">
+      <rect x="4" y="4" width="192" height="392" rx="28" fill="#111318"/>
+      <rect x="12" y="12" width="176" height="376" rx="20" fill="#1c1f28"/>
+      <!-- gallery grid -->
+      <g>
+        <rect x="24" y="100" width="48" height="64" rx="6" fill="#3a3e4d"/>
+        <rect x="76" y="100" width="48" height="64" rx="6" fill="#2a2e3b"/>
+        <rect x="128" y="100" width="48" height="64" rx="6" fill="#2a2e3b"/>
+        <rect x="24" y="170" width="48" height="64" rx="6" fill="#2a2e3b"/>
+        <rect x="76" y="170" width="48" height="64" rx="6" fill="#2a2e3b"/>
+      </g>
+      <text x="48" y="136" fill="#c8ccda" font-family="Jost, sans-serif" font-size="9" text-anchor="middle">newest</text>
+      <rect x="18" y="94" width="60" height="76" rx="10" fill="none" stroke="#e0332c" stroke-width="4"/>
+      <!-- next button -->
+      <rect x="112" y="336" width="66" height="34" rx="8" fill="#e0332c"/>
+      <text x="145" y="358" fill="#fff" font-family="Jost, sans-serif" font-size="15" font-weight="600" text-anchor="middle">Next</text>
+    </svg>
+    <div class="step-text">
+      <span class="step-tag">Step 3</span>
+      <h3>Pick your video, then tap Next</h3>
+      <p>Your video will be the <b>newest one in the grid</b> (top left). Tap it, then tap the red <b>Next</b> button in the bottom right. You can also <b>tap more than one video or photo</b> here to combine them into one post and edit them together. If TikTok shows an editing screen after that, just tap <b>Next</b> again, you don't need to change anything.</p>
+    </div>
+  </div>
+
+  <div class="step">
+    <svg viewBox="0 0 200 400" xmlns="http://www.w3.org/2000/svg">
+      <rect x="4" y="4" width="192" height="392" rx="28" fill="#fff" stroke="#e6e2d8" stroke-width="2"/>
+      <rect x="30" y="50" width="90" height="10" rx="5" fill="#d8d4c8"/>
+      <rect x="30" y="70" width="140" height="10" rx="5" fill="#e8e4d8"/>
+      <rect x="130" y="100" width="40" height="56" rx="6" fill="#d8d4c8"/>
+      <rect x="30" y="180" width="140" height="10" rx="5" fill="#e8e4d8"/>
+      <rect x="30" y="200" width="110" height="10" rx="5" fill="#e8e4d8"/>
+      <!-- two bottom buttons -->
+      <rect x="24" y="330" width="70" height="38" rx="8" fill="#f0ede4" stroke="#c8c4b8"/>
+      <text x="59" y="354" fill="#22242c" font-family="Jost, sans-serif" font-size="13" font-weight="600" text-anchor="middle">Drafts</text>
+      <rect x="104" y="330" width="70" height="38" rx="8" fill="#e0332c"/>
+      <text x="139" y="354" fill="#fff" font-family="Jost, sans-serif" font-size="13" font-weight="600" text-anchor="middle">Post</text>
+      <rect x="18" y="324" width="82" height="50" rx="12" fill="none" stroke="#e0332c" stroke-width="4" stroke-dasharray="6 5"/>
+    </svg>
+    <div class="step-text">
+      <span class="step-tag">Step 4</span>
+      <h3>Tap Drafts (NOT Post)</h3>
+      <p>At the bottom of the posting page there are two buttons side by side: <b>Drafts</b> on the left and <b>Post</b> on the right. Tap <b>Drafts</b>. Your video is now saved inside TikTok for later. Nobody can see it yet.</p>
+    </div>
+  </div>
+
+  <div class="tip"><b>Good to know:</b> Drafts only live on your phone inside the TikTok app. If you delete the app, drafts are deleted too. Post anything you really care about.</div>
+</section>
+
+<!-- ==================== PART 2 ==================== -->
+<section id="part2">
+  <div class="part-title">
+    <div class="part-num" style="background: #4a4e5c;">2</div>
+    <h2>Come back later and post the draft
+      <small>Your draft waits in your profile until you're ready.</small>
+    </h2>
+  </div>
+
+  <div class="step">
+    <svg viewBox="0 0 200 400" xmlns="http://www.w3.org/2000/svg">
+      <rect x="4" y="4" width="192" height="392" rx="28" fill="#111318"/>
+      <rect x="12" y="12" width="176" height="376" rx="20" fill="#1c1f28"/>
+      <rect x="30" y="60" width="140" height="220" rx="10" fill="#2a2e3b"/>
+      <rect x="12" y="340" width="176" height="48" fill="#111318"/>
+      <circle cx="40" cy="364" r="7" fill="#3a3e4d"/>
+      <circle cx="72" cy="364" r="7" fill="#3a3e4d"/>
+      <rect x="88" y="352" width="24" height="24" rx="6" fill="#fff"/>
+      <circle cx="132" cy="364" r="7" fill="#3a3e4d"/>
+      <!-- profile icon -->
+      <circle cx="164" cy="360" r="5" fill="#8a8fa3"/>
+      <path d="M 156 372 Q 164 364 172 372" stroke="#8a8fa3" stroke-width="4" fill="none"/>
+      <circle cx="164" cy="364" r="20" fill="none" stroke="#e0332c" stroke-width="4"/>
+    </svg>
+    <div class="step-text">
+      <span class="step-tag">Step 5</span>
+      <h3>Tap Profile</h3>
+      <p>Open TikTok and tap <b>Profile</b> in the <b>bottom right corner</b> (the little person icon).</p>
+    </div>
+  </div>
+
+  <div class="step">
+    <svg viewBox="0 0 200 400" xmlns="http://www.w3.org/2000/svg">
+      <rect x="4" y="4" width="192" height="392" rx="28" fill="#111318"/>
+      <rect x="12" y="12" width="176" height="376" rx="20" fill="#1c1f28"/>
+      <circle cx="100" cy="70" r="24" fill="#3a3e4d"/>
+      <rect x="60" y="104" width="80" height="8" rx="4" fill="#3a3e4d"/>
+      <!-- video grid -->
+      <g>
+        <rect x="24" y="160" width="48" height="70" rx="6" fill="#2a2e3b" stroke="#8a8fa3" stroke-dasharray="4 3"/>
+        <text x="48" y="190" fill="#c8ccda" font-family="Jost, sans-serif" font-size="11" text-anchor="middle">Drafts</text>
+        <text x="48" y="206" fill="#8a8fa3" font-family="Jost, sans-serif" font-size="10" text-anchor="middle">1</text>
+        <rect x="76" y="160" width="48" height="70" rx="6" fill="#2a2e3b"/>
+        <rect x="128" y="160" width="48" height="70" rx="6" fill="#2a2e3b"/>
+        <rect x="24" y="236" width="48" height="70" rx="6" fill="#2a2e3b"/>
+        <rect x="76" y="236" width="48" height="70" rx="6" fill="#2a2e3b"/>
+      </g>
+      <rect x="18" y="154" width="60" height="82" rx="10" fill="none" stroke="#e0332c" stroke-width="4"/>
+    </svg>
+    <div class="step-text">
+      <span class="step-tag">Step 6</span>
+      <h3>Tap the Drafts box</h3>
+      <p>In your grid of videos, the <b>very first box</b> (top left) says <b>Drafts</b>. Tap it, then tap the video you saved.</p>
+    </div>
+  </div>
+
+  <div class="step">
+    <svg viewBox="0 0 200 400" xmlns="http://www.w3.org/2000/svg">
+      <rect x="4" y="4" width="192" height="392" rx="28" fill="#fff" stroke="#e6e2d8" stroke-width="2"/>
+      <rect x="30" y="50" width="90" height="10" rx="5" fill="#d8d4c8"/>
+      <rect x="30" y="70" width="140" height="10" rx="5" fill="#e8e4d8"/>
+      <rect x="130" y="100" width="40" height="56" rx="6" fill="#d8d4c8"/>
+      <rect x="30" y="180" width="140" height="10" rx="5" fill="#e8e4d8"/>
+      <rect x="24" y="330" width="70" height="38" rx="8" fill="#f0ede4" stroke="#c8c4b8"/>
+      <text x="59" y="354" fill="#22242c" font-family="Jost, sans-serif" font-size="13" font-weight="600" text-anchor="middle">Drafts</text>
+      <rect x="104" y="330" width="70" height="38" rx="8" fill="#e0332c"/>
+      <text x="139" y="354" fill="#fff" font-family="Jost, sans-serif" font-size="13" font-weight="600" text-anchor="middle">Post</text>
+      <rect x="98" y="324" width="82" height="50" rx="12" fill="none" stroke="#e0332c" stroke-width="4" stroke-dasharray="6 5"/>
+    </svg>
+    <div class="step-text">
+      <span class="step-tag">Step 7</span>
+      <h3>Write a caption, then tap Post</h3>
+      <p>You're back on the same posting page. A <b>caption</b> is the little sentence that shows under your video, like "New sea turtle painting." At the end of your caption, add a few <b>hashtags</b>: words with a <b>#</b> in front, like <b>#oceanart</b>. Hashtags are how strangers who love art find your video. Ready-made sets you can copy are in <a href="#part5"><b>Part 5</b></a> below. Then tap the red <b>Post</b> button. Your video is now live on TikTok!</p>
+    </div>
+  </div>
+</section>
+
+<!-- ==================== PART 3 ==================== -->
+<section id="part3">
+  <div class="part-title">
+    <div class="part-num" style="background: var(--insta);">3</div>
+    <h2>Download your video, then post it to Instagram
+      <small>Start from your TikTok profile: save the video to your phone, then put it on Instagram as a Reel.</small>
+    </h2>
+  </div>
+
+  <div class="step">
+    <svg viewBox="0 0 200 400" xmlns="http://www.w3.org/2000/svg">
+      <rect x="4" y="4" width="192" height="392" rx="28" fill="#111318"/>
+      <rect x="12" y="12" width="176" height="376" rx="20" fill="#2a2e3b"/>
+      <text x="90" y="200" fill="#565b6e" font-family="Jost, sans-serif" font-size="13" text-anchor="middle">your posted video</text>
+      <!-- right rail icons -->
+      <circle cx="164" cy="200" r="10" fill="#3a3e4d"/>
+      <circle cx="164" cy="240" r="10" fill="#3a3e4d"/>
+      <!-- three dots -->
+      <circle cx="152" cy="300" r="4" fill="#fff"/>
+      <circle cx="164" cy="300" r="4" fill="#fff"/>
+      <circle cx="176" cy="300" r="4" fill="#fff"/>
+      <circle cx="164" cy="300" r="22" fill="none" stroke="#e0332c" stroke-width="4"/>
+    </svg>
+    <div class="step-text">
+      <span class="step-tag">Step 8</span>
+      <h3>Go to your Profile and open your video</h3>
+      <p>In TikTok, tap <b>Profile</b> in the <b>bottom right corner</b> (the little person icon). Tap the video you just posted to open it, then tap the <b>three dots [&hellip;]</b> on the right side of the screen (below the heart and comment buttons).</p>
+    </div>
+  </div>
+
+  <div class="step">
+    <svg viewBox="0 0 200 400" xmlns="http://www.w3.org/2000/svg">
+      <rect x="4" y="4" width="192" height="392" rx="28" fill="#111318"/>
+      <rect x="12" y="12" width="176" height="376" rx="20" fill="#2a2e3b"/>
+      <!-- share sheet -->
+      <rect x="12" y="230" width="176" height="158" rx="16" fill="#fff"/>
+      <rect x="30" y="250" width="80" height="8" rx="4" fill="#d8d4c8"/>
+      <g>
+        <circle cx="50" cy="300" r="18" fill="#f0ede4"/>
+        <path d="M 50 292 L 50 306 M 44 300 L 50 307 L 56 300" stroke="#22242c" stroke-width="3" fill="none" stroke-linecap="round"/>
+        <text x="50" y="336" fill="#22242c" font-family="Jost, sans-serif" font-size="10" text-anchor="middle">Save video</text>
+        <circle cx="105" cy="300" r="18" fill="#f0ede4"/>
+        <circle cx="160" cy="300" r="18" fill="#f0ede4"/>
+      </g>
+      <circle cx="50" cy="300" r="27" fill="none" stroke="#e0332c" stroke-width="4"/>
+    </svg>
+    <div class="step-text">
+      <span class="step-tag">Step 9</span>
+      <h3>Tap "Save video"</h3>
+      <p>A menu slides up. Tap <b>Save video</b> (a downward arrow icon). The video downloads into your phone's <b>Photos</b>, with the TikTok logo stamped on it. That's normal.</p>
+    </div>
+  </div>
+
+  <div class="step">
+    <svg viewBox="0 0 200 400" xmlns="http://www.w3.org/2000/svg">
+      <rect x="4" y="4" width="192" height="392" rx="28" fill="#fff" stroke="#e6e2d8" stroke-width="2"/>
+      <!-- top bar with plus at top left -->
+      <rect x="24" y="36" width="24" height="24" rx="7" fill="none" stroke="#22242c" stroke-width="3"/>
+      <line x1="36" y1="42" x2="36" y2="54" stroke="#22242c" stroke-width="3"/>
+      <line x1="30" y1="48" x2="42" y2="48" stroke="#22242c" stroke-width="3"/>
+      <rect x="100" y="42" width="76" height="12" rx="6" fill="#d8d4c8"/>
+      <circle cx="36" cy="48" r="24" fill="none" stroke="#e0332c" stroke-width="4"/>
+      <!-- profile content -->
+      <circle cx="56" cy="110" r="26" fill="#e8e4d8"/>
+      <rect x="96" y="96" width="80" height="10" rx="5" fill="#e8e4d8"/>
+      <rect x="96" y="114" width="60" height="10" rx="5" fill="#e8e4d8"/>
+      <rect x="24" y="160" width="152" height="140" rx="10" fill="#f0ede4"/>
+      <!-- bottom bar: profile highlighted on right, middle is messages -->
+      <line x1="12" y1="336" x2="188" y2="336" stroke="#e6e2d8" stroke-width="2"/>
+      <circle cx="36" cy="364" r="7" fill="#c8c4b8"/>
+      <circle cx="68" cy="364" r="7" fill="#c8c4b8"/>
+      <path d="M 92 358 L 108 358 L 108 368 L 102 368 L 97 373 L 97 368 L 92 368 Z" fill="#c8c4b8"/>
+      <circle cx="132" cy="364" r="7" fill="#c8c4b8"/>
+      <circle cx="164" cy="364" r="9" fill="#8a867a"/>
+      <path d="M 158 344 L 170 344" stroke="#2e8b6e" stroke-width="0"/>
+    </svg>
+    <div class="step-text">
+      <span class="step-tag">Step 10</span>
+      <h3>Open Instagram, go to Profile, tap the plus at the top</h3>
+      <p>Tap your <b>Profile</b> (your picture, bottom right corner). Then tap the <b>+ button at the top left</b> of your profile page and choose <b>Reel</b> for a video. <b>Careful:</b> the button in the middle of the bottom bar is <b>Messages</b>, not posting, and don't tap the + on Stories either.</p>
+    </div>
+  </div>
+
+  <div class="step">
+    <svg viewBox="0 0 200 400" xmlns="http://www.w3.org/2000/svg">
+      <rect x="4" y="4" width="192" height="392" rx="28" fill="#111318"/>
+      <rect x="12" y="12" width="176" height="376" rx="20" fill="#1c1f28"/>
+      <!-- gallery grid -->
+      <g>
+        <rect x="24" y="120" width="48" height="64" rx="6" fill="#3a3e4d"/>
+        <rect x="76" y="120" width="48" height="64" rx="6" fill="#2a2e3b"/>
+        <rect x="128" y="120" width="48" height="64" rx="6" fill="#2a2e3b"/>
+        <rect x="24" y="190" width="48" height="64" rx="6" fill="#2a2e3b"/>
+      </g>
+      <text x="48" y="156" fill="#c8ccda" font-family="Jost, sans-serif" font-size="9" text-anchor="middle">newest</text>
+      <rect x="18" y="114" width="60" height="76" rx="10" fill="none" stroke="#e0332c" stroke-width="4"/>
+      <!-- next -->
+      <rect x="112" y="336" width="66" height="34" rx="8" fill="#3897f0"/>
+      <text x="145" y="358" fill="#fff" font-family="Jost, sans-serif" font-size="14" font-weight="600" text-anchor="middle">Next</text>
+    </svg>
+    <div class="step-text">
+      <span class="step-tag">Step 11</span>
+      <h3>Pick your video, tap Next, then Share</h3>
+      <p>Your saved TikTok video will be the <b>newest video in the gallery</b> (top left). Tap it, tap <b>Next</b>, write a caption (use the same one from TikTok, hashtags and all), then tap <b>Share</b>. Done, it's on Instagram!</p>
+    </div>
+  </div>
+
+  <div class="tip"><b>Good to know:</b> The video will have a small TikTok watermark on it. That's fine for family and friends. If it ever bothers you, ask Megan, there are ways around it.</div>
+</section>
+
+<!-- ==================== PART 4 ==================== -->
+<section id="part4">
+  <div class="part-title">
+    <div class="part-num" style="background: var(--fb);">4</div>
+    <h2>Post the same video to Facebook
+      <small>Same idea as Instagram. The video is already saved on your phone.</small>
+    </h2>
+  </div>
+
+  <div class="step">
+    <svg viewBox="0 0 200 400" xmlns="http://www.w3.org/2000/svg">
+      <rect x="4" y="4" width="192" height="392" rx="28" fill="#fff" stroke="#e6e2d8" stroke-width="2"/>
+      <rect x="24" y="40" width="80" height="14" rx="7" fill="#1877f2"/>
+      <!-- status box -->
+      <rect x="24" y="80" width="152" height="46" rx="10" fill="#f0ede4"/>
+      <circle cx="46" cy="103" r="12" fill="#c8c4b8"/>
+      <text x="66" y="108" fill="#8a867a" font-family="Jost, sans-serif" font-size="11">What's on your mind?</text>
+      <!-- photo/video row -->
+      <rect x="24" y="134" width="152" height="34" rx="8" fill="#fff" stroke="#e6e2d8"/>
+      <rect x="34" y="143" width="16" height="16" rx="3" fill="#45bd62"/>
+      <text x="58" y="156" fill="#22242c" font-family="Jost, sans-serif" font-size="11" font-weight="600">Photo / Video</text>
+      <rect x="18" y="128" width="164" height="46" rx="12" fill="none" stroke="#e0332c" stroke-width="4" stroke-dasharray="6 5"/>
+    </svg>
+    <div class="step-text">
+      <span class="step-tag">Step 12</span>
+      <h3>Open Facebook and tap "Photo / Video"</h3>
+      <p>At the top of Facebook, right under the <b>"What's on your mind?"</b> box, tap the green <b>Photo / Video</b> button.</p>
+    </div>
+  </div>
+
+  <div class="step">
+    <svg viewBox="0 0 200 400" xmlns="http://www.w3.org/2000/svg">
+      <rect x="4" y="4" width="192" height="392" rx="28" fill="#fff" stroke="#e6e2d8" stroke-width="2"/>
+      <g>
+        <rect x="24" y="60" width="48" height="64" rx="6" fill="#c8c4b8"/>
+        <rect x="76" y="60" width="48" height="64" rx="6" fill="#e8e4d8"/>
+        <rect x="128" y="60" width="48" height="64" rx="6" fill="#e8e4d8"/>
+      </g>
+      <text x="48" y="96" fill="#fff" font-family="Jost, sans-serif" font-size="9" text-anchor="middle">newest</text>
+      <rect x="18" y="54" width="60" height="76" rx="10" fill="none" stroke="#e0332c" stroke-width="4"/>
+      <!-- post button -->
+      <rect x="24" y="330" width="152" height="40" rx="10" fill="#1877f2"/>
+      <text x="100" y="356" fill="#fff" font-family="Jost, sans-serif" font-size="15" font-weight="600" text-anchor="middle">Post</text>
+    </svg>
+    <div class="step-text">
+      <span class="step-tag">Step 13</span>
+      <h3>Pick the video, then tap Post</h3>
+      <p>Choose the same video (again, <b>newest, top left</b>), tap <b>Done</b> or <b>Next</b>, write something if you'd like, then tap the blue <b>Post</b> button. That's all three!</p>
+    </div>
+  </div>
+
+  <div class="tip"><b>Stuck?</b> The apps move buttons around sometimes. If something doesn't look like the picture, look for the same <b>words</b> ("Drafts", "Save video", "Post"). And you can always call Megan.</div>
+</section>
+
+<!-- ==================== PART 5 ==================== -->
+<section id="part5">
+  <div class="part-title">
+    <div class="part-num" style="background: #2e8b6e;">5</div>
+    <h2>Hashtags: what they are and which ones to use
+      <small>Optional, but they help strangers who love art find your videos.</small>
+    </h2>
+  </div>
+
+  <div class="explain">
+    <p>A <b>hashtag</b> is just a word with a <b>#</b> symbol in front of it, like <b>#art</b>. You type them at the end of your caption. Think of them as filing labels: when you add #oceanart, your video gets filed in the "ocean art" pile, and anyone browsing that pile can find it. No spaces inside a hashtag: <b>#oceanart</b> works, <b>#ocean art</b> only counts the first word.</p>
+    <p style="margin-top: 12px;">A few simple rules: <b>3 to 5 hashtags is plenty</b> (more looks spammy), they work the same on TikTok, Instagram, and Facebook, and capital letters don't matter (#OceanArt and #oceanart are the same tag).</p>
+  </div>
+
+  <div class="hashtag-card">
+    <div class="hashtag-head">
+      <h3>Any art post</h3>
+      <button class="copy-btn" data-copy="#art #artist #artwork #creativeprocess #artoftheday">Copy</button>
+    </div>
+    <div class="tags">#art #artist #artwork #creativeprocess #artoftheday</div>
+  </div>
+
+  <div class="hashtag-card">
+    <div class="hashtag-head">
+      <h3>Ocean art</h3>
+      <button class="copy-btn" data-copy="#oceanart #seaart #marineart #oceanpainting #coastalart">Copy</button>
+    </div>
+    <div class="tags">#oceanart #seaart #marineart #oceanpainting #coastalart</div>
+  </div>
+
+  <div class="hashtag-card">
+    <div class="hashtag-head">
+      <h3>Animal art</h3>
+      <button class="copy-btn" data-copy="#animalart #wildlifeart #animalpainting #petportrait #wildlifeartist">Copy</button>
+    </div>
+    <div class="tags">#animalart #wildlifeart #animalpainting #petportrait #wildlifeartist</div>
+  </div>
+
+  <div class="hashtag-card">
+    <div class="hashtag-head">
+      <h3>Painting process videos</h3>
+      <button class="copy-btn" data-copy="#painting #paintingprocess #satisfyingart #arttok #watchmepaint">Copy</button>
+    </div>
+    <div class="tags">#painting #paintingprocess #satisfyingart #arttok #watchmepaint</div>
+  </div>
+
+  <div class="tip"><b>How to use these:</b> Tap the <b>Copy</b> button on the set that fits your video. Then when you're writing your caption, press and hold in the caption box and tap <b>Paste</b>. Mix and match is fine too, just keep it to about 5 total.</div>
+</section>
+
+<footer>
+  Made with love by Megan &middot; <a href="index.html">back to the moon</a>
+</footer>
+
+<script>
+  document.querySelectorAll('.copy-btn').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      navigator.clipboard.writeText(btn.dataset.copy).then(function () {
+        var old = btn.textContent;
+        btn.textContent = 'Copied!';
+        setTimeout(function () { btn.textContent = old; }, 1600);
+      });
+    });
+  });
+</script>
+
+</body>
+</html>
