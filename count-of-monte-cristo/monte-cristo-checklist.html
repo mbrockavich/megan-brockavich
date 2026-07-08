@@ -450,6 +450,58 @@ button.ghost:hover { color: var(--wax); border-color: var(--wax); }
 .chapter-row.checked label { color: var(--iron); text-decoration: line-through; text-decoration-color: var(--gold); }
 .chapter-row.checked .num { color: var(--gold); }
 
+.chapter-row label { flex: 1; }
+
+/* ---------- completed chapters ---------- */
+
+.completed-card { opacity: 0.92; }
+
+.completed-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 8px 10px;
+  border-radius: 2px;
+}
+
+.completed-row:hover { background: rgba(122, 94, 42, 0.08); }
+
+.completed-row input[type="checkbox"] {
+  margin-top: 3px;
+  width: 16px;
+  height: 16px;
+  accent-color: var(--gold);
+  flex-shrink: 0;
+  cursor: pointer;
+}
+
+.completed-row label {
+  flex: 1;
+  cursor: pointer;
+  font-size: 16px;
+  line-height: 1.4;
+  color: var(--iron);
+  text-decoration: line-through;
+  text-decoration-color: var(--gold);
+}
+
+.completed-row .num {
+  font-family: 'Special Elite', monospace;
+  font-size: 13px;
+  color: var(--gold);
+  margin-right: 6px;
+}
+
+.completed-row .completed-date {
+  font-family: 'EB Garamond', serif;
+  font-style: italic;
+  font-size: 12px;
+  color: var(--iron);
+  white-space: nowrap;
+  padding-left: 10px;
+  align-self: center;
+}
+
 .rest-note {
   padding: 14px 16px;
   font-style: italic;
@@ -686,6 +738,14 @@ button.ghost:hover { color: var(--wax); border-color: var(--wax); }
       <p class="ledger-heading">The Ledger of Days</p>
       <div id="dayList"></div>
 
+      <div id="completedSection" class="hidden">
+        <div class="divider"><div class="line"></div><div class="mark">&#10022;</div><div class="line"></div></div>
+        <p class="ledger-heading">Chapters Completed</p>
+        <div class="day-card completed-card">
+          <div class="chapters" id="completedList"></div>
+        </div>
+      </div>
+
       <div class="reset-row"><a id="resetAll">Strike every mark from the ledger</a></div>
       <div class="sync-row"><a id="toggleSync">Sync across devices via GitHub</a></div>
       <p class="sync-status" id="syncStatus">Not connected. Saving to this browser only.</p>
@@ -769,6 +829,8 @@ button.ghost:hover { color: var(--wax); border-color: var(--wax); }
     chainFill: document.getElementById('chainFill'),
     chainPct: document.getElementById('chainPct'),
     dayList: document.getElementById('dayList'),
+    completedSection: document.getElementById('completedSection'),
+    completedList: document.getElementById('completedList'),
     resetAll: document.getElementById('resetAll'),
     syncStatus: document.getElementById('syncStatus'),
     syncPanelStatus: document.getElementById('syncPanelStatus'),
@@ -845,10 +907,15 @@ button.ghost:hover { color: var(--wax); border-color: var(--wax); }
     return days[d.getDay()] + ', ' + months[d.getMonth()] + ' ' + d.getDate() + ', ' + d.getFullYear();
   }
 
+  function normalizeState(s) {
+    if (!s.completedAt || typeof s.completedAt !== 'object') s.completedAt = {};
+    return s;
+  }
+
   function defaultState() {
     var start = todayISO();
     var end = addDays(start, 29);
-    return { startDate: start, endDate: end, checked: new Array(TOTAL).fill(false) };
+    return normalizeState({ startDate: start, endDate: end, checked: new Array(TOTAL).fill(false), completedAt: {} });
   }
 
   function loadState() {
@@ -857,13 +924,19 @@ button.ghost:hover { color: var(--wax); border-color: var(--wax); }
       if (raw) {
         var parsed = JSON.parse(raw);
         if (parsed && Array.isArray(parsed.checked) && parsed.checked.length === TOTAL) {
-          return parsed;
+          return normalizeState(parsed);
         }
       }
     } catch (e) {
       console.error('Could not read the ledger', e);
     }
     return null;
+  }
+
+  function formatCompletedAt(ts) {
+    var d = new Date(ts);
+    var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    return months[d.getMonth()] + ' ' + d.getDate() + ', ' + d.getFullYear();
   }
 
   function saveState() {
@@ -995,7 +1068,7 @@ button.ghost:hover { color: var(--wax); border-color: var(--wax); }
     pushTimer = setTimeout(function () {
       pushRemote(syncConfig, state).then(function (result) {
         if (result && result.adopted) {
-          state = result.remoteState;
+          state = normalizeState(result.remoteState);
           try { window.localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch (e) { /* ignore */ }
           render();
           setSyncStatus('Synced, updated from your other device.', 'ok');
@@ -1050,6 +1123,58 @@ button.ghost:hover { color: var(--wax); border-color: var(--wax); }
     return { remainingChapters: remainingChapters, overdue: false, complete: false, days: days };
   }
 
+  function renderCompletedList() {
+    var completedIdxs = [];
+    for (var i = 0; i < TOTAL; i++) {
+      if (state.checked[i]) completedIdxs.push(i);
+    }
+
+    if (!completedIdxs.length) {
+      els.completedSection.classList.add('hidden');
+      els.completedList.innerHTML = '';
+      return;
+    }
+
+    completedIdxs.sort(function (a, b) {
+      return (state.completedAt[b] || 0) - (state.completedAt[a] || 0);
+    });
+
+    els.completedSection.classList.remove('hidden');
+    els.completedList.innerHTML = '';
+    completedIdxs.forEach(function (idx) {
+      var row = document.createElement('div');
+      row.className = 'completed-row';
+
+      var cb = document.createElement('input');
+      cb.type = 'checkbox';
+      cb.id = 'ch-done-' + idx;
+      cb.checked = true;
+      cb.addEventListener('change', function () {
+        state.checked[idx] = false;
+        delete state.completedAt[idx];
+        saveState();
+        render();
+      });
+
+      var label = document.createElement('label');
+      label.setAttribute('for', 'ch-done-' + idx);
+      var numSpan = document.createElement('span');
+      numSpan.className = 'num';
+      numSpan.textContent = String(idx + 1).padStart(3, '0');
+      label.appendChild(numSpan);
+      label.appendChild(document.createTextNode(TITLES[idx]));
+
+      var dateSpan = document.createElement('span');
+      dateSpan.className = 'completed-date';
+      dateSpan.textContent = state.completedAt[idx] ? ('Completed ' + formatCompletedAt(state.completedAt[idx])) : 'Completed date unknown';
+
+      row.appendChild(cb);
+      row.appendChild(label);
+      row.appendChild(dateSpan);
+      els.completedList.appendChild(row);
+    });
+  }
+
   function render() {
     var data = buildDayAssignments();
     var checkedCount = TOTAL - data.remainingChapters.length;
@@ -1066,6 +1191,7 @@ button.ghost:hover { color: var(--wax); border-color: var(--wax); }
       els.decreeText.innerHTML = 'The sentence is served, all <strong>117</strong> chapters read. The Count walks free.';
       els.statDays.textContent = '0';
       els.dayList.innerHTML = '<p class="rest-note">There is nothing left owed to this ledger. Begin a new sentence above if you wish to read again.</p>';
+      renderCompletedList();
       return;
     }
 
@@ -1125,6 +1251,11 @@ button.ghost:hover { color: var(--wax); border-color: var(--wax); }
           cb.checked = state.checked[idx];
           cb.addEventListener('change', function () {
             state.checked[idx] = cb.checked;
+            if (cb.checked) {
+              state.completedAt[idx] = Date.now();
+            } else {
+              delete state.completedAt[idx];
+            }
             saveState();
             render();
           });
@@ -1146,6 +1277,8 @@ button.ghost:hover { color: var(--wax); border-color: var(--wax); }
 
       els.dayList.appendChild(card);
     });
+
+    renderCompletedList();
   }
 
   function updateEchoes() {
@@ -1218,7 +1351,7 @@ button.ghost:hover { color: var(--wax); border-color: var(--wax); }
         var remoteTime = remote.state.updatedAt || 0;
         var localTime = state.updatedAt || 0;
         if (remoteTime > localTime) {
-          state = remote.state;
+          state = normalizeState(remote.state);
           try { window.localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch (e) { /* ignore */ }
           render();
           setSyncStatus('Connected. Loaded newer progress from GitHub.', 'ok');
@@ -1256,6 +1389,7 @@ button.ghost:hover { color: var(--wax); border-color: var(--wax); }
       return;
     }
     state.checked = new Array(TOTAL).fill(false);
+    state.completedAt = {};
     resetArmed = false;
     els.resetAll.textContent = 'Strike every mark from the ledger';
     saveState();
@@ -1284,7 +1418,7 @@ button.ghost:hover { color: var(--wax); border-color: var(--wax); }
           var remoteTime = remote.state.updatedAt || 0;
           var localTime = localState ? (localState.updatedAt || 0) : -1;
           if (remoteTime >= localTime) {
-            state = remote.state;
+            state = normalizeState(remote.state);
             try { window.localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch (e) { /* ignore */ }
             setSyncStatus('Synced, showing the latest from GitHub.', 'ok');
           } else {
