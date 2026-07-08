@@ -680,7 +680,6 @@ button.ghost:hover { color: var(--wax); border-color: var(--wax); }
       </div>
 
       <div class="edit-terms-row"><a id="editTerms">Renegotiate the terms of release</a></div>
-      <p class="sync-status" id="syncStatus">Working locally only</p>
 
       <div class="divider"><div class="line"></div><div class="mark">&#10022;</div><div class="line"></div></div>
 
@@ -689,6 +688,7 @@ button.ghost:hover { color: var(--wax); border-color: var(--wax); }
 
       <div class="reset-row"><a id="resetAll">Strike every mark from the ledger</a></div>
       <div class="sync-row"><a id="toggleSync">Sync across devices via GitHub</a></div>
+      <p class="sync-status" id="syncStatus">Not connected. Saving to this browser only.</p>
       <div id="syncPanel" class="sync-panel hidden">
         <div class="field">
           <label for="syncRepo">Repository (owner/name)</label>
@@ -710,6 +710,7 @@ button.ghost:hover { color: var(--wax); border-color: var(--wax); }
           <button id="connectSync">Save and Connect</button>
           <button class="ghost" id="disconnectSync">Disconnect</button>
         </div>
+        <p class="sync-status" id="syncPanelStatus" style="margin-top:14px;"></p>
         <p class="sync-note">The token stays in this browser only. It is never written into the saved progress file.</p>
       </div>
     </div>
@@ -770,6 +771,7 @@ button.ghost:hover { color: var(--wax); border-color: var(--wax); }
     dayList: document.getElementById('dayList'),
     resetAll: document.getElementById('resetAll'),
     syncStatus: document.getElementById('syncStatus'),
+    syncPanelStatus: document.getElementById('syncPanelStatus'),
     toggleSync: document.getElementById('toggleSync'),
     syncPanel: document.getElementById('syncPanel'),
     syncRepo: document.getElementById('syncRepo'),
@@ -900,6 +902,10 @@ button.ghost:hover { color: var(--wax); border-color: var(--wax); }
   function setSyncStatus(text, kind) {
     els.syncStatus.textContent = text;
     els.syncStatus.className = 'sync-status ' + (kind || '');
+    if (els.syncPanelStatus) {
+      els.syncPanelStatus.textContent = text;
+      els.syncPanelStatus.className = 'sync-status ' + (kind || '');
+    }
   }
 
   function b64EncodeUnicode(str) {
@@ -1199,6 +1205,7 @@ button.ghost:hover { color: var(--wax); border-color: var(--wax); }
         setSyncStatus('Connected. Will create the file on your next change.', 'ok');
         queuePush();
       }
+      els.syncPanel.classList.add('hidden');
     }).catch(function (err) {
       setSyncStatus('Could not connect: ' + err.message, 'error');
     });
