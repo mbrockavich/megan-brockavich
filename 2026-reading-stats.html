@@ -630,7 +630,7 @@ const modalClose = document.getElementById("modalClose");
 function openGenreModal(genre, spineColor){
   const genreBooks = books
     .filter(b => b.genre === genre)
-    .sort((a,b) => new Date(b.dateFinished) - new Date(a.dateFinished));
+    .sort((a,b) => a.author.localeCompare(b.author) || new Date(a.dateFinished) - new Date(b.dateFinished));
 
   modalTitle.textContent = `${GENRE_EMOJI[genre] || "📚"} ${genre}`;
   modalSub.textContent = `${genreBooks.length} book${genreBooks.length === 1 ? "" : "s"} finished in 2026`;
