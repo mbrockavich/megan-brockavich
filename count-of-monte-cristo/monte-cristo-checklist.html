@@ -939,11 +939,17 @@ button.ghost:hover { color: var(--wax); border-color: var(--wax); }
     return { state: remoteState, sha: json.sha };
   }
 
-  async function pushRemote(cfg, stateObj) {
+  async function pushRemote(cfg, stateObj, attempt) {
+    attempt = attempt || 1;
+
     var existing = null;
     try {
       existing = await fetchRemote(cfg);
     } catch (e) { /* first write, or transient; proceed without sha */ }
+
+    if (existing && (existing.state.updatedAt || 0) > (stateObj.updatedAt || 0)) {
+      return { adopted: true, remoteState: existing.state };
+    }
 
     var body = {
       message: 'Update reading progress',
@@ -961,13 +967,25 @@ button.ghost:hover { color: var(--wax); border-color: var(--wax); }
       },
       body: JSON.stringify(body)
     });
+
+    if (res.status === 409 && attempt < 4) {
+      await new Promise(function (resolve) { setTimeout(resolve, 400 * attempt); });
+      return pushRemote(cfg, stateObj, attempt + 1);
+    }
+
     if (!res.ok) {
       var errBody = await res.json().catch(function () { return {}; });
-      throw new Error(errBody.message || ('GitHub error ' + res.status));
+      var message = errBody.message || ('GitHub error ' + res.status);
+      if (/does not match/.test(message) && attempt < 4) {
+        await new Promise(function (resolve) { setTimeout(resolve, 400 * attempt); });
+        return pushRemote(cfg, stateObj, attempt + 1);
+      }
+      throw new Error(message);
     }
+
     var json = await res.json();
     remoteSha = json.content.sha;
-    return json;
+    return { adopted: false };
   }
 
   function queuePush() {
@@ -975,8 +993,15 @@ button.ghost:hover { color: var(--wax); border-color: var(--wax); }
     setSyncStatus('Syncing to GitHub…', 'busy');
     clearTimeout(pushTimer);
     pushTimer = setTimeout(function () {
-      pushRemote(syncConfig, state).then(function () {
-        setSyncStatus('Synced just now', 'ok');
+      pushRemote(syncConfig, state).then(function (result) {
+        if (result && result.adopted) {
+          state = result.remoteState;
+          try { window.localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch (e) { /* ignore */ }
+          render();
+          setSyncStatus('Synced, updated from your other device.', 'ok');
+        } else {
+          setSyncStatus('Synced just now', 'ok');
+        }
       }).catch(function (err) {
         setSyncStatus('Sync failed: ' + err.message + '. Saved locally only.', 'error');
       });
