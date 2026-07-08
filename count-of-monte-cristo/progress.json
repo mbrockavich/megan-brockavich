@@ -12,7 +12,7 @@
     true,
     true,
     true,
-    false,
+    true,
     false,
     false,
     false,
@@ -120,9 +120,10 @@
     false,
     false
   ],
-  "updatedAt": 1783550188561,
+  "updatedAt": 1783551115159,
   "completedAt": {
-    "9": 1783550188561
+    "9": 1783550188561,
+    "10": 1783551115159
   },
   "todayPlan": {
     "date": "2026-07-08",
