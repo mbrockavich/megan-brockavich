@@ -1,6 +1,6 @@
 {
   "startDate": "2026-07-01",
-  "endDate": "2026-08-31",
+  "endDate": "2026-07-31",
   "checked": [
     false,
     false,
@@ -120,5 +120,5 @@
     false,
     false
   ],
-  "updatedAt": 1783521393065
+  "updatedAt": 1783521552175
 }
