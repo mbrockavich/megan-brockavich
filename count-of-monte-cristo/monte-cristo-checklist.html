@@ -185,7 +185,8 @@ h1.title {
   margin-bottom: 6px;
 }
 
-.field input[type="date"] {
+.field input[type="date"],
+.field input[type="number"] {
   width: 100%;
   font-family: 'Special Elite', monospace;
   font-size: 15px;
@@ -196,7 +197,8 @@ h1.title {
   color: var(--ink);
 }
 
-.field input[type="date"]:focus {
+.field input[type="date"]:focus,
+.field input[type="number"]:focus {
   outline: 2px solid var(--wax);
   outline-offset: 1px;
 }
@@ -687,7 +689,8 @@ button.ghost:hover { color: var(--wax); border-color: var(--wax); }
       <p class="instructions-heading">How to Use This Ledger</p>
       <ol>
         <li>Choose the day you're starting the book and the day you'd like to finish it, then click <em>Fix the Terms</em>.</li>
-        <li>The ledger splits the book's 117 chapters evenly across your remaining days and shows today's quota.</li>
+        <li>Already partway through? Enter the chapter you're on and earlier chapters are marked read automatically, listed below with an unknown completion date.</li>
+        <li>The ledger splits the book's 117 chapters evenly across your remaining days and shows today's quota. Once today's quota is checked off, today's card disappears &mdash; it won't refill until tomorrow.</li>
         <li>Check off chapters as you read them &mdash; your progress is saved automatically in this browser.</li>
         <li>Miss a day? The ledger reshuffles what's left across the days that remain.</li>
         <li>Changed your mind about the deadline? Click <em>Renegotiate the terms of release</em> to pick new dates.</li>
@@ -709,6 +712,11 @@ button.ghost:hover { color: var(--wax); border-color: var(--wax); }
           <input type="date" id="endDate">
           <p class="date-echo" id="endEcho"></p>
         </div>
+      </div>
+      <div class="field" style="margin-top:16px;">
+        <label for="startChapter">What Chapter Are You On?</label>
+        <input type="number" id="startChapter" min="1" max="118" value="1">
+        <p class="date-echo" id="startChapterEcho"></p>
       </div>
       <div class="setup-row">
         <button id="saveTerms">Fix the Terms</button>
@@ -820,6 +828,8 @@ button.ghost:hover { color: var(--wax); border-color: var(--wax); }
     endDate: document.getElementById('endDate'),
     startEcho: document.getElementById('startEcho'),
     endEcho: document.getElementById('endEcho'),
+    startChapter: document.getElementById('startChapter'),
+    startChapterEcho: document.getElementById('startChapterEcho'),
     saveTerms: document.getElementById('saveTerms'),
     editTerms: document.getElementById('editTerms'),
     decreeText: document.getElementById('decreeText'),
@@ -1081,6 +1091,16 @@ button.ghost:hover { color: var(--wax); border-color: var(--wax); }
     }, 900);
   }
 
+  function ensureTodayPlan(remainingChapters, today) {
+    if (!state.todayPlan || state.todayPlan.date !== today || !Array.isArray(state.todayPlan.chapters)) {
+      var totalDays = daysBetweenInclusive(today, state.endDate);
+      if (totalDays < 1) totalDays = 1;
+      var quota = Math.ceil(remainingChapters.length / totalDays);
+      state.todayPlan = { date: today, chapters: remainingChapters.slice(0, quota) };
+      saveState();
+    }
+  }
+
   function buildDayAssignments() {
     var remainingChapters = [];
     for (var i = 0; i < TOTAL; i++) {
@@ -1091,33 +1111,48 @@ button.ghost:hover { color: var(--wax); border-color: var(--wax); }
     var overdue = state.endDate < today && remainingChapters.length > 0;
     var complete = remainingChapters.length === 0;
 
-    var days = [];
     if (complete) {
       return { remainingChapters: remainingChapters, overdue: false, complete: true, days: [] };
     }
 
     if (overdue) {
-      days.push({ date: today, isToday: true, isOverdue: true, chapters: remainingChapters.slice() });
-      return { remainingChapters: remainingChapters, overdue: true, complete: false, days: days };
+      var overdueDays = [{ date: today, isToday: true, isOverdue: true, chapters: remainingChapters.slice() }];
+      return { remainingChapters: remainingChapters, overdue: true, complete: false, days: overdueDays };
     }
+
+    ensureTodayPlan(remainingChapters, today);
+
+    var todaySet = {};
+    state.todayPlan.chapters.forEach(function (idx) { todaySet[idx] = true; });
+
+    var todaysChapters = remainingChapters.filter(function (idx) { return todaySet[idx]; });
+    var futureRemaining = remainingChapters.filter(function (idx) { return !todaySet[idx]; });
 
     var totalDays = daysBetweenInclusive(today, state.endDate);
     if (totalDays < 1) totalDays = 1;
+    var futureDaysCount = totalDays - 1;
 
-    var base = Math.floor(remainingChapters.length / totalDays);
-    var extra = remainingChapters.length % totalDays;
-    var pointer = 0;
+    var days = [];
+    if (todaysChapters.length > 0) {
+      days.push({ date: today, isToday: true, isOverdue: false, chapters: todaysChapters });
+    }
 
-    for (var d = 0; d < totalDays; d++) {
-      var count = base + (d < extra ? 1 : 0);
-      var chunk = remainingChapters.slice(pointer, pointer + count);
-      pointer += count;
-      days.push({
-        date: addDays(today, d),
-        isToday: d === 0,
-        isOverdue: false,
-        chapters: chunk
-      });
+    if (futureDaysCount > 0) {
+      var base = Math.floor(futureRemaining.length / futureDaysCount);
+      var extra = futureRemaining.length % futureDaysCount;
+      var pointer = 0;
+
+      for (var d = 0; d < futureDaysCount; d++) {
+        var count = base + (d < extra ? 1 : 0);
+        var chunk = futureRemaining.slice(pointer, pointer + count);
+        pointer += count;
+        days.push({
+          date: addDays(today, d + 1),
+          isToday: false,
+          isOverdue: false,
+          chapters: chunk
+        });
+      }
     }
 
     return { remainingChapters: remainingChapters, overdue: false, complete: false, days: days };
@@ -1284,15 +1319,33 @@ button.ghost:hover { color: var(--wax); border-color: var(--wax); }
   function updateEchoes() {
     els.startEcho.textContent = els.startDate.value ? formatDateFull(els.startDate.value) : '';
     els.endEcho.textContent = els.endDate.value ? formatDateFull(els.endDate.value) : '';
+
+    var chapterNum = parseInt(els.startChapter.value, 10);
+    if (!chapterNum || chapterNum <= 1) {
+      els.startChapterEcho.textContent = 'Starting from the beginning.';
+    } else {
+      var lastRead = Math.min(chapterNum - 1, TOTAL);
+      els.startChapterEcho.textContent = 'Chapters 1–' + lastRead + ' will be marked as already read.';
+    }
   }
 
   els.startDate.addEventListener('input', updateEchoes);
   els.endDate.addEventListener('input', updateEchoes);
+  els.startChapter.addEventListener('input', updateEchoes);
+
+  function currentChapterNumber() {
+    if (!state) return 1;
+    for (var i = 0; i < TOTAL; i++) {
+      if (!state.checked[i]) return i + 1;
+    }
+    return TOTAL + 1;
+  }
 
   function showSetup(isEdit) {
     els.setupHeading.textContent = isEdit ? 'Renegotiate the Terms' : 'Fix the Terms of Your Sentence';
     els.startDate.value = state ? state.startDate : todayISO();
     els.endDate.value = state ? state.endDate : addDays(todayISO(), 29);
+    els.startChapter.value = currentChapterNumber();
     updateEchoes();
     els.setup.classList.remove('hidden');
     els.mainView.classList.add('hidden');
@@ -1311,6 +1364,14 @@ button.ghost:hover { color: var(--wax); border-color: var(--wax); }
     if (!state) state = defaultState();
     state.startDate = start;
     state.endDate = end;
+    state.todayPlan = null;
+
+    var chapterNum = parseInt(els.startChapter.value, 10) || 1;
+    if (chapterNum < 1) chapterNum = 1;
+    for (var i = 0; i < TOTAL && i < chapterNum - 1; i++) {
+      if (!state.checked[i]) state.checked[i] = true;
+    }
+
     saveState();
     showMain();
   });
@@ -1390,6 +1451,7 @@ button.ghost:hover { color: var(--wax); border-color: var(--wax); }
     }
     state.checked = new Array(TOTAL).fill(false);
     state.completedAt = {};
+    state.todayPlan = null;
     resetArmed = false;
     els.resetAll.textContent = 'Strike every mark from the ledger';
     saveState();
