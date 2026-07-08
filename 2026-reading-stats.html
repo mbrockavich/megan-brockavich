@@ -299,6 +299,12 @@
   .series-head{ display:flex; align-items:baseline; flex-wrap:wrap; gap: 8px 12px; margin-bottom: 12px; }
   .series-name{ font-family:'Fraunces',serif; font-weight:600; font-size:16px; }
   .series-author{ font-family:'Space Mono',monospace; font-size:10.5px; color:var(--ink-soft); }
+  .series-status{
+    font-family:'Space Mono',monospace; font-size:9px; text-transform:uppercase; letter-spacing:0.06em;
+    padding: 2px 8px; border-radius: 20px; border: 1px solid currentColor;
+  }
+  .series-status.complete{ color: #3f7a54; }
+  .series-status.ongoing{ color: var(--stamp); }
   .series-progress{
     margin-left:auto;
     font-family:'Space Mono',monospace; font-size:10px; text-transform:uppercase; letter-spacing:0.08em;
@@ -518,11 +524,15 @@ const books = [
 
 /* Multi-book series touched by the 2026 shelf, in reading order.
    `read` books are matched by exact title against the `books` array above
-   to pull their cover; unread books render as greyed-out placeholders. */
+   to pull their cover; unread books render as greyed-out placeholders.
+   `status` reflects whether the AUTHOR is done writing the series, not
+   whether you're caught up on it: "complete" = no more books planned,
+   "ongoing" = more entries are announced or expected. */
 const SERIES = [
   {
     name: "Darkmore Penitentiary",
     author: "Caroline Peckham & Susanne Valenti",
+    status: "complete",
     books: [
       {title:"Caged Wolf", read:true, readDate:"August 2025", cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1680885592i/126128250.jpg"},
       {title:"Alpha Wolf", read:true, readDate:"October 2025", cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1622992365i/58272634.jpg"},
@@ -533,6 +543,7 @@ const SERIES = [
   {
     name: "The Ashen",
     author: "Demi Winters",
+    status: "ongoing",
     books: [
       {title:"The Road of Bones", read:true, readDate:null, cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1704736755i/205044632.jpg"},
       {title:"Kingdom of Claw", read:true, readDate:"April 2024", cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1706976049i/207041696.jpg"},
@@ -543,6 +554,7 @@ const SERIES = [
   {
     name: "Red Rising Saga",
     author: "Pierce Brown",
+    status: "ongoing",
     books: [
       {title:"Red Rising", read:true},
       {title:"Golden Son", read:true},
@@ -556,6 +568,7 @@ const SERIES = [
   {
     name: "The Ravenhood",
     author: "Kate Stewart",
+    status: "complete",
     books: [
       {title:"Flock", read:true},
       {title:"Exodus", read:true},
@@ -565,6 +578,7 @@ const SERIES = [
   {
     name: "The Magicians Trilogy",
     author: "Lev Grossman",
+    status: "complete",
     books: [
       {title:"The Magicians", read:true},
       {title:"The Magician King", read:true},
@@ -574,6 +588,7 @@ const SERIES = [
   {
     name: "Heartstring Duet",
     author: "Liv Zander",
+    status: "complete",
     books: [
       {title:"Crown Me Dead", read:true},
       {title:"Crown Me Yours", read:true}
@@ -582,6 +597,7 @@ const SERIES = [
   {
     name: "The Housemaid",
     author: "Freida McFadden",
+    status: "complete",
     books: [
       {title:"The Housemaid", read:false},
       {title:"The Housemaid's Secret", read:false},
@@ -592,6 +608,7 @@ const SERIES = [
   {
     name: "Letters of Enchantment",
     author: "Rebecca Ross",
+    status: "complete",
     books: [
       {title:"Divine Rivals", read:false},
       {title:"Ruthless Vows", read:true}
@@ -600,6 +617,7 @@ const SERIES = [
   {
     name: "The Shining",
     author: "Stephen King",
+    status: "complete",
     books: [
       {title:"The Shining", read:false},
       {title:"Doctor Sleep", read:true}
@@ -608,6 +626,7 @@ const SERIES = [
   {
     name: "Firefly Lane",
     author: "Kristin Hannah",
+    status: "complete",
     books: [
       {title:"Firefly Lane", read:false},
       {title:"Fly Away", read:true}
@@ -616,13 +635,15 @@ const SERIES = [
   {
     name: "Skye O'Shea Paranormal Cozy Mystery",
     author: "Rowan Dillon",
+    status: "ongoing",
     books: [
       {title:"A Mystical Legacy", read:true},
       {title:"Bogs, Brews, and Banshees", read:false},
       {title:"Whispers, Whiskey, and Wishes", read:false},
       {title:"Pranks, Poitin, and Pucas", read:false},
-      {title:"Frost, Faelan, and Fairies", read:false},
-      {title:"Spectacles, Sangria, and Selkies", read:false}
+      {title:"Roots, Rum, and Revenants", read:false},
+      {title:"Spectacles, Sangria, and Selkies", read:false},
+      {title:"Greed, Guinness, and Grogochs", read:false}
     ]
   }
 ];
@@ -847,7 +868,13 @@ const seriesContainer = document.getElementById("seriesList");
 SERIES.forEach(s => {
   const readCount = s.books.filter(b => b.read).length;
   const total = s.books.length;
-  const complete = readCount === total;
+  const caughtUp = readCount === total;
+  const seriesDone = s.status === "complete";
+
+  let badgeText, badgeClass;
+  if(caughtUp && seriesDone){ badgeText = "Complete"; badgeClass = "complete"; }
+  else if(caughtUp){ badgeText = "Caught Up"; badgeClass = "complete"; }
+  else { badgeText = `${readCount}/${total} read`; badgeClass = ""; }
 
   const row = document.createElement("div");
   row.className = "series-row";
@@ -873,8 +900,9 @@ SERIES.forEach(s => {
   row.innerHTML = `
     <div class="series-head">
       <div class="series-name">${s.name}</div>
+      <div class="series-status ${s.status}">${seriesDone ? "Series Complete" : "Still Being Written"}</div>
       <div class="series-author">${s.author}</div>
-      <div class="series-progress${complete ? " complete" : ""}">${complete ? "Complete" : `${readCount}/${total} read`}</div>
+      <div class="series-progress${badgeClass ? " " + badgeClass : ""}">${badgeText}</div>
     </div>
     <div class="series-books">${booksHtml}</div>
   `;
