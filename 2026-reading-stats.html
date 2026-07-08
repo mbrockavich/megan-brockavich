@@ -1,0 +1,711 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>2026 Reading Record</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Space+Mono:wght@400;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --wood: #6b3a52;
+    --wood-dark: #4a2740;
+    --wood-darker: #33192c;
+    --card: #fdf1f5;
+    --card-shadow: #f0d3de;
+    --ink: #5c3a4a;
+    --ink-soft: #a67a92;
+    --stamp: #e2789a;
+    --brass: #d9a4c0;
+    --sage: #a8d5ba;
+    --slate-blue: #b8c4e8;
+    --plum: #c9a0c9;
+  }
+
+  *{ box-sizing:border-box; }
+
+  body{
+    margin:0;
+    background:
+      radial-gradient(1px 1px at 8% 12%, rgba(255,235,242,0.6), transparent),
+      radial-gradient(1px 1px at 22% 68%, rgba(255,235,242,0.45), transparent),
+      radial-gradient(1px 1px at 38% 24%, rgba(255,235,242,0.55), transparent),
+      radial-gradient(1.5px 1.5px at 54% 82%, rgba(255,235,242,0.45), transparent),
+      radial-gradient(1px 1px at 68% 14%, rgba(255,235,242,0.5), transparent),
+      radial-gradient(1.5px 1.5px at 79% 55%, rgba(255,235,242,0.55), transparent),
+      radial-gradient(1px 1px at 91% 30%, rgba(255,235,242,0.45), transparent),
+      radial-gradient(1px 1px at 12% 88%, rgba(255,235,242,0.4), transparent),
+      radial-gradient(1px 1px at 63% 92%, rgba(255,235,242,0.4), transparent),
+      radial-gradient(1.5px 1.5px at 88% 78%, rgba(255,235,242,0.45), transparent),
+      radial-gradient(ellipse at top, var(--wood) 0%, var(--wood-dark) 65%, var(--wood-darker) 100%);
+    background-attachment:fixed;
+    background-size: cover;
+    font-family:'Inter', sans-serif;
+    color: var(--card);
+    padding: 48px 20px 80px;
+  }
+
+  .page{ max-width: 1060px; margin:0 auto; }
+
+  /* header */
+  header{
+    text-align:center;
+    margin-bottom: 44px;
+  }
+  header .eyebrow{
+    font-family:'Space Mono', monospace;
+    letter-spacing: 0.28em;
+    font-size: 11px;
+    text-transform: uppercase;
+    color: var(--brass);
+    margin-bottom: 10px;
+  }
+  header h1{
+    font-family:'Fraunces', serif;
+    font-optical-sizing:auto;
+    font-weight:600;
+    font-size: clamp(34px, 5vw, 54px);
+    margin: 0 0 8px;
+    color: var(--card);
+  }
+  header p{
+    font-size: 15px;
+    color: #f0c9dc;
+    margin:0;
+  }
+
+  /* generic index card */
+  .card{
+    background: var(--card);
+    color: var(--ink);
+    border-radius: 3px;
+    box-shadow: 0 10px 0 -4px var(--card-shadow), 0 14px 24px rgba(0,0,0,0.35);
+    position: relative;
+  }
+  .card::before{
+    content:"";
+    position:absolute; left:0; right:0; top: 46px;
+    height:1px;
+    background: repeating-linear-gradient(to bottom, transparent, transparent 27px, rgba(43,33,24,0.12) 27px, rgba(43,33,24,0.12) 28px);
+    bottom: 16px;
+    pointer-events:none;
+    opacity: 0.5;
+  }
+  .card .card-inner{ position:relative; z-index:1; }
+
+  /* HERO: due date card */
+  .hero-card{ padding: 34px 32px 30px; margin-bottom: 30px; }
+  .hero-top{
+    display:flex; justify-content:space-between; align-items:flex-start;
+    flex-wrap: wrap; gap: 16px;
+    border-bottom: 2px solid var(--ink);
+    padding-bottom: 14px; margin-bottom: 20px;
+  }
+  .hero-title{
+    font-family:'Space Mono', monospace;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    font-size: 13px;
+    font-weight: 700;
+  }
+  .hero-title span{ display:block; font-size:10px; font-weight:400; letter-spacing:0.1em; color: var(--ink-soft); margin-top:3px; }
+  .hero-count{ text-align:right; }
+  .hero-count .num{
+    font-family:'Fraunces', serif;
+    font-weight: 700;
+    font-size: 46px;
+    line-height: 1;
+  }
+  .hero-count .num small{ font-family:'Space Mono',monospace; font-size:20px; font-weight:400; color: var(--ink-soft); }
+  .hero-count .lbl{ font-family:'Space Mono', monospace; font-size: 10px; letter-spacing:0.15em; text-transform:uppercase; color: var(--ink-soft); }
+
+  .stamp-grid{
+    display:grid;
+    grid-template-columns: repeat(12, 1fr);
+    gap: 8px;
+    margin-bottom: 22px;
+  }
+  .month-slot{
+    aspect-ratio: 1;
+    border: 1.5px dashed rgba(43,33,24,0.3);
+    border-radius: 50%;
+    display:flex; align-items:center; justify-content:center;
+    position: relative;
+  }
+  .month-slot .mlabel{
+    position:absolute; bottom:-18px; left:0; right:0; text-align:center;
+    font-family:'Space Mono',monospace; font-size:9px; letter-spacing:0.05em; color: var(--ink-soft);
+  }
+  .month-slot.stamped{
+    border-style: solid;
+    border-color: var(--stamp);
+  }
+  .month-slot .stamp-mark{
+    font-family:'Space Mono', monospace;
+    font-weight:700;
+    font-size: 14px;
+    color: var(--stamp);
+    transform: rotate(-11deg);
+    line-height:1;
+  }
+  .month-slot .stamp-mark small{ display:block; font-size:8px; letter-spacing:0.06em; text-align:center; }
+
+  .hero-foot{
+    display:flex; gap: 24px; flex-wrap:wrap;
+    margin-top: 28px;
+    padding-top: 16px;
+    border-top: 1px dashed rgba(43,33,24,0.25);
+  }
+  .hero-foot .stat{ flex:1; min-width:150px; }
+  .hero-foot .stat .v{ font-family:'Fraunces',serif; font-weight:600; font-size:22px; }
+  .hero-foot .stat .l{ font-family:'Space Mono',monospace; font-size:10px; text-transform:uppercase; letter-spacing:0.1em; color: var(--ink-soft); }
+
+  /* two column stat charts */
+  .grid-2{ display:grid; grid-template-columns: 1fr 1fr; gap: 22px; margin-bottom: 30px; }
+  @media (max-width: 720px){ .grid-2{ grid-template-columns: 1fr; } }
+
+  .panel{ padding: 24px 26px 26px; }
+  .panel h2{
+    font-family:'Fraunces', serif;
+    font-size: 19px;
+    font-weight:600;
+    margin: 0 0 3px;
+  }
+  .panel .sub{
+    font-family:'Space Mono', monospace;
+    font-size: 10px;
+    text-transform:uppercase;
+    letter-spacing: 0.1em;
+    color: var(--ink-soft);
+    margin-bottom: 18px;
+  }
+
+  .bar-row{ display:flex; align-items:center; gap:10px; margin-bottom: 9px; }
+  .bar-row .m-label{ width: 34px; font-family:'Space Mono',monospace; font-size:10px; color: var(--ink-soft); flex-shrink:0; }
+  .bar-track{ flex:1; background: rgba(43,33,24,0.08); border-radius: 2px; height: 16px; position:relative; overflow:hidden; }
+  .bar-fill{ height:100%; border-radius: 2px; }
+  .bar-val{ width: 30px; text-align:right; font-family:'Space Mono',monospace; font-size:11px; font-weight:700; flex-shrink:0; }
+
+  /* genre shelf */
+  .shelf-panel{ padding: 28px 30px 30px; margin-bottom: 30px; }
+  .shelf-panel h2{ font-family:'Fraunces',serif; font-weight:600; font-size:22px; margin:0 0 3px; }
+  .shelf-panel .sub{ font-family:'Space Mono',monospace; font-size:10px; text-transform:uppercase; letter-spacing:0.1em; color:var(--ink-soft); margin-bottom:22px; }
+
+  .spine-row{ display:flex; align-items:center; gap: 14px; margin-bottom: 10px; cursor:pointer; transition:transform .15s ease-out; border-radius:4px; }
+  .spine-row:hover{ transform: translateX(4px); }
+  .spine-row:hover .spine-name{ text-decoration:underline; text-decoration-thickness:1.5px; }
+  .spine-row:focus-visible{ outline:2px solid var(--stamp); outline-offset:3px; }
+
+  /* genre detail modal */
+  .modal-overlay{
+    display:none;
+    position:fixed; inset:0; z-index:500;
+    background: rgba(51,25,44,0.72);
+    align-items:flex-start; justify-content:center;
+    padding: 60px 20px;
+    overflow-y:auto;
+  }
+  .modal-overlay.open{ display:flex; }
+  .modal-panel{
+    background: var(--card);
+    color: var(--ink);
+    border-radius: 10px;
+    max-width: 780px;
+    width: 100%;
+    padding: 32px 32px 36px;
+    position: relative;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+  }
+  .modal-close{
+    position:absolute; top:18px; right:18px;
+    background: rgba(92,58,74,0.08);
+    border:0; border-radius:50%;
+    width:34px; height:34px;
+    font-size:18px; line-height:1;
+    cursor:pointer; color:var(--ink);
+    display:flex; align-items:center; justify-content:center;
+  }
+  .modal-close:hover{ background: rgba(92,58,74,0.16); }
+  .modal-eyebrow{
+    font-family:'Space Mono',monospace; font-size:10px; text-transform:uppercase;
+    letter-spacing:0.15em; color: var(--stamp); margin-bottom:6px;
+  }
+  .modal-title{
+    font-family:'Fraunces',serif; font-weight:700; font-size:28px; margin:0 0 4px;
+  }
+  .modal-sub{ font-size:13px; color:var(--ink-soft); margin-bottom:24px; }
+  .modal-book-grid{
+    display:grid;
+    grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+    gap: 20px;
+  }
+  .modal-book{ text-align:center; }
+  .modal-book-cover{
+    width:100%; aspect-ratio: 2/3;
+    border-radius: 3px 8px 8px 3px/2px;
+    box-shadow: 0 6px 14px rgba(0,0,0,0.25);
+    position:relative;
+    overflow:hidden;
+    display:flex; align-items:center; justify-content:center;
+    margin-bottom:8px;
+    padding: 10px;
+    font-family:'Fraunces',serif; font-weight:600; font-size:12px; line-height:1.25;
+    color: rgba(0,0,0,0.7);
+    text-shadow: 0 1px 0 rgba(255,255,255,0.25);
+  }
+  .modal-book-cover img{
+    position:absolute; inset:0;
+    width:100%; height:100%; object-fit:cover;
+    border-radius: inherit;
+    display:block;
+  }
+  .modal-book-title{ font-size:11.5px; font-weight:600; line-height:1.3; margin-bottom:2px; }
+  .modal-book-author{ font-size:10.5px; color:var(--ink-soft); }
+  .modal-book-date{ font-family:'Space Mono',monospace; font-size:9.5px; color:var(--ink-soft); margin-top:2px; }
+  .spine-name{ width: 150px; flex-shrink:0; font-size: 13px; font-weight:600; }
+  .spine-track{ flex:1; height: 26px; background: rgba(43,33,24,0.06); border-radius: 2px; position:relative; }
+  .spine-fill{
+    height:100%;
+    border-radius: 2px 6px 6px 2px;
+    display:flex; align-items:center; justify-content:flex-end;
+    padding-right:8px;
+    min-width: 30px;
+  }
+  .spine-fill span{ font-family:'Space Mono',monospace; font-size:11px; font-weight:700; color:#4a2740; }
+
+  /* missing genres */
+  .missing-panel{ padding: 26px 30px; margin-bottom: 30px; }
+  .missing-panel h2{ font-family:'Fraunces',serif; font-weight:600; font-size:20px; margin:0 0 3px; }
+  .missing-panel .sub{ font-family:'Space Mono',monospace; font-size:10px; text-transform:uppercase; letter-spacing:0.1em; color:var(--ink-soft); margin-bottom:18px; }
+  .missing-tags{ display:flex; flex-wrap:wrap; gap: 10px; }
+  .missing-tag{
+    font-family:'Space Mono', monospace;
+    font-size: 11px;
+    padding: 7px 12px;
+    border: 1.5px dashed var(--ink-soft);
+    border-radius: 3px;
+    color: var(--ink-soft);
+    background: repeating-linear-gradient(45deg, transparent, transparent 6px, rgba(43,33,24,0.03) 6px, rgba(43,33,24,0.03) 12px);
+  }
+  .missing-empty{ font-size:13px; color:var(--ink-soft); font-style:italic; }
+
+  /* fun stats */
+  .fun-grid{
+    display:grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 18px;
+  }
+  @media (max-width: 780px){ .fun-grid{ grid-template-columns: repeat(2,1fr); } }
+  @media (max-width: 500px){ .fun-grid{ grid-template-columns: 1fr; } }
+
+  .fun-card{ padding: 20px 20px 18px; }
+  .fun-cover-wrap{
+    width: 48px; height: 72px;
+    border-radius: 0 4px 4px 0/2px;
+    float:right; margin: -4px 0 8px 10px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+    position:relative; overflow:hidden;
+    display:flex; align-items:center; justify-content:center;
+    font-size: 18px;
+  }
+  .fun-cover-wrap img{ position:absolute; inset:0; width:100%; height:100%; object-fit:cover; }
+  .fun-card .icon-label{ font-family:'Space Mono',monospace; font-size: 10px; text-transform:uppercase; letter-spacing:0.1em; color: var(--stamp); margin-bottom:8px; }
+  .fun-card .big{ font-family:'Fraunces',serif; font-weight:700; font-size: 26px; line-height:1.15; margin-bottom:6px; }
+  .fun-card .desc{ font-size: 12.5px; color: var(--ink-soft); line-height:1.4; }
+
+  section.section-head{ margin: 0 0 16px; }
+  section.section-head h2{ font-family:'Fraunces',serif; font-size:24px; font-weight:600; margin:0; color:var(--card); }
+  section.section-head p{ margin: 4px 0 0; font-size:13px; color:#d8c8b0; }
+
+  footer{
+    text-align:center;
+    margin-top: 50px;
+    font-family:'Space Mono', monospace;
+    font-size: 11px;
+    color: #e3aec9;
+    letter-spacing: 0.05em;
+  }
+</style>
+</head>
+<body>
+
+<div class="page">
+
+  <header>
+    <div class="eyebrow">🌙 Under This Moon, A Card Catalog</div>
+    <h1>The Reading Record</h1>
+    <p id="headerSub">Loading your shelf...</p>
+  </header>
+
+  <!-- HERO -->
+  <div class="card hero-card">
+    <div class="card-inner">
+      <div class="hero-top">
+        <div class="hero-title">Checkout History<span id="dateRange">Jan 2026 to present</span></div>
+        <div class="hero-count">
+          <div class="num" id="heroCount">0<small>/80</small></div>
+          <div class="lbl">Books Borrowed From Your Own Shelf</div>
+        </div>
+      </div>
+
+      <div class="stamp-grid" id="stampGrid"></div>
+
+      <div class="hero-foot" id="heroFoot"></div>
+    </div>
+  </div>
+
+  <!-- BOOKS / PAGES PER MONTH -->
+  <div class="grid-2">
+    <div class="card panel">
+      <div class="card-inner">
+        <h2>Books Per Month</h2>
+        <div class="sub">How many you finished, month by month</div>
+        <div id="booksChart"></div>
+      </div>
+    </div>
+    <div class="card panel">
+      <div class="card-inner">
+        <h2>Pages Per Month</h2>
+        <div class="sub">Total pages turned, month by month</div>
+        <div id="pagesChart"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- GENRE SHELF -->
+  <div class="card shelf-panel">
+    <div class="card-inner">
+      <h2>Your Shelf, By Genre</h2>
+      <div class="sub">Sorted by how much shelf space each genre has earned</div>
+      <div id="genreShelf"></div>
+    </div>
+  </div>
+
+  <!-- MISSING GENRES -->
+  <div class="card missing-panel">
+    <div class="card-inner">
+      <h2>Not Yet Checked Out</h2>
+      <div class="sub">Genres with zero appearances on your 2026 shelf</div>
+      <div class="missing-tags" id="missingGenres"></div>
+    </div>
+  </div>
+
+  <!-- FUN STATS -->
+  <section class="section-head">
+    <h2>Odds and Ends</h2>
+    <p>A few numbers with no practical use whatsoever</p>
+  </section>
+  <div class="fun-grid" id="funGrid"></div>
+
+  <footer id="dataNote">🌙 Built from your 2026 Goodreads reading challenge export.</footer>
+
+</div>
+
+<!-- GENRE DETAIL MODAL -->
+<div class="modal-overlay" id="genreModalOverlay">
+  <div class="modal-panel" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <button class="modal-close" id="modalClose" aria-label="Close">✕</button>
+    <div class="modal-eyebrow">On This Shelf</div>
+    <h2 class="modal-title" id="modalTitle"></h2>
+    <div class="modal-sub" id="modalSub"></div>
+    <div class="modal-book-grid" id="modalBookGrid"></div>
+  </div>
+</div>
+
+<script>
+/* =========================================================================
+   EDIT ME: replace this array with the real 2026 reading data from Goodreads.
+   Fields: title, author, genre, pages, dateFinished (YYYY-MM-DD)
+   Pick ONE primary genre per book, keep genre names consistent so the
+   shelf chart groups them correctly.
+   ========================================================================= */
+const GOAL = 80;
+const books = [
+  {title:"Sunrise on the Reaping", author:"Suzanne Collins", genre:"Science Fiction", pages:419, dateFinished:"2026-01-03"},
+  {title:"Feral Wolf", author:"Caroline Peckham & Susanne Valenti", genre:"Romantasy", pages:408, dateFinished:"2026-01-08"},
+  {title:"Untamed", cover:"https://m.media-amazon.com/images/I/51YkYhYbRdL.jpg", author:"Glennon Doyle", genre:"Memoir", pages:352, dateFinished:"2026-01-10"},
+  {title:"Red Rising", author:"Pierce Brown", genre:"Science Fiction", pages:401, dateFinished:"2026-01-17"},
+  {title:"Golden Son", author:"Pierce Brown", genre:"Science Fiction", pages:466, dateFinished:"2026-01-22"},
+  {title:"Morning Star", author:"Pierce Brown", genre:"Science Fiction", pages:526, dateFinished:"2026-01-31"},
+  {title:"A Mystical Legacy", author:"Rowan Dillon", genre:"Mystery", pages:32, dateFinished:"2026-01-31"},
+  {title:"Roots of Darkness", author:"Demi Winters", genre:"Romantasy", pages:213, dateFinished:"2026-02-14"},
+  {title:"The Thicket", author:"Noelle West Ihli", genre:"Horror", pages:332, dateFinished:"2026-02-22"},
+  {title:"Dawn of the North", author:"Demi Winters", genre:"Romantasy", pages:608, dateFinished:"2026-02-28"},
+  {title:"Flock", cover:"https://m.media-amazon.com/images/I/41yC9PdU0gL.jpg", author:"Kate Stewart", genre:"Contemporary Romance", pages:450, dateFinished:"2026-03-01"},
+  {title:"Exodus", cover:"https://m.media-amazon.com/images/I/41XHkcLHMEL.jpg", author:"Kate Stewart", genre:"Contemporary Romance", pages:500, dateFinished:"2026-03-10"},
+  {title:"The Comfy Cozy Witch's Guide to Making Magic in Your Everyday Life", author:"Jennie Blonde", genre:"Nonfiction", pages:208, dateFinished:"2026-03-12"},
+  {title:"The Finish Line", author:"Kate Stewart", genre:"Contemporary Romance", pages:560, dateFinished:"2026-03-15"},
+  {title:"Project Hail Mary", author:"Andy Weir", genre:"Science Fiction", pages:496, dateFinished:"2026-03-20"},
+  {title:"Just For the Cameras", author:"Meghan Quinn", genre:"Contemporary Romance", pages:637, dateFinished:"2026-03-22"},
+  {title:"We Should All Be Feminists", author:"Chimamanda Ngozi Adichie", genre:"Nonfiction", pages:64, dateFinished:"2026-03-25"},
+  {title:"Dear Debbie", author:"Freida McFadden", genre:"Thriller", pages:336, dateFinished:"2026-03-27"},
+  {title:"Cleopatra", cover:"https://m.media-amazon.com/images/I/61SqZSwLTvL.jpg", author:"Saara El-Arifi", genre:"Historical Fiction", pages:448, dateFinished:"2026-04-01"},
+  {title:"A Wrinkle in Time: The Graphic Novel", author:"Madeleine L'Engle", genre:"Graphic Novel", pages:392, dateFinished:"2026-04-01"},
+  {title:"The Princess Bride", author:"William Goldman", genre:"Fantasy", pages:432, dateFinished:"2026-04-09"},
+  {title:"Ruthless Vows", author:"Rebecca Ross", genre:"Romantasy", pages:419, dateFinished:"2026-04-23"},
+  {title:"The Book Witch", author:"Meg Shaffer", genre:"Fantasy", pages:320, dateFinished:"2026-04-25"},
+  {title:"Katabasis", author:"R.F. Kuang", genre:"Fantasy", pages:567, dateFinished:"2026-05-02"},
+  {title:"The Dinner Party", author:"Freida McFadden", genre:"Thriller", pages:196, dateFinished:"2026-05-02"},
+  {title:"The Magicians", author:"Lev Grossman", genre:"Fantasy", pages:402, dateFinished:"2026-05-07"},
+  {title:"The Magician King", cover:"https://m.media-amazon.com/images/I/51uxgRMrw6L.jpg", author:"Lev Grossman", genre:"Fantasy", pages:400, dateFinished:"2026-05-12"},
+  {title:"The Magician's Land", cover:"https://m.media-amazon.com/images/I/51TZvbTMO8L.jpg", author:"Lev Grossman", genre:"Fantasy", pages:401, dateFinished:"2026-05-15"},
+  {title:"The Last Letter", author:"Rebecca Yarros", genre:"Contemporary Romance", pages:336, dateFinished:"2026-05-19"},
+  {title:"Crown Me Dead", author:"Liv Zander", genre:"Romantasy", pages:270, dateFinished:"2026-05-21"},
+  {title:"Crown Me Yours", author:"Liv Zander", genre:"Romantasy", pages:244, dateFinished:"2026-05-25"},
+  {title:"My Husband's Wife", author:"Alice Feeney", genre:"Thriller", pages:320, dateFinished:"2026-05-26"},
+  {title:"The Devil at His Elbow", author:"Valerie Bauerlein", genre:"Nonfiction", pages:489, dateFinished:"2026-06-03"},
+  {title:"Wild Wolf", cover:"https://m.media-amazon.com/images/I/41kTxqoYBwL.jpg", author:"Caroline Peckham & Susanne Valenti", genre:"Romantasy", pages:430, dateFinished:"2026-06-06"},
+  {title:"Remarkably Bright Creatures", author:"Shelby Van Pelt", genre:"Literary Fiction", pages:368, dateFinished:"2026-06-07"},
+  {title:"Iron Gold", author:"Pierce Brown", genre:"Science Fiction", pages:605, dateFinished:"2026-06-14"},
+  {title:"Pendulum Magic for Beginners", author:"Richard Webster", genre:"Nonfiction", pages:241, dateFinished:"2026-06-28"},
+  {title:"Doctor Sleep", author:"Stephen King", genre:"Horror", pages:531, dateFinished:"2026-06-28"},
+  {title:"The Housemaid's Wedding", author:"Freida McFadden", genre:"Thriller", pages:86, dateFinished:"2026-06-29"},
+  {title:"Dark Age", author:"Pierce Brown", genre:"Science Fiction", pages:776, dateFinished:"2026-07-03"},
+  {title:"Fly Away", author:"Kristin Hannah", genre:"Contemporary Fiction", pages:416, dateFinished:"2026-07-07"}
+];
+
+/* Master list used only to figure out what's missing from the shelf. */
+const MASTER_GENRES = [
+  "Contemporary Fiction","Contemporary Romance","Romantasy","Fantasy","Science Fiction",
+  "Thriller","Mystery","Horror","Nonfiction","Memoir","Literary Fiction",
+  "Historical Fiction","Graphic Novel","Poetry","Young Adult","Classics","Biography","Self-Help"
+];
+
+/* Palette cycled across genre bars */
+const SPINE_COLORS = ["#e2789a","#b8c4e8","#a8d5ba","#f0c987","#c9a0c9","#e8a87c","#8fc9ce","#d9a4c0"];
+
+/* Emoji per genre, for a little levity on the shelf */
+const GENRE_EMOJI = {
+  "Contemporary Fiction":"📖","Contemporary Romance":"💛","Romantasy":"🐉","Fantasy":"🗝️",
+  "Science Fiction":"🚀","Thriller":"🔪","Mystery":"🔎","Horror":"🕯️","Nonfiction":"🧠",
+  "Memoir":"🪞","Literary Fiction":"🖋️","Historical Fiction":"🏛️","Graphic Novel":"🎨",
+  "Poetry":"🌸","Young Adult":"🎒","Classics":"🕰️","Biography":"👤","Self-Help":"🌱"
+};
+
+/* ---------------- date helpers ---------------- */
+const TODAY = new Date("2026-07-08");
+const YEAR = 2026;
+const MONTH_LABELS = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+
+function monthIndex(dateStr){ return new Date(dateStr).getMonth(); } // 0-11
+
+/* ---------------- aggregate ---------------- */
+const totalRead = books.length;
+const remaining = Math.max(GOAL - totalRead, 0);
+
+const booksByMonth = new Array(12).fill(0);
+const pagesByMonth = new Array(12).fill(0);
+books.forEach(b => {
+  const m = monthIndex(b.dateFinished);
+  booksByMonth[m]++;
+  pagesByMonth[m] += b.pages;
+});
+
+const currentMonth = TODAY.getMonth(); // 0-indexed, July = 6
+const monthsLeft = 12 - currentMonth; // includes current month
+const paceNeededPerMonth = remaining > 0 ? (remaining / monthsLeft) : 0;
+
+const endOfYear = new Date(YEAR, 11, 31);
+const daysLeftInYear = Math.round((endOfYear - TODAY) / 86400000);
+const daysPerBookNeeded = remaining > 0 ? (daysLeftInYear / remaining) : 0;
+
+const genreCounts = {};
+books.forEach(b => { genreCounts[b.genre] = (genreCounts[b.genre] || 0) + 1; });
+const genreList = Object.entries(genreCounts).sort((a,b) => b[1]-a[1]);
+const missingGenres = MASTER_GENRES.filter(g => !genreCounts[g]);
+
+const totalPages = books.reduce((s,b) => s + b.pages, 0);
+const avgPages = Math.round(totalPages / totalRead);
+const longest = books.reduce((a,b) => b.pages > a.pages ? b : a, books[0]);
+const shortest = books.reduce((a,b) => b.pages < a.pages ? b : a, books[0]);
+
+const authorCounts = {};
+books.forEach(b => { authorCounts[b.author] = (authorCounts[b.author]||0)+1; });
+const topAuthor = Object.entries(authorCounts).sort((a,b)=>b[1]-a[1])[0];
+
+const sortedByDate = [...books].sort((a,b) => new Date(a.dateFinished) - new Date(b.dateFinished));
+let fastestGap = Infinity, slowestGap = 0, gapSum = 0, gapCount = 0;
+for(let i=1;i<sortedByDate.length;i++){
+  const gap = (new Date(sortedByDate[i].dateFinished) - new Date(sortedByDate[i-1].dateFinished)) / 86400000;
+  fastestGap = Math.min(fastestGap, gap);
+  slowestGap = Math.max(slowestGap, gap);
+  gapSum += gap; gapCount++;
+}
+const avgGap = gapCount ? (gapSum/gapCount) : 0;
+
+const bestMonthIdx = booksByMonth.indexOf(Math.max(...booksByMonth));
+const stackHeightInches = totalPages * 0.0018 * 25.4 === 0 ? 0 : totalPages * 0.045; // rough avg page thickness in mm converted, simplified below
+/* simpler: assume ~0.1mm per page average, convert total to feet */
+const stackFeet = (totalPages * 0.1) / 304.8;
+
+/* ---------------- render header ---------------- */
+document.getElementById("headerSub").textContent =
+  `${totalRead} of ${GOAL} books, ${totalPages.toLocaleString()} pages, as of ${TODAY.toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'})}`;
+
+/* ---------------- render hero ---------------- */
+document.getElementById("heroCount").innerHTML = `${totalRead}<small>/${GOAL}</small>`;
+
+const stampGrid = document.getElementById("stampGrid");
+MONTH_LABELS.forEach((label, i) => {
+  const count = booksByMonth[i];
+  const isFuture = i > currentMonth;
+  const slot = document.createElement("div");
+  slot.className = "month-slot" + (count > 0 ? " stamped" : "");
+  slot.innerHTML = count > 0
+    ? `<div class="stamp-mark">${count}<small>${isFuture ? "" : "read"}</small></div>`
+    : "";
+  const lab = document.createElement("div");
+  lab.className = "mlabel";
+  lab.textContent = label;
+  slot.appendChild(lab);
+  stampGrid.appendChild(slot);
+});
+
+const heroFoot = document.getElementById("heroFoot");
+const footStats = [
+  {v: remaining, l: "Books left to hit goal"},
+  {v: remaining > 0 ? paceNeededPerMonth.toFixed(1) : "Goal met", l: "Books per month needed"},
+  {v: remaining > 0 ? daysPerBookNeeded.toFixed(0) + " days" : "Goal met", l: "Finish one every..."}
+];
+footStats.forEach(s => {
+  const el = document.createElement("div");
+  el.className = "stat";
+  el.innerHTML = `<div class="v">${s.v}</div><div class="l">${s.l}</div>`;
+  heroFoot.appendChild(el);
+});
+
+/* ---------------- books / pages per month bars ---------------- */
+function renderBarChart(containerId, values, colorVar, formatVal){
+  const container = document.getElementById(containerId);
+  const max = Math.max(...values, 1);
+  MONTH_LABELS.forEach((label, i) => {
+    if(i > currentMonth) return; // skip future months
+    const row = document.createElement("div");
+    row.className = "bar-row";
+    const pct = (values[i] / max) * 100;
+    row.innerHTML = `
+      <div class="m-label">${label}</div>
+      <div class="bar-track"><div class="bar-fill" style="width:${pct}%; background:${colorVar};"></div></div>
+      <div class="bar-val">${formatVal(values[i])}</div>
+    `;
+    container.appendChild(row);
+  });
+}
+renderBarChart("booksChart", booksByMonth, "var(--sage)", v => v);
+renderBarChart("pagesChart", pagesByMonth, "var(--slate-blue)", v => v.toLocaleString());
+
+/* ---------------- genre shelf ---------------- */
+const shelfContainer = document.getElementById("genreShelf");
+const maxGenreCount = genreList.length ? genreList[0][1] : 1;
+genreList.forEach(([genre, count], i) => {
+  const pct = Math.max((count / maxGenreCount) * 100, 12);
+  const spineColor = SPINE_COLORS[i % SPINE_COLORS.length];
+  const row = document.createElement("div");
+  row.className = "spine-row";
+  row.setAttribute("tabindex", "0");
+  row.setAttribute("role", "button");
+  row.setAttribute("aria-label", `View ${count} ${genre} books`);
+  row.innerHTML = `
+    <div class="spine-name">${GENRE_EMOJI[genre] || "📚"} ${genre}</div>
+    <div class="spine-track">
+      <div class="spine-fill" style="width:${pct}%; background:${spineColor};">
+        <span>${count}</span>
+      </div>
+    </div>
+  `;
+  row.addEventListener("click", () => openGenreModal(genre, spineColor));
+  row.addEventListener("keydown", (e) => {
+    if(e.key === "Enter" || e.key === " "){ e.preventDefault(); openGenreModal(genre, spineColor); }
+  });
+  shelfContainer.appendChild(row);
+});
+
+/* ---------------- genre detail modal ---------------- */
+const modalOverlay = document.getElementById("genreModalOverlay");
+const modalTitle = document.getElementById("modalTitle");
+const modalSub = document.getElementById("modalSub");
+const modalBookGrid = document.getElementById("modalBookGrid");
+const modalClose = document.getElementById("modalClose");
+
+function openGenreModal(genre, spineColor){
+  const genreBooks = books
+    .filter(b => b.genre === genre)
+    .sort((a,b) => new Date(b.dateFinished) - new Date(a.dateFinished));
+
+  modalTitle.textContent = `${GENRE_EMOJI[genre] || "📚"} ${genre}`;
+  modalSub.textContent = `${genreBooks.length} book${genreBooks.length === 1 ? "" : "s"} finished in 2026`;
+
+  modalBookGrid.innerHTML = "";
+  genreBooks.forEach(b => {
+    const item = document.createElement("div");
+    item.className = "modal-book";
+    const coverHtml = `<div class="modal-book-cover" style="background:${spineColor};"><span>${b.title}</span>${b.cover ? `<img src="${b.cover}" alt="Cover of ${b.title}" loading="lazy" onerror="this.remove()">` : ""}</div>`;
+    const niceDate = new Date(b.dateFinished).toLocaleDateString('en-US', {month:'short', day:'numeric'});
+    item.innerHTML = `
+      ${coverHtml}
+      <div class="modal-book-title">${b.title}</div>
+      <div class="modal-book-author">${b.author}</div>
+      <div class="modal-book-date">Finished ${niceDate}</div>
+    `;
+    modalBookGrid.appendChild(item);
+  });
+
+  modalOverlay.classList.add("open");
+  modalClose.focus();
+}
+
+function closeGenreModal(){
+  modalOverlay.classList.remove("open");
+}
+
+modalClose.addEventListener("click", closeGenreModal);
+modalOverlay.addEventListener("click", (e) => {
+  if(e.target === modalOverlay) closeGenreModal();
+});
+document.addEventListener("keydown", (e) => {
+  if(e.key === "Escape" && modalOverlay.classList.contains("open")) closeGenreModal();
+});
+
+/* ---------------- missing genres ---------------- */
+const missingContainer = document.getElementById("missingGenres");
+if(missingGenres.length === 0){
+  missingContainer.innerHTML = `<div class="missing-empty">Every genre on the list has at least one entry. Impressively well rounded. 🌟</div>`;
+} else {
+  missingGenres.forEach(g => {
+    const tag = document.createElement("div");
+    tag.className = "missing-tag";
+    tag.textContent = `${GENRE_EMOJI[g] || "📚"} ${g}`;
+    missingContainer.appendChild(tag);
+  });
+}
+
+/* ---------------- fun stats ---------------- */
+const funStats = [
+  {label:"📄 Total Pages", big: totalPages.toLocaleString(), desc:"That is a lot of eye movement."},
+  {label:"📏 Average Book", big: avgPages + " pages", desc:"Your typical read this year, give or take a chapter."},
+  {label:"🐘 Longest Read", big: longest.pages + " pg", desc:`"${longest.title}" by ${longest.author}, your biggest commitment of 2026.`, cover: longest.cover},
+  {label:"🐁 Shortest Read", big: shortest.pages + " pg", desc:`"${shortest.title}" by ${shortest.author}, a nice palate cleanser.`, cover: shortest.cover},
+  {label:"⭐ Most Read Author", big: topAuthor ? topAuthor[0] : "N/A", desc: topAuthor ? `${topAuthor[1]} books so far, basically a subscription at this point.` : ""},
+  {label:"⚡ Fastest Finish", big: (fastestGap === Infinity ? "N/A" : Math.round(fastestGap) + " days"), desc:"Shortest gap between two finished books. A binge, essentially."},
+  {label:"🐢 Slowest Stretch", big: slowestGap + " days", desc:"Longest gap between two finished books. Life happens."},
+  {label:"🎯 Average Pace", big: avgGap.toFixed(1) + " days/book", desc:"Your typical turnaround time, averaged across the year."},
+  {label:"🏆 Best Month", big: MONTH_LABELS[bestMonthIdx], desc:`${booksByMonth[bestMonthIdx]} books finished, your strongest showing of the year.`},
+  {label:"📚 Stack Height", big: stackFeet.toFixed(1) + " ft", desc:"Roughly how tall your 2026 books would be, stacked spine down."},
+  {label:"🔮 On Pace For", big: Math.round(totalRead / (currentMonth + (TODAY.getDate()/30)) * 12), desc:"Projected year end total, if you keep your current pace exactly."},
+  {label:"🎉 Percent To Goal", big: Math.round((totalRead/GOAL)*100) + "%", desc:`${remaining} books stand between you and ${GOAL}.`}
+];
+
+const funGrid = document.getElementById("funGrid");
+funStats.forEach(s => {
+  const el = document.createElement("div");
+  el.className = "card fun-card";
+  const coverWrap = s.cover
+    ? `<div class="fun-cover-wrap" style="background:${SPINE_COLORS[0]};">📕<img src="${s.cover}" alt="" loading="lazy" onerror="this.remove()"></div>`
+    : "";
+  el.innerHTML = `<div class="card-inner">${coverWrap}<div class="icon-label">${s.label}</div><div class="big">${s.big}</div><div class="desc">${s.desc}</div></div>`;
+  funGrid.appendChild(el);
+});
+</script>
+
+</body>
+</html>
