@@ -289,6 +289,49 @@
   }
   .missing-empty{ font-size:13px; color:var(--ink-soft); font-style:italic; }
 
+  /* series tracker */
+  .series-panel{ padding: 28px 30px 30px; margin-bottom: 30px; }
+  .series-panel h2{ font-family:'Fraunces',serif; font-weight:600; font-size:22px; margin:0 0 3px; }
+  .series-panel .sub{ font-family:'Space Mono',monospace; font-size:10px; text-transform:uppercase; letter-spacing:0.1em; color:var(--ink-soft); margin-bottom:24px; }
+
+  .series-row{ margin-bottom: 30px; }
+  .series-row:last-child{ margin-bottom: 0; }
+  .series-head{ display:flex; align-items:baseline; flex-wrap:wrap; gap: 8px 12px; margin-bottom: 12px; }
+  .series-name{ font-family:'Fraunces',serif; font-weight:600; font-size:16px; }
+  .series-author{ font-family:'Space Mono',monospace; font-size:10.5px; color:var(--ink-soft); }
+  .series-progress{
+    margin-left:auto;
+    font-family:'Space Mono',monospace; font-size:10px; text-transform:uppercase; letter-spacing:0.08em;
+    padding: 3px 9px; border-radius: 20px;
+    background: rgba(226,120,154,0.15); color: var(--stamp);
+  }
+  .series-progress.complete{ background: rgba(168,213,186,0.25); color:#3f7a54; }
+
+  .series-books{ display:flex; flex-wrap:wrap; gap: 16px; }
+  .series-book{ width: 92px; text-align:center; }
+  .series-book-cover{
+    width:100%; aspect-ratio: 2/3;
+    border-radius: 3px 8px 8px 3px/2px;
+    box-shadow: 0 6px 14px rgba(0,0,0,0.25);
+    position:relative; overflow:hidden;
+    margin-bottom:6px;
+  }
+  .series-book-cover img{ position:absolute; inset:0; width:100%; height:100%; object-fit:cover; border-radius:inherit; display:block; }
+  .series-book-title{ font-size:10.5px; font-weight:600; line-height:1.25; }
+  .series-book-pos{ font-family:'Space Mono',monospace; font-size:9px; color:var(--ink-soft); margin-top:1px; }
+
+  .series-book.unread .series-book-cover{
+    box-shadow:none;
+    border: 1.5px dashed var(--ink-soft);
+    background: repeating-linear-gradient(45deg, transparent, transparent 6px, rgba(43,33,24,0.05) 6px, rgba(43,33,24,0.05) 12px);
+    display:flex; align-items:center; justify-content:center;
+  }
+  .series-book.unread .series-book-cover span{
+    font-family:'Space Mono',monospace; font-size:9px; text-transform:uppercase; letter-spacing:0.06em;
+    color: var(--ink-soft); padding: 6px;
+  }
+  .series-book.unread .series-book-title{ color: var(--ink-soft); }
+
   /* fun stats */
   .fun-grid{
     display:grid;
@@ -390,6 +433,15 @@
     </div>
   </div>
 
+  <!-- SERIES TRACKER -->
+  <div class="card series-panel">
+    <div class="card-inner">
+      <h2>Series In Progress</h2>
+      <div class="sub">Multi-book series with at least one entry on your 2026 shelf</div>
+      <div id="seriesList"></div>
+    </div>
+  </div>
+
   <!-- FUN STATS -->
   <section class="section-head">
     <h2>Odds and Ends</h2>
@@ -462,6 +514,117 @@ const books = [
   {title:"The Housemaid's Wedding", cover:"https://covers.openlibrary.org/b/id/15162542-L.jpg", author:"Freida McFadden", genre:"Thriller", pages:86, dateFinished:"2026-06-29"},
   {title:"Dark Age", cover:"https://covers.openlibrary.org/b/id/8748017-L.jpg", author:"Pierce Brown", genre:"Science Fiction", pages:776, dateFinished:"2026-07-03"},
   {title:"Fly Away", cover:"https://covers.openlibrary.org/b/id/9418741-L.jpg", author:"Kristin Hannah", genre:"Contemporary Fiction", pages:416, dateFinished:"2026-07-07"}
+];
+
+/* Multi-book series touched by the 2026 shelf, in reading order.
+   `read` books are matched by exact title against the `books` array above
+   to pull their cover; unread books render as greyed-out placeholders. */
+const SERIES = [
+  {
+    name: "Darkmore Penitentiary",
+    author: "Caroline Peckham & Susanne Valenti",
+    books: [
+      {title:"Caged Wolf", read:true, readDate:"August 2025", cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1680885592i/126128250.jpg"},
+      {title:"Alpha Wolf", read:true, readDate:"October 2025", cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1622992365i/58272634.jpg"},
+      {title:"Feral Wolf", read:true},
+      {title:"Wild Wolf", read:true}
+    ]
+  },
+  {
+    name: "The Ashen",
+    author: "Demi Winters",
+    books: [
+      {title:"The Road of Bones", read:true, readDate:null, cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1704736755i/205044632.jpg"},
+      {title:"Kingdom of Claw", read:true, readDate:"April 2024", cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1706976049i/207041696.jpg"},
+      {title:"Roots of Darkness", read:true},
+      {title:"Dawn of the North", read:true}
+    ]
+  },
+  {
+    name: "Red Rising Saga",
+    author: "Pierce Brown",
+    books: [
+      {title:"Red Rising", read:true},
+      {title:"Golden Son", read:true},
+      {title:"Morning Star", read:true},
+      {title:"Iron Gold", read:true},
+      {title:"Dark Age", read:true},
+      {title:"Light Bringer", read:false},
+      {title:"Red God", read:false}
+    ]
+  },
+  {
+    name: "The Ravenhood",
+    author: "Kate Stewart",
+    books: [
+      {title:"Flock", read:true},
+      {title:"Exodus", read:true},
+      {title:"The Finish Line", read:true}
+    ]
+  },
+  {
+    name: "The Magicians Trilogy",
+    author: "Lev Grossman",
+    books: [
+      {title:"The Magicians", read:true},
+      {title:"The Magician King", read:true},
+      {title:"The Magician's Land", read:true}
+    ]
+  },
+  {
+    name: "Heartstring Duet",
+    author: "Liv Zander",
+    books: [
+      {title:"Crown Me Dead", read:true},
+      {title:"Crown Me Yours", read:true}
+    ]
+  },
+  {
+    name: "The Housemaid",
+    author: "Freida McFadden",
+    books: [
+      {title:"The Housemaid", read:false},
+      {title:"The Housemaid's Secret", read:false},
+      {title:"The Housemaid's Wedding", read:true},
+      {title:"The Housemaid Is Watching", read:false}
+    ]
+  },
+  {
+    name: "Letters of Enchantment",
+    author: "Rebecca Ross",
+    books: [
+      {title:"Divine Rivals", read:false},
+      {title:"Ruthless Vows", read:true}
+    ]
+  },
+  {
+    name: "The Shining",
+    author: "Stephen King",
+    books: [
+      {title:"The Shining", read:false},
+      {title:"Doctor Sleep", read:true}
+    ]
+  },
+  {
+    name: "Firefly Lane",
+    author: "Kristin Hannah",
+    books: [
+      {title:"Firefly Lane", read:false},
+      {title:"Fly Away", read:true}
+    ]
+  },
+  {
+    name: "Skye O'Shea Paranormal Cozy Mystery",
+    author: "Rowan Dillon",
+    books: [
+      {title:"A Mystical Legacy", read:true},
+      {title:"Bogs, Brews, and Banshees", read:false},
+      {title:"Whispers, Whiskey, and Wishes", read:false},
+      {title:"Pranks, Poitin, and Pucas", read:false},
+      {title:"Frost, Faelan, and Fairies", read:false},
+      {title:"Spectacles, Sangria, and Selkies", read:false}
+    ]
+  }
 ];
 
 /* Master list used only to figure out what's missing from the shelf. */
@@ -678,6 +841,45 @@ if(missingGenres.length === 0){
     missingContainer.appendChild(tag);
   });
 }
+
+/* ---------------- series tracker ---------------- */
+const seriesContainer = document.getElementById("seriesList");
+SERIES.forEach(s => {
+  const readCount = s.books.filter(b => b.read).length;
+  const total = s.books.length;
+  const complete = readCount === total;
+
+  const row = document.createElement("div");
+  row.className = "series-row";
+
+  const booksHtml = s.books.map((b, i) => {
+    const match = books.find(x => x.title === b.title);
+    const cover = b.cover || (match ? match.cover : null);
+    const coverHtml = cover
+      ? `<img src="${cover}" alt="Cover of ${b.title}" loading="lazy" onerror="this.remove()">`
+      : (b.read ? "" : `<span>Not Read Yet</span>`);
+    let posLabel = `Book ${i + 1}`;
+    if(b.readDate) posLabel = `Read ${b.readDate}`;
+    else if(b.read && !match) posLabel = "Read";
+    return `
+      <div class="series-book ${b.read ? "" : "unread"}">
+        <div class="series-book-cover">${coverHtml}</div>
+        <div class="series-book-title">${b.title}</div>
+        <div class="series-book-pos">${posLabel}</div>
+      </div>
+    `;
+  }).join("");
+
+  row.innerHTML = `
+    <div class="series-head">
+      <div class="series-name">${s.name}</div>
+      <div class="series-author">${s.author}</div>
+      <div class="series-progress${complete ? " complete" : ""}">${complete ? "Complete" : `${readCount}/${total} read`}</div>
+    </div>
+    <div class="series-books">${booksHtml}</div>
+  `;
+  seriesContainer.appendChild(row);
+});
 
 /* ---------------- fun stats ---------------- */
 const funStats = [
