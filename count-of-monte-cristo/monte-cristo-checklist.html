@@ -504,6 +504,11 @@ button.ghost:hover { color: var(--wax); border-color: var(--wax); }
   align-self: center;
 }
 
+.recap-row {
+  text-align: center;
+  margin-top: 16px;
+}
+
 .rest-note {
   padding: 14px 16px;
   font-style: italic;
@@ -614,6 +619,100 @@ button.ghost:hover { color: var(--wax); border-color: var(--wax); }
 }
 
 .hidden { display: none !important; }
+
+/* ---------- cliff notes ---------- */
+
+.notes-btn {
+  flex-shrink: 0;
+  font-family: 'Cinzel', serif;
+  font-size: 9px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  background: transparent;
+  color: var(--iron);
+  border: 1px solid var(--iron);
+  padding: 4px 8px;
+  border-radius: 2px;
+  cursor: pointer;
+  box-shadow: none;
+  margin-top: 1px;
+  white-space: nowrap;
+}
+
+.notes-btn:hover { color: var(--wax); border-color: var(--wax); filter: none; }
+.notes-btn:active { transform: none; box-shadow: none; }
+
+.notes-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(10, 8, 5, 0.72);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  z-index: 100;
+}
+
+.notes-modal {
+  max-width: 480px;
+  width: 100%;
+  max-height: 80vh;
+  overflow-y: auto;
+  background: var(--parchment);
+  border-radius: 3px;
+  box-shadow: 0 20px 50px rgba(0,0,0,0.6), 0 0 0 4px rgba(122, 94, 42, 0.3);
+  padding: 26px 26px 22px;
+  position: relative;
+}
+
+.notes-modal .num {
+  font-family: 'Special Elite', monospace;
+  font-size: 13px;
+  color: var(--gold);
+  display: block;
+  margin-bottom: 2px;
+}
+
+.notes-modal h2 {
+  font-family: 'Cinzel', serif;
+  font-size: 20px;
+  color: var(--ink);
+  margin: 0 0 14px;
+  padding-right: 30px;
+}
+
+.notes-modal p {
+  font-family: 'EB Garamond', serif;
+  font-size: 16px;
+  line-height: 1.6;
+  color: var(--ink);
+  margin: 0;
+}
+
+.notes-modal .notes-close {
+  position: absolute;
+  top: 14px;
+  right: 16px;
+  font-family: 'Cinzel', serif;
+  font-size: 20px;
+  line-height: 1;
+  color: var(--iron);
+  cursor: pointer;
+  border: none;
+  background: none;
+  padding: 4px;
+  box-shadow: none;
+}
+
+.notes-modal .notes-close:hover { color: var(--wax); }
+
+.notes-modal .notes-warn {
+  margin-top: 14px;
+  font-family: 'EB Garamond', serif;
+  font-style: italic;
+  font-size: 12px;
+  color: var(--iron);
+}
 
 /* ---------- instructions ---------- */
 
@@ -771,6 +870,7 @@ button.ghost:hover { color: var(--wax); border-color: var(--wax); }
         <div class="day-card completed-card">
           <div class="chapters" id="completedList"></div>
         </div>
+        <div class="recap-row"><button class="ghost" id="recapBtn" type="button">Summarize Where I Am So Far</button></div>
       </div>
 
       <div class="reset-row"><a id="resetAll">Strike every mark from the ledger</a></div>
@@ -808,6 +908,18 @@ button.ghost:hover { color: var(--wax); border-color: var(--wax); }
 
 </div>
 
+<div id="notesOverlay" class="notes-overlay hidden">
+  <div class="notes-modal">
+    <button class="notes-close" id="notesClose" aria-label="Close">&times;</button>
+    <span class="num" id="notesNum"></span>
+    <h2 id="notesTitle"></h2>
+    <p id="notesBody"></p>
+    <p class="notes-warn">A refresher only &mdash; nothing here spoils what comes after this chapter.</p>
+  </div>
+</div>
+
+<script src="monte-cristo-cliff-notes.js"></script>
+<script src="monte-cristo-story-recaps.js"></script>
 <script>
 (function () {
 
@@ -839,7 +951,17 @@ button.ghost:hover { color: var(--wax); border-color: var(--wax); }
     "Luigi Vampa's Bill of Fare","The Pardon","The Fifth of October"
   ];
 
+  var SUMMARIES = window.MC_CLIFF_NOTES || {};
+  var RECAPS = window.MC_STORY_RECAPS || {};
+  var RECAP_POINTS = [10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 110, 117];
+
   var els = {
+    notesOverlay: document.getElementById('notesOverlay'),
+    notesClose: document.getElementById('notesClose'),
+    notesNum: document.getElementById('notesNum'),
+    notesTitle: document.getElementById('notesTitle'),
+    notesBody: document.getElementById('notesBody'),
+    recapBtn: document.getElementById('recapBtn'),
     setup: document.getElementById('setup'),
     setupHeading: document.getElementById('setupHeading'),
     mainView: document.getElementById('mainView'),
@@ -1177,6 +1299,80 @@ button.ghost:hover { color: var(--wax); border-color: var(--wax); }
     return { remainingChapters: remainingChapters, overdue: false, complete: false, days: days };
   }
 
+  function openNotes(idx) {
+    els.notesNum.textContent = String(idx + 1).padStart(3, '0');
+    els.notesTitle.textContent = TITLES[idx];
+    els.notesBody.textContent = SUMMARIES[String(idx + 1)] || 'No cliff notes have been written for this chapter yet.';
+    els.notesOverlay.classList.remove('hidden');
+  }
+
+  function closeNotes() {
+    els.notesOverlay.classList.add('hidden');
+  }
+
+  function furthestCompletedChapter() {
+    var last = 0;
+    for (var i = 0; i < TOTAL; i++) {
+      if (state.checked[i]) last = i + 1;
+    }
+    return last;
+  }
+
+  function openRecap() {
+    var furthest = furthestCompletedChapter();
+
+    if (furthest === 0) {
+      els.notesNum.textContent = '';
+      els.notesTitle.textContent = 'Your Story So Far';
+      els.notesBody.textContent = 'You have not checked off any chapters yet. Once you have, come back here for a recap.';
+      els.notesOverlay.classList.remove('hidden');
+      return;
+    }
+
+    var checkpoint = 0;
+    for (var j = 0; j < RECAP_POINTS.length; j++) {
+      if (RECAP_POINTS[j] <= furthest) checkpoint = RECAP_POINTS[j];
+    }
+
+    els.notesNum.textContent = 'Through chapter ' + String(furthest).padStart(3, '0') + ' of 117';
+    els.notesTitle.textContent = furthest >= 117 ? 'Your Story So Far (The Whole Tale)' : 'Your Story So Far';
+
+    if (checkpoint === 0) {
+      els.notesBody.textContent = 'You are ' + furthest + ' chapter' + (furthest === 1 ? '' : 's') + ' in — check back after chapter 10 for your first recap.';
+    } else {
+      var text = RECAPS[String(checkpoint)] || 'A recap for this point has not been written yet.';
+      if (checkpoint < furthest) {
+        text += ' You have also read on through chapter ' + furthest +
+          ' since this recap was last written, though those events aren’t summarized here yet to avoid getting ahead of you.';
+      }
+      els.notesBody.textContent = text;
+    }
+
+    els.notesOverlay.classList.remove('hidden');
+  }
+
+  els.recapBtn.addEventListener('click', openRecap);
+
+  els.notesClose.addEventListener('click', closeNotes);
+  els.notesOverlay.addEventListener('click', function (e) {
+    if (e.target === els.notesOverlay) closeNotes();
+  });
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape') closeNotes();
+  });
+
+  function makeNotesButton(idx) {
+    var btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'notes-btn';
+    btn.textContent = 'Cliff Notes';
+    btn.addEventListener('click', function (e) {
+      e.preventDefault();
+      openNotes(idx);
+    });
+    return btn;
+  }
+
   function renderCompletedList() {
     var completedIdxs = [];
     for (var i = 0; i < TOTAL; i++) {
@@ -1224,6 +1420,7 @@ button.ghost:hover { color: var(--wax); border-color: var(--wax); }
 
       row.appendChild(cb);
       row.appendChild(label);
+      row.appendChild(makeNotesButton(idx));
       row.appendChild(dateSpan);
       els.completedList.appendChild(row);
     });
@@ -1324,6 +1521,7 @@ button.ghost:hover { color: var(--wax); border-color: var(--wax); }
 
           row.appendChild(cb);
           row.appendChild(label);
+          row.appendChild(makeNotesButton(idx));
           list.appendChild(row);
         });
         card.appendChild(list);
