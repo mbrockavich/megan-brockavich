@@ -619,10 +619,14 @@ button.ghost:hover { color: var(--wax); border-color: var(--wax); }
 
 .instructions {
   margin-bottom: 22px;
-  padding: 16px 18px;
+  padding: 12px 18px;
   border: 1px dashed rgba(122, 94, 42, 0.5);
   border-radius: 2px;
   background: rgba(122, 94, 42, 0.06);
+}
+
+.instructions[open] {
+  padding-bottom: 16px;
 }
 
 .instructions-heading {
@@ -631,12 +635,28 @@ button.ghost:hover { color: var(--wax); border-color: var(--wax); }
   letter-spacing: 0.1em;
   text-transform: uppercase;
   color: var(--iron);
-  margin: 0 0 8px;
+  margin: 0;
+  padding: 4px 0;
   text-align: center;
+  cursor: pointer;
+  list-style: none;
+}
+
+.instructions-heading::-webkit-details-marker { display: none; }
+
+.instructions-heading::after {
+  content: '▾';
+  display: inline-block;
+  margin-left: 6px;
+  transition: transform 0.15s ease;
+}
+
+.instructions[open] .instructions-heading::after {
+  transform: rotate(180deg);
 }
 
 .instructions ol {
-  margin: 0;
+  margin: 12px 0 0;
   padding-left: 20px;
 }
 
@@ -685,8 +705,8 @@ button.ghost:hover { color: var(--wax); border-color: var(--wax); }
 
   <div class="book">
 
-    <div class="instructions">
-      <p class="instructions-heading">How to Use This Ledger</p>
+    <details class="instructions" open>
+      <summary class="instructions-heading">How to Use This Ledger</summary>
       <ol>
         <li>Choose the day you're starting the book and the day you'd like to finish it, then click <em>Fix the Terms</em>.</li>
         <li>Already partway through? Enter the chapter you're on and earlier chapters are marked read automatically, listed below with an unknown completion date.</li>
@@ -694,9 +714,8 @@ button.ghost:hover { color: var(--wax); border-color: var(--wax); }
         <li>Check off chapters as you read them &mdash; your progress is saved automatically in this browser.</li>
         <li>Miss a day? The ledger reshuffles what's left across the days that remain.</li>
         <li>Changed your mind about the deadline? Click <em>Renegotiate the terms of release</em> to pick new dates.</li>
-        <li>Want your progress on another device? Click <em>Sync across devices via GitHub</em> and connect a repository.</li>
       </ol>
-    </div>
+    </details>
 
     <!-- SETUP -->
     <div id="setup" class="setup-section">
