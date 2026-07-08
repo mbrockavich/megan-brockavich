@@ -3,14 +3,14 @@
   "endDate": "2026-07-31",
   "checked": [
     true,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
     false,
     false,
     false,
@@ -120,5 +120,5 @@
     false,
     false
   ],
-  "updatedAt": 1783521076147
+  "updatedAt": 1783521089662
 }
