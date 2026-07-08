@@ -1,0 +1,928 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Count of Monte Cristo — Reading Sentence</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Special+Elite&display=swap');
+
+:root {
+  --parchment: #ECE1C6;
+  --parchment-dark: #DBC79A;
+  --parchment-shadow: #B99F6E;
+  --ink: #2C2318;
+  --dungeon: #17140F;
+  --dungeon-mid: #241F19;
+  --stone-line: #3A342A;
+  --wax: #7B1D22;
+  --wax-dark: #55131A;
+  --gold: #A9812E;
+  --gold-light: #D4AF5A;
+  --iron: #6E6656;
+  --iron-light: #948A72;
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  padding: 0;
+  background: var(--dungeon);
+  color: var(--ink);
+  font-family: 'EB Garamond', serif;
+}
+
+body {
+  background-image:
+    radial-gradient(circle at 20% 20%, rgba(255,255,255,0.02), transparent 40%),
+    radial-gradient(circle at 80% 70%, rgba(255,255,255,0.015), transparent 45%),
+    repeating-linear-gradient(0deg, var(--dungeon-mid) 0px, var(--dungeon-mid) 2px, var(--dungeon) 2px, var(--dungeon) 42px);
+  min-height: 100vh;
+  padding: 36px 16px 80px;
+}
+
+.page {
+  max-width: 760px;
+  margin: 0 auto;
+}
+
+/* ---------- header ---------- */
+
+.header {
+  text-align: center;
+  margin-bottom: 28px;
+  position: relative;
+}
+
+.seal {
+  width: 84px;
+  height: 84px;
+  margin: 0 auto 8px;
+  filter: drop-shadow(0 3px 4px rgba(0,0,0,0.5));
+}
+
+.title-eyebrow {
+  font-family: 'EB Garamond', serif;
+  font-style: italic;
+  font-size: 14px;
+  letter-spacing: 0.14em;
+  color: var(--iron-light);
+  text-transform: uppercase;
+  margin: 0 0 6px;
+}
+
+h1.title {
+  font-family: 'Cinzel', serif;
+  font-weight: 700;
+  font-size: clamp(28px, 5vw, 42px);
+  letter-spacing: 0.04em;
+  color: var(--parchment-dark);
+  margin: 0;
+  text-shadow: 0 2px 0 rgba(0,0,0,0.6);
+}
+
+.subtitle {
+  font-family: 'EB Garamond', serif;
+  font-style: italic;
+  font-size: 16px;
+  color: var(--iron-light);
+  margin: 8px 0 0;
+}
+
+.flourish {
+  width: 180px;
+  height: 14px;
+  margin: 18px auto 0;
+  opacity: 0.7;
+}
+
+.cover-row {
+  margin: 22px 0 10px;
+}
+
+.cover-art {
+  width: 140px;
+  height: auto;
+  border-radius: 2px;
+  box-shadow:
+    0 10px 24px rgba(0,0,0,0.55),
+    0 0 0 4px #f4f0e6,
+    0 0 0 5px rgba(122, 94, 42, 0.5);
+  transform: rotate(-2deg);
+}
+
+.goodreads-link {
+  margin: 14px 0 0;
+}
+
+.goodreads-link a {
+  font-family: 'EB Garamond', serif;
+  font-style: italic;
+  font-size: 13px;
+  letter-spacing: 0.02em;
+  color: var(--gold-light);
+  text-decoration: none;
+  border-bottom: 1px solid rgba(212, 175, 90, 0.4);
+  padding-bottom: 1px;
+}
+
+.goodreads-link a:hover {
+  color: #EFE1C9;
+  border-bottom-color: #EFE1C9;
+}
+
+/* ---------- the book / card ---------- */
+
+.book {
+  background: var(--parchment);
+  background-image:
+    repeating-linear-gradient(90deg, rgba(0,0,0,0.015) 0px, transparent 1px, transparent 3px),
+    radial-gradient(ellipse at top left, rgba(255,255,255,0.25), transparent 55%),
+    radial-gradient(ellipse at bottom right, rgba(0,0,0,0.08), transparent 60%);
+  border-radius: 3px;
+  box-shadow:
+    0 1px 0 rgba(255,255,255,0.4) inset,
+    0 30px 60px rgba(0,0,0,0.55),
+    0 4px 0 var(--parchment-shadow);
+  padding: 34px 32px 30px;
+  position: relative;
+}
+
+.book::before {
+  content: "";
+  position: absolute;
+  inset: 10px;
+  border: 1px solid rgba(122, 94, 42, 0.35);
+  pointer-events: none;
+}
+
+@media (max-width: 560px) {
+  .book { padding: 24px 18px 22px; }
+}
+
+/* ---------- setup form ---------- */
+
+.setup {
+  display: grid;
+  gap: 16px;
+  grid-template-columns: 1fr 1fr;
+  margin-bottom: 6px;
+}
+
+@media (max-width: 500px) {
+  .setup { grid-template-columns: 1fr; }
+}
+
+.field label {
+  display: block;
+  font-family: 'Cinzel', serif;
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--iron);
+  margin-bottom: 6px;
+}
+
+.field input[type="date"] {
+  width: 100%;
+  font-family: 'Special Elite', monospace;
+  font-size: 15px;
+  padding: 9px 10px;
+  border: 1px solid var(--gold);
+  border-radius: 2px;
+  background: #F7F0DC;
+  color: var(--ink);
+}
+
+.field input[type="date"]:focus {
+  outline: 2px solid var(--wax);
+  outline-offset: 1px;
+}
+
+.date-echo {
+  font-family: 'EB Garamond', serif;
+  font-style: italic;
+  font-size: 13px;
+  color: var(--wax);
+  margin: 6px 2px 0;
+  min-height: 16px;
+}
+
+.setup-row {
+  display: flex;
+  justify-content: center;
+  margin-top: 18px;
+}
+
+button {
+  font-family: 'Cinzel', serif;
+  font-size: 13px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  background: var(--wax);
+  color: #EFE1C9;
+  border: 1px solid var(--wax-dark);
+  padding: 11px 26px;
+  border-radius: 2px;
+  cursor: pointer;
+  box-shadow: 0 2px 0 var(--wax-dark), 0 4px 8px rgba(0,0,0,0.35);
+  transition: transform 0.08s ease;
+}
+
+button:hover { filter: brightness(1.08); }
+button:active { transform: translateY(2px); box-shadow: 0 0 0 var(--wax-dark); }
+
+button.ghost {
+  background: transparent;
+  color: var(--iron);
+  border: 1px solid var(--iron);
+  box-shadow: none;
+}
+
+button.ghost:hover { color: var(--wax); border-color: var(--wax); }
+
+.edit-terms-row {
+  text-align: center;
+  margin-top: 4px;
+}
+
+.edit-terms-row a {
+  font-family: 'EB Garamond', serif;
+  font-style: italic;
+  font-size: 13px;
+  color: var(--iron);
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.edit-terms-row a:hover { color: var(--wax); }
+
+/* ---------- divider ---------- */
+
+.divider {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 26px 0 22px;
+}
+.divider .line { flex: 1; height: 1px; background: linear-gradient(90deg, transparent, var(--gold), transparent); }
+.divider .mark { font-family: 'Cinzel', serif; font-size: 12px; color: var(--gold); letter-spacing: 0.15em; }
+
+/* ---------- sentence / dashboard ---------- */
+
+.sentence {
+  text-align: center;
+  padding: 4px 6px 22px;
+}
+
+.sentence .decree {
+  font-family: 'EB Garamond', serif;
+  font-size: 19px;
+  line-height: 1.55;
+  color: var(--ink);
+}
+
+.sentence .decree strong {
+  font-family: 'Special Elite', monospace;
+  font-weight: 400;
+  color: var(--wax);
+  font-size: 20px;
+}
+
+.sentence .decree.overdue strong { color: var(--wax); }
+.sentence .decree.free strong { color: var(--gold); }
+
+.stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  margin-top: 18px;
+}
+
+.stat {
+  text-align: center;
+  padding: 10px 4px;
+  border-top: 1px solid var(--gold);
+  border-bottom: 1px solid var(--gold);
+}
+
+.stat .num {
+  font-family: 'Special Elite', monospace;
+  font-size: 26px;
+  color: var(--ink);
+  display: block;
+}
+
+.stat .lbl {
+  font-family: 'Cinzel', serif;
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--iron);
+  display: block;
+  margin-top: 4px;
+}
+
+/* chain progress */
+
+.chain-wrap {
+  margin-top: 22px;
+}
+
+.chain-label {
+  display: flex;
+  justify-content: space-between;
+  font-family: 'Cinzel', serif;
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--iron);
+  margin-bottom: 6px;
+}
+
+.chain-track {
+  height: 10px;
+  border-radius: 6px;
+  background: repeating-linear-gradient(90deg, var(--iron) 0px, var(--iron) 6px, var(--iron-light) 6px, var(--iron-light) 8px);
+  overflow: hidden;
+  box-shadow: inset 0 1px 3px rgba(0,0,0,0.4);
+}
+
+.chain-fill {
+  height: 100%;
+  background: repeating-linear-gradient(90deg, var(--gold) 0px, var(--gold) 6px, var(--gold-light) 6px, var(--gold-light) 8px);
+  transition: width 0.4s ease;
+}
+
+/* ---------- day ledger ---------- */
+
+.ledger-heading {
+  font-family: 'Cinzel', serif;
+  font-size: 14px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--iron);
+  text-align: center;
+  margin: 0 0 18px;
+}
+
+.day-card {
+  border: 1px solid var(--gold);
+  border-radius: 2px;
+  margin-bottom: 14px;
+  background: rgba(255,255,255,0.15);
+  overflow: hidden;
+}
+
+.day-card.today { border-color: var(--wax); box-shadow: 0 0 0 1px var(--wax); }
+.day-card.overdue { border-color: var(--wax); background: rgba(123, 29, 34, 0.06); }
+.day-card.rest { opacity: 0.75; }
+
+.day-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  padding: 10px 16px;
+  background: rgba(122, 94, 42, 0.12);
+  border-bottom: 1px solid rgba(122, 94, 42, 0.3);
+}
+
+.day-header .date {
+  font-family: 'Special Elite', monospace;
+  font-size: 14px;
+  color: var(--ink);
+}
+
+.day-header .date .today-tag {
+  font-family: 'Cinzel', serif;
+  font-size: 10px;
+  color: var(--wax);
+  letter-spacing: 0.08em;
+  margin-left: 8px;
+}
+
+.day-header .quota {
+  font-family: 'EB Garamond', serif;
+  font-style: italic;
+  font-size: 13px;
+  color: var(--iron);
+}
+
+.chapters {
+  padding: 6px 8px;
+}
+
+.chapter-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 8px 10px;
+  border-radius: 2px;
+}
+
+.chapter-row:hover { background: rgba(122, 94, 42, 0.08); }
+
+.chapter-row input[type="checkbox"] {
+  margin-top: 3px;
+  width: 16px;
+  height: 16px;
+  accent-color: var(--wax);
+  flex-shrink: 0;
+  cursor: pointer;
+}
+
+.chapter-row label {
+  cursor: pointer;
+  font-size: 16px;
+  line-height: 1.4;
+}
+
+.chapter-row .num {
+  font-family: 'Special Elite', monospace;
+  font-size: 13px;
+  color: var(--iron);
+  margin-right: 6px;
+}
+
+.chapter-row.checked label { color: var(--iron); text-decoration: line-through; text-decoration-color: var(--gold); }
+.chapter-row.checked .num { color: var(--gold); }
+
+.rest-note {
+  padding: 14px 16px;
+  font-style: italic;
+  font-size: 14px;
+  color: var(--iron);
+  text-align: center;
+}
+
+/* ---------- completion state ---------- */
+
+.freedom {
+  text-align: center;
+  padding: 20px 10px 6px;
+}
+
+.freedom .decree { font-size: 20px; }
+
+/* ---------- footer ---------- */
+
+.footer-note {
+  text-align: center;
+  font-size: 12px;
+  color: var(--iron-light);
+  margin-top: 28px;
+  line-height: 1.6;
+}
+
+.reset-row {
+  text-align: center;
+  margin-top: 22px;
+}
+
+.reset-row a {
+  font-family: 'EB Garamond', serif;
+  font-style: italic;
+  font-size: 12px;
+  color: var(--iron);
+  cursor: pointer;
+}
+
+.reset-row a:hover { color: var(--wax); }
+
+.hidden { display: none !important; }
+
+</style>
+</head>
+<body>
+
+<div class="page">
+
+  <div class="header">
+    <svg class="seal" viewBox="0 0 100 100">
+      <circle cx="50" cy="50" r="46" fill="#7B1D22" stroke="#55131A" stroke-width="2"/>
+      <circle cx="50" cy="50" r="38" fill="none" stroke="#D4AF5A" stroke-width="1" opacity="0.6"/>
+      <text x="50" y="58" text-anchor="middle" font-family="Cinzel, serif" font-size="26" fill="#D4AF5A" font-weight="700">MC</text>
+      <circle cx="50" cy="50" r="46" fill="none" stroke="#3a1012" stroke-width="0.5" opacity="0.5"/>
+    </svg>
+    <p class="title-eyebrow">A Reader's Ledger</p>
+    <h1 class="title">The Count of Monte Cristo</h1>
+    <p class="subtitle">Wherein the prisoner sets the term of his own sentence</p>
+    <div class="cover-row">
+      <img class="cover-art" src="monte-cristo-cover.jpg" alt="Cover of the Penguin Classics edition of The Count of Monte Cristo by Alexandre Dumas">
+    </div>
+    <p class="goodreads-link"><a href="https://www.goodreads.com/book/show/7126.The_Count_of_Monte_Cristo" target="_blank" rel="noopener">View this edition on Goodreads &#8250;</a></p>
+    <svg class="flourish" viewBox="0 0 180 14">
+      <path d="M0 7 H70" stroke="#A9812E" stroke-width="1"/>
+      <path d="M110 7 H180" stroke="#A9812E" stroke-width="1"/>
+      <circle cx="90" cy="7" r="4" fill="none" stroke="#A9812E" stroke-width="1"/>
+      <path d="M78 7 H86 M94 7 H102" stroke="#A9812E" stroke-width="1"/>
+    </svg>
+  </div>
+
+  <div class="book">
+
+    <!-- SETUP -->
+    <div id="setup" class="setup-section">
+      <p class="ledger-heading" id="setupHeading">Fix the Terms of Your Sentence</p>
+      <div class="setup">
+        <div class="field">
+          <label for="startDate">Day the Sentence Begins</label>
+          <input type="date" id="startDate">
+          <p class="date-echo" id="startEcho"></p>
+        </div>
+        <div class="field">
+          <label for="endDate">Day of Release</label>
+          <input type="date" id="endDate">
+          <p class="date-echo" id="endEcho"></p>
+        </div>
+      </div>
+      <div class="setup-row">
+        <button id="saveTerms">Fix the Terms</button>
+      </div>
+    </div>
+
+    <div id="mainView" class="hidden">
+      <div class="divider"><div class="line"></div><div class="mark">&#10022;</div><div class="line"></div></div>
+
+      <div class="sentence">
+        <p class="decree" id="decreeText"></p>
+        <div class="stats">
+          <div class="stat"><span class="num" id="statRead">0</span><span class="lbl">Chapters Read</span></div>
+          <div class="stat"><span class="num" id="statRemaining">117</span><span class="lbl">Remaining</span></div>
+          <div class="stat"><span class="num" id="statDays">0</span><span class="lbl">Days Left</span></div>
+        </div>
+        <div class="chain-wrap">
+          <div class="chain-label"><span>In Irons</span><span id="chainPct">0%</span><span>Free</span></div>
+          <div class="chain-track"><div class="chain-fill" id="chainFill" style="width:0%"></div></div>
+        </div>
+      </div>
+
+      <div class="edit-terms-row"><a id="editTerms">Renegotiate the terms of release</a></div>
+
+      <div class="divider"><div class="line"></div><div class="mark">&#10022;</div><div class="line"></div></div>
+
+      <p class="ledger-heading">The Ledger of Days</p>
+      <div id="dayList"></div>
+
+      <div class="reset-row"><a id="resetAll">Strike every mark from the ledger</a></div>
+    </div>
+
+  </div>
+
+  <p class="footer-note">The unabridged Chapman &amp; Hall numbering runs 117 chapters, used here.<br>If your edition splits or merges chapters, the count still holds.</p>
+
+</div>
+
+<script>
+(function () {
+
+  var TOTAL = 117;
+  var TITLES = [
+    "Marseilles, The Arrival","Father and Son","The Catalans","Conspiracy","The Marriage Feast",
+    "The Deputy Procureur du Roi","The Examination","The Chateau D'If","The Evening of the Betrothal",
+    "The King's Closet at the Tuileries","The Corsican Ogre","Father and Son","The Hundred Days",
+    "The Two Prisoners","Number 34 and Number 27","A Learned Italian","The Abbe's Chamber","The Treasure",
+    "The Third Attack","The Cemetery of the Chateau D'If","The Island of Tiboulen","The Smugglers",
+    "The Island of Monte Cristo","The Secret Cave","The Unknown","The Pont du Gard Inn","The Story",
+    "The Prison Register","The House of Morrel and Son","The Fifth of September","Italy, Sinbad the Sailor",
+    "The Waking","Roman Bandits","The Colosseum","La Mazzolata","The Carnival at Rome",
+    "The Catacombs of Saint Sebastian","The Compact","The Guests","The Breakfast","The Presentation",
+    "Monsieur Bertuccio","The House at Auteuil","The Vendetta","The Rain of Blood","Unlimited Credit",
+    "The Dappled Grays","Ideology","Haidee","The Morrel Family","Pyramus and Thisbe","Toxicology",
+    "Robert le Diable","A Flurry in Stocks","Major Cavalcanti","Andrea Cavalcanti","In the Lucerne Patch",
+    "M. Noirtier de Villefort","The Will","The Telegraph","How a Gardener May Get Rid of the Dormice That Eat His Peaches",
+    "Ghosts","The Dinner","The Beggar","A Conjugal Scene","Matrimonial Projects",
+    "At the Office of the King's Attorney","A Summer Ball","The Inquiry","The Ball","Bread and Salt",
+    "Madame de Saint Meran","The Promise","The Villefort Family Vault","A Signed Statement",
+    "Progress of Cavalcanti the Younger","Haidee","We Hear From Yanina","The Lemonade","The Accusation",
+    "The Room of the Retired Baker","The Burglary","The Hand of God","Beauchamp","The Journey","The Trial",
+    "The Challenge","The Insult","A Nocturnal Interview","The Meeting","Mother and Son","The Suicide",
+    "Valentine","Maximilian's Avowal","Father and Daughter","The Contract","The Departure for Belgium",
+    "The Bell and Bottle Tavern","The Law","The Apparition","Locusta","Valentine","Maximilian",
+    "Danglars' Signature","The Cemetery of Pere la Chaise","Dividing the Proceeds","The Lions' Den",
+    "The Judge","The Assizes","The Indictment","Expiation","The Departure","The Past","Peppino",
+    "Luigi Vampa's Bill of Fare","The Pardon","The Fifth of October"
+  ];
+
+  var els = {
+    setup: document.getElementById('setup'),
+    setupHeading: document.getElementById('setupHeading'),
+    mainView: document.getElementById('mainView'),
+    startDate: document.getElementById('startDate'),
+    endDate: document.getElementById('endDate'),
+    startEcho: document.getElementById('startEcho'),
+    endEcho: document.getElementById('endEcho'),
+    saveTerms: document.getElementById('saveTerms'),
+    editTerms: document.getElementById('editTerms'),
+    decreeText: document.getElementById('decreeText'),
+    statRead: document.getElementById('statRead'),
+    statRemaining: document.getElementById('statRemaining'),
+    statDays: document.getElementById('statDays'),
+    chainFill: document.getElementById('chainFill'),
+    chainPct: document.getElementById('chainPct'),
+    dayList: document.getElementById('dayList'),
+    resetAll: document.getElementById('resetAll')
+  };
+
+  var STORAGE_KEY = 'mc-checklist-state-v1';
+  var state = null;
+
+  function todayISO() {
+    var d = new Date();
+    d.setHours(0,0,0,0);
+    return isoOf(d);
+  }
+
+  function isoOf(d) {
+    var y = d.getFullYear();
+    var m = String(d.getMonth() + 1).padStart(2, '0');
+    var day = String(d.getDate()).padStart(2, '0');
+    return y + '-' + m + '-' + day;
+  }
+
+  function parseISO(iso) {
+    var parts = iso.split('-');
+    return new Date(parseInt(parts[0],10), parseInt(parts[1],10) - 1, parseInt(parts[2],10));
+  }
+
+  function addDays(iso, n) {
+    var d = parseISO(iso);
+    d.setDate(d.getDate() + n);
+    return isoOf(d);
+  }
+
+  function daysBetweenInclusive(startIso, endIso) {
+    var a = parseISO(startIso);
+    var b = parseISO(endIso);
+    var diff = Math.round((b - a) / 86400000);
+    return diff + 1;
+  }
+
+  function formatDate(iso) {
+    var d = parseISO(iso);
+    var days = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+    var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    return days[d.getDay()] + ', ' + months[d.getMonth()] + ' ' + d.getDate();
+  }
+
+  function formatDateLong(iso) {
+    var d = parseISO(iso);
+    var months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+    return 'the ' + ordinal(d.getDate()) + ' of ' + months[d.getMonth()];
+  }
+
+  function ordinal(n) {
+    var s = ['th','st','nd','rd'], v = n % 100;
+    return n + (s[(v - 20) % 10] || s[v] || s[0]);
+  }
+
+  function formatDateFull(iso) {
+    var d = parseISO(iso);
+    var days = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+    var months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+    return days[d.getDay()] + ', ' + months[d.getMonth()] + ' ' + d.getDate() + ', ' + d.getFullYear();
+  }
+
+  function defaultState() {
+    var start = todayISO();
+    var end = addDays(start, 29);
+    return { startDate: start, endDate: end, checked: new Array(TOTAL).fill(false) };
+  }
+
+  function loadState() {
+    try {
+      var raw = window.localStorage.getItem(STORAGE_KEY);
+      if (raw) {
+        var parsed = JSON.parse(raw);
+        if (parsed && Array.isArray(parsed.checked) && parsed.checked.length === TOTAL) {
+          return parsed;
+        }
+      }
+    } catch (e) {
+      console.error('Could not read the ledger', e);
+    }
+    return null;
+  }
+
+  function saveState() {
+    try {
+      window.localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    } catch (e) {
+      console.error('Could not save to the ledger', e);
+    }
+  }
+
+  function buildDayAssignments() {
+    var remainingChapters = [];
+    for (var i = 0; i < TOTAL; i++) {
+      if (!state.checked[i]) remainingChapters.push(i);
+    }
+
+    var today = todayISO();
+    var overdue = state.endDate < today && remainingChapters.length > 0;
+    var complete = remainingChapters.length === 0;
+
+    var days = [];
+    if (complete) {
+      return { remainingChapters: remainingChapters, overdue: false, complete: true, days: [] };
+    }
+
+    if (overdue) {
+      days.push({ date: today, isToday: true, isOverdue: true, chapters: remainingChapters.slice() });
+      return { remainingChapters: remainingChapters, overdue: true, complete: false, days: days };
+    }
+
+    var totalDays = daysBetweenInclusive(today, state.endDate);
+    if (totalDays < 1) totalDays = 1;
+
+    var base = Math.floor(remainingChapters.length / totalDays);
+    var extra = remainingChapters.length % totalDays;
+    var pointer = 0;
+
+    for (var d = 0; d < totalDays; d++) {
+      var count = base + (d < extra ? 1 : 0);
+      var chunk = remainingChapters.slice(pointer, pointer + count);
+      pointer += count;
+      days.push({
+        date: addDays(today, d),
+        isToday: d === 0,
+        isOverdue: false,
+        chapters: chunk
+      });
+    }
+
+    return { remainingChapters: remainingChapters, overdue: false, complete: false, days: days };
+  }
+
+  function render() {
+    var data = buildDayAssignments();
+    var checkedCount = TOTAL - data.remainingChapters.length;
+
+    els.statRead.textContent = checkedCount;
+    els.statRemaining.textContent = data.remainingChapters.length;
+
+    var pct = Math.round((checkedCount / TOTAL) * 100);
+    els.chainFill.style.width = pct + '%';
+    els.chainPct.textContent = pct + '%';
+
+    if (data.complete) {
+      els.decreeText.className = 'decree free';
+      els.decreeText.innerHTML = 'The sentence is served, all <strong>117</strong> chapters read. The Count walks free.';
+      els.statDays.textContent = '0';
+      els.dayList.innerHTML = '<p class="rest-note">There is nothing left owed to this ledger. Begin a new sentence above if you wish to read again.</p>';
+      return;
+    }
+
+    if (data.overdue) {
+      els.decreeText.className = 'decree overdue';
+      els.decreeText.innerHTML = 'The day of release has come and gone with <strong>' + data.remainingChapters.length + '</strong> chapters still owed. Renegotiate the terms below, or settle the debt today.';
+      els.statDays.textContent = '0';
+    } else {
+      var totalDays = data.days.length;
+      var maxQuota = data.days.length ? Math.max.apply(null, data.days.map(function (d) { return d.chapters.length; })) : 0;
+      els.decreeText.className = 'decree';
+      els.decreeText.innerHTML = 'By order of this ledger, you are bound to <strong>' + maxQuota + ' chapter' + (maxQuota === 1 ? '' : 's') + ' a day</strong> until ' + formatDateLong(state.endDate) + '.';
+      els.statDays.textContent = totalDays;
+    }
+
+    els.dayList.innerHTML = '';
+    data.days.forEach(function (day) {
+      var card = document.createElement('div');
+      card.className = 'day-card' + (day.isToday ? ' today' : '') + (day.isOverdue ? ' overdue' : '') + (day.chapters.length === 0 ? ' rest' : '');
+
+      var header = document.createElement('div');
+      header.className = 'day-header';
+
+      var dateSpan = document.createElement('span');
+      dateSpan.className = 'date';
+      dateSpan.textContent = day.isOverdue ? 'In Arrears' : formatDate(day.date);
+      if (day.isToday && !day.isOverdue) {
+        var tag = document.createElement('span');
+        tag.className = 'today-tag';
+        tag.textContent = 'TODAY';
+        dateSpan.appendChild(tag);
+      }
+      header.appendChild(dateSpan);
+
+      var quota = document.createElement('span');
+      quota.className = 'quota';
+      quota.textContent = day.chapters.length === 0 ? 'a day of rest' : (day.chapters.length + ' chapter' + (day.chapters.length === 1 ? '' : 's') + ' owed');
+      header.appendChild(quota);
+
+      card.appendChild(header);
+
+      if (day.chapters.length === 0) {
+        var note = document.createElement('p');
+        note.className = 'rest-note';
+        note.textContent = 'You have read ahead. Nothing is owed on this day.';
+        card.appendChild(note);
+      } else {
+        var list = document.createElement('div');
+        list.className = 'chapters';
+        day.chapters.forEach(function (idx) {
+          var row = document.createElement('div');
+          row.className = 'chapter-row' + (state.checked[idx] ? ' checked' : '');
+
+          var cb = document.createElement('input');
+          cb.type = 'checkbox';
+          cb.id = 'ch-' + idx;
+          cb.checked = state.checked[idx];
+          cb.addEventListener('change', function () {
+            state.checked[idx] = cb.checked;
+            saveState();
+            render();
+          });
+
+          var label = document.createElement('label');
+          label.setAttribute('for', 'ch-' + idx);
+          var numSpan = document.createElement('span');
+          numSpan.className = 'num';
+          numSpan.textContent = String(idx + 1).padStart(3, '0');
+          label.appendChild(numSpan);
+          label.appendChild(document.createTextNode(TITLES[idx]));
+
+          row.appendChild(cb);
+          row.appendChild(label);
+          list.appendChild(row);
+        });
+        card.appendChild(list);
+      }
+
+      els.dayList.appendChild(card);
+    });
+  }
+
+  function updateEchoes() {
+    els.startEcho.textContent = els.startDate.value ? formatDateFull(els.startDate.value) : '';
+    els.endEcho.textContent = els.endDate.value ? formatDateFull(els.endDate.value) : '';
+  }
+
+  els.startDate.addEventListener('input', updateEchoes);
+  els.endDate.addEventListener('input', updateEchoes);
+
+  function showSetup(isEdit) {
+    els.setupHeading.textContent = isEdit ? 'Renegotiate the Terms' : 'Fix the Terms of Your Sentence';
+    els.startDate.value = state ? state.startDate : todayISO();
+    els.endDate.value = state ? state.endDate : addDays(todayISO(), 29);
+    updateEchoes();
+    els.setup.classList.remove('hidden');
+    els.mainView.classList.add('hidden');
+  }
+
+  function showMain() {
+    els.setup.classList.add('hidden');
+    els.mainView.classList.remove('hidden');
+    render();
+  }
+
+  els.saveTerms.addEventListener('click', function () {
+    var start = els.startDate.value || todayISO();
+    var end = els.endDate.value || addDays(start, 29);
+    if (end < start) end = start;
+    if (!state) state = defaultState();
+    state.startDate = start;
+    state.endDate = end;
+    saveState();
+    showMain();
+  });
+
+  els.editTerms.addEventListener('click', function () {
+    showSetup(true);
+  });
+
+  var resetArmed = false;
+  els.resetAll.addEventListener('click', function () {
+    if (!resetArmed) {
+      resetArmed = true;
+      els.resetAll.textContent = 'Click once more to confirm';
+      setTimeout(function () {
+        resetArmed = false;
+        els.resetAll.textContent = 'Strike every mark from the ledger';
+      }, 3000);
+      return;
+    }
+    state.checked = new Array(TOTAL).fill(false);
+    resetArmed = false;
+    els.resetAll.textContent = 'Strike every mark from the ledger';
+    saveState();
+    render();
+  });
+
+  (function init() {
+    var loaded = loadState();
+    if (loaded) {
+      state = loaded;
+      showMain();
+    } else {
+      state = defaultState();
+      showSetup(false);
+    }
+  })();
+
+})();
+</script>
+
+</body>
+</html>

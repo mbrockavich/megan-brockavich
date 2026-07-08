@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Megan's Library</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Italiana&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --night: #0a0d18;
+    --night-soft: #12172a;
+    --moonlight: #e9e7dd;
+    --dim: #8b90a8;
+    --dimmer: #565b73;
+    --line: rgba(139, 144, 168, 0.18);
+    --lamp: #c9a266;
+    --lamp-soft: rgba(201, 162, 102, 0.16);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { height: 100%; }
+
+  body {
+    background: var(--night);
+    color: var(--moonlight);
+    font-family: 'Jost', sans-serif;
+    font-weight: 300;
+    overflow-x: hidden;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+  }
+
+  #sky {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+  }
+
+  main {
+    position: relative;
+    z-index: 1;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 9vh 24px 6vh;
+  }
+
+  .name {
+    font-family: 'Italiana', serif;
+    font-size: clamp(2.6rem, 8vw, 5.2rem);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    line-height: 1;
+    text-align: center;
+    animation: rise 1.4s ease-out both;
+  }
+
+  .tagline {
+    margin-top: 14px;
+    font-size: 0.78rem;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--dim);
+    text-align: center;
+    animation: rise 1.4s ease-out 0.15s both;
+  }
+
+  /* the lamp */
+  .lamp-wrap {
+    margin: 8vh 0 0;
+    display: flex;
+    justify-content: center;
+    animation: rise 1.6s ease-out 0.3s both;
+  }
+
+  #lampGlow {
+    filter: drop-shadow(0 0 40px var(--lamp-soft));
+  }
+
+  .flicker {
+    animation: flicker 5s ease-in-out infinite;
+  }
+
+  @keyframes flicker {
+    0%, 100% { opacity: 1; }
+    46% { opacity: 1; }
+    47% { opacity: 0.85; }
+    48% { opacity: 1; }
+    72% { opacity: 1; }
+    73% { opacity: 0.9; }
+    74% { opacity: 1; }
+  }
+
+  /* shelf */
+  .shelf-wrap {
+    width: 100%;
+    max-width: 780px;
+    margin-top: -8px;
+    animation: rise 1.4s ease-out 0.5s both;
+  }
+
+  .shelf {
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    gap: 10px;
+    padding: 0 20px;
+    min-height: 220px;
+  }
+
+  .spine {
+    position: relative;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    padding-bottom: 16px;
+    width: 56px;
+    border-radius: 3px 3px 1px 1px;
+    text-decoration: none;
+    color: var(--night);
+    box-shadow: inset -6px 0 10px rgba(0,0,0,0.18), 0 2px 6px rgba(0,0,0,0.4);
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+    cursor: pointer;
+  }
+
+  .spine:hover, .spine:focus-visible {
+    transform: translateY(-10px);
+    box-shadow: inset -6px 0 10px rgba(0,0,0,0.18), 0 12px 22px rgba(0,0,0,0.45);
+    outline: none;
+  }
+
+  .spine-label {
+    writing-mode: vertical-rl;
+    transform: rotate(180deg);
+    font-family: 'Jost', sans-serif;
+    font-size: 0.66rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+
+  .spine.empty {
+    background: transparent !important;
+    box-shadow: none;
+    border: 1px dashed var(--line);
+    color: var(--dimmer);
+    cursor: default;
+    height: 140px !important;
+  }
+  .spine.empty:hover { transform: none; }
+  .spine.empty .spine-label { font-size: 0.6rem; letter-spacing: 0.1em; }
+
+  .ledge {
+    height: 3px;
+    max-width: 780px;
+    width: 100%;
+    margin: 0 auto;
+    background: linear-gradient(to right, transparent, var(--line) 10%, var(--line) 90%, transparent);
+    box-shadow: 0 10px 22px rgba(0,0,0,0.5);
+  }
+
+  .shelf-caption {
+    text-align: center;
+    margin-top: 22px;
+    font-size: 0.7rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--dimmer);
+  }
+
+  nav {
+    position: relative;
+    z-index: 1;
+    text-align: center;
+    padding: 16px 24px 0;
+  }
+
+  nav a {
+    font-size: 0.66rem;
+    letter-spacing: 0.24em;
+    text-transform: uppercase;
+    color: var(--dimmer);
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+  nav a:hover { color: var(--dim); }
+
+  footer {
+    position: relative;
+    z-index: 1;
+    text-align: center;
+    padding: 24px;
+    font-size: 0.66rem;
+    letter-spacing: 0.24em;
+    text-transform: uppercase;
+    color: var(--dimmer);
+  }
+
+  @keyframes rise {
+    from { opacity: 0; transform: translateY(16px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .name, .tagline, .lamp-wrap, .shelf-wrap { animation: none; }
+    .flicker { animation: none; }
+  }
+</style>
+</head>
+<body>
+
+<canvas id="sky"></canvas>
+
+<nav><a href="index.html">Back to the moon</a></nav>
+
+<main>
+  <h1 class="name">Megan's Library</h1>
+  <div class="tagline">a shelf, a lamp, whatever I'm reading</div>
+
+  <div class="lamp-wrap">
+    <svg id="lampGlow" class="flicker" width="70" height="70" viewBox="0 0 70 70" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="35" cy="35" r="30" fill="var(--lamp-soft)" />
+      <circle cx="35" cy="35" r="14" fill="var(--lamp)" opacity="0.85" />
+      <circle cx="35" cy="35" r="6" fill="#fff8ea" />
+    </svg>
+  </div>
+
+  <div class="shelf-wrap">
+    <div class="shelf" id="shelf"></div>
+    <div class="ledge"></div>
+    <div class="shelf-caption">tap a spine to open it</div>
+  </div>
+</main>
+
+<footer id="footer"></footer>
+
+<script>
+(function () {
+  // ---------- books on the shelf ----------
+  // Add more entries here as the shelf grows.
+  const books = [
+    {
+      title: 'The Count of Monte Cristo',
+      href: 'count-of-monte-cristo/monte-cristo-checklist.html',
+      color: '#8b6f47',
+      height: 200
+    }
+  ];
+
+  const EMPTY_SLOTS = 5; // faint placeholders to hint the shelf will fill in
+
+  const shelf = document.getElementById('shelf');
+  shelf.innerHTML = books.map(b => `
+    <a class="spine" href="${b.href}" style="height:${b.height}px; background:${b.color};">
+      <span class="spine-label">${b.title}</span>
+    </a>
+  `).join('') + Array.from({ length: EMPTY_SLOTS }).map((_, i) => `
+    <div class="spine empty" style="height:${130 + (i % 3) * 14}px;">
+      <span class="spine-label">&nbsp;</span>
+    </div>
+  `).join('');
+
+  const dateFmt = new Intl.DateTimeFormat(undefined, { year: 'numeric', month: 'long', day: 'numeric' });
+  document.getElementById('footer').textContent = dateFmt.format(new Date());
+
+  // ---------- star field (matches the main page) ----------
+  const canvas = document.getElementById('sky');
+  const ctx = canvas.getContext('2d');
+  let stars = [];
+
+  function seedStars() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    const count = Math.floor((canvas.width * canvas.height) / 9000);
+    stars = Array.from({ length: count }, () => ({
+      x: Math.random() * canvas.width,
+      y: Math.random() * canvas.height,
+      r: Math.random() * 1.1 + 0.2,
+      base: Math.random() * 0.5 + 0.15,
+      speed: Math.random() * 0.0012 + 0.0004,
+      offset: Math.random() * Math.PI * 2
+    }));
+  }
+
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  function drawStars(t) {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    for (const s of stars) {
+      const tw = reduceMotion ? 1 : (0.6 + 0.4 * Math.sin(t * s.speed + s.offset));
+      ctx.globalAlpha = s.base * tw;
+      ctx.fillStyle = '#e9e7dd';
+      ctx.beginPath();
+      ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+      ctx.fill();
+    }
+    if (!reduceMotion) requestAnimationFrame(drawStars);
+  }
+
+  seedStars();
+  window.addEventListener('resize', seedStars);
+  requestAnimationFrame(drawStars);
+})();
+</script>
+
+</body>
+</html>
