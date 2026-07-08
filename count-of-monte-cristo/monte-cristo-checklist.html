@@ -4,7 +4,6 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>The Count of Monte Cristo — Reading Sentence</title>
-<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>⚔️</text></svg>">
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Special+Elite&display=swap');
 
@@ -492,47 +491,74 @@ button.ghost:hover { color: var(--wax); border-color: var(--wax); }
 
 .reset-row a:hover { color: var(--wax); }
 
-.hidden { display: none !important; }
-
-/* ---------- instructions ---------- */
-
-.instructions {
-  margin-bottom: 22px;
-  padding: 16px 18px;
-  border: 1px dashed rgba(122, 94, 42, 0.5);
-  border-radius: 2px;
-  background: rgba(122, 94, 42, 0.06);
-}
-
-.instructions-heading {
-  font-family: 'Cinzel', serif;
-  font-size: 12px;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: var(--iron);
-  margin: 0 0 8px;
+.sync-status {
   text-align: center;
-}
-
-.instructions ol {
-  margin: 0;
-  padding-left: 20px;
-}
-
-.instructions li {
   font-family: 'EB Garamond', serif;
-  font-size: 14px;
-  line-height: 1.55;
-  color: var(--ink);
-  margin-bottom: 6px;
-}
-
-.instructions li:last-child { margin-bottom: 0; }
-
-.instructions li em {
-  color: var(--wax);
   font-style: italic;
+  font-size: 13px;
+  color: var(--iron);
+  margin: 10px 0 0;
 }
+
+.sync-status.ok { color: #4C6B3C; }
+.sync-status.error { color: var(--wax); }
+.sync-status.busy { color: var(--gold); }
+
+.sync-row {
+  text-align: center;
+  margin-top: 10px;
+}
+
+.sync-row a {
+  font-family: 'EB Garamond', serif;
+  font-style: italic;
+  font-size: 12px;
+  color: var(--iron);
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.sync-row a:hover { color: var(--wax); }
+
+.sync-panel {
+  margin-top: 16px;
+  padding: 18px;
+  border: 1px solid var(--gold);
+  border-radius: 2px;
+  background: rgba(255,255,255,0.2);
+}
+
+.sync-panel .field {
+  margin-bottom: 14px;
+}
+
+.sync-panel .field input[type="text"],
+.sync-panel .field input[type="password"] {
+  width: 100%;
+  font-family: 'Special Elite', monospace;
+  font-size: 14px;
+  padding: 9px 10px;
+  border: 1px solid var(--gold);
+  border-radius: 2px;
+  background: #F7F0DC;
+  color: var(--ink);
+}
+
+.sync-panel .setup-row {
+  gap: 10px;
+}
+
+.sync-note {
+  font-family: 'EB Garamond', serif;
+  font-style: italic;
+  font-size: 12px;
+  color: var(--iron);
+  text-align: center;
+  margin: 14px 0 0;
+}
+
+.hidden { display: none !important; }
 
 </style>
 </head>
@@ -563,17 +589,6 @@ button.ghost:hover { color: var(--wax); border-color: var(--wax); }
   </div>
 
   <div class="book">
-
-    <div class="instructions">
-      <p class="instructions-heading">How to Use This Ledger</p>
-      <ol>
-        <li>Choose the day you're starting the book and the day you'd like to finish it, then click <em>Fix the Terms</em>.</li>
-        <li>The ledger splits the book's 117 chapters evenly across your remaining days and shows today's quota.</li>
-        <li>Check off chapters as you read them &mdash; your progress is saved automatically in this browser.</li>
-        <li>Miss a day? The ledger reshuffles what's left across the days that remain.</li>
-        <li>Changed your mind about the deadline? Click <em>Renegotiate the terms of release</em> to pick new dates.</li>
-      </ol>
-    </div>
 
     <!-- SETUP -->
     <div id="setup" class="setup-section">
@@ -612,6 +627,7 @@ button.ghost:hover { color: var(--wax); border-color: var(--wax); }
       </div>
 
       <div class="edit-terms-row"><a id="editTerms">Renegotiate the terms of release</a></div>
+      <p class="sync-status" id="syncStatus">Working locally only</p>
 
       <div class="divider"><div class="line"></div><div class="mark">&#10022;</div><div class="line"></div></div>
 
@@ -619,6 +635,30 @@ button.ghost:hover { color: var(--wax); border-color: var(--wax); }
       <div id="dayList"></div>
 
       <div class="reset-row"><a id="resetAll">Strike every mark from the ledger</a></div>
+      <div class="sync-row"><a id="toggleSync">Sync across devices via GitHub</a></div>
+      <div id="syncPanel" class="sync-panel hidden">
+        <div class="field">
+          <label for="syncRepo">Repository (owner/name)</label>
+          <input type="text" id="syncRepo" placeholder="yourname/monte-cristo-checklist">
+        </div>
+        <div class="field">
+          <label for="syncPath">File Path</label>
+          <input type="text" id="syncPath" placeholder="progress.json">
+        </div>
+        <div class="field">
+          <label for="syncBranch">Branch</label>
+          <input type="text" id="syncBranch" placeholder="main">
+        </div>
+        <div class="field">
+          <label for="syncToken">Personal Access Token</label>
+          <input type="password" id="syncToken" placeholder="ghp_xxxxxxxxxxxx">
+        </div>
+        <div class="setup-row">
+          <button id="connectSync">Save and Connect</button>
+          <button class="ghost" id="disconnectSync">Disconnect</button>
+        </div>
+        <p class="sync-note">The token stays in this browser only. It is never written into the saved progress file.</p>
+      </div>
     </div>
 
   </div>
@@ -675,11 +715,24 @@ button.ghost:hover { color: var(--wax); border-color: var(--wax); }
     chainFill: document.getElementById('chainFill'),
     chainPct: document.getElementById('chainPct'),
     dayList: document.getElementById('dayList'),
-    resetAll: document.getElementById('resetAll')
+    resetAll: document.getElementById('resetAll'),
+    syncStatus: document.getElementById('syncStatus'),
+    toggleSync: document.getElementById('toggleSync'),
+    syncPanel: document.getElementById('syncPanel'),
+    syncRepo: document.getElementById('syncRepo'),
+    syncPath: document.getElementById('syncPath'),
+    syncBranch: document.getElementById('syncBranch'),
+    syncToken: document.getElementById('syncToken'),
+    connectSync: document.getElementById('connectSync'),
+    disconnectSync: document.getElementById('disconnectSync')
   };
 
   var STORAGE_KEY = 'mc-checklist-state-v1';
+  var CONFIG_KEY = 'mc-sync-config-v1';
   var state = null;
+  var syncConfig = null;
+  var remoteSha = null;
+  var pushTimer = null;
 
   function todayISO() {
     var d = new Date();
@@ -759,11 +812,116 @@ button.ghost:hover { color: var(--wax); border-color: var(--wax); }
   }
 
   function saveState() {
+    state.updatedAt = Date.now();
     try {
       window.localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
     } catch (e) {
       console.error('Could not save to the ledger', e);
     }
+    queuePush();
+  }
+
+  function loadConfig() {
+    try {
+      var raw = window.localStorage.getItem(CONFIG_KEY);
+      return raw ? JSON.parse(raw) : null;
+    } catch (e) {
+      return null;
+    }
+  }
+
+  function saveConfig(cfg) {
+    try {
+      window.localStorage.setItem(CONFIG_KEY, JSON.stringify(cfg));
+    } catch (e) {
+      console.error('Could not save sync settings', e);
+    }
+  }
+
+  function clearConfig() {
+    try {
+      window.localStorage.removeItem(CONFIG_KEY);
+    } catch (e) { /* ignore */ }
+  }
+
+  function setSyncStatus(text, kind) {
+    els.syncStatus.textContent = text;
+    els.syncStatus.className = 'sync-status ' + (kind || '');
+  }
+
+  function b64EncodeUnicode(str) {
+    return btoa(encodeURIComponent(str).replace(/%([0-9A-F]{2})/g, function (match, p1) {
+      return String.fromCharCode('0x' + p1);
+    }));
+  }
+
+  function b64DecodeUnicode(str) {
+    return decodeURIComponent(atob(str.replace(/\n/g, '')).split('').map(function (c) {
+      return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+    }).join(''));
+  }
+
+  function githubContentsUrl(cfg) {
+    return 'https://api.github.com/repos/' + cfg.repo + '/contents/' + encodeURIComponent(cfg.path) + '?ref=' + encodeURIComponent(cfg.branch);
+  }
+
+  async function fetchRemote(cfg) {
+    var res = await fetch(githubContentsUrl(cfg), {
+      headers: { 'Authorization': 'token ' + cfg.token, 'Accept': 'application/vnd.github+json' }
+    });
+    if (res.status === 404) return null;
+    if (!res.ok) {
+      var body = await res.json().catch(function () { return {}; });
+      throw new Error(body.message || ('GitHub error ' + res.status));
+    }
+    var json = await res.json();
+    var decoded = b64DecodeUnicode(json.content);
+    var remoteState = JSON.parse(decoded);
+    return { state: remoteState, sha: json.sha };
+  }
+
+  async function pushRemote(cfg, stateObj) {
+    var existing = null;
+    try {
+      existing = await fetchRemote(cfg);
+    } catch (e) { /* first write, or transient; proceed without sha */ }
+
+    var body = {
+      message: 'Update reading progress',
+      content: b64EncodeUnicode(JSON.stringify(stateObj, null, 2)),
+      branch: cfg.branch
+    };
+    if (existing && existing.sha) body.sha = existing.sha;
+
+    var res = await fetch('https://api.github.com/repos/' + cfg.repo + '/contents/' + encodeURIComponent(cfg.path), {
+      method: 'PUT',
+      headers: {
+        'Authorization': 'token ' + cfg.token,
+        'Accept': 'application/vnd.github+json',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(body)
+    });
+    if (!res.ok) {
+      var errBody = await res.json().catch(function () { return {}; });
+      throw new Error(errBody.message || ('GitHub error ' + res.status));
+    }
+    var json = await res.json();
+    remoteSha = json.content.sha;
+    return json;
+  }
+
+  function queuePush() {
+    if (!syncConfig) return;
+    setSyncStatus('Syncing to GitHub…', 'busy');
+    clearTimeout(pushTimer);
+    pushTimer = setTimeout(function () {
+      pushRemote(syncConfig, state).then(function () {
+        setSyncStatus('Synced just now', 'ok');
+      }).catch(function (err) {
+        setSyncStatus('Sync failed: ' + err.message + '. Saved locally only.', 'error');
+      });
+    }, 900);
   }
 
   function buildDayAssignments() {
@@ -944,6 +1102,63 @@ button.ghost:hover { color: var(--wax); border-color: var(--wax); }
     showSetup(true);
   });
 
+  els.toggleSync.addEventListener('click', function () {
+    els.syncPanel.classList.toggle('hidden');
+    if (!els.syncPanel.classList.contains('hidden') && syncConfig) {
+      els.syncRepo.value = syncConfig.repo || '';
+      els.syncPath.value = syncConfig.path || '';
+      els.syncBranch.value = syncConfig.branch || 'main';
+      els.syncToken.value = syncConfig.token || '';
+    }
+  });
+
+  els.connectSync.addEventListener('click', function () {
+    var repo = els.syncRepo.value.trim();
+    var path = els.syncPath.value.trim() || 'progress.json';
+    var branch = els.syncBranch.value.trim() || 'main';
+    var token = els.syncToken.value.trim();
+
+    if (!repo || repo.indexOf('/') === -1 || !token) {
+      setSyncStatus('Enter a repository as owner/name, plus a token.', 'error');
+      return;
+    }
+
+    var cfg = { repo: repo, path: path, branch: branch, token: token };
+    setSyncStatus('Connecting to GitHub…', 'busy');
+
+    fetchRemote(cfg).then(function (remote) {
+      syncConfig = cfg;
+      saveConfig(cfg);
+      if (remote) {
+        remoteSha = remote.sha;
+        var remoteTime = remote.state.updatedAt || 0;
+        var localTime = state.updatedAt || 0;
+        if (remoteTime > localTime) {
+          state = remote.state;
+          try { window.localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch (e) { /* ignore */ }
+          render();
+          setSyncStatus('Connected. Loaded newer progress from GitHub.', 'ok');
+        } else {
+          setSyncStatus('Connected. This device is already up to date.', 'ok');
+          queuePush();
+        }
+      } else {
+        setSyncStatus('Connected. Will create the file on your next change.', 'ok');
+        queuePush();
+      }
+    }).catch(function (err) {
+      setSyncStatus('Could not connect: ' + err.message, 'error');
+    });
+  });
+
+  els.disconnectSync.addEventListener('click', function () {
+    clearConfig();
+    syncConfig = null;
+    remoteSha = null;
+    els.syncToken.value = '';
+    setSyncStatus('Disconnected. Saving to this browser only.', '');
+  });
+
   var resetArmed = false;
   els.resetAll.addEventListener('click', function () {
     if (!resetArmed) {
@@ -962,16 +1177,59 @@ button.ghost:hover { color: var(--wax); border-color: var(--wax); }
     render();
   });
 
-  (function init() {
-    var loaded = loadState();
-    if (loaded) {
-      state = loaded;
-      showMain();
-    } else {
-      state = defaultState();
-      showSetup(false);
+  function init() {
+    var localState = loadState();
+    syncConfig = loadConfig();
+    var hadSaved = !!localState;
+
+    function finish() {
+      if (hadSaved) {
+        showMain();
+      } else {
+        showSetup(false);
+      }
     }
-  })();
+
+    if (syncConfig) {
+      setSyncStatus('Checking GitHub for your progress…', 'busy');
+      fetchRemote(syncConfig).then(function (remote) {
+        if (remote) {
+          hadSaved = true;
+          remoteSha = remote.sha;
+          var remoteTime = remote.state.updatedAt || 0;
+          var localTime = localState ? (localState.updatedAt || 0) : -1;
+          if (remoteTime >= localTime) {
+            state = remote.state;
+            try { window.localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch (e) { /* ignore */ }
+            setSyncStatus('Synced, showing the latest from GitHub.', 'ok');
+          } else {
+            state = localState;
+            setSyncStatus('Synced, this device was newer.', 'ok');
+            queuePush();
+          }
+        } else {
+          state = localState || defaultState();
+          if (localState) {
+            setSyncStatus('Connected. Will sync on your next change.', 'ok');
+            queuePush();
+          } else {
+            setSyncStatus('Connected. Set your dates below to begin.', 'ok');
+          }
+        }
+        finish();
+      }).catch(function (err) {
+        state = localState || defaultState();
+        setSyncStatus('Sync failed: ' + err.message + '. Saving locally only.', 'error');
+        finish();
+      });
+    } else {
+      state = localState || defaultState();
+      setSyncStatus('Not connected. Saving to this browser only.', '');
+      finish();
+    }
+  }
+
+  init();
 
 })();
 </script>
