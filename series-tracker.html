@@ -265,9 +265,10 @@ sortedSeries.forEach(s => {
   const booksHtml = enriched.map((b) => {
     const isRead = !!b.match;
     const cover = (b.match && b.match.cover) || b.cover || null;
+    const comingSoonLabel = b.comingSoon ? (typeof b.comingSoon === "string" ? `Coming ${b.comingSoon}` : "Coming Soon") : null;
     const coverHtml = cover
       ? `<img src="${cover}" alt="Cover of ${b.title}" loading="lazy" onerror="this.remove()">`
-      : (isRead ? "" : (b.comingSoon ? `<span>Coming Soon</span>` : `<span>Not Read Yet</span>`));
+      : (isRead ? "" : (b.comingSoon ? `<span>${comingSoonLabel}</span>` : `<span>Not Read Yet</span>`));
 
     let posLabel = "";
     let posClass = "";
@@ -280,7 +281,7 @@ sortedSeries.forEach(s => {
         posLabel = "Read";
       }
     } else if(b.comingSoon){
-      posLabel = "Coming Soon";
+      posLabel = comingSoonLabel;
       posClass = "coming";
     } else {
       posLabel = "Not Read Yet";

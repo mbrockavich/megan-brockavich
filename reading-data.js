@@ -128,13 +128,53 @@ function findRead(title) {
    "ongoing" = more entries are announced or expected. */
 const SERIES = [
   {
+    name: "Throne of Glass",
+    author: "Sarah J. Maas",
+    status: "complete",
+    books: [
+      {title:"Throne of Glass"},
+      {title:"Crown of Midnight"},
+      {title:"Heir of Fire"},
+      {title:"The Assassin's Blade"},
+      {title:"Queen of Shadows"},
+      {title:"Empire of Storms"},
+      {title:"Tower of Dawn"},
+      {title:"Kingdom of Ash"}
+    ]
+  },
+  {
+    name: "A Court of Thorns and Roses",
+    author: "Sarah J. Maas",
+    status: "ongoing",
+    books: [
+      {title:"A Court of Thorns and Roses"},
+      {title:"A Court of Mist and Fury"},
+      {title:"A Court of Wings and Ruin"},
+      {title:"A Court of Frost and Starlight"},
+      {title:"A Court of Silver Flames"},
+      {title:"ACOTAR Book 6", comingSoon:"October 2026"},
+      {title:"ACOTAR Book 7", comingSoon:"January 2027"}
+    ]
+  },
+  {
+    name: "Crescent City",
+    author: "Sarah J. Maas",
+    status: "ongoing",
+    books: [
+      {title:"House of Earth and Blood"},
+      {title:"House of Sky and Breath"},
+      {title:"House of Flame and Shadow"},
+      {title:"Crescent City Book 4", comingSoon:true}
+    ]
+  },
+  {
     name: "Heartstrings",
     author: "B.K. Borison",
     status: "ongoing",
     books: [
       {title:"First-Time Caller"},
       {title:"And Now, Back to You", cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1748482477i/217513554.jpg"},
-      {title:"Longtime Listener", comingSoon:true}
+      {title:"Longtime Listener", comingSoon:"February 2027"}
     ]
   },
   {
@@ -157,7 +197,7 @@ const SERIES = [
       {title:"Assistant to the Villain"},
       {title:"Apprentice to the Villain", cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1730881672i/203147386.jpg"},
       {title:"Accomplice to the Villain", cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1765013612i/219209774.jpg"},
-      {title:"Adversary to the Villain", comingSoon:true}
+      {title:"Adversary to the Villain", comingSoon:"August 2026"}
     ]
   },
   {
@@ -332,7 +372,7 @@ const SERIES = [
       {title:"Pranks, Poitin, and Pucas", cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1724848086i/217912014.jpg"},
       {title:"Roots, Rum, and Revenants", cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1758805415i/242063842.jpg"},
       {title:"Spectacles, Sangria, and Selkies", cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1759954713i/242542188.jpg"},
-      {title:"Greed, Guinness, and Grogochs", comingSoon:true}
+      {title:"Greed, Guinness, and Grogochs", comingSoon:"April 2027"}
     ]
   }
 ];
@@ -393,7 +433,7 @@ const WORLD_TRACKER = [
       {title:"Never Keep", cover:"https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1717864038i/210966754._SY180_.jpg"},
       {title:"Echo Fort", cover:"https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1747983780i/219503833._SY180_.jpg"},
       {title:"Cinder Vale", cover:"https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1746267651i/232736952._SY180_.jpg"},
-      {title:"Oracle Bay", comingSoon:true}
+      {title:"Oracle Bay", comingSoon:"March 2027"}
     ]
   }
 ];
@@ -427,8 +467,8 @@ const SJM_UNIVERSE = [
       {title:"A Court of Wings and Ruin"},
       {title:"A Court of Frost and Starlight"},
       {title:"A Court of Silver Flames"},
-      {title:"ACOTAR Book 6", comingSoon:true},
-      {title:"ACOTAR Book 7", comingSoon:true}
+      {title:"ACOTAR Book 6", comingSoon:"October 2026"},
+      {title:"ACOTAR Book 7", comingSoon:"January 2027"}
     ]
   },
   {
