@@ -102,6 +102,12 @@
     border-radius: 2px;
     pointer-events:none;
   }
+  .solaria-map{
+    display:block; width:100%; max-width:520px; margin: 0 auto 24px;
+    border-radius: 4px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.3), 0 0 0 4px var(--parchment), 0 0 0 6px rgba(139,111,71,0.4);
+    position:relative;
+  }
   .map-title{
     font-family:'Fraunces',serif; font-weight:600; font-size:20px; text-align:center;
     letter-spacing:0.04em; margin-bottom:2px; position:relative;
@@ -221,6 +227,7 @@
   </header>
 
   <div class="map-card">
+    <img class="solaria-map" src="https://static.wikia.nocookie.net/zabooks/images/0/09/Solariamap.png/revision/latest?cb=20240229183310" alt="Map of Solaria" loading="lazy" onerror="this.remove()">
     <div class="map-title">The Realms of Solaria</div>
     <div class="map-sub">Follow the path from the Fae Lands to the Waning Lands</div>
     <div class="route" id="route"></div>
