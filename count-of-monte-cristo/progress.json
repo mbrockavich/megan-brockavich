@@ -11,12 +11,12 @@
     true,
     true,
     true,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
     false,
     false,
     false,
@@ -120,8 +120,15 @@
     false,
     false
   ],
-  "updatedAt": 1783523114134,
-  "completedAt": {},
+  "updatedAt": 1783554757065,
+  "completedAt": {
+    "9": 1783550188561,
+    "10": 1783551115159,
+    "11": 1783552625787,
+    "12": 1783552626868,
+    "13": 1783553459596,
+    "14": 1783554757065
+  },
   "todayPlan": {
     "date": "2026-07-08",
     "chapters": [
