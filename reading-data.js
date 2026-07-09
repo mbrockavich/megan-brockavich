@@ -86,7 +86,14 @@ const pastReads = [
   {title:"Vicious Fae", readDate:"May 2025", cover:"https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1619382736i/57849111._SY180_.jpg"},
   {title:"Broken Fae", readDate:"June 2025", cover:"https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1619382818i/57849125._SY180_.jpg"},
   {title:"Warrior Fae", readDate:"June 2025", cover:"https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1619382385i/57849074._SY180_.jpg"},
-  {title:"Scythe", readDate:"September 2025", cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1456172676i/28954189.jpg"}
+  {title:"Scythe", readDate:"September 2025", cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1456172676i/28954189.jpg"},
+  {title:"Powerless", readDate:"June 2024", cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1672676191i/75513900.jpg"},
+  {title:"Powerful", readDate:"June 2024", cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1731714728i/203840597.jpg"},
+  {title:"Reckless", readDate:"July 2024", cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1731714752i/183086339.jpg"},
+  {title:"Fearless", readDate:"August 2025", cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1730330746i/214151222.jpg"},
+  {title:"Wicked: Everyone Deserves the Chance to Fly", readDate:"December 2024", cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1733855486i/30241301.jpg"},
+  {title:"Assistant to the Villain", readDate:"August 2024", cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1702057336i/123257687.jpg"},
+  {title:"First-Time Caller", readDate:"July 2025", cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1718283728i/213243908.jpg"}
 ];
 
 /* Looks a title up in this year's `books` first, then in `pastReads`.
@@ -104,6 +111,51 @@ function findRead(title) {
    whether you're caught up on it: "complete" = no more books planned,
    "ongoing" = more entries are announced or expected. */
 const SERIES = [
+  {
+    name: "Heartstrings",
+    author: "B.K. Borison",
+    status: "ongoing",
+    books: [
+      {title:"First-Time Caller"},
+      {title:"And Now, Back to You", cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1748482477i/217513554.jpg"},
+      {title:"Longtime Listener", comingSoon:true}
+    ]
+  },
+  {
+    name: "The Wicked Years",
+    author: "Gregory Maguire",
+    status: "ongoing",
+    books: [
+      {title:"Elphie: A Wicked Childhood", cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1722577882i/199743711.jpg"},
+      {title:"Wicked: Everyone Deserves the Chance to Fly"},
+      {title:"Son of a Witch", cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1370992595i/13521.jpg"},
+      {title:"A Lion Among Men", cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1370992593i/3124249.jpg"},
+      {title:"Out of Oz", cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1370992585i/10594929.jpg"}
+    ]
+  },
+  {
+    name: "Assistant to the Villain",
+    author: "Hannah Nicole Maehrer",
+    status: "ongoing",
+    books: [
+      {title:"Assistant to the Villain"},
+      {title:"Apprentice to the Villain", cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1730881672i/203147386.jpg"},
+      {title:"Accomplice to the Villain", cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1765013612i/219209774.jpg"},
+      {title:"Adversary to the Villain", comingSoon:true}
+    ]
+  },
+  {
+    name: "The Powerless Trilogy",
+    author: "Lauren Roberts",
+    status: "ongoing",
+    books: [
+      {title:"Powerless"},
+      {title:"Powerful"},
+      {title:"Reckless"},
+      {title:"Fearless"},
+      {title:"Fearful", cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1749656949i/220161171.jpg"}
+    ]
+  },
   {
     name: "Arc of a Scythe",
     author: "Neal Shusterman",

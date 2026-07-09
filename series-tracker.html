@@ -230,7 +230,20 @@ const seriesContainerProgress = document.getElementById("seriesListProgress");
 const seriesContainerCaughtUp = document.getElementById("seriesListCaughtUp");
 const seriesContainerComplete = document.getElementById("seriesListComplete");
 
-const sortedSeries = [...SERIES].sort((a, b) => a.author.localeCompare(b.author));
+function seriesLastReadTime(s) {
+  let max = -Infinity;
+  s.books.forEach(b => {
+    const m = findRead(b.title);
+    if(!m) return;
+    const t = m.dateFinished ? new Date(m.dateFinished).getTime()
+      : m.readDate ? new Date(m.readDate).getTime()
+      : 0;
+    if(t > max) max = t;
+  });
+  return max;
+}
+
+const sortedSeries = [...SERIES].sort((a, b) => seriesLastReadTime(b) - seriesLastReadTime(a));
 
 sortedSeries.forEach(s => {
   const enriched = s.books.map(b => ({ ...b, match: findRead(b.title) }));
