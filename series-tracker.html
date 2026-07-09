@@ -105,8 +105,12 @@
   .series-panel h2{ font-family:'Fraunces',serif; font-weight:600; font-size:22px; margin:0 0 3px; }
   .series-panel .sub{ font-family:'Space Mono',monospace; font-size:10px; text-transform:uppercase; letter-spacing:0.1em; color:var(--ink-soft); margin-bottom:24px; }
 
-  .series-row{ margin-bottom: 30px; }
+  .series-row{ margin-bottom: 30px; padding: 14px; border-radius: 6px; }
   .series-row:last-child{ margin-bottom: 0; }
+  .series-row.fully-read{
+    background: rgba(168,213,186,0.14);
+    box-shadow: inset 0 0 0 1.5px rgba(168,213,186,0.4);
+  }
   .series-head{ display:flex; align-items:baseline; flex-wrap:wrap; gap: 8px 12px; margin-bottom: 12px; }
   .series-name{ font-family:'Fraunces',serif; font-weight:600; font-size:16px; }
   .series-author{ font-family:'Space Mono',monospace; font-size:10.5px; color:var(--ink-soft); }
@@ -202,7 +206,9 @@
 const seriesContainerComplete = document.getElementById("seriesListComplete");
 const seriesContainerOngoing = document.getElementById("seriesListOngoing");
 
-SERIES.forEach(s => {
+const sortedSeries = [...SERIES].sort((a, b) => a.author.localeCompare(b.author));
+
+sortedSeries.forEach(s => {
   const readCount = s.books.filter(b => b.read).length;
   const total = s.books.length;
   const caughtUp = readCount === total;
@@ -214,7 +220,7 @@ SERIES.forEach(s => {
   else { badgeText = `${readCount}/${total} read`; badgeClass = ""; }
 
   const row = document.createElement("div");
-  row.className = "series-row";
+  row.className = "series-row" + (caughtUp && seriesDone ? " fully-read" : "");
 
   const booksHtml = s.books.map((b, i) => {
     const match = books.find(x => x.title === b.title);
