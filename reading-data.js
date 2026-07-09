@@ -371,7 +371,7 @@ const SERIES = [
       {title:"Whispers, Whiskey, and Wishes", cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1708359064i/208878163.jpg"},
       {title:"Pranks, Poitin, and Pucas", cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1724848086i/217912014.jpg"},
       {title:"Roots, Rum, and Revenants", cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1758805415i/242063842.jpg"},
-      {title:"Spectacles, Sangria, and Selkies", cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1759954713i/242542188.jpg"},
+      {title:"Spectacles, Sangria, and Selkies", cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1782483297i/254609775.jpg"},
       {title:"Greed, Guinness, and Grogochs", comingSoon:"April 2027"}
     ]
   }
