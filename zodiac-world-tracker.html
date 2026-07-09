@@ -107,6 +107,28 @@
     border-radius: 4px;
     box-shadow: 0 8px 20px rgba(0,0,0,0.3), 0 0 0 4px var(--parchment), 0 0 0 6px rgba(139,111,71,0.4);
     position:relative;
+    cursor: zoom-in;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+  }
+  .solaria-map:hover{
+    transform: scale(1.015);
+    box-shadow: 0 10px 26px rgba(0,0,0,0.4), 0 0 0 4px var(--parchment), 0 0 0 6px rgba(139,111,71,0.55);
+  }
+
+  .map-lightbox{
+    display:none;
+    position:fixed; inset:0; z-index:100;
+    background: rgba(20,10,16,0.88);
+    align-items:center; justify-content:center;
+    padding: 30px;
+    cursor: zoom-out;
+  }
+  .map-lightbox.open{ display:flex; }
+  .map-lightbox img{
+    max-width:95vw; max-height:92vh;
+    width:auto; height:auto;
+    border-radius: 4px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.6), 0 0 0 6px rgba(239,224,200,0.9);
   }
   .map-title{
     font-family:'Fraunces',serif; font-weight:600; font-size:20px; text-align:center;
@@ -226,10 +248,14 @@
   </header>
 
   <div class="map-card">
-    <img class="solaria-map" src="https://static.wikia.nocookie.net/zabooks/images/0/09/Solariamap.png/revision/latest?cb=20240229183310" alt="Map of Solaria" loading="lazy" onerror="this.remove()">
+    <img class="solaria-map" src="https://static.wikia.nocookie.net/zabooks/images/0/09/Solariamap.png/revision/latest?cb=20240229183310" alt="Map of Solaria" loading="lazy" onerror="this.remove()" onclick="document.getElementById('mapLightbox').classList.add('open')">
     <div class="map-title">The Realms of Solaria</div>
     <div class="map-sub">Follow the path from the Fae Lands to the Waning Lands</div>
     <div class="route" id="route"></div>
+  </div>
+
+  <div class="map-lightbox" id="mapLightbox" onclick="this.classList.remove('open')">
+    <img src="https://static.wikia.nocookie.net/zabooks/images/0/09/Solariamap.png/revision/latest?cb=20240229183310" alt="Map of Solaria, enlarged">
   </div>
 
   <footer>🗺️ One shared reading log — check a book off anywhere, it checks off everywhere.</footer>
@@ -238,6 +264,10 @@
 
 <script src="reading-data.js"></script>
 <script>
+document.addEventListener("keydown", (e) => {
+  if(e.key === "Escape") document.getElementById("mapLightbox").classList.remove("open");
+});
+
 const route = document.getElementById("route");
 
 const readBadge = `<div class="read-badge"><svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M5 13l4 4L19 7" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></div>`;
