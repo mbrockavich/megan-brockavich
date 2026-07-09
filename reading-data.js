@@ -109,7 +109,10 @@ const pastReads = [
   {title:"A Court of Silver Flames", readDate:null, cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1734440950i/53138095.jpg"},
   {title:"House of Earth and Blood", readDate:null, cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1559142847i/44778083.jpg"},
   {title:"House of Sky and Breath", readDate:null, cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1633097753i/40132775.jpg"},
-  {title:"House of Flame and Shadow", readDate:null, cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1689809645i/52857700.jpg"}
+  {title:"House of Flame and Shadow", readDate:null, cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1689809645i/52857700.jpg"},
+  {title:"Fourth Wing", readDate:null, cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1761312598i/61431922.jpg"},
+  {title:"Iron Flame", readDate:null, cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1706724269i/90202302.jpg"},
+  {title:"Onyx Storm", readDate:"January 2025", cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1766329694i/209439446.jpg"}
 ];
 
 /* Looks a title up in this year's `books` first, then in `pastReads`.
@@ -127,6 +130,18 @@ function findRead(title) {
    whether you're caught up on it: "complete" = no more books planned,
    "ongoing" = more entries are announced or expected. */
 const SERIES = [
+  {
+    name: "The Empyrean (Fourth Wing)",
+    author: "Rebecca Yarros",
+    status: "ongoing",
+    books: [
+      {title:"Fourth Wing"},
+      {title:"Iron Flame"},
+      {title:"Onyx Storm"},
+      {title:"Empyrean Book 4", comingSoon:true},
+      {title:"Empyrean Book 5", comingSoon:true}
+    ]
+  },
   {
     name: "Throne of Glass",
     author: "Sarah J. Maas",
