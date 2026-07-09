@@ -132,15 +132,18 @@
     margin-bottom:6px;
   }
   .series-book-cover img{ position:absolute; inset:0; width:100%; height:100%; object-fit:cover; border-radius:inherit; display:block; }
-  .series-book-cover.pre2026 img{ filter: grayscale(1) brightness(0.75); }
-  .series-book-cover.pre2026::before{
-    content:""; position:absolute; inset:0; background: rgba(43,33,24,0.15);
+  .series-book-cover.read img{ filter: grayscale(0.85) brightness(0.8); }
+  .series-book-cover.read::before{
+    content:""; position:absolute; inset:0; background: rgba(43,33,24,0.1);
   }
-  .pre2026-check{
-    position:absolute; inset:0; display:flex; align-items:center; justify-content:center;
-    color:#fff; font-size:28px; font-weight:700;
-    text-shadow: 0 2px 6px rgba(0,0,0,0.6);
+  .read-badge{
+    position:absolute; top:6px; right:6px;
+    width:22px; height:22px; border-radius:50%;
+    background: var(--stamp);
+    display:flex; align-items:center; justify-content:center;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.4), 0 0 0 2px rgba(255,255,255,0.85);
   }
+  .read-badge svg{ width:12px; height:12px; }
   .series-book-title{ font-size:10.5px; font-weight:600; line-height:1.25; }
   .series-book-pos{ font-family:'Space Mono',monospace; font-size:9px; color:var(--ink-soft); margin-top:1px; }
 
@@ -155,6 +158,17 @@
     color: var(--ink-soft); padding: 6px;
   }
   .series-book.unread .series-book-title{ color: var(--ink-soft); }
+
+  .series-book-cover.upcoming{
+    box-shadow:none;
+    border: 1.5px dashed var(--stamp);
+    background: repeating-linear-gradient(45deg, transparent, transparent 6px, rgba(226,120,154,0.06) 6px, rgba(226,120,154,0.06) 12px);
+    display:flex; align-items:center; justify-content:center;
+  }
+  .series-book-cover.upcoming span{
+    font-family:'Space Mono',monospace; font-size:9px; text-transform:uppercase; letter-spacing:0.06em;
+    color: var(--stamp); padding: 6px;
+  }
 
   footer{
     text-align:center;
@@ -183,17 +197,25 @@
 
   <div class="card series-panel">
     <div class="card-inner">
-      <h2>Complete Series</h2>
-      <div class="sub">Series the author has finished writing</div>
-      <div id="seriesListComplete"></div>
+      <h2>In Progress</h2>
+      <div class="sub">Series you're still working through</div>
+      <div id="seriesListProgress"></div>
     </div>
   </div>
 
   <div class="card series-panel">
     <div class="card-inner">
-      <h2>Still Being Written</h2>
-      <div class="sub">Series with more books yet to come</div>
-      <div id="seriesListOngoing"></div>
+      <h2>Caught Up</h2>
+      <div class="sub">Read everything out so far, waiting on the next one</div>
+      <div id="seriesListCaughtUp"></div>
+    </div>
+  </div>
+
+  <div class="card series-panel">
+    <div class="card-inner">
+      <h2>Completed</h2>
+      <div class="sub">Series you've read in full, nothing left to come</div>
+      <div id="seriesListComplete"></div>
     </div>
   </div>
 
@@ -203,8 +225,9 @@
 
 <script src="reading-data.js"></script>
 <script>
+const seriesContainerProgress = document.getElementById("seriesListProgress");
+const seriesContainerCaughtUp = document.getElementById("seriesListCaughtUp");
 const seriesContainerComplete = document.getElementById("seriesListComplete");
-const seriesContainerOngoing = document.getElementById("seriesListOngoing");
 
 const sortedSeries = [...SERIES].sort((a, b) => a.author.localeCompare(b.author));
 
@@ -222,24 +245,38 @@ sortedSeries.forEach(s => {
   const row = document.createElement("div");
   row.className = "series-row" + (caughtUp && seriesDone ? " fully-read" : "");
 
-  const booksHtml = s.books.map((b, i) => {
+  const readBadge = `<div class="read-badge"><svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M5 13l4 4L19 7" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></div>`;
+
+  const booksHtml = s.books.map((b) => {
     const match = books.find(x => x.title === b.title);
     const cover = b.cover || (match ? match.cover : null);
     const coverHtml = cover
       ? `<img src="${cover}" alt="Cover of ${b.title}" loading="lazy" onerror="this.remove()">`
       : (b.read ? "" : `<span>Not Read Yet</span>`);
-    const readBefore2026 = b.read && !match;
-    let posLabel = `Book ${i + 1}`;
-    if(b.readDate) posLabel = `Read ${b.readDate}`;
-    else if(readBefore2026) posLabel = "Read";
+
+    let posLabel = "";
+    if(b.read){
+      if(b.readDate){
+        posLabel = `Read ${b.readDate}`;
+      } else if(match){
+        posLabel = `Read ${new Date(match.dateFinished).toLocaleDateString('en-US', {month:'long', year:'numeric'})}`;
+      } else {
+        posLabel = "Read";
+      }
+    }
+
     return `
       <div class="series-book ${b.read ? "" : "unread"}">
-        <div class="series-book-cover${readBefore2026 ? " pre2026" : ""}">${coverHtml}${readBefore2026 ? `<div class="pre2026-check">✓</div>` : ""}</div>
+        <div class="series-book-cover${b.read ? " read" : ""}">${coverHtml}${b.read ? readBadge : ""}</div>
         <div class="series-book-title">${b.title}</div>
         <div class="series-book-pos">${posLabel}</div>
       </div>
     `;
-  }).join("");
+  }).join("") + (caughtUp && !seriesDone ? `
+      <div class="series-book upcoming">
+        <div class="series-book-cover upcoming"><span>Still Being Written</span></div>
+      </div>
+    ` : "");
 
   row.innerHTML = `
     <div class="series-head">
@@ -249,7 +286,11 @@ sortedSeries.forEach(s => {
     </div>
     <div class="series-books">${booksHtml}</div>
   `;
-  (seriesDone ? seriesContainerComplete : seriesContainerOngoing).appendChild(row);
+  let container;
+  if(!caughtUp) container = seriesContainerProgress;
+  else if(!seriesDone) container = seriesContainerCaughtUp;
+  else container = seriesContainerComplete;
+  container.appendChild(row);
 });
 </script>
 

@@ -42,7 +42,7 @@ const books = [
   {title:"Iron Gold", cover:"https://covers.openlibrary.org/b/id/14511722-L.jpg", author:"Pierce Brown", genre:"Science Fiction", pages:605, dateFinished:"2026-06-14"},
   {title:"Pendulum Magic for Beginners", cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1386166779i/19176827.jpg", author:"Richard Webster", genre:"Nonfiction", pages:241, dateFinished:"2026-06-28"},
   {title:"Doctor Sleep", cover:"https://covers.openlibrary.org/b/id/14652972-L.jpg", author:"Stephen King", genre:"Horror", pages:531, dateFinished:"2026-06-28"},
-  {title:"The Housemaid's Wedding", cover:"https://covers.openlibrary.org/b/id/15162542-L.jpg", author:"Freida McFadden", genre:"Thriller", pages:86, dateFinished:"2026-06-29"},
+  {title:"The Housemaid's Wedding", cover:"https://covers.openlibrary.org/b/id/14840898-L.jpg", author:"Freida McFadden", genre:"Thriller", pages:86, dateFinished:"2026-06-29"},
   {title:"Dark Age", cover:"https://covers.openlibrary.org/b/id/8748017-L.jpg", author:"Pierce Brown", genre:"Science Fiction", pages:776, dateFinished:"2026-07-03"},
   {title:"Fly Away", cover:"https://covers.openlibrary.org/b/id/9418741-L.jpg", author:"Kristin Hannah", genre:"Contemporary Fiction", pages:416, dateFinished:"2026-07-07"}
 ];
@@ -124,10 +124,10 @@ const SERIES = [
     author: "Freida McFadden",
     status: "complete",
     books: [
-      {title:"The Housemaid", read:false},
-      {title:"The Housemaid's Secret", read:false},
+      {title:"The Housemaid", read:true, readDate:"April 2024", cover:"https://covers.openlibrary.org/b/id/15105883-L.jpg"},
+      {title:"The Housemaid's Secret", read:true, readDate:"September 2024", cover:"https://covers.openlibrary.org/b/id/13439869-L.jpg"},
       {title:"The Housemaid's Wedding", read:true},
-      {title:"The Housemaid Is Watching", read:false}
+      {title:"The Housemaid Is Watching", read:true, readDate:"September 2024", cover:"https://covers.openlibrary.org/b/id/14633291-L.jpg"}
     ]
   },
   {
