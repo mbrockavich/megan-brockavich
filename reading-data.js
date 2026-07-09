@@ -93,7 +93,23 @@ const pastReads = [
   {title:"Fearless", readDate:"August 2025", cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1730330746i/214151222.jpg"},
   {title:"Wicked: Everyone Deserves the Chance to Fly", readDate:"December 2024", cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1733855486i/30241301.jpg"},
   {title:"Assistant to the Villain", readDate:"August 2024", cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1702057336i/123257687.jpg"},
-  {title:"First-Time Caller", readDate:"July 2025", cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1718283728i/213243908.jpg"}
+  {title:"First-Time Caller", readDate:"July 2025", cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1718283728i/213243908.jpg"},
+  {title:"The Assassin's Blade", readDate:null, cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1680869667i/126062562.jpg"},
+  {title:"Throne of Glass", readDate:null, cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1673566495i/76703559.jpg"},
+  {title:"Crown of Midnight", readDate:null, cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1673566594i/76705490.jpg"},
+  {title:"Heir of Fire", readDate:null, cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1673566654i/76706470.jpg"},
+  {title:"Queen of Shadows", readDate:null, cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1677267561i/123004944.jpg"},
+  {title:"Empire of Storms", readDate:null, cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1676979605i/76713323.jpg"},
+  {title:"Tower of Dawn", readDate:null, cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1673567264i/76714487.jpg"},
+  {title:"Kingdom of Ash", readDate:null, cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1673567331i/76715522.jpg"},
+  {title:"A Court of Thorns and Roses", readDate:null, cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1620324329i/50659467.jpg"},
+  {title:"A Court of Mist and Fury", readDate:null, cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1620325671i/50659468.jpg"},
+  {title:"A Court of Wings and Ruin", readDate:null, cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1585623092i/50659472.jpg"},
+  {title:"A Court of Frost and Starlight", readDate:null, cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1585622963i/50659471.jpg"},
+  {title:"A Court of Silver Flames", readDate:null, cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1734440950i/53138095.jpg"},
+  {title:"House of Earth and Blood", readDate:null, cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1559142847i/44778083.jpg"},
+  {title:"House of Sky and Breath", readDate:null, cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1633097753i/40132775.jpg"},
+  {title:"House of Flame and Shadow", readDate:null, cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1689809645i/52857700.jpg"}
 ];
 
 /* Looks a title up in this year's `books` first, then in `pastReads`.
@@ -378,6 +394,52 @@ const WORLD_TRACKER = [
       {title:"Echo Fort", cover:"https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1747983780i/219503833._SY180_.jpg"},
       {title:"Cinder Vale", cover:"https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1746267651i/232736952._SY180_.jpg"},
       {title:"Oracle Bay", comingSoon:true}
+    ]
+  }
+];
+
+/* Sarah J. Maas's three fantasy worlds, in reading order per series.
+   Same {title}/{title,cover}/{title,comingSoon} shape, checked off via
+   findRead(). */
+const SJM_UNIVERSE = [
+  {
+    name: "Throne of Glass",
+    realm: "Erilea",
+    blurb: "Where it all began",
+    books: [
+      {title:"The Assassin's Blade"},
+      {title:"Throne of Glass"},
+      {title:"Crown of Midnight"},
+      {title:"Heir of Fire"},
+      {title:"Queen of Shadows"},
+      {title:"Empire of Storms"},
+      {title:"Tower of Dawn"},
+      {title:"Kingdom of Ash"}
+    ]
+  },
+  {
+    name: "A Court of Thorns and Roses",
+    realm: "Prythian",
+    blurb: "The Night Court and beyond",
+    books: [
+      {title:"A Court of Thorns and Roses"},
+      {title:"A Court of Mist and Fury"},
+      {title:"A Court of Wings and Ruin"},
+      {title:"A Court of Frost and Starlight"},
+      {title:"A Court of Silver Flames"},
+      {title:"ACOTAR Book 6", comingSoon:true},
+      {title:"ACOTAR Book 7", comingSoon:true}
+    ]
+  },
+  {
+    name: "Crescent City",
+    realm: "Midgard",
+    blurb: "The newest world",
+    books: [
+      {title:"House of Earth and Blood"},
+      {title:"House of Sky and Breath"},
+      {title:"House of Flame and Shadow"},
+      {title:"Crescent City Book 4", comingSoon:true}
     ]
   }
 ];
