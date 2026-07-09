@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Series Tracker</title>
+<title>Zodiac Universe Map</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Space+Mono:wght@400;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
@@ -17,6 +17,8 @@
     --ink-soft: #a67a92;
     --stamp: #e2789a;
     --brass: #d9a4c0;
+    --parchment: #efe0c8;
+    --parchment-line: #b89768;
   }
 
   *{ box-sizing:border-box; }
@@ -56,10 +58,7 @@
   nav a:hover{ color: var(--card); }
   nav a + a{ margin-left: 22px; }
 
-  header{
-    text-align:center;
-    margin-bottom: 44px;
-  }
+  header{ text-align:center; margin-bottom: 44px; }
   header .eyebrow{
     font-family:'Space Mono', monospace;
     letter-spacing: 0.28em;
@@ -76,52 +75,76 @@
     margin: 0 0 8px;
     color: var(--card);
   }
-  header p{
-    font-size: 15px;
-    color: #f0c9dc;
-    margin:0;
-  }
+  header p{ font-size: 15px; color: #f0c9dc; margin:0; }
 
-  .card{
-    background: var(--card);
+  /* map card */
+  .map-card{
+    background: linear-gradient(180deg, var(--parchment) 0%, #e8d7b8 100%);
     color: var(--ink);
     border-radius: 3px;
     box-shadow: 0 10px 0 -4px var(--card-shadow), 0 14px 24px rgba(0,0,0,0.35);
     position: relative;
+    padding: 34px 30px 40px;
+    overflow: hidden;
   }
-  .card::before{
+  .map-card::before{
     content:"";
-    position:absolute; left:0; right:0; top: 46px;
-    height:1px;
-    background: repeating-linear-gradient(to bottom, transparent, transparent 27px, rgba(43,33,24,0.12) 27px, rgba(43,33,24,0.12) 28px);
-    bottom: 16px;
+    position:absolute; inset:0;
+    background-image:
+      repeating-linear-gradient(0deg, transparent, transparent 38px, rgba(139,111,71,0.06) 38px, rgba(139,111,71,0.06) 39px),
+      repeating-linear-gradient(90deg, transparent, transparent 38px, rgba(139,111,71,0.06) 38px, rgba(139,111,71,0.06) 39px);
     pointer-events:none;
-    opacity: 0.5;
   }
-  .card .card-inner{ position:relative; z-index:1; }
-
-  /* series tracker */
-  .series-panel{ padding: 28px 30px 30px; margin-bottom: 30px; }
-  .series-panel h2{ font-family:'Fraunces',serif; font-weight:600; font-size:22px; margin:0 0 3px; }
-  .series-panel .sub{ font-family:'Space Mono',monospace; font-size:10px; text-transform:uppercase; letter-spacing:0.1em; color:var(--ink-soft); margin-bottom:24px; }
-
-  .series-row{ margin-bottom: 30px; padding: 14px; border-radius: 6px; }
-  .series-row:last-child{ margin-bottom: 0; }
-  .series-row.fully-read{
-    background: rgba(168,213,186,0.14);
-    box-shadow: inset 0 0 0 1.5px rgba(168,213,186,0.4);
+  .map-card::after{
+    content:"";
+    position:absolute; inset:10px;
+    border: 2px solid rgba(139,111,71,0.35);
+    border-radius: 2px;
+    pointer-events:none;
   }
-  .series-head{ display:flex; align-items:baseline; flex-wrap:wrap; gap: 8px 12px; margin-bottom: 12px; }
-  .series-name{ font-family:'Fraunces',serif; font-weight:600; font-size:16px; }
-  .series-author{ font-family:'Space Mono',monospace; font-size:10.5px; color:var(--ink-soft); }
-  .series-progress{
-    margin-left:auto;
+  .map-title{
+    font-family:'Fraunces',serif; font-weight:600; font-size:20px; text-align:center;
+    letter-spacing:0.04em; margin-bottom:2px; position:relative;
+  }
+  .map-sub{
+    font-family:'Space Mono',monospace; font-size:10px; text-transform:uppercase; letter-spacing:0.14em;
+    color: var(--ink-soft); text-align:center; margin-bottom:36px; position:relative;
+  }
+
+  /* the travel path connecting regions */
+  .route{ position:relative; }
+  .route::before{
+    content:"";
+    position:absolute; left:20px; top:14px; bottom:14px; width:0;
+    border-left: 3px dotted var(--parchment-line);
+  }
+
+  .region{ position:relative; padding-left: 52px; margin-bottom: 40px; }
+  .region:last-child{ margin-bottom:0; }
+  .region-pin{
+    position:absolute; left:6px; top:2px;
+    width:28px; height:28px; border-radius:50%;
+    background: var(--stamp);
+    display:flex; align-items:center; justify-content:center;
+    box-shadow: 0 3px 8px rgba(0,0,0,0.3), 0 0 0 3px var(--parchment);
+    font-family:'Fraunces',serif; font-weight:700; font-size:13px; color:#fff;
+  }
+  .region-pin.done{ background: #3f7a54; }
+  .region-head{ margin-bottom: 14px; }
+  .region-era{
+    font-family:'Space Mono',monospace; font-size:10px; text-transform:uppercase; letter-spacing:0.14em;
+    color: var(--stamp); margin-bottom: 2px;
+  }
+  .region-name{ font-family:'Fraunces',serif; font-weight:600; font-size:18px; }
+  .region-blurb{ font-size: 12.5px; color: var(--ink-soft); margin-top:2px; }
+  .region-progress{
     font-family:'Space Mono',monospace; font-size:10px; text-transform:uppercase; letter-spacing:0.08em;
-    padding: 3px 9px; border-radius: 20px;
+    padding: 3px 9px; border-radius: 20px; display:inline-block; margin-top:8px;
     background: rgba(226,120,154,0.15); color: var(--stamp);
   }
-  .series-progress.complete{ background: rgba(168,213,186,0.25); color:#3f7a54; }
+  .region-progress.complete{ background: rgba(63,122,84,0.15); color:#3f7a54; }
 
+  /* reuse the series-tracker book cover styling */
   .series-books{ display:flex; flex-wrap:wrap; gap: 16px; }
   .series-book{ width: 92px; text-align:center; }
   .series-book-cover{
@@ -144,10 +167,10 @@
     box-shadow: 0 2px 6px rgba(0,0,0,0.4), 0 0 0 2px rgba(255,255,255,0.85);
   }
   .read-badge svg{ width:12px; height:12px; }
-  .series-book-pos.unread{ color: var(--ink-soft); font-style: italic; }
-  .series-book-pos.coming{ color: var(--stamp); font-style: italic; }
   .series-book-title{ font-size:10.5px; font-weight:600; line-height:1.25; }
   .series-book-pos{ font-family:'Space Mono',monospace; font-size:9px; color:var(--ink-soft); margin-top:1px; }
+  .series-book-pos.unread{ color: var(--ink-soft); font-style: italic; }
+  .series-book-pos.coming{ color: var(--stamp); font-style: italic; }
 
   .series-book.unread .series-book-cover{
     box-shadow:none;
@@ -188,67 +211,36 @@
 
   <nav>
     <a href="library.html">← Megan's Library</a>
-    <a href="2026-reading-stats.html">2026 Reading Record</a>
+    <a href="series-tracker.html">Series Tracker</a>
   </nav>
 
   <header>
-    <div class="eyebrow">🌙 Under This Moon, A Card Catalog</div>
-    <h1>Series Tracker</h1>
-    <p>Every multi-book series on the shelf, and how caught up you are</p>
+    <div class="eyebrow">🗺️ A Map of Solaria</div>
+    <h1>Zodiac Universe</h1>
+    <p>Every era of Caroline Peckham &amp; Susanne Valenti's Solaria, in reading order</p>
   </header>
 
-  <div class="card series-panel">
-    <div class="card-inner">
-      <h2>In Progress</h2>
-      <div class="sub">Series you're still working through</div>
-      <div id="seriesListProgress"></div>
-    </div>
+  <div class="map-card">
+    <div class="map-title">The Realms of Solaria</div>
+    <div class="map-sub">Follow the path from the Fae Lands to the Waning Lands</div>
+    <div class="route" id="route"></div>
   </div>
 
-  <div class="card series-panel">
-    <div class="card-inner">
-      <h2>Caught Up</h2>
-      <div class="sub">Read everything out so far, waiting on the next one</div>
-      <div id="seriesListCaughtUp"></div>
-    </div>
-  </div>
-
-  <div class="card series-panel">
-    <div class="card-inner">
-      <h2>Completed</h2>
-      <div class="sub">Series you've read in full, nothing left to come</div>
-      <div id="seriesListComplete"></div>
-    </div>
-  </div>
-
-  <footer>🌙 Built from your 2026 Goodreads reading challenge export.</footer>
+  <footer>🗺️ One shared reading log — check a book off anywhere, it checks off everywhere.</footer>
 
 </div>
 
 <script src="reading-data.js"></script>
 <script>
-const seriesContainerProgress = document.getElementById("seriesListProgress");
-const seriesContainerCaughtUp = document.getElementById("seriesListCaughtUp");
-const seriesContainerComplete = document.getElementById("seriesListComplete");
+const route = document.getElementById("route");
 
-const sortedSeries = [...SERIES].sort((a, b) => a.author.localeCompare(b.author));
+const readBadge = `<div class="read-badge"><svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M5 13l4 4L19 7" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></div>`;
 
-sortedSeries.forEach(s => {
-  const enriched = s.books.map(b => ({ ...b, match: findRead(b.title) }));
+WORLD_TRACKER.forEach((region, i) => {
+  const enriched = region.books.map(b => ({ ...b, match: findRead(b.title) }));
   const readCount = enriched.filter(b => b.match).length;
   const total = enriched.length;
-  const caughtUp = readCount === total;
-  const seriesDone = s.status === "complete";
-
-  let badgeText, badgeClass;
-  if(caughtUp && seriesDone){ badgeText = "Complete"; badgeClass = "complete"; }
-  else if(caughtUp){ badgeText = "Caught Up"; badgeClass = "complete"; }
-  else { badgeText = `${readCount}/${total} read`; badgeClass = ""; }
-
-  const row = document.createElement("div");
-  row.className = "series-row" + (caughtUp && seriesDone ? " fully-read" : "");
-
-  const readBadge = `<div class="read-badge"><svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M5 13l4 4L19 7" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></div>`;
+  const complete = readCount === total;
 
   const booksHtml = enriched.map((b) => {
     const isRead = !!b.match;
@@ -257,8 +249,7 @@ sortedSeries.forEach(s => {
       ? `<img src="${cover}" alt="Cover of ${b.title}" loading="lazy" onerror="this.remove()">`
       : (isRead ? "" : (b.comingSoon ? `<span>Coming Soon</span>` : `<span>Not Read Yet</span>`));
 
-    let posLabel = "";
-    let posClass = "";
+    let posLabel = "", posClass = "";
     if(isRead){
       if(b.match.readDate){
         posLabel = `Read ${b.match.readDate}`;
@@ -268,11 +259,9 @@ sortedSeries.forEach(s => {
         posLabel = "Read";
       }
     } else if(b.comingSoon){
-      posLabel = "Coming Soon";
-      posClass = "coming";
+      posLabel = "Coming Soon"; posClass = "coming";
     } else {
-      posLabel = "Not Read Yet";
-      posClass = "unread";
+      posLabel = "Not Read Yet"; posClass = "unread";
     }
 
     const coverClass = isRead ? " read" : (b.comingSoon ? " upcoming" : (cover ? " unread-with-cover" : ""));
@@ -285,25 +274,21 @@ sortedSeries.forEach(s => {
         <div class="series-book-pos ${posClass}">${posLabel}</div>
       </div>
     `;
-  }).join("") + (caughtUp && !seriesDone ? `
-      <div class="series-book upcoming">
-        <div class="series-book-cover upcoming"><span>Coming Soon</span></div>
-      </div>
-    ` : "");
+  }).join("");
 
-  row.innerHTML = `
-    <div class="series-head">
-      <div class="series-name">${s.name}</div>
-      <div class="series-author">${s.author}</div>
-      <div class="series-progress${badgeClass ? " " + badgeClass : ""}">${badgeText}</div>
+  const el = document.createElement("div");
+  el.className = "region";
+  el.innerHTML = `
+    <div class="region-pin${complete ? " done" : ""}">${i + 1}</div>
+    <div class="region-head">
+      <div class="region-era">${region.era}</div>
+      <div class="region-name">${region.name}</div>
+      <div class="region-blurb">${region.blurb}</div>
+      <div class="region-progress${complete ? " complete" : ""}">${complete ? "Complete" : `${readCount}/${total} read`}</div>
     </div>
     <div class="series-books">${booksHtml}</div>
   `;
-  let container;
-  if(!caughtUp) container = seriesContainerProgress;
-  else if(!seriesDone) container = seriesContainerCaughtUp;
-  else container = seriesContainerComplete;
-  container.appendChild(row);
+  route.appendChild(el);
 });
 </script>
 

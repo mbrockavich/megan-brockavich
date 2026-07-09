@@ -1,6 +1,11 @@
 /* =========================================================================
-   Shared reading data, used by both 2026-reading-stats.html and
-   series-tracker.html. Edit here once and both pages stay in sync.
+   Shared reading data, used by 2026-reading-stats.html, series-tracker.html,
+   and zodiac-world-tracker.html. Edit here once and every page stays in sync.
+
+   Read status is never hand-set per series/tracker entry — it's computed by
+   looking up a book's title in `books` (this year's reads) or `pastReads`
+   (everything finished before 2026). Add a title to either array once, and
+   every tracker that lists that book checks it off automatically.
    ========================================================================= */
 const GOAL = 80;
 const books = [
@@ -47,22 +52,82 @@ const books = [
   {title:"Fly Away", cover:"https://covers.openlibrary.org/b/id/9418741-L.jpg", author:"Kristin Hannah", genre:"Contemporary Fiction", pages:416, dateFinished:"2026-07-07"}
 ];
 
+/* Everything finished before 2026 that still shows up as "read" on a
+   tracker page. Same idea as `books` above but without stats-page fields
+   (genre/pages/dateFinished) — just enough to check a title off and show
+   when/what cover to use. */
+const pastReads = [
+  {title:"The Awakening", readDate:"March 2025", cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1560277389i/46261182.jpg"},
+  {title:"Ruthless Fae", readDate:"March 2025", cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1565943045l/51966347.jpg"},
+  {title:"The Reckoning", readDate:"March 2025", cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1635198815i/59450488.jpg"},
+  {title:"Origins of an Academy Bully", readDate:"June 2025", cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1677104440i/49646047.jpg"},
+  {title:"Shadow Princess", readDate:"June 2025", cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1570223430l/53146871.jpg"},
+  {title:"Cursed Fates", readDate:"June 2025", cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1578710951i/50391615.jpg"},
+  {title:"The Big A.S.S. Party", readDate:"June 2025", cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1596452502i/54798561.jpg"},
+  {title:"Fated Throne", readDate:"June 2025", cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1605478159i/53535526.jpg"},
+  {title:"The Awakening as Told by the Boys", readDate:"June 2025", cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1629291604i/58800799.jpg"},
+  {title:"Heartless Sky", readDate:"June 2025", cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1628199263i/56474282.jpg"},
+  {title:"Sorrow and Starlight", readDate:"July 2025", cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1664442356i/59808792.jpg"},
+  {title:"Beyond the Veil", readDate:"July 2025", cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1686777106i/177899172.jpg"},
+  {title:"Live and Let Lionel", readDate:"July 2025", cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1707177040i/207603149.jpg"},
+  {title:"Restless Stars", readDate:"July 2025", cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1711995687i/198954263.jpg"},
+  {title:"Caged Wolf", readDate:"August 2025", cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1680885592i/126128250.jpg"},
+  {title:"Alpha Wolf", readDate:"October 2025", cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1622992365i/58272634.jpg"},
+  {title:"The Road of Bones", readDate:null, cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1704736755i/205044632.jpg"},
+  {title:"Kingdom of Claw", readDate:"April 2024", cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1706976049i/207041696.jpg"},
+  {title:"The Housemaid", readDate:"April 2024", cover:"https://covers.openlibrary.org/b/id/15105883-L.jpg"},
+  {title:"The Housemaid's Secret", readDate:"September 2024", cover:"https://covers.openlibrary.org/b/id/13439869-L.jpg"},
+  {title:"The Housemaid Is Watching", readDate:"September 2024", cover:"https://covers.openlibrary.org/b/id/14633291-L.jpg"},
+  {title:"Divine Rivals", readDate:"February 2025", cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1661929417i/62202008.jpg"},
+  {title:"The Shining", readDate:"October 2024", cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1353277730i/11588.jpg"},
+  {title:"Firefly Lane", readDate:"April 2025", cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1485338283i/3524297.jpg"}
+];
+
+/* Looks a title up in this year's `books` first, then in `pastReads`.
+   Returns the matching object (with .cover, and either .readDate or
+   .dateFinished) or null if the book hasn't been logged as read anywhere. */
+function findRead(title) {
+  return books.find(b => b.title === title) || pastReads.find(b => b.title === title) || null;
+}
+
 /* Multi-book series touched by the 2026 shelf, in reading order.
-   `read` books are matched by exact title against the `books` array above
-   to pull their cover; unread books render as greyed-out placeholders.
+   Read/unread is computed via findRead() above, not stored per book —
+   entries here are just {title}, plus optional `cover` (a preview image
+   for an unread book) or `comingSoon:true` (not released yet).
    `status` reflects whether the AUTHOR is done writing the series, not
    whether you're caught up on it: "complete" = no more books planned,
    "ongoing" = more entries are announced or expected. */
 const SERIES = [
   {
+    name: "Zodiac Academy",
+    author: "Caroline Peckham & Susanne Valenti",
+    status: "complete",
+    books: [
+      {title:"The Awakening"},
+      {title:"Ruthless Fae"},
+      {title:"The Reckoning"},
+      {title:"Origins of an Academy Bully"},
+      {title:"Shadow Princess"},
+      {title:"Cursed Fates"},
+      {title:"The Big A.S.S. Party"},
+      {title:"Fated Throne"},
+      {title:"The Awakening as Told by the Boys"},
+      {title:"Heartless Sky"},
+      {title:"Sorrow and Starlight"},
+      {title:"Beyond the Veil"},
+      {title:"Live and Let Lionel"},
+      {title:"Restless Stars"}
+    ]
+  },
+  {
     name: "Darkmore Penitentiary",
     author: "Caroline Peckham & Susanne Valenti",
     status: "complete",
     books: [
-      {title:"Caged Wolf", read:true, readDate:"August 2025", cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1680885592i/126128250.jpg"},
-      {title:"Alpha Wolf", read:true, readDate:"October 2025", cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1622992365i/58272634.jpg"},
-      {title:"Feral Wolf", read:true},
-      {title:"Wild Wolf", read:true}
+      {title:"Caged Wolf"},
+      {title:"Alpha Wolf"},
+      {title:"Feral Wolf"},
+      {title:"Wild Wolf"}
     ]
   },
   {
@@ -70,10 +135,10 @@ const SERIES = [
     author: "Demi Winters",
     status: "ongoing",
     books: [
-      {title:"The Road of Bones", read:true, readDate:null, cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1704736755i/205044632.jpg"},
-      {title:"Kingdom of Claw", read:true, readDate:"April 2024", cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1706976049i/207041696.jpg"},
-      {title:"Roots of Darkness", read:true},
-      {title:"Dawn of the North", read:true}
+      {title:"The Road of Bones"},
+      {title:"Kingdom of Claw"},
+      {title:"Roots of Darkness"},
+      {title:"Dawn of the North"}
     ]
   },
   {
@@ -81,13 +146,13 @@ const SERIES = [
     author: "Pierce Brown",
     status: "ongoing",
     books: [
-      {title:"Red Rising", read:true},
-      {title:"Golden Son", read:true},
-      {title:"Morning Star", read:true},
-      {title:"Iron Gold", read:true},
-      {title:"Dark Age", read:true},
-      {title:"Light Bringer", read:false},
-      {title:"Red God", read:false}
+      {title:"Red Rising"},
+      {title:"Golden Son"},
+      {title:"Morning Star"},
+      {title:"Iron Gold"},
+      {title:"Dark Age"},
+      {title:"Light Bringer", cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1667655583i/29227774.jpg"},
+      {title:"Red God", comingSoon:true}
     ]
   },
   {
@@ -95,9 +160,9 @@ const SERIES = [
     author: "Kate Stewart",
     status: "complete",
     books: [
-      {title:"Flock", read:true},
-      {title:"Exodus", read:true},
-      {title:"The Finish Line", read:true}
+      {title:"Flock"},
+      {title:"Exodus"},
+      {title:"The Finish Line"}
     ]
   },
   {
@@ -105,9 +170,9 @@ const SERIES = [
     author: "Lev Grossman",
     status: "complete",
     books: [
-      {title:"The Magicians", read:true},
-      {title:"The Magician King", read:true},
-      {title:"The Magician's Land", read:true}
+      {title:"The Magicians"},
+      {title:"The Magician King"},
+      {title:"The Magician's Land"}
     ]
   },
   {
@@ -115,8 +180,8 @@ const SERIES = [
     author: "Liv Zander",
     status: "complete",
     books: [
-      {title:"Crown Me Dead", read:true},
-      {title:"Crown Me Yours", read:true}
+      {title:"Crown Me Dead"},
+      {title:"Crown Me Yours"}
     ]
   },
   {
@@ -124,10 +189,10 @@ const SERIES = [
     author: "Freida McFadden",
     status: "complete",
     books: [
-      {title:"The Housemaid", read:true, readDate:"April 2024", cover:"https://covers.openlibrary.org/b/id/15105883-L.jpg"},
-      {title:"The Housemaid's Secret", read:true, readDate:"September 2024", cover:"https://covers.openlibrary.org/b/id/13439869-L.jpg"},
-      {title:"The Housemaid's Wedding", read:true},
-      {title:"The Housemaid Is Watching", read:true, readDate:"September 2024", cover:"https://covers.openlibrary.org/b/id/14633291-L.jpg"}
+      {title:"The Housemaid"},
+      {title:"The Housemaid's Secret"},
+      {title:"The Housemaid's Wedding"},
+      {title:"The Housemaid Is Watching"}
     ]
   },
   {
@@ -135,8 +200,9 @@ const SERIES = [
     author: "Rebecca Ross",
     status: "complete",
     books: [
-      {title:"Divine Rivals", read:false},
-      {title:"Ruthless Vows", read:true}
+      {title:"Wild Reverence", cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1737937394i/222376906.jpg"},
+      {title:"Divine Rivals"},
+      {title:"Ruthless Vows"}
     ]
   },
   {
@@ -144,8 +210,9 @@ const SERIES = [
     author: "Stephen King",
     status: "complete",
     books: [
-      {title:"The Shining", read:false},
-      {title:"Doctor Sleep", read:true}
+      {title:"Before the Play", cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1557520154i/45714016.jpg"},
+      {title:"The Shining"},
+      {title:"Doctor Sleep"}
     ]
   },
   {
@@ -153,8 +220,8 @@ const SERIES = [
     author: "Kristin Hannah",
     status: "complete",
     books: [
-      {title:"Firefly Lane", read:false},
-      {title:"Fly Away", read:true}
+      {title:"Firefly Lane"},
+      {title:"Fly Away"}
     ]
   },
   {
@@ -162,13 +229,74 @@ const SERIES = [
     author: "Rowan Dillon",
     status: "ongoing",
     books: [
-      {title:"A Mystical Legacy", read:true},
-      {title:"Bogs, Brews, and Banshees", read:false},
-      {title:"Whispers, Whiskey, and Wishes", read:false},
-      {title:"Pranks, Poitin, and Pucas", read:false},
-      {title:"Roots, Rum, and Revenants", read:false},
-      {title:"Spectacles, Sangria, and Selkies", read:false},
-      {title:"Greed, Guinness, and Grogochs", read:false}
+      {title:"A Mystical Legacy"},
+      {title:"Bogs, Brews, and Banshees", cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1699539434i/201899519.jpg"},
+      {title:"Whispers, Whiskey, and Wishes", cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1708359064i/208878163.jpg"},
+      {title:"Pranks, Poitin, and Pucas", cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1724848086i/217912014.jpg"},
+      {title:"Roots, Rum, and Revenants", cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1758805415i/242063842.jpg"},
+      {title:"Spectacles, Sangria, and Selkies", cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1759954713i/242542188.jpg"},
+      {title:"Greed, Guinness, and Grogochs", comingSoon:true}
+    ]
+  }
+];
+
+/* The full Caroline Peckham & Susanne Valenti "Solaria" universe, in
+   chronological/reading order across every era. Same {title}/{title,cover}/
+   {title,comingSoon} shape as SERIES above, checked off via findRead(). */
+const WORLD_TRACKER = [
+  {
+    name: "Ruthless Boys of the Zodiac",
+    era: "The Fae Lands",
+    blurb: "The prequel — five years before the Academy",
+    books: [
+      {title:"Dark Fae", cover:"https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1619705977i/57892054._SY180_.jpg"},
+      {title:"Savage Fae", cover:"https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1619382623i/57849105._SY180_.jpg"},
+      {title:"Vicious Fae", cover:"https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1619382736i/57849111._SY180_.jpg"},
+      {title:"Broken Fae", cover:"https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1619382818i/57849125._SY180_.jpg"},
+      {title:"Warrior Fae", cover:"https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1619382385i/57849074._SY180_.jpg"}
+    ]
+  },
+  {
+    name: "Zodiac Academy",
+    era: "Zodiac Academy",
+    blurb: "The main saga",
+    books: [
+      {title:"The Awakening"},
+      {title:"Ruthless Fae"},
+      {title:"The Reckoning"},
+      {title:"Origins of an Academy Bully"},
+      {title:"Shadow Princess"},
+      {title:"Cursed Fates"},
+      {title:"The Big A.S.S. Party"},
+      {title:"Fated Throne"},
+      {title:"The Awakening as Told by the Boys"},
+      {title:"Heartless Sky"},
+      {title:"Sorrow and Starlight"},
+      {title:"Beyond the Veil"},
+      {title:"Live and Let Lionel"},
+      {title:"Restless Stars"}
+    ]
+  },
+  {
+    name: "Darkmore Penitentiary",
+    era: "Darkmore Penitentiary",
+    blurb: "Five years after the Academy",
+    books: [
+      {title:"Caged Wolf"},
+      {title:"Alpha Wolf"},
+      {title:"Feral Wolf"},
+      {title:"Wild Wolf"}
+    ]
+  },
+  {
+    name: "Sins of the Zodiac",
+    era: "The Waning Lands",
+    blurb: "The newest era — new characters, same world",
+    books: [
+      {title:"Never Keep", cover:"https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1717864038i/210966754._SY180_.jpg"},
+      {title:"Echo Fort", cover:"https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1747983780i/219503833._SY180_.jpg"},
+      {title:"Cinder Vale", cover:"https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1746267651i/232736952._SY180_.jpg"},
+      {title:"Oracle Bay", comingSoon:true}
     ]
   }
 ];
