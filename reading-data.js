@@ -407,10 +407,10 @@ const SJM_UNIVERSE = [
     realm: "Erilea",
     blurb: "Where it all began",
     books: [
-      {title:"The Assassin's Blade"},
       {title:"Throne of Glass"},
       {title:"Crown of Midnight"},
       {title:"Heir of Fire"},
+      {title:"The Assassin's Blade"},
       {title:"Queen of Shadows"},
       {title:"Empire of Storms"},
       {title:"Tower of Dawn"},
