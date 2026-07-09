@@ -247,9 +247,11 @@ const sortedSeries = [...SERIES].sort((a, b) => seriesLastReadTime(b) - seriesLa
 
 sortedSeries.forEach(s => {
   const enriched = s.books.map(b => ({ ...b, match: findRead(b.title) }));
-  const readCount = enriched.filter(b => b.match).length;
-  const total = enriched.length;
-  const caughtUp = readCount === total;
+  const releasedBooks = enriched.filter(b => !b.comingSoon);
+  const hasComingSoon = enriched.some(b => b.comingSoon);
+  const readCount = releasedBooks.filter(b => b.match).length;
+  const total = releasedBooks.length;
+  const caughtUp = total > 0 && readCount === total;
   const seriesDone = s.status === "complete";
 
   let badgeText, badgeClass;
@@ -298,7 +300,7 @@ sortedSeries.forEach(s => {
         <div class="series-book-pos ${posClass}">${posLabel}</div>
       </div>
     `;
-  }).join("") + (caughtUp && !seriesDone ? `
+  }).join("") + (caughtUp && !seriesDone && !hasComingSoon ? `
       <div class="series-book upcoming">
         <div class="series-book-cover upcoming"><span>Coming Soon</span></div>
       </div>
