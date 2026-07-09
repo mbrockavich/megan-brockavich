@@ -85,7 +85,8 @@ const pastReads = [
   {title:"Savage Fae", readDate:"May 2025", cover:"https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1619382623i/57849105._SY180_.jpg"},
   {title:"Vicious Fae", readDate:"May 2025", cover:"https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1619382736i/57849111._SY180_.jpg"},
   {title:"Broken Fae", readDate:"June 2025", cover:"https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1619382818i/57849125._SY180_.jpg"},
-  {title:"Warrior Fae", readDate:"June 2025", cover:"https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1619382385i/57849074._SY180_.jpg"}
+  {title:"Warrior Fae", readDate:"June 2025", cover:"https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1619382385i/57849074._SY180_.jpg"},
+  {title:"Scythe", readDate:"September 2025", cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1456172676i/28954189.jpg"}
 ];
 
 /* Looks a title up in this year's `books` first, then in `pastReads`.
@@ -103,6 +104,17 @@ function findRead(title) {
    whether you're caught up on it: "complete" = no more books planned,
    "ongoing" = more entries are announced or expected. */
 const SERIES = [
+  {
+    name: "Arc of a Scythe",
+    author: "Neal Shusterman",
+    status: "complete",
+    books: [
+      {title:"Scythe"},
+      {title:"Thunderhead", cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1505658534i/33555224.jpg"},
+      {title:"The Toll", cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1558117336i/43822024.jpg"},
+      {title:"Gleanings", cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1649100303i/60320602.jpg"}
+    ]
+  },
   {
     name: "Ruthless Boys of the Zodiac",
     author: "Caroline Peckham & Susanne Valenti",
