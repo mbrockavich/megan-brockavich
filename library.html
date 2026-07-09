@@ -256,10 +256,16 @@
       href: '2026-reading-stats.html',
       color: '#6b3a52',
       height: 180
+    },
+    {
+      title: 'Series Tracker',
+      href: 'series-tracker.html',
+      color: '#a67a92',
+      height: 190
     }
   ];
 
-  const EMPTY_SLOTS = 4; // faint placeholders to hint the shelf will fill in
+  const EMPTY_SLOTS = 3; // faint placeholders to hint the shelf will fill in
 
   const shelf = document.getElementById('shelf');
   shelf.innerHTML = books.map(b => `
