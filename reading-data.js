@@ -80,7 +80,12 @@ const pastReads = [
   {title:"The Housemaid Is Watching", readDate:"September 2024", cover:"https://covers.openlibrary.org/b/id/14633291-L.jpg"},
   {title:"Divine Rivals", readDate:"February 2025", cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1661929417i/62202008.jpg"},
   {title:"The Shining", readDate:"October 2024", cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1353277730i/11588.jpg"},
-  {title:"Firefly Lane", readDate:"April 2025", cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1485338283i/3524297.jpg"}
+  {title:"Firefly Lane", readDate:"April 2025", cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1485338283i/3524297.jpg"},
+  {title:"Dark Fae", readDate:"May 2025", cover:"https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1619705977i/57892054._SY180_.jpg"},
+  {title:"Savage Fae", readDate:"May 2025", cover:"https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1619382623i/57849105._SY180_.jpg"},
+  {title:"Vicious Fae", readDate:"May 2025", cover:"https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1619382736i/57849111._SY180_.jpg"},
+  {title:"Broken Fae", readDate:"June 2025", cover:"https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1619382818i/57849125._SY180_.jpg"},
+  {title:"Warrior Fae", readDate:"June 2025", cover:"https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1619382385i/57849074._SY180_.jpg"}
 ];
 
 /* Looks a title up in this year's `books` first, then in `pastReads`.
