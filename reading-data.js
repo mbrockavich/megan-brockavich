@@ -104,6 +104,18 @@ function findRead(title) {
    "ongoing" = more entries are announced or expected. */
 const SERIES = [
   {
+    name: "Ruthless Boys of the Zodiac",
+    author: "Caroline Peckham & Susanne Valenti",
+    status: "complete",
+    books: [
+      {title:"Dark Fae"},
+      {title:"Savage Fae"},
+      {title:"Vicious Fae"},
+      {title:"Broken Fae"},
+      {title:"Warrior Fae"}
+    ]
+  },
+  {
     name: "Zodiac Academy",
     author: "Caroline Peckham & Susanne Valenti",
     status: "complete",
