@@ -103,6 +103,10 @@
   /* series tracker */
   .series-panel{ padding: 28px 30px 30px; margin-bottom: 30px; }
   .series-panel h2{ font-family:'Fraunces',serif; font-weight:600; font-size:22px; margin:0 0 3px; }
+  .bucket-count{
+    font-family:'Space Mono',monospace; font-weight:400; font-size:12px;
+    color: var(--ink-soft); vertical-align: middle; margin-left: 4px;
+  }
   .series-panel .sub{ font-family:'Space Mono',monospace; font-size:10px; text-transform:uppercase; letter-spacing:0.1em; color:var(--ink-soft); margin-bottom:24px; }
 
   .series-row{ margin-bottom: 30px; padding: 14px; border-radius: 6px; }
@@ -198,7 +202,7 @@
 
   <div class="card series-panel">
     <div class="card-inner">
-      <h2>In Progress</h2>
+      <h2>In Progress <span class="bucket-count" id="countProgress"></span></h2>
       <div class="sub">Series you're still working through</div>
       <div id="seriesListProgress"></div>
     </div>
@@ -206,7 +210,7 @@
 
   <div class="card series-panel">
     <div class="card-inner">
-      <h2>Caught Up</h2>
+      <h2>Caught Up <span class="bucket-count" id="countCaughtUp"></span></h2>
       <div class="sub">Read everything out so far, waiting on the next one</div>
       <div id="seriesListCaughtUp"></div>
     </div>
@@ -214,7 +218,7 @@
 
   <div class="card series-panel">
     <div class="card-inner">
-      <h2>Completed</h2>
+      <h2>Completed <span class="bucket-count" id="countComplete"></span></h2>
       <div class="sub">Series you've read in full, nothing left to come</div>
       <div id="seriesListComplete"></div>
     </div>
@@ -320,6 +324,10 @@ sortedSeries.forEach(s => {
   else container = seriesContainerComplete;
   container.appendChild(row);
 });
+
+document.getElementById("countProgress").textContent = `(${seriesContainerProgress.children.length})`;
+document.getElementById("countCaughtUp").textContent = `(${seriesContainerCaughtUp.children.length})`;
+document.getElementById("countComplete").textContent = `(${seriesContainerComplete.children.length})`;
 </script>
 
 </body>
