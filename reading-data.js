@@ -38,7 +38,7 @@ const books = [
   {title:"My Husband's Wife", cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1747668611i/231127462.jpg", author:"Alice Feeney", genre:"Thriller", pages:320, dateFinished:"2026-05-26"},
   {title:"The Devil at His Elbow", cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1712842498i/210454076.jpg", author:"Valerie Bauerlein", genre:"Nonfiction", pages:489, dateFinished:"2026-06-03"},
   {title:"Wild Wolf", cover:"https://m.media-amazon.com/images/I/41kTxqoYBwL.jpg", author:"Caroline Peckham & Susanne Valenti", genre:"Romantasy", pages:430, dateFinished:"2026-06-06"},
-  {title:"Remarkably Bright Creatures", cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1651600548i/58733693.jpg", author:"Shelby Van Pelt", genre:"Literary Fiction", pages:368, dateFinished:"2026-06-07"},
+  {title:"Remarkably Bright Creatures", cover:"https://covers.openlibrary.org/b/id/12019989-L.jpg", author:"Shelby Van Pelt", genre:"Literary Fiction", pages:368, dateFinished:"2026-06-07"},
   {title:"Iron Gold", cover:"https://covers.openlibrary.org/b/id/14511722-L.jpg", author:"Pierce Brown", genre:"Science Fiction", pages:605, dateFinished:"2026-06-14"},
   {title:"Pendulum Magic for Beginners", cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1386166779i/19176827.jpg", author:"Richard Webster", genre:"Nonfiction", pages:241, dateFinished:"2026-06-28"},
   {title:"Doctor Sleep", cover:"https://covers.openlibrary.org/b/id/14652972-L.jpg", author:"Stephen King", genre:"Horror", pages:531, dateFinished:"2026-06-28"},
