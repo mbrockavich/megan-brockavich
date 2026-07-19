@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>The Atlas · Daily Decree</title>
-<meta name="theme-color" content="#000000">
+<meta name="theme-color" content="#0b0620">
 <link rel="manifest" href="manifest.json">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -12,82 +12,134 @@
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600&family=Cinzel+Decorative:wght@700&family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400;1,500&display=swap" rel="stylesheet">
 <style>
   :root{
-    --bg:#000000;--panel:#0a0a0a;--panel-edge:#1c1c1c;--ink:#f4f1ea;
-    --dim:#8a8a8a;--faint:#5a5a5a;--accent:#c9b98f;
+    --ink:#ece4d6;--muted:#a99fb8;
+    --gold:#d8c48a;--gold-bright:#f3e6b6;--gold-dim:#8f7c4c;
+    --violet:#b9a3e8;--edge:rgba(216,196,138,.28);
+    --disp:'Cinzel Decorative',serif;
+    --head:'Cinzel',serif;
     --serif:'Cormorant Garamond','Times New Roman',Georgia,serif;
-    --mono:'Space Mono',ui-monospace,'SFMono-Regular',Menlo,monospace;
   }
   *{box-sizing:border-box;margin:0;padding:0;}
-  html,body{background:var(--bg);color:var(--ink);}
-  body{font-family:var(--serif);min-height:100vh;-webkit-font-smoothing:antialiased;display:flex;justify-content:center;padding:44px 20px 80px;background:radial-gradient(1200px 600px at 50% -10%,#10100f 0%,#000 60%),#000;position:relative;overflow-x:hidden;}
+  html,body{background:#05030e;color:var(--ink);}
+  body{
+    font-family:var(--serif);min-height:100vh;-webkit-font-smoothing:antialiased;
+    display:flex;justify-content:center;padding:34px 16px 70px;position:relative;overflow-x:hidden;
+    background:
+      radial-gradient(900px 500px at 20% -8%, rgba(122,66,180,.30), transparent 60%),
+      radial-gradient(820px 520px at 88% 8%, rgba(40,78,168,.26), transparent 60%),
+      radial-gradient(700px 700px at 50% 118%, rgba(150,120,60,.14), transparent 60%),
+      linear-gradient(#0b0620,#06040f 55%,#05030c);
+  }
   #stars{position:fixed;inset:0;pointer-events:none;z-index:0;}
-  .wrap{width:100%;max-width:520px;position:relative;z-index:1;}
-  .avatar{width:96px;height:96px;border-radius:50%;margin:0 auto 18px;background:radial-gradient(circle at 35% 30%,#3a3a3a 0%,#111 55%,#000 100%);box-shadow:0 0 40px rgba(201,185,143,.10),inset 0 0 30px rgba(0,0,0,.8);border:1px solid #222;position:relative;}
-  .avatar::after{content:"\263E";position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:38px;color:#6d6d6d;}
-  h1.you{text-align:center;font-weight:500;font-size:44px;letter-spacing:.5px;line-height:1;margin-bottom:6px;}
-  .handle{text-align:center;font-family:var(--mono);font-size:12px;color:var(--dim);letter-spacing:1px;margin-bottom:14px;}
-  .chart-line{text-align:center;font-family:var(--mono);font-size:13px;color:var(--ink);letter-spacing:.5px;display:flex;gap:16px;justify-content:center;flex-wrap:wrap;margin-bottom:34px;}
-  .chart-line .g{color:var(--accent);}
-  .rule{height:1px;background:linear-gradient(90deg,transparent,#242424,transparent);margin:0 0 30px;}
-  .kicker{font-family:var(--mono);font-size:11px;letter-spacing:3px;color:var(--faint);text-transform:uppercase;text-align:center;margin-bottom:10px;}
-  .date{font-family:var(--mono);font-size:12px;letter-spacing:2px;color:var(--accent);text-transform:uppercase;text-align:center;margin-bottom:12px;}
-  .badge{font-family:var(--mono);font-size:9.5px;letter-spacing:1.5px;text-transform:uppercase;text-align:center;margin-bottom:22px;color:var(--accent);}
-  .greet{display:block;font-style:italic;color:var(--accent);margin-bottom:10px;}
-  .decree{font-size:26px;line-height:1.5;font-weight:400;text-align:center;padding:0 4px;margin-bottom:22px;min-height:120px;}
-  .signoff{font-family:var(--mono);font-size:10.5px;letter-spacing:2px;color:var(--faint);text-transform:uppercase;text-align:center;margin-bottom:40px;}
-  .placements{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--panel-edge);border:1px solid var(--panel-edge);margin-bottom:34px;}
-  .placements .cell{background:var(--panel);padding:16px 8px;text-align:center;}
-  .placements .role{font-family:var(--mono);font-size:9px;letter-spacing:2px;color:var(--faint);text-transform:uppercase;margin-bottom:8px;}
-  .placements .glyph{font-size:22px;color:var(--accent);line-height:1;margin-bottom:6px;}
-  .placements .sign{font-size:18px;letter-spacing:.5px;}
-  .controls{display:flex;gap:12px;align-items:center;justify-content:center;flex-wrap:wrap;}
-  label.sel{font-family:var(--mono);font-size:10px;letter-spacing:2px;color:var(--faint);text-transform:uppercase;}
-  select{font-family:var(--mono);font-size:12px;letter-spacing:1px;background:var(--panel);color:var(--ink);border:1px solid var(--panel-edge);padding:8px 12px;border-radius:2px;text-transform:uppercase;cursor:pointer;}
-  button{font-family:var(--mono);font-size:10px;letter-spacing:2px;text-transform:uppercase;background:transparent;color:var(--accent);border:1px solid #2a2620;padding:9px 16px;border-radius:2px;cursor:pointer;transition:all .2s;}
-  button:hover{background:#141210;border-color:var(--accent);}
-  .foot{text-align:center;font-family:var(--mono);font-size:9px;letter-spacing:1.5px;color:#3a3a3a;text-transform:uppercase;margin-top:46px;}
-  @media(max-width:480px){h1.you{font-size:38px;}.decree{font-size:22px;}}
+  .wrap{width:100%;max-width:540px;position:relative;z-index:1;}
+
+  /* ornate frame */
+  .frame{position:relative;padding:34px 26px 30px;border:1px solid var(--edge);
+    background:linear-gradient(180deg, rgba(24,16,44,.66), rgba(10,7,22,.72));
+    box-shadow:0 0 60px rgba(90,50,150,.25), inset 0 0 40px rgba(0,0,0,.5);
+    backdrop-filter:blur(2px);}
+  .frame::before{content:"";position:absolute;inset:6px;border:1px solid rgba(216,196,138,.16);pointer-events:none;}
+  .corner{position:absolute;color:var(--gold);font-size:15px;line-height:1;opacity:.85;text-shadow:0 0 8px rgba(216,196,138,.6);}
+  .corner.tl{top:-8px;left:-8px}.corner.tr{top:-8px;right:-8px}.corner.bl{bottom:-8px;left:-8px}.corner.br{bottom:-8px;right:-8px}
+
+  .brand{font-family:var(--disp);text-align:center;color:var(--gold-bright);
+    font-size:26px;letter-spacing:5px;text-transform:uppercase;
+    text-shadow:0 0 18px rgba(216,196,138,.45);}
+  .brand-sub{font-family:var(--head);text-align:center;color:var(--gold-dim);
+    font-size:9.5px;letter-spacing:5px;text-transform:uppercase;margin-top:8px;}
+  .flourish{display:flex;align-items:center;justify-content:center;gap:10px;color:var(--gold);margin:16px 0 4px;font-size:12px;opacity:.75;}
+  .flourish::before,.flourish::after{content:"";height:1px;width:64px;background:linear-gradient(90deg,transparent,var(--edge),transparent);}
+
+  /* moon */
+  .moon-wrap{display:flex;flex-direction:column;align-items:center;margin:14px 0 6px;}
+  #moon{filter:drop-shadow(0 0 14px rgba(226,214,170,.4));}
+  .moon-label{font-family:var(--head);color:var(--gold);font-size:11px;letter-spacing:3px;text-transform:uppercase;margin-top:12px;text-align:center;}
+  .moon-illum{font-family:var(--head);color:var(--muted);font-size:9px;letter-spacing:2px;text-transform:uppercase;margin-top:5px;}
+
+  .date{font-family:var(--head);color:var(--violet);font-size:10.5px;letter-spacing:3px;text-transform:uppercase;text-align:center;margin:18px 0 16px;}
+
+  .greet{display:block;font-family:var(--head);font-weight:500;color:var(--gold-bright);
+    font-size:15px;letter-spacing:1px;line-height:1.5;margin-bottom:16px;text-shadow:0 0 12px rgba(216,196,138,.3);}
+  .decree{font-size:23px;line-height:1.62;text-align:center;color:var(--ink);padding:0 2px;min-height:96px;}
+  .decree .body{color:#ded4e6;}
+  .signoff{font-family:var(--head);color:var(--gold-dim);font-size:10px;letter-spacing:3px;text-transform:uppercase;text-align:center;margin-top:20px;}
+
+  .chart{display:flex;justify-content:center;gap:22px;flex-wrap:wrap;margin:22px 0 4px;}
+  .chart .cell{text-align:center;}
+  .chart .role{font-family:var(--head);color:var(--gold-dim);font-size:8px;letter-spacing:2px;text-transform:uppercase;margin-bottom:5px;}
+  .chart .glyph{color:var(--gold);font-size:19px;text-shadow:0 0 10px rgba(216,196,138,.5);}
+  .chart .nm{font-family:var(--head);color:var(--muted);font-size:9.5px;letter-spacing:2px;text-transform:uppercase;margin-top:4px;}
+
+  .controls{display:flex;gap:12px;align-items:center;justify-content:center;flex-wrap:wrap;margin-top:24px;}
+  label.sel{font-family:var(--head);font-size:9px;letter-spacing:2px;color:var(--gold-dim);text-transform:uppercase;}
+  select{font-family:var(--head);font-size:11px;letter-spacing:1px;background:rgba(10,7,22,.8);color:var(--ink);border:1px solid var(--edge);padding:8px 12px;text-transform:uppercase;cursor:pointer;}
+  button{font-family:var(--head);font-size:9.5px;letter-spacing:2px;text-transform:uppercase;background:transparent;color:var(--gold);border:1px solid var(--edge);padding:9px 16px;cursor:pointer;transition:all .25s;}
+  button:hover{background:rgba(216,196,138,.08);border-color:var(--gold);box-shadow:0 0 14px rgba(216,196,138,.25);}
+  .foot{text-align:center;font-family:var(--head);font-size:8.5px;letter-spacing:2px;color:#4a4360;text-transform:uppercase;margin-top:26px;}
+  .why{margin-top:22px;border-top:1px solid var(--edge);padding-top:12px;}
+  .whybtn{width:100%;background:transparent;border:none;color:var(--gold);font-family:var(--head);font-size:10px;letter-spacing:3px;text-transform:uppercase;cursor:pointer;padding:6px 0;transition:color .2s;}
+  .whybtn:hover{color:var(--gold-bright);text-shadow:0 0 10px rgba(216,196,138,.4);}
+  .whybody{max-height:0;overflow:hidden;transition:max-height .55s ease;text-align:left;}
+  .why.open .whybody{max-height:1400px;}
+  .whyrow{margin:16px 2px 0;}
+  .whyh{font-family:var(--head);color:var(--gold);font-size:9.5px;letter-spacing:2px;text-transform:uppercase;margin-bottom:6px;}
+  .whyrow p{font-family:var(--serif);color:#cfc6dc;font-size:16px;line-height:1.5;}
+  .whyrow p b{color:var(--gold-bright);font-weight:500;}
+  @media(max-width:480px){.brand{font-size:21px;letter-spacing:3px;}.decree{font-size:20px;}.frame{padding:30px 18px 26px;}}
 </style>
 </head>
 <body>
 <canvas id="stars"></canvas>
 <div class="wrap">
-  <div class="avatar"></div>
-  <h1 class="you">You</h1>
-  <div class="handle">@mbrockavich</div>
-  <div class="chart-line">
-    <span><span class="g">&#9737;</span> Scorpio</span>
-    <span><span class="g">&#9789;</span> Sagittarius</span>
-    <span><span class="g">&#8593;</span> Capricorn</span>
+  <div class="frame">
+    <span class="corner tl">&#10022;</span><span class="corner tr">&#10022;</span>
+    <span class="corner bl">&#10022;</span><span class="corner br">&#10022;</span>
+
+    <div class="brand">The Atlas</div>
+    <div class="brand-sub">Celestial Register of Solaria</div>
+
+    <div class="moon-wrap">
+      <svg id="moon" width="96" height="96" viewBox="-50 -50 100 100" aria-hidden="true"></svg>
+      <div class="moon-label" id="moonLabel">&hellip;</div>
+      <div class="moon-illum" id="moonIllum"></div>
+    </div>
+
+    <div class="flourish">&#10022;</div>
+    <div class="date" id="date">&hellip;</div>
+
+    <div class="decree" id="decree"><span class="greet">Good morning, Scorpio. The stars have spoken.</span></div>
+    <div class="signoff" id="signoff">So say the stars.</div>
+
+    <div class="why" id="why">
+      <button class="whybtn" id="whyBtn">&#10022; Tell me more &#10022;</button>
+      <div class="whybody" id="whyBody"></div>
+    </div>
+
+    <div class="flourish">&#10022;</div>
+    <div class="chart">
+      <div class="cell"><div class="role">Sun</div><div class="glyph">&#9807;</div><div class="nm">Scorpio</div></div>
+      <div class="cell"><div class="role">Moon</div><div class="glyph">&#9808;</div><div class="nm">Sagittarius</div></div>
+      <div class="cell"><div class="role">Rising</div><div class="glyph">&#9809;</div><div class="nm">Capricorn</div></div>
+    </div>
+
+    <div class="controls">
+      <label class="sel" for="signSel">Read as</label>
+      <select id="signSel"></select>
+      <button id="reroll" title="Only the restless demand a second reading">Consult again</button>
+    </div>
+    <div class="foot">The stars owe you nothing &middot; Read at your own peril</div>
   </div>
-  <div class="rule"></div>
-  <div class="kicker">The Atlas &middot; Daily Decree</div>
-  <div class="date" id="date">&hellip;</div>
-  <div class="badge" id="badge"></div>
-  <div class="decree" id="decree"><span class="greet">Good morning, Scorpio. The stars have spoken.</span></div>
-  <div class="signoff" id="signoff">So say the stars.</div>
-  <div class="placements">
-    <div class="cell"><div class="role">Sun</div><div class="glyph">&#9807;</div><div class="sign">Scorpio</div></div>
-    <div class="cell"><div class="role">Moon</div><div class="glyph">&#9808;</div><div class="sign">Sagittarius</div></div>
-    <div class="cell"><div class="role">Ascendant</div><div class="glyph">&#9809;</div><div class="sign">Capricorn</div></div>
-  </div>
-  <div class="controls">
-    <label class="sel" for="signSel">Read as</label>
-    <select id="signSel"></select>
-    <button id="reroll" title="Only the truly restless demand a second reading">Consult again</button>
-  </div>
-  <div class="foot">The stars owe you nothing &middot; Read at your own peril</div>
 </div>
 
 <script>
 /* ---------- starfield ---------- */
 (function(){
   const c=document.getElementById('stars'),x=c.getContext('2d');let w,h,stars=[];
-  function size(){w=c.width=innerWidth;h=c.height=innerHeight;stars=Array.from({length:Math.min(160,Math.floor(w*h/9000))},()=>({x:Math.random()*w,y:Math.random()*h,r:Math.random()*1.2+.2,a:Math.random(),tw:Math.random()*.02+.004}));}
-  function draw(){x.clearRect(0,0,w,h);for(const s of stars){s.a+=s.tw;const o=(Math.sin(s.a)+1)/2*.7+.1;x.beginPath();x.fillStyle='rgba(201,185,143,'+o.toFixed(3)+')';x.arc(s.x,s.y,s.r,0,7);x.fill();}requestAnimationFrame(draw);}
+  function size(){w=c.width=innerWidth;h=c.height=innerHeight;stars=Array.from({length:Math.min(200,Math.floor(w*h/7000))},()=>({x:Math.random()*w,y:Math.random()*h,r:Math.random()*1.3+.2,a:Math.random(),tw:Math.random()*.02+.003,c:Math.random()<.22?'185,163,232':'216,196,138'}));}
+  function draw(){x.clearRect(0,0,w,h);for(const s of stars){s.a+=s.tw;const o=(Math.sin(s.a)+1)/2*.7+.08;x.beginPath();x.fillStyle='rgba('+s.c+','+o.toFixed(3)+')';x.arc(s.x,s.y,s.r,0,7);x.fill();}requestAnimationFrame(draw);}
   size();draw();addEventListener('resize',size);
 })();
 
@@ -97,7 +149,7 @@ function mulberry(a){return function(){a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a
 function pick(arr,rng){return arr[Math.floor(rng()*arr.length)];}
 function todayKey(){const n=new Date();return n.getFullYear()+'-'+String(n.getMonth()+1).padStart(2,'0')+'-'+String(n.getDate()).padStart(2,'0');}
 
-/* ---------- live moon (Schlyter, real ecliptic longitude + phase) ---------- */
+/* ---------- live moon (Schlyter) ---------- */
 const SIGNS=["Aries","Taurus","Gemini","Cancer","Leo","Virgo","Libra","Scorpio","Sagittarius","Capricorn","Aquarius","Pisces"];
 const RAD=Math.PI/180;
 function rev(x){x=x%360;return x<0?x+360:x;}
@@ -124,10 +176,32 @@ function moonNow(){
   else if(Math.abs(ip-50)<=2)phase=waxing?"First Quarter":"Last Quarter";
   else if(ip<50)phase=waxing?"Waxing Crescent":"Waning Crescent";
   else phase=waxing?"Waxing Gibbous":"Waning Gibbous";
-  return {sign,phase,illum:Math.round(ip)};
+  return {sign,phase,illum:Math.round(ip),frac:illum,waxing};
+}
+function drawMoon(m){
+  const R=44,svg=document.getElementById('moon'),NS='http://www.w3.org/2000/svg';
+  while(svg.firstChild)svg.removeChild(svg.firstChild);
+  const defs=document.createElementNS(NS,'defs');
+  defs.innerHTML='<radialGradient id="lit" cx="38%" cy="34%" r="72%"><stop offset="0%" stop-color="#fff8e6"/><stop offset="55%" stop-color="#efe0b4"/><stop offset="100%" stop-color="#cdb884"/></radialGradient>';
+  svg.appendChild(defs);
+  const base=document.createElementNS(NS,'circle');
+  base.setAttribute('r',R);base.setAttribute('cx',0);base.setAttribute('cy',0);
+  base.setAttribute('fill','#161028');base.setAttribute('stroke','rgba(216,196,138,.5)');base.setAttribute('stroke-width','0.8');
+  svg.appendChild(base);
+  const k=Math.max(0.001,Math.min(0.999,m.frac));
+  const rx=R*Math.abs(1-2*k);
+  const litSweep=m.waxing?1:0;
+  const termSweep=(k<0.5)?litSweep:(1-litSweep);
+  const p=document.createElementNS(NS,'path');
+  p.setAttribute('d',`M 0 ${-R} A ${R} ${R} 0 0 ${litSweep} 0 ${R} A ${rx} ${R} 0 0 ${termSweep} 0 ${-R} Z`);
+  p.setAttribute('fill','url(#lit)');
+  svg.appendChild(p);
+  // faint maria specks on lit side
+  const specks=[[12,-8,3],[20,10,2.4],[6,16,2]];
+  for(const s of specks){const cc=document.createElementNS(NS,'circle');cc.setAttribute('cx',(m.waxing?s[0]:-s[0]));cc.setAttribute('cy',s[1]);cc.setAttribute('r',s[2]);cc.setAttribute('fill','rgba(150,132,92,.22)');svg.appendChild(cc);}
 }
 
-/* ---------- Atlas voice pools ---------- */
+/* ---------- Atlas voice ---------- */
 const MOON_OMEN={
  Aries:"the heavens sharpen their knives and dare you to move first.",
  Taurus:"the sky digs in its heels, and so, stubbornly, may you.",
@@ -143,31 +217,65 @@ const MOON_OMEN={
  Pisces:"the veil thins, and the dreams you dismissed come asking after you."
 };
 const BODIES=["You will be tempted to say the quiet part loudly. The stars endorse this, purely for the entertainment.","Someone will underestimate you before noon. Let them. It is more fun that way.","A door you have been circling finally opens, so walk through it before you talk yourself out of it.","Your patience will be tested by a fool. Resist the urge to correct them; the cosmos will handle it.","That thing you have been avoiding has been avoiding you right back. Today you meet in the middle.","You will feel the pull to overthink a simple message. Send it. Then put the Atlas down.","An old grudge asks to be watered today. Do not feed it. It grows perfectly well on neglect.","The universe hands you a small win. Accept it graciously and do not interrogate its motives.","Someone means to charm you into a favour. You will see straight through them, as you always do.","A plan you made in a bold mood comes due today. Past you was reckless. Present you is impressed.","You are owed an apology that will not come. Collect interest in the form of magnificent indifference.","Trust the instinct that pricks at the back of your neck this afternoon. It has never once been wrong.","A conversation you are dreading will be over faster than the dread it caused. Get it done at dawn.","You will want to burn a bridge today. The stars advise leaving it standing, since you may need the retreat.","Something you buried resurfaces. Deal with it now, or it will pick a far worse moment of its own.","Ambition looks good on you today. Aim higher than is polite and refuse to explain yourself.","A quiet act of defiance will set the tone for your whole week. Choose it deliberately.","You will be asked to be the reasonable one again. Decline, at least until the coffee lands.","The right people are watching today, even the ones pretending not to. Give them a show worth remembering.","Rest is not a reward you have to earn. The stars are tired of repeating this to you.","A small betrayal is easier to forgive than to forget. Do neither today; simply take notes.","You will get exactly what you asked for, phrased exactly as you asked for it. Be careful how you word things.","Momentum is on your side this morning and gone by dusk. Move while the moving is good.","Someone will mistake your calm for surrender. That misunderstanding is a gift. Unwrap it slowly.","Guard your hours today; something ordinary is quietly trying to steal the whole afternoon.","A truth you have been circling will surface if you stop talking long enough to let it.","The day rewards nerve over caution. Spend the nerve early, before doubt wakes up."];
-const SCORPIO=["Scorpio, your suspicion is a feature and not a flaw, but do let one person past the moat today.","Scorpio, you already know the truth of it. Stop making the stars spell out what you sensed at dawn.","Scorpio, the grudge you are nursing is fully grown now. Consider setting it loose into the wild.","Scorpio, intensity is your birthright, but not everything requires a total eclipse. Pick your storms.","Scorpio, the thing you want, you want completely; make sure it is worth the whole of you."];
+const SCORPIO=["Scorpio, your suspicion is a feature and not a flaw, but do let one person past the moat today.","Scorpio, you already know the truth of it. Stop making the stars spell out what you sensed at dawn.","Scorpio, the grudge you are nursing is fully grown now. Consider setting it loose into the wild.","Scorpio, intensity is your birthright, but not everything requires a total eclipse. Pick your storms.","Scorpio, the thing you want, you want completely; make certain it is worth the whole of you."];
 const SAG_MOON=["Your Sagittarius moon wants to flee somewhere new, so feed it a small adventure before it books a flight.","That restless Sag moon is itching for honesty. Say the bold thing; soften it by exactly one degree.","Your Sagittarius moon craves the horizon today. Let it roam in daydreams while your feet stay put.","The Sag moon in you is allergic to being fenced in. Give yourself one door left deliberately open."];
 const CAP_RISING=["Capricorn rising, the world reads you as unbothered. Use the disguise; it is doing excellent work.","Your Capricorn ascendant is quietly building something. Let no one rush the scaffolding.","Capricorn rising, you make discipline look effortless, so permit yourself one unstrategic joy today.","The Capricorn in your ascendant is playing the long game, as ever. Trust the slow ledger."];
 const SIGNOFFS=["So say the stars.","By order of the Astral Court.","The Atlas, in its infinite candour.","Sealed beneath the watching moon.","The stars decline to elaborate.","The Void sends its regards.","Heed this, or do not. The heavens have already moved on."];
 const GENERIC_STINGER={Aries:"Aries, your first instinct is fire. Aim it at a wall that deserves burning.",Taurus:"Taurus, stubbornness is your armour today. Wear it, but leave the visor up.",Gemini:"Gemini, you will want to be in two conversations at once. Win one properly instead.",Cancer:"Cancer, your shell is not a prison. Crack a window and let one good thing in.",Leo:"Leo, the spotlight finds you regardless. Decide what it catches you doing.",Virgo:"Virgo, the flaw you are fixating on is invisible to everyone but you. Let it be.",Libra:"Libra, stop weighing it. The scale tipped hours ago and you know which way.",Scorpio:"Scorpio, you already know the truth of it. Stop making the stars spell it out.",Sagittarius:"Sagittarius, the horizon is calling. Answer it, even if only in your notebook.",Capricorn:"Capricorn, you are building something quiet and vast. Let no one rush the scaffolding.",Aquarius:"Aquarius, your strangest idea today is your best one. Refuse to make it palatable.",Pisces:"Pisces, the dream you woke from was a message. Read it twice before the day erases it."};
 
-function greeting(sign){return '<span class="greet">Good morning, '+sign+'. The stars have spoken.</span>';}
+const PHASE_MEAN={
+ "New Moon":"A New Moon is a dark, fresh slate, a time for quiet beginnings and setting intentions.",
+ "Waxing Crescent":"A Waxing Crescent is early, gathering light, with energy building behind new efforts.",
+ "First Quarter":"A First Quarter is a turning point of tension and decision, where effort meets resistance.",
+ "Waxing Gibbous":"A Waxing Gibbous is the refining stretch before fullness, a time to sharpen and push.",
+ "Full Moon":"A Full Moon is peak light, a time of culmination, revelation, and heightened feeling.",
+ "Waning Gibbous":"A Waning Gibbous is the release after the peak, a time for gratitude and letting things settle.",
+ "Last Quarter":"A Last Quarter is for cutting loose what no longer serves and clearing the ground.",
+ "Waning Crescent":"A Waning Crescent is the dark before renewal, a time for rest, reflection, and endings."
+};
+const MOON_SIGN_MEAN={
+ Aries:"With it in Aries, the mood turns toward impulse, courage, and acting now.",
+ Taurus:"With it in Taurus, everything slows toward comfort, patience, and what is worth keeping.",
+ Gemini:"With it in Gemini, the mind scatters into talk, curiosity, and restless thought.",
+ Cancer:"With it in Cancer, feeling turns inward toward home and the people you protect.",
+ Leo:"With it in Leo, the day wants warmth, recognition, and the nerve to be seen.",
+ Virgo:"With it in Virgo, focus sharpens toward detail, order, and quiet usefulness.",
+ Libra:"With it in Libra, the pull is toward balance, relationships, and decisions you have delayed.",
+ Scorpio:"With it in Scorpio, everything deepens toward intensity, secrets, and what lies beneath.",
+ Sagittarius:"With it in Sagittarius, the craving is for freedom, honesty, and a horizon to aim at.",
+ Capricorn:"With it in Capricorn, the tone turns serious toward work, discipline, and the long climb.",
+ Aquarius:"With it in Aquarius, the view steps back toward the strange, the independent, the bigger picture.",
+ Pisces:"With it in Pisces, the edges dissolve toward dreams, intuition, and quiet compassion."
+};
+const NATAL={sun:"the intense, perceptive, all or nothing core of who you are",moon:"your restless, blunt inner world that craves freedom and honesty",rise:"the composed, quietly ambitious mask you meet the world in"};
+function whyHTML(sign){
+ const sunLine = sign==='Scorpio'
+   ? 'You are read as <b>Scorpio</b>, your own Sun sign.'
+   : 'Right now you are reading through the lens of <b>'+sign+'</b>; your own Sun is Scorpio.';
+ return ''
+ +'<div class="whyrow"><div class="whyh">The Moon right now</div><p>Tonight the Moon is a <b>'+MOON.phase+'</b> in <b>'+MOON.sign+'</b>, '+MOON.illum+'% lit. '+(PHASE_MEAN[MOON.phase]||'')+' '+(MOON_SIGN_MEAN[MOON.sign]||'')+' This is computed live from the real sky, and it shapes the opening line of today\'s decree.</p></div>'
+ +'<div class="whyrow"><div class="whyh">Your stars</div><p>'+sunLine+' Your birth chart runs deeper than one sign: <b>Sun in Scorpio</b>, '+NATAL.sun+'; <b>Moon in Sagittarius</b>, '+NATAL.moon+'; <b>Capricorn Rising</b>, '+NATAL.rise+'. The closing line each day leans on whichever of these the stars favour.</p></div>'
+ +'<div class="whyrow"><div class="whyh">Why it changes</div><p>The Moon shifts phase nightly and crosses into a new sign every two to three days, so the reading is recomputed from the real sky each morning. The rest turns on its own daily cycle, which is why tomorrow will not read quite like today.</p></div>';
+}
 
 let MOON=null;
 function render(sign){
   const key=todayKey();
-  if(!MOON){try{MOON=moonNow();}catch(e){MOON={sign:"the deep sky",phase:"Moon",illum:null};}}
+  if(!MOON){try{MOON=moonNow();}catch(e){MOON={sign:"the deep sky",phase:"Moon",illum:null,frac:0.5,waxing:true};}}
+  try{drawMoon(MOON);}catch(e){}
+  document.getElementById('moonLabel').textContent=MOON.phase+' in '+MOON.sign;
+  document.getElementById('moonIllum').textContent=MOON.illum!=null?(MOON.illum+'% Illuminated'):'';
   document.getElementById('date').textContent=new Date().toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric',year:'numeric'});
-  document.getElementById('badge').innerHTML='&#9790; '+MOON.phase+' in '+MOON.sign+(MOON.illum!=null?' &middot; '+MOON.illum+'% lit':'');
 
   const seed=hashStr(key+'|'+sign+(window.__reroll||''));
   const rng=mulberry(seed);
   const omen=MOON_OMEN[MOON.sign]||"the heavens keep their counsel, and that is rarely good news.";
   const lead='Beneath a '+MOON.phase+' Moon riding through '+MOON.sign+', '+omen;
   const body=pick(BODIES,rng);
-  let stinger;
-  if(sign==="Scorpio"){stinger=pick([pick(SCORPIO,rng),pick(SAG_MOON,rng),pick(CAP_RISING,rng)],rng);}
-  else{stinger=GENERIC_STINGER[sign];}
-  document.getElementById('decree').innerHTML=greeting(sign)+' '+lead+' '+body+' '+stinger;
+  let stinger= sign==="Scorpio" ? pick([pick(SCORPIO,rng),pick(SAG_MOON,rng),pick(CAP_RISING,rng)],rng) : GENERIC_STINGER[sign];
+  document.getElementById('decree').innerHTML='<span class="greet">Good morning, '+sign+'. The stars have spoken.</span> '+lead+' <span class="body">'+body+' '+stinger+'</span>';
   document.getElementById('signoff').textContent=pick(SIGNOFFS,rng);
+  document.getElementById('whyBody').innerHTML=whyHTML(sign);
 }
 
 const sel=document.getElementById('signSel');
@@ -176,6 +284,8 @@ let current=localStorage.getItem('atlas_sign')||'Scorpio';
 sel.value=current;render(current);
 sel.addEventListener('change',()=>{current=sel.value;localStorage.setItem('atlas_sign',current);window.__reroll='';render(current);});
 document.getElementById('reroll').addEventListener('click',()=>{window.__reroll=(window.__reroll?parseInt(window.__reroll)+1:1)+'';render(current);});
+const why=document.getElementById('why');
+document.getElementById('whyBtn').addEventListener('click',()=>{const open=why.classList.toggle('open');document.getElementById('whyBtn').innerHTML=open?'✦ Show less ✦':'✦ Tell me more ✦';});
 </script>
 </body>
 </html>
