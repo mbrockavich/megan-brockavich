@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Atlas · Daily Decree</title>
+<meta name="theme-color" content="#000000">
+<link rel="manifest" href="manifest.json">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Atlas">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#000000;--panel:#0a0a0a;--panel-edge:#1c1c1c;--ink:#f4f1ea;
+    --dim:#8a8a8a;--faint:#5a5a5a;--accent:#c9b98f;
+    --serif:'Cormorant Garamond','Times New Roman',Georgia,serif;
+    --mono:'Space Mono',ui-monospace,'SFMono-Regular',Menlo,monospace;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html,body{background:var(--bg);color:var(--ink);}
+  body{font-family:var(--serif);min-height:100vh;-webkit-font-smoothing:antialiased;display:flex;justify-content:center;padding:44px 20px 80px;background:radial-gradient(1200px 600px at 50% -10%,#10100f 0%,#000 60%),#000;position:relative;overflow-x:hidden;}
+  #stars{position:fixed;inset:0;pointer-events:none;z-index:0;}
+  .wrap{width:100%;max-width:520px;position:relative;z-index:1;}
+  .avatar{width:96px;height:96px;border-radius:50%;margin:0 auto 18px;background:radial-gradient(circle at 35% 30%,#3a3a3a 0%,#111 55%,#000 100%);box-shadow:0 0 40px rgba(201,185,143,.10),inset 0 0 30px rgba(0,0,0,.8);border:1px solid #222;position:relative;}
+  .avatar::after{content:"\263E";position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:38px;color:#6d6d6d;}
+  h1.you{text-align:center;font-weight:500;font-size:44px;letter-spacing:.5px;line-height:1;margin-bottom:6px;}
+  .handle{text-align:center;font-family:var(--mono);font-size:12px;color:var(--dim);letter-spacing:1px;margin-bottom:14px;}
+  .chart-line{text-align:center;font-family:var(--mono);font-size:13px;color:var(--ink);letter-spacing:.5px;display:flex;gap:16px;justify-content:center;flex-wrap:wrap;margin-bottom:34px;}
+  .chart-line .g{color:var(--accent);}
+  .rule{height:1px;background:linear-gradient(90deg,transparent,#242424,transparent);margin:0 0 30px;}
+  .kicker{font-family:var(--mono);font-size:11px;letter-spacing:3px;color:var(--faint);text-transform:uppercase;text-align:center;margin-bottom:10px;}
+  .date{font-family:var(--mono);font-size:12px;letter-spacing:2px;color:var(--accent);text-transform:uppercase;text-align:center;margin-bottom:12px;}
+  .badge{font-family:var(--mono);font-size:9px;letter-spacing:2px;text-transform:uppercase;text-align:center;margin-bottom:22px;color:var(--faint);}
+  .badge .live{color:var(--accent);}
+  .greet{display:block;font-style:italic;color:var(--accent);margin-bottom:10px;}
+  .decree{font-size:26px;line-height:1.5;font-weight:400;text-align:center;padding:0 4px;margin-bottom:22px;min-height:120px;}
+  .signoff{font-family:var(--mono);font-size:10.5px;letter-spacing:2px;color:var(--faint);text-transform:uppercase;text-align:center;margin-bottom:40px;}
+  .placements{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--panel-edge);border:1px solid var(--panel-edge);margin-bottom:34px;}
+  .placements .cell{background:var(--panel);padding:16px 8px;text-align:center;}
+  .placements .role{font-family:var(--mono);font-size:9px;letter-spacing:2px;color:var(--faint);text-transform:uppercase;margin-bottom:8px;}
+  .placements .glyph{font-size:22px;color:var(--accent);line-height:1;margin-bottom:6px;}
+  .placements .sign{font-size:18px;letter-spacing:.5px;}
+  .controls{display:flex;gap:12px;align-items:center;justify-content:center;flex-wrap:wrap;}
+  label.sel{font-family:var(--mono);font-size:10px;letter-spacing:2px;color:var(--faint);text-transform:uppercase;}
+  select{font-family:var(--mono);font-size:12px;letter-spacing:1px;background:var(--panel);color:var(--ink);border:1px solid var(--panel-edge);padding:8px 12px;border-radius:2px;text-transform:uppercase;cursor:pointer;}
+  button{font-family:var(--mono);font-size:10px;letter-spacing:2px;text-transform:uppercase;background:transparent;color:var(--accent);border:1px solid #2a2620;padding:9px 16px;border-radius:2px;cursor:pointer;transition:all .2s;}
+  button:hover{background:#141210;border-color:var(--accent);}
+  .foot{text-align:center;font-family:var(--mono);font-size:9px;letter-spacing:1.5px;color:#3a3a3a;text-transform:uppercase;margin-top:46px;}
+  @media(max-width:480px){h1.you{font-size:38px;}.decree{font-size:22px;}}
+</style>
+</head>
+<body>
+<canvas id="stars"></canvas>
+<div class="wrap">
+  <div class="avatar"></div>
+  <h1 class="you">You</h1>
+  <div class="handle">@mbrockavich</div>
+  <div class="chart-line">
+    <span><span class="g">&#9737;</span> Scorpio</span>
+    <span><span class="g">&#9789;</span> Sagittarius</span>
+    <span><span class="g">&#8593;</span> Capricorn</span>
+  </div>
+  <div class="rule"></div>
+  <div class="kicker">The Atlas &middot; Daily Decree</div>
+  <div class="date" id="date">&hellip;</div>
+  <div class="badge" id="badge"></div>
+  <div class="decree" id="decree"><span class="greet">Good morning, Scorpio. The stars have spoken.</span></div>
+  <div class="signoff" id="signoff">So say the stars.</div>
+  <div class="placements">
+    <div class="cell"><div class="role">Sun</div><div class="glyph">&#9807;</div><div class="sign">Scorpio</div></div>
+    <div class="cell"><div class="role">Moon</div><div class="glyph">&#9808;</div><div class="sign">Sagittarius</div></div>
+    <div class="cell"><div class="role">Ascendant</div><div class="glyph">&#9809;</div><div class="sign">Capricorn</div></div>
+  </div>
+  <div class="controls">
+    <label class="sel" for="signSel">Read as</label>
+    <select id="signSel"></select>
+    <button id="reroll" title="Only the truly restless demand a second reading">Consult again</button>
+  </div>
+  <div class="foot">The stars owe you nothing &middot; Read at your own peril</div>
+</div>
+
+<!-- Written fresh each morning by the Atlas task. Missing file = offline reading. -->
+<script>
+(function(){
+  const c=document.getElementById('stars'),x=c.getContext('2d');let w,h,stars=[];
+  function size(){w=c.width=innerWidth;h=c.height=innerHeight;stars=Array.from({length:Math.min(160,Math.floor(w*h/9000))},()=>({x:Math.random()*w,y:Math.random()*h,r:Math.random()*1.2+.2,a:Math.random(),tw:Math.random()*.02+.004}));}
+  function draw(){x.clearRect(0,0,w,h);for(const s of stars){s.a+=s.tw;const o=(Math.sin(s.a)+1)/2*.7+.1;x.beginPath();x.fillStyle='rgba(201,185,143,'+o.toFixed(3)+')';x.arc(s.x,s.y,s.r,0,7);x.fill();}requestAnimationFrame(draw);}
+  size();draw();addEventListener('resize',size);
+})();
+
+function hashStr(s){let h=2166136261;for(let i=0;i<s.length;i++){h^=s.charCodeAt(i);h=Math.imul(h,16777619);}return h>>>0;}
+function mulberry(a){return function(){a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;};}
+function pick(arr,rng){return arr[Math.floor(rng()*arr.length)];}
+
+const SIGNS=["Aries","Taurus","Gemini","Cancer","Leo","Virgo","Libra","Scorpio","Sagittarius","Capricorn","Aquarius","Pisces"];
+
+const LEADS=["The stars have convened, and frankly they were not impressed.","Mercury slinks retrograde-adjacent today, so mind your mouth.","The heavens tilt in your favour, and you should enjoy it while it lasts.","A cold wind moves through the twelfth house, and it has your name on it.","The moon is watching. The moon is always watching.","Fortune smiles upon you today, which is usually how the trouble starts.","The celestial court has reviewed your week and issued a warning.","Venus is meddling again, and she has opinions about your choices.","The stars aligned at dawn, then thought better of it.","An omen crossed the sky last night. It was, regrettably, about you.","The constellations are gossiping, and you are the subject.","Saturn has entered the chat, and Saturn does not do small talk.","The void stirred at midnight and murmured your initials.","The stars decree a day of consequence, theirs and not yours.","Pluto is brooding in a corner of your chart, as is its way.","The firmament offers you a gift today, wrapped in barbed wire."];
+const BODIES=["You will be tempted to say the quiet part loudly. The stars endorse this, purely for the entertainment.","Someone will underestimate you before noon. Let them. It is more fun that way.","A door you have been circling finally opens, so walk through it before you talk yourself out of it.","Your patience will be tested by a fool. Resist the urge to correct them; the cosmos will handle it.","That thing you have been avoiding has been avoiding you right back. Today you meet in the middle.","You will feel the pull to overthink a simple message. Send it. Then put the Atlas down.","An old grudge asks to be watered today. Do not feed it. It grows perfectly well on neglect.","The universe hands you a small win. Accept it graciously and do not interrogate its motives.","Someone means to charm you into a favour. You will see straight through them, as you always do.","A plan you made in a bold mood comes due today. Past you was reckless. Present you is impressed.","You are owed an apology that will not come. Collect interest in the form of magnificent indifference.","Trust the instinct that pricks at the back of your neck this afternoon. It has never once been wrong.","A conversation you are dreading will be over faster than the dread it caused. Get it done at dawn.","You will want to burn a bridge today. The stars advise leaving it standing, since you may need the retreat.","Something you buried resurfaces. Deal with it now, or it will pick a far worse moment of its own.","Ambition looks good on you today. Aim higher than is polite and refuse to explain yourself.","A quiet act of defiance will set the tone for your whole week. Choose it deliberately.","You will be asked to be the reasonable one again. Decline, at least until the coffee lands.","The right people are watching today, even the ones pretending not to. Give them a show worth remembering.","Rest is not a reward you have to earn. The stars are tired of repeating this to you.","A small betrayal is easier to forgive than to forget. Do neither today; simply take notes.","You will get exactly what you asked for, phrased exactly as you asked for it. Be careful how you word things.","Momentum is on your side this morning and gone by dusk. Move while the moving is good.","Someone will mistake your calm for surrender. That misunderstanding is a gift. Unwrap it slowly."];
+const SCORPIO=["Scorpio, your suspicion is a feature and not a flaw, but do let one person past the moat today.","Scorpio, you already know the truth of it. Stop making the stars spell out what you sensed at 6am.","Scorpio, the grudge you are nursing is fully grown now. Consider setting it loose into the wild.","Scorpio, intensity is your birthright, but not everything requires a total eclipse. Pick your storms."];
+const SAG_MOON=["Your Sagittarius moon wants to flee somewhere new, so feed it a small adventure before it books a flight.","That restless Sag moon is itching for honesty. Say the bold thing; soften it by exactly one degree.","Your Sagittarius moon craves the horizon today. Let it roam in daydreams while your feet stay put.","The Sag moon in you is allergic to being fenced in. Give yourself one door left deliberately open."];
+const CAP_RISING=["Capricorn rising, the world reads you as unbothered. Use the disguise; it is doing excellent work.","Your Capricorn ascendant is quietly building something. Let no one rush the scaffolding.","Capricorn rising, you make discipline look effortless, so permit yourself one unstrategic joy today.","The Capricorn in your ascendant is playing the long game, as ever. Trust the slow ledger."];
+const SIGNOFFS=["So say the stars.","By order of the Astral Court.","The Atlas, in its infinite candour.","Sealed beneath the watching moon.","The stars decline to elaborate.","The Void sends its regards."];
+const GENERIC_STINGER={Aries:"Aries, your first instinct is fire. Aim it at a wall that deserves burning.",Taurus:"Taurus, stubbornness is your armour today. Wear it, but leave the visor up.",Gemini:"Gemini, you will want to be in two conversations at once. Win one properly instead.",Cancer:"Cancer, your shell is not a prison. Crack a window and let one good thing in.",Leo:"Leo, the spotlight finds you regardless. Decide what it catches you doing.",Virgo:"Virgo, the flaw you are fixating on is invisible to everyone but you. Let it be.",Libra:"Libra, stop weighing it. The scale tipped hours ago and you know which way.",Scorpio:"Scorpio, you already know the truth of it. Stop making the stars spell it out.",Sagittarius:"Sagittarius, the horizon is calling. Answer it, even if only in your notebook.",Capricorn:"Capricorn, you are building something quiet and vast. Let no one rush the scaffolding.",Aquarius:"Aquarius, your strangest idea today is your best one. Refuse to make it palatable.",Pisces:"Pisces, the dream you woke from was a message. Read it twice before the day erases it."};
+
+function todayKey(){const n=new Date();return n.getFullYear()+'-'+String(n.getMonth()+1).padStart(2,'0')+'-'+String(n.getDate()).padStart(2,'0');}
+function greeting(sign){return '<span class="greet">Good morning, '+sign+'. The stars have spoken.</span>';}
+
+function render(sign){
+  const key=todayKey();
+  document.getElementById('date').textContent=new Date().toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric',year:'numeric'});
+  const T=window.ATLAS_TODAY;
+  if(sign==="Scorpio" && !window.__reroll && T && T.date===key){
+    document.getElementById('badge').innerHTML='<span class="live">&#10022; Personalized &middot; your stars &amp; your day</span>';
+    document.getElementById('decree').innerHTML=greeting(sign)+' '+(T.lead?T.lead+' ':'')+(T.body||T.decree||"");
+    document.getElementById('signoff').textContent=T.signoff||"So say the stars.";
+    return;
+  }
+  const seed=hashStr(key+'|'+sign+(window.__reroll||''));
+  const rng=mulberry(seed);
+  const lead=pick(LEADS,rng),body=pick(BODIES,rng);
+  let stinger;
+  if(sign==="Scorpio"){stinger=pick([pick(SCORPIO,rng),pick(SAG_MOON,rng),pick(CAP_RISING,rng)],rng);}
+  else{stinger=GENERIC_STINGER[sign];}
+  document.getElementById('badge').innerHTML= sign==="Scorpio" ? "Awaiting today&rsquo;s decree &middot; offline reading" : "";
+  document.getElementById('decree').innerHTML=greeting(sign)+' '+lead+' '+body+' '+stinger;
+  document.getElementById('signoff').textContent=pick(SIGNOFFS,rng);
+}
+
+function init(){
+  const sel=document.getElementById('signSel');
+  SIGNS.forEach(s=>{const o=document.createElement('option');o.value=s;o.textContent=s;sel.appendChild(o);});
+  let current=localStorage.getItem('atlas_sign')||'Scorpio';
+  sel.value=current;render(current);
+  sel.addEventListener('change',()=>{current=sel.value;localStorage.setItem('atlas_sign',current);window.__reroll='';render(current);});
+  document.getElementById('reroll').addEventListener('click',()=>{window.__reroll=(window.__reroll?parseInt(window.__reroll)+1:1)+'';render(current);});
+}
+// Load today's decree with a cache-buster so the hosted / home-screen app never serves a stale reading.
+(function(){
+  function tryLoad(url,done){var sc=document.createElement('script');sc.src=url;sc.onload=function(){done(true);};sc.onerror=function(){done(false);};document.head.appendChild(sc);}
+  tryLoad('today.js?d='+todayKey(),function(ok){ ok ? init() : tryLoad('today.js',function(){init();}); });
+})();
+</script>
+</body>
+</html>
