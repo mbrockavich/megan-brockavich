@@ -34,8 +34,7 @@
   .rule{height:1px;background:linear-gradient(90deg,transparent,#242424,transparent);margin:0 0 30px;}
   .kicker{font-family:var(--mono);font-size:11px;letter-spacing:3px;color:var(--faint);text-transform:uppercase;text-align:center;margin-bottom:10px;}
   .date{font-family:var(--mono);font-size:12px;letter-spacing:2px;color:var(--accent);text-transform:uppercase;text-align:center;margin-bottom:12px;}
-  .badge{font-family:var(--mono);font-size:9px;letter-spacing:2px;text-transform:uppercase;text-align:center;margin-bottom:22px;color:var(--faint);}
-  .badge .live{color:var(--accent);}
+  .badge{font-family:var(--mono);font-size:9.5px;letter-spacing:1.5px;text-transform:uppercase;text-align:center;margin-bottom:22px;color:var(--accent);}
   .greet{display:block;font-style:italic;color:var(--accent);margin-bottom:10px;}
   .decree{font-size:26px;line-height:1.5;font-weight:400;text-align:center;padding:0 4px;margin-bottom:22px;min-height:120px;}
   .signoff{font-family:var(--mono);font-size:10.5px;letter-spacing:2px;color:var(--faint);text-transform:uppercase;text-align:center;margin-bottom:40px;}
@@ -83,8 +82,8 @@
   <div class="foot">The stars owe you nothing &middot; Read at your own peril</div>
 </div>
 
-<!-- Written fresh each morning by the Atlas task. Missing file = offline reading. -->
 <script>
+/* ---------- starfield ---------- */
 (function(){
   const c=document.getElementById('stars'),x=c.getContext('2d');let w,h,stars=[];
   function size(){w=c.width=innerWidth;h=c.height=innerHeight;stars=Array.from({length:Math.min(160,Math.floor(w*h/9000))},()=>({x:Math.random()*w,y:Math.random()*h,r:Math.random()*1.2+.2,a:Math.random(),tw:Math.random()*.02+.004}));}
@@ -92,57 +91,91 @@
   size();draw();addEventListener('resize',size);
 })();
 
+/* ---------- deterministic daily RNG ---------- */
 function hashStr(s){let h=2166136261;for(let i=0;i<s.length;i++){h^=s.charCodeAt(i);h=Math.imul(h,16777619);}return h>>>0;}
 function mulberry(a){return function(){a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;};}
 function pick(arr,rng){return arr[Math.floor(rng()*arr.length)];}
+function todayKey(){const n=new Date();return n.getFullYear()+'-'+String(n.getMonth()+1).padStart(2,'0')+'-'+String(n.getDate()).padStart(2,'0');}
 
+/* ---------- live moon (Schlyter, real ecliptic longitude + phase) ---------- */
 const SIGNS=["Aries","Taurus","Gemini","Cancer","Leo","Virgo","Libra","Scorpio","Sagittarius","Capricorn","Aquarius","Pisces"];
+const RAD=Math.PI/180;
+function rev(x){x=x%360;return x<0?x+360:x;}
+function sind(x){return Math.sin(x*RAD);}function cosd(x){return Math.cos(x*RAD);}
+function moonNow(){
+  const dt=new Date();
+  const Y=dt.getUTCFullYear(),Mo=dt.getUTCMonth()+1,D=dt.getUTCDate();
+  let d=367*Y-Math.floor(7*(Y+Math.floor((Mo+9)/12))/4)+Math.floor(275*Mo/9)+D-730530;
+  d+=(dt.getUTCHours()+dt.getUTCMinutes()/60+dt.getUTCSeconds()/3600)/24;
+  const N=rev(125.1228-0.0529538083*d),i=5.1454,w=rev(318.0634+0.1643573223*d),a=60.2666,e=0.0549,M=rev(115.3654+13.0649929509*d);
+  let E=M+(180/Math.PI)*e*sind(M)*(1+e*cosd(M));
+  for(let k=0;k<6;k++){E=E-(E-(180/Math.PI)*e*sind(E)-M)/(1-e*cosd(E));}
+  const xv=a*(cosd(E)-e),yv=a*Math.sqrt(1-e*e)*sind(E);
+  const v=rev(Math.atan2(yv,xv)/RAD);
+  let lon=rev(Math.atan2(sind(N)*cosd(v+w)+cosd(N)*sind(v+w)*cosd(i),cosd(N)*cosd(v+w)-sind(N)*sind(v+w)*cosd(i))/RAD);
+  const Ms=rev(356.0470+0.9856002585*d),ws=282.9404+4.70935e-5*d,Ls=rev(ws+Ms);
+  const Lm=rev(N+w+M),Dm=rev(Lm-Ls),F=rev(Lm-N);
+  lon+=-1.274*sind(M-2*Dm)+0.658*sind(2*Dm)-0.186*sind(Ms)-0.059*sind(2*M-2*Dm)-0.057*sind(M-2*Dm+Ms)+0.053*sind(M+2*Dm)+0.046*sind(2*Dm-Ms)+0.041*sind(M-Ms)-0.035*sind(Dm)-0.031*sind(M+Ms)-0.015*sind(2*F-2*Dm)+0.011*sind(M-4*Dm);
+  lon=rev(lon);
+  const sign=SIGNS[Math.floor(lon/30)];
+  const elong=rev(lon-Ls),illum=(1-cosd(elong))/2,ip=illum*100,waxing=elong<180;
+  let phase;
+  if(ip<1)phase="New Moon";else if(ip>99)phase="Full Moon";
+  else if(Math.abs(ip-50)<=2)phase=waxing?"First Quarter":"Last Quarter";
+  else if(ip<50)phase=waxing?"Waxing Crescent":"Waning Crescent";
+  else phase=waxing?"Waxing Gibbous":"Waning Gibbous";
+  return {sign,phase,illum:Math.round(ip)};
+}
 
-const LEADS=["The stars have convened, and frankly they were not impressed.","Mercury slinks retrograde-adjacent today, so mind your mouth.","The heavens tilt in your favour, and you should enjoy it while it lasts.","A cold wind moves through the twelfth house, and it has your name on it.","The moon is watching. The moon is always watching.","Fortune smiles upon you today, which is usually how the trouble starts.","The celestial court has reviewed your week and issued a warning.","Venus is meddling again, and she has opinions about your choices.","The stars aligned at dawn, then thought better of it.","An omen crossed the sky last night. It was, regrettably, about you.","The constellations are gossiping, and you are the subject.","Saturn has entered the chat, and Saturn does not do small talk.","The void stirred at midnight and murmured your initials.","The stars decree a day of consequence, theirs and not yours.","Pluto is brooding in a corner of your chart, as is its way.","The firmament offers you a gift today, wrapped in barbed wire."];
-const BODIES=["You will be tempted to say the quiet part loudly. The stars endorse this, purely for the entertainment.","Someone will underestimate you before noon. Let them. It is more fun that way.","A door you have been circling finally opens, so walk through it before you talk yourself out of it.","Your patience will be tested by a fool. Resist the urge to correct them; the cosmos will handle it.","That thing you have been avoiding has been avoiding you right back. Today you meet in the middle.","You will feel the pull to overthink a simple message. Send it. Then put the Atlas down.","An old grudge asks to be watered today. Do not feed it. It grows perfectly well on neglect.","The universe hands you a small win. Accept it graciously and do not interrogate its motives.","Someone means to charm you into a favour. You will see straight through them, as you always do.","A plan you made in a bold mood comes due today. Past you was reckless. Present you is impressed.","You are owed an apology that will not come. Collect interest in the form of magnificent indifference.","Trust the instinct that pricks at the back of your neck this afternoon. It has never once been wrong.","A conversation you are dreading will be over faster than the dread it caused. Get it done at dawn.","You will want to burn a bridge today. The stars advise leaving it standing, since you may need the retreat.","Something you buried resurfaces. Deal with it now, or it will pick a far worse moment of its own.","Ambition looks good on you today. Aim higher than is polite and refuse to explain yourself.","A quiet act of defiance will set the tone for your whole week. Choose it deliberately.","You will be asked to be the reasonable one again. Decline, at least until the coffee lands.","The right people are watching today, even the ones pretending not to. Give them a show worth remembering.","Rest is not a reward you have to earn. The stars are tired of repeating this to you.","A small betrayal is easier to forgive than to forget. Do neither today; simply take notes.","You will get exactly what you asked for, phrased exactly as you asked for it. Be careful how you word things.","Momentum is on your side this morning and gone by dusk. Move while the moving is good.","Someone will mistake your calm for surrender. That misunderstanding is a gift. Unwrap it slowly."];
-const SCORPIO=["Scorpio, your suspicion is a feature and not a flaw, but do let one person past the moat today.","Scorpio, you already know the truth of it. Stop making the stars spell out what you sensed at 6am.","Scorpio, the grudge you are nursing is fully grown now. Consider setting it loose into the wild.","Scorpio, intensity is your birthright, but not everything requires a total eclipse. Pick your storms."];
+/* ---------- Atlas voice pools ---------- */
+const MOON_OMEN={
+ Aries:"the heavens sharpen their knives and dare you to move first.",
+ Taurus:"the sky digs in its heels, and so, stubbornly, may you.",
+ Gemini:"the stars speak from two mouths at once, so trust neither entirely.",
+ Cancer:"the tides climb higher than is comfortable, and your armour thins.",
+ Leo:"the firmament demands a performance whether or not you feel like the lead.",
+ Virgo:"the heavens tally your flaws like coins, so give them nothing to count.",
+ Libra:"the scales tip toward reckoning, and you already know which way they fall.",
+ Scorpio:"the dark grows teeth tonight, and it recognises its own.",
+ Sagittarius:"the horizon calls in a voice you will struggle to ignore.",
+ Capricorn:"the mountain lengthens above you, indifferent to your fatigue.",
+ Aquarius:"the sky turns strange and electric, and convention will not save you.",
+ Pisces:"the veil thins, and the dreams you dismissed come asking after you."
+};
+const BODIES=["You will be tempted to say the quiet part loudly. The stars endorse this, purely for the entertainment.","Someone will underestimate you before noon. Let them. It is more fun that way.","A door you have been circling finally opens, so walk through it before you talk yourself out of it.","Your patience will be tested by a fool. Resist the urge to correct them; the cosmos will handle it.","That thing you have been avoiding has been avoiding you right back. Today you meet in the middle.","You will feel the pull to overthink a simple message. Send it. Then put the Atlas down.","An old grudge asks to be watered today. Do not feed it. It grows perfectly well on neglect.","The universe hands you a small win. Accept it graciously and do not interrogate its motives.","Someone means to charm you into a favour. You will see straight through them, as you always do.","A plan you made in a bold mood comes due today. Past you was reckless. Present you is impressed.","You are owed an apology that will not come. Collect interest in the form of magnificent indifference.","Trust the instinct that pricks at the back of your neck this afternoon. It has never once been wrong.","A conversation you are dreading will be over faster than the dread it caused. Get it done at dawn.","You will want to burn a bridge today. The stars advise leaving it standing, since you may need the retreat.","Something you buried resurfaces. Deal with it now, or it will pick a far worse moment of its own.","Ambition looks good on you today. Aim higher than is polite and refuse to explain yourself.","A quiet act of defiance will set the tone for your whole week. Choose it deliberately.","You will be asked to be the reasonable one again. Decline, at least until the coffee lands.","The right people are watching today, even the ones pretending not to. Give them a show worth remembering.","Rest is not a reward you have to earn. The stars are tired of repeating this to you.","A small betrayal is easier to forgive than to forget. Do neither today; simply take notes.","You will get exactly what you asked for, phrased exactly as you asked for it. Be careful how you word things.","Momentum is on your side this morning and gone by dusk. Move while the moving is good.","Someone will mistake your calm for surrender. That misunderstanding is a gift. Unwrap it slowly.","Guard your hours today; something ordinary is quietly trying to steal the whole afternoon.","A truth you have been circling will surface if you stop talking long enough to let it.","The day rewards nerve over caution. Spend the nerve early, before doubt wakes up."];
+const SCORPIO=["Scorpio, your suspicion is a feature and not a flaw, but do let one person past the moat today.","Scorpio, you already know the truth of it. Stop making the stars spell out what you sensed at dawn.","Scorpio, the grudge you are nursing is fully grown now. Consider setting it loose into the wild.","Scorpio, intensity is your birthright, but not everything requires a total eclipse. Pick your storms.","Scorpio, the thing you want, you want completely; make sure it is worth the whole of you."];
 const SAG_MOON=["Your Sagittarius moon wants to flee somewhere new, so feed it a small adventure before it books a flight.","That restless Sag moon is itching for honesty. Say the bold thing; soften it by exactly one degree.","Your Sagittarius moon craves the horizon today. Let it roam in daydreams while your feet stay put.","The Sag moon in you is allergic to being fenced in. Give yourself one door left deliberately open."];
 const CAP_RISING=["Capricorn rising, the world reads you as unbothered. Use the disguise; it is doing excellent work.","Your Capricorn ascendant is quietly building something. Let no one rush the scaffolding.","Capricorn rising, you make discipline look effortless, so permit yourself one unstrategic joy today.","The Capricorn in your ascendant is playing the long game, as ever. Trust the slow ledger."];
-const SIGNOFFS=["So say the stars.","By order of the Astral Court.","The Atlas, in its infinite candour.","Sealed beneath the watching moon.","The stars decline to elaborate.","The Void sends its regards."];
+const SIGNOFFS=["So say the stars.","By order of the Astral Court.","The Atlas, in its infinite candour.","Sealed beneath the watching moon.","The stars decline to elaborate.","The Void sends its regards.","Heed this, or do not. The heavens have already moved on."];
 const GENERIC_STINGER={Aries:"Aries, your first instinct is fire. Aim it at a wall that deserves burning.",Taurus:"Taurus, stubbornness is your armour today. Wear it, but leave the visor up.",Gemini:"Gemini, you will want to be in two conversations at once. Win one properly instead.",Cancer:"Cancer, your shell is not a prison. Crack a window and let one good thing in.",Leo:"Leo, the spotlight finds you regardless. Decide what it catches you doing.",Virgo:"Virgo, the flaw you are fixating on is invisible to everyone but you. Let it be.",Libra:"Libra, stop weighing it. The scale tipped hours ago and you know which way.",Scorpio:"Scorpio, you already know the truth of it. Stop making the stars spell it out.",Sagittarius:"Sagittarius, the horizon is calling. Answer it, even if only in your notebook.",Capricorn:"Capricorn, you are building something quiet and vast. Let no one rush the scaffolding.",Aquarius:"Aquarius, your strangest idea today is your best one. Refuse to make it palatable.",Pisces:"Pisces, the dream you woke from was a message. Read it twice before the day erases it."};
 
-function todayKey(){const n=new Date();return n.getFullYear()+'-'+String(n.getMonth()+1).padStart(2,'0')+'-'+String(n.getDate()).padStart(2,'0');}
 function greeting(sign){return '<span class="greet">Good morning, '+sign+'. The stars have spoken.</span>';}
 
+let MOON=null;
 function render(sign){
   const key=todayKey();
+  if(!MOON){try{MOON=moonNow();}catch(e){MOON={sign:"the deep sky",phase:"Moon",illum:null};}}
   document.getElementById('date').textContent=new Date().toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric',year:'numeric'});
-  const T=window.ATLAS_TODAY;
-  if(sign==="Scorpio" && !window.__reroll && T && T.date===key){
-    document.getElementById('badge').innerHTML='<span class="live">&#10022; Personalized &middot; your stars &amp; your day</span>';
-    document.getElementById('decree').innerHTML=greeting(sign)+' '+(T.lead?T.lead+' ':'')+(T.body||T.decree||"");
-    document.getElementById('signoff').textContent=T.signoff||"So say the stars.";
-    return;
-  }
+  document.getElementById('badge').innerHTML='&#9790; '+MOON.phase+' in '+MOON.sign+(MOON.illum!=null?' &middot; '+MOON.illum+'% lit':'');
+
   const seed=hashStr(key+'|'+sign+(window.__reroll||''));
   const rng=mulberry(seed);
-  const lead=pick(LEADS,rng),body=pick(BODIES,rng);
+  const omen=MOON_OMEN[MOON.sign]||"the heavens keep their counsel, and that is rarely good news.";
+  const lead='Beneath a '+MOON.phase+' Moon riding through '+MOON.sign+', '+omen;
+  const body=pick(BODIES,rng);
   let stinger;
   if(sign==="Scorpio"){stinger=pick([pick(SCORPIO,rng),pick(SAG_MOON,rng),pick(CAP_RISING,rng)],rng);}
   else{stinger=GENERIC_STINGER[sign];}
-  document.getElementById('badge').innerHTML= sign==="Scorpio" ? "Awaiting today&rsquo;s decree &middot; offline reading" : "";
   document.getElementById('decree').innerHTML=greeting(sign)+' '+lead+' '+body+' '+stinger;
   document.getElementById('signoff').textContent=pick(SIGNOFFS,rng);
 }
 
-function init(){
-  const sel=document.getElementById('signSel');
-  SIGNS.forEach(s=>{const o=document.createElement('option');o.value=s;o.textContent=s;sel.appendChild(o);});
-  let current=localStorage.getItem('atlas_sign')||'Scorpio';
-  sel.value=current;render(current);
-  sel.addEventListener('change',()=>{current=sel.value;localStorage.setItem('atlas_sign',current);window.__reroll='';render(current);});
-  document.getElementById('reroll').addEventListener('click',()=>{window.__reroll=(window.__reroll?parseInt(window.__reroll)+1:1)+'';render(current);});
-}
-// Load today's decree with a cache-buster so the hosted / home-screen app never serves a stale reading.
-(function(){
-  function tryLoad(url,done){var sc=document.createElement('script');sc.src=url;sc.onload=function(){done(true);};sc.onerror=function(){done(false);};document.head.appendChild(sc);}
-  tryLoad('today.js?d='+todayKey(),function(ok){ ok ? init() : tryLoad('today.js',function(){init();}); });
-})();
+const sel=document.getElementById('signSel');
+SIGNS.forEach(s=>{const o=document.createElement('option');o.value=s;o.textContent=s;sel.appendChild(o);});
+let current=localStorage.getItem('atlas_sign')||'Scorpio';
+sel.value=current;render(current);
+sel.addEventListener('change',()=>{current=sel.value;localStorage.setItem('atlas_sign',current);window.__reroll='';render(current);});
+document.getElementById('reroll').addEventListener('click',()=>{window.__reroll=(window.__reroll?parseInt(window.__reroll)+1:1)+'';render(current);});
 </script>
 </body>
 </html>
