@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
+<title>Work Countdown</title>
+
+<link rel="manifest" href="manifest.json" />
+<meta name="theme-color" content="#D4537E" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<meta name="apple-mobile-web-app-title" content="Countdown" />
+<link rel="apple-touch-icon" href="icons/icon-192.png" />
+<link rel="icon" href="icons/icon-192.png" />
+
+<style>
+  :root {
+    --pink-50: #FBEAF0;
+    --pink-100: #F4C0D1;
+    --pink-200: #ED93B1;
+    --pink-400: #D4537E;
+    --pink-600: #993556;
+    --pink-800: #72243E;
+    --lav-400: #7F77DD;
+  }
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    background: linear-gradient(180deg, var(--pink-50) 0%, #F3E9FB 100%);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    color: var(--pink-800);
+    overscroll-behavior: none;
+  }
+  body {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    padding: 24px;
+  }
+  .card {
+    width: 100%;
+    max-width: 380px;
+    background: #ffffff;
+    border-radius: 28px;
+    padding: 32px 24px 28px;
+    box-shadow: 0 20px 40px rgba(212, 83, 126, 0.18);
+    text-align: center;
+  }
+  .badge {
+    width: 64px;
+    height: 64px;
+    margin: 0 auto 14px;
+    border-radius: 20px;
+    background: var(--pink-100);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  h1 {
+    font-size: 20px;
+    font-weight: 700;
+    margin: 0 0 4px;
+    color: var(--pink-800);
+  }
+  .subtitle {
+    font-size: 13px;
+    color: var(--pink-600);
+    margin: 0 0 22px;
+  }
+  .setup-row {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    margin-bottom: 8px;
+  }
+  .setup-row label {
+    font-size: 13px;
+    color: var(--pink-600);
+    font-weight: 600;
+  }
+  input[type="number"] {
+    width: 72px;
+    height: 40px;
+    border-radius: 12px;
+    border: 2px solid var(--pink-100);
+    text-align: center;
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--pink-800);
+    outline: none;
+    -moz-appearance: textfield;
+  }
+  input[type="number"]:focus { border-color: var(--pink-400); }
+  .set-btn {
+    height: 40px;
+    padding: 0 18px;
+    border-radius: 12px;
+    border: none;
+    background: var(--pink-100);
+    color: var(--pink-800);
+    font-weight: 700;
+    font-size: 13px;
+  }
+  .set-btn:active { transform: scale(0.96); }
+
+  .ring-wrap {
+    position: relative;
+    width: 240px;
+    height: 240px;
+    margin: 22px auto 6px;
+  }
+  .ring-wrap svg { width: 100%; height: 100%; transform: rotate(-90deg); }
+  .ring-bg { fill: none; stroke: var(--pink-50); stroke-width: 14; }
+  .ring-progress {
+    fill: none;
+    stroke: url(#grad);
+    stroke-width: 14;
+    stroke-linecap: round;
+    transition: stroke-dashoffset 0.3s linear;
+  }
+  .time-display {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 34px;
+    font-weight: 800;
+    font-variant-numeric: tabular-nums;
+    color: var(--pink-800);
+  }
+  .status {
+    font-size: 13px;
+    color: var(--pink-600);
+    margin: 10px 0 22px;
+    min-height: 18px;
+  }
+  .controls {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+  }
+  button.action {
+    flex: 1;
+    max-width: 150px;
+    height: 52px;
+    border-radius: 16px;
+    border: none;
+    font-size: 15px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    cursor: pointer;
+  }
+  button.action:active { transform: scale(0.96); }
+  #toggle-btn {
+    background: var(--pink-400);
+    color: #ffffff;
+  }
+  #toggle-btn.running {
+    background: var(--lav-400);
+  }
+  #reset-btn {
+    background: var(--pink-50);
+    color: var(--pink-600);
+  }
+</style>
+</head>
+<body>
+
+<div class="card">
+  <div class="badge">
+    <svg width="34" height="34" viewBox="0 0 100 100">
+      <circle cx="34" cy="20" r="8" fill="#D4537E" />
+      <circle cx="66" cy="20" r="8" fill="#D4537E" />
+      <circle cx="50" cy="54" r="34" fill="#D4537E" />
+      <circle cx="50" cy="54" r="27" fill="#ffffff" />
+      <line x1="50" y1="54" x2="50" y2="36" stroke="#D4537E" stroke-width="5" stroke-linecap="round" />
+      <line x1="50" y1="54" x2="63" y2="60" stroke="#D4537E" stroke-width="5" stroke-linecap="round" />
+      <circle cx="50" cy="54" r="4" fill="#D4537E" />
+    </svg>
+  </div>
+  <h1>Work countdown</h1>
+  <p class="subtitle">Set your hours, then start and stop as you go.</p>
+
+  <div class="setup-row">
+    <label for="hours-input">Hours today</label>
+    <input id="hours-input" type="number" min="0.25" max="16" step="0.25" value="8" inputmode="decimal" />
+    <button class="set-btn" id="set-btn">Set</button>
+  </div>
+
+  <div class="ring-wrap">
+    <svg viewBox="0 0 240 240">
+      <defs>
+        <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stop-color="#D4537E" />
+          <stop offset="100%" stop-color="#7F77DD" />
+        </linearGradient>
+      </defs>
+      <circle class="ring-bg" cx="120" cy="120" r="105" />
+      <circle class="ring-progress" id="ring" cx="120" cy="120" r="105" />
+    </svg>
+    <div class="time-display" id="display">08:00:00</div>
+  </div>
+
+  <p class="status" id="status">Ready when you are.</p>
+
+  <div class="controls">
+    <button class="action" id="toggle-btn">Start</button>
+    <button class="action" id="reset-btn">Reset</button>
+  </div>
+</div>
+
+<script>
+(function () {
+  var hoursInput = document.getElementById('hours-input');
+  var setBtn = document.getElementById('set-btn');
+  var toggleBtn = document.getElementById('toggle-btn');
+  var resetBtn = document.getElementById('reset-btn');
+  var display = document.getElementById('display');
+  var status = document.getElementById('status');
+  var ring = document.getElementById('ring');
+
+  var CIRC = 2 * Math.PI * 105;
+  ring.style.strokeDasharray = CIRC;
+
+  var STORE_KEY = 'work-countdown-state-v1';
+  var state = load();
+
+  function load() {
+    try {
+      var raw = localStorage.getItem(STORE_KEY);
+      if (!raw) return defaultState();
+      var s = JSON.parse(raw);
+      if (s.running && s.lastTs) {
+        var elapsed = (Date.now() - s.lastTs) / 1000;
+        s.remaining -= elapsed;
+      }
+      if (s.remaining < 0) s.remaining = 0;
+      if (s.remaining <= 0) s.running = false;
+      return s;
+    } catch (e) {
+      return defaultState();
+    }
+  }
+
+  function defaultState() {
+    var h = 8;
+    return { totalSeconds: h * 3600, remaining: h * 3600, running: false, lastTs: null };
+  }
+
+  function save() {
+    localStorage.setItem(STORE_KEY, JSON.stringify(state));
+  }
+
+  function fmt(sec) {
+    sec = Math.max(0, Math.round(sec));
+    var h = Math.floor(sec / 3600);
+    var m = Math.floor((sec % 3600) / 60);
+    var s = sec % 60;
+    function pad(n) { return n < 10 ? '0' + n : '' + n; }
+    return pad(h) + ':' + pad(m) + ':' + pad(s);
+  }
+
+  function render() {
+    display.textContent = fmt(state.remaining);
+    var frac = state.totalSeconds > 0 ? state.remaining / state.totalSeconds : 0;
+    frac = Math.max(0, Math.min(1, frac));
+    ring.style.strokeDashoffset = CIRC * (1 - frac);
+    hoursInput.value = Math.round((state.totalSeconds / 3600) * 100) / 100;
+
+    if (state.running) {
+      toggleBtn.textContent = 'Stop';
+      toggleBtn.classList.add('running');
+      status.textContent = "You're working. Keep going!";
+    } else if (state.remaining <= 0) {
+      toggleBtn.textContent = 'Start';
+      toggleBtn.classList.remove('running');
+      status.textContent = "All done for today! Nice work.";
+    } else if (state.remaining < state.totalSeconds) {
+      toggleBtn.textContent = 'Start';
+      toggleBtn.classList.remove('running');
+      status.textContent = 'Paused. Press start to resume.';
+    } else {
+      toggleBtn.textContent = 'Start';
+      toggleBtn.classList.remove('running');
+      status.textContent = 'Ready when you are.';
+    }
+  }
+
+  var timerId = null;
+
+  function tick() {
+    if (!state.running) return;
+    var now = Date.now();
+    var elapsed = (now - state.lastTs) / 1000;
+    state.lastTs = now;
+    state.remaining -= elapsed;
+    if (state.remaining <= 0) {
+      state.remaining = 0;
+      state.running = false;
+      stopTimer();
+    }
+    render();
+    save();
+  }
+
+  function startTimer() {
+    if (timerId) return;
+    timerId = setInterval(tick, 250);
+  }
+
+  function stopTimer() {
+    if (timerId) { clearInterval(timerId); timerId = null; }
+  }
+
+  setBtn.addEventListener('click', function () {
+    state.running = false;
+    stopTimer();
+    var h = parseFloat(hoursInput.value);
+    if (isNaN(h) || h <= 0) h = 8;
+    state.totalSeconds = Math.round(h * 3600);
+    state.remaining = state.totalSeconds;
+    state.lastTs = null;
+    render();
+    save();
+  });
+
+  toggleBtn.addEventListener('click', function () {
+    if (state.running) {
+      state.running = false;
+      stopTimer();
+    } else {
+      if (state.remaining <= 0) return;
+      state.running = true;
+      state.lastTs = Date.now();
+      startTimer();
+    }
+    render();
+    save();
+  });
+
+  resetBtn.addEventListener('click', function () {
+    state.running = false;
+    stopTimer();
+    state.remaining = state.totalSeconds;
+    state.lastTs = null;
+    render();
+    save();
+  });
+
+  document.addEventListener('visibilitychange', function () {
+    if (document.visibilityState === 'visible' && state.running) {
+      state = load();
+      render();
+      if (state.running) startTimer();
+    }
+  });
+
+  render();
+  if (state.running) startTimer();
+
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', function () {
+      navigator.serviceWorker.register('sw.js').catch(function () {});
+    });
+  }
+})();
+</script>
+
+</body>
+</html>
