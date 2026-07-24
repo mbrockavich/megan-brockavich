@@ -1,6 +1,6 @@
 /* =========================================================================
-   Shared reading data, used by 2026-reading-stats.html, series-tracker.html,
-   and zodiac-world-tracker.html. Edit here once and every page stays in sync.
+   Shared reading data, used by 2026-reading-stats.html and series-tracker.html.
+   Edit here once and every page stays in sync.
 
    Read status is never hand-set per series/tracker entry — it's computed by
    looking up a book's title in `books` (this year's reads) or `pastReads`
@@ -389,113 +389,6 @@ const SERIES = [
       {title:"Roots, Rum, and Revenants", cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1758805415i/242063842.jpg"},
       {title:"Spectacles, Sangria, and Selkies", cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1782483297i/254609775.jpg"},
       {title:"Greed, Guinness, and Grogochs", comingSoon:"April 2027"}
-    ]
-  }
-];
-
-/* The full Caroline Peckham & Susanne Valenti "Solaria" universe, in
-   chronological/reading order across every era. Same {title}/{title,cover}/
-   {title,comingSoon} shape as SERIES above, checked off via findRead(). */
-const WORLD_TRACKER = [
-  {
-    name: "Ruthless Boys of the Zodiac",
-    era: "The Fae Lands",
-    blurb: "The prequel — five years before the Academy",
-    books: [
-      {title:"Dark Fae", cover:"https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1619705977i/57892054._SY180_.jpg"},
-      {title:"Savage Fae", cover:"https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1619382623i/57849105._SY180_.jpg"},
-      {title:"Vicious Fae", cover:"https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1619382736i/57849111._SY180_.jpg"},
-      {title:"Broken Fae", cover:"https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1619382818i/57849125._SY180_.jpg"},
-      {title:"Warrior Fae", cover:"https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1619382385i/57849074._SY180_.jpg"}
-    ]
-  },
-  {
-    name: "Zodiac Academy",
-    era: "Zodiac Academy",
-    blurb: "The main saga",
-    books: [
-      {title:"The Awakening"},
-      {title:"Ruthless Fae"},
-      {title:"The Reckoning"},
-      {title:"Origins of an Academy Bully"},
-      {title:"Shadow Princess"},
-      {title:"Cursed Fates"},
-      {title:"The Big A.S.S. Party"},
-      {title:"Fated Throne"},
-      {title:"The Awakening as Told by the Boys"},
-      {title:"Heartless Sky"},
-      {title:"Sorrow and Starlight"},
-      {title:"Beyond the Veil"},
-      {title:"Live and Let Lionel"},
-      {title:"Restless Stars"}
-    ]
-  },
-  {
-    name: "Darkmore Penitentiary",
-    era: "Darkmore Penitentiary",
-    blurb: "Five years after the Academy",
-    books: [
-      {title:"Caged Wolf"},
-      {title:"Alpha Wolf"},
-      {title:"Feral Wolf"},
-      {title:"Wild Wolf"}
-    ]
-  },
-  {
-    name: "Sins of the Zodiac",
-    era: "The Waning Lands",
-    blurb: "The newest era — new characters, same world",
-    books: [
-      {title:"Never Keep", cover:"https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1717864038i/210966754._SY180_.jpg"},
-      {title:"Echo Fort", cover:"https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1747983780i/219503833._SY180_.jpg"},
-      {title:"Cinder Vale", cover:"https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1746267651i/232736952._SY180_.jpg"},
-      {title:"Oracle Bay", comingSoon:"March 2027"}
-    ]
-  }
-];
-
-/* Sarah J. Maas's three fantasy worlds, in reading order per series.
-   Same {title}/{title,cover}/{title,comingSoon} shape, checked off via
-   findRead(). */
-const SJM_UNIVERSE = [
-  {
-    name: "Throne of Glass",
-    realm: "Erilea",
-    blurb: "Where it all began",
-    books: [
-      {title:"Throne of Glass"},
-      {title:"Crown of Midnight"},
-      {title:"Heir of Fire"},
-      {title:"The Assassin's Blade"},
-      {title:"Queen of Shadows"},
-      {title:"Empire of Storms"},
-      {title:"Tower of Dawn"},
-      {title:"Kingdom of Ash"}
-    ]
-  },
-  {
-    name: "A Court of Thorns and Roses",
-    realm: "Prythian",
-    blurb: "The Night Court and beyond",
-    books: [
-      {title:"A Court of Thorns and Roses"},
-      {title:"A Court of Mist and Fury"},
-      {title:"A Court of Wings and Ruin"},
-      {title:"A Court of Frost and Starlight"},
-      {title:"A Court of Silver Flames"},
-      {title:"ACOTAR Book 6", comingSoon:"October 2026"},
-      {title:"ACOTAR Book 7", comingSoon:"January 2027"}
-    ]
-  },
-  {
-    name: "Crescent City",
-    realm: "Midgard",
-    blurb: "The newest world",
-    books: [
-      {title:"House of Earth and Blood"},
-      {title:"House of Sky and Breath"},
-      {title:"House of Flame and Shadow"},
-      {title:"Crescent City Book 4", comingSoon:true}
     ]
   }
 ];
