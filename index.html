@@ -16,6 +16,8 @@
     --dim: #8b90a8;
     --dimmer: #565b73;
     --line: rgba(139, 144, 168, 0.18);
+    --lamp: #c9a266;
+    --lamp-soft: rgba(201, 162, 102, 0.16);
   }
 
   * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -114,7 +116,7 @@
     animation: rise 1.4s ease-out 0.6s both;
   }
 
-  .upcoming-title {
+  .upcoming-title, .section-title {
     font-size: 0.7rem;
     letter-spacing: 0.34em;
     text-transform: uppercase;
@@ -168,22 +170,152 @@
     color: var(--dimmer);
   }
 
-  nav {
-    position: relative;
-    z-index: 1;
-    text-align: center;
-    padding: 16px 24px 0;
+  /* my apps */
+  .apps {
+    margin-top: 8vh;
+    width: 100%;
+    max-width: 720px;
+    animation: rise 1.4s ease-out 0.7s both;
   }
 
-  nav a {
+  .tile-row {
+    display: flex;
+    justify-content: center;
+    border-top: 1px solid var(--line);
+  }
+
+  .tile {
+    flex: 1;
+    max-width: 220px;
+    display: block;
+    padding: 24px 14px 20px;
+    text-align: center;
+    border-left: 1px solid var(--line);
+    text-decoration: none;
+    color: inherit;
+    transition: background 0.4s ease, transform 0.25s ease;
+  }
+  .tile:first-child { border-left: none; }
+  .tile:hover, .tile:focus-visible { background: var(--night-soft); transform: translateY(-3px); outline: none; }
+
+  .tile-icon { margin: 0 auto 12px; width: 30px; height: 30px; }
+
+  .tile-name {
+    font-size: 0.78rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--moonlight);
+  }
+
+  .tile-desc {
+    margin-top: 6px;
+    font-size: 0.68rem;
+    letter-spacing: 0.06em;
+    color: var(--dim);
+    line-height: 1.5;
+  }
+
+  /* library shelf */
+  .library-shelf {
+    margin-top: 9vh;
+    width: 100%;
+    max-width: 720px;
+    animation: rise 1.4s ease-out 0.85s both;
+  }
+
+  .lamp-wrap-mini {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 4px;
+  }
+
+  #lampGlowMini { filter: drop-shadow(0 0 30px var(--lamp-soft)); }
+
+  .flicker { animation: flicker 5s ease-in-out infinite; }
+
+  @keyframes flicker {
+    0%, 100% { opacity: 1; }
+    46% { opacity: 1; }
+    47% { opacity: 0.85; }
+    48% { opacity: 1; }
+    72% { opacity: 1; }
+    73% { opacity: 0.9; }
+    74% { opacity: 1; }
+  }
+
+  .shelf {
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    gap: 8px;
+    padding: 10px 20px 0;
+    min-height: 130px;
+  }
+
+  .spine {
+    position: relative;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    padding-bottom: 12px;
+    width: 46px;
+    border-radius: 3px 3px 1px 1px;
+    text-decoration: none;
+    color: var(--night);
+    box-shadow: inset -5px 0 8px rgba(0,0,0,0.18), 0 2px 6px rgba(0,0,0,0.4);
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+    cursor: pointer;
+  }
+
+  .spine:hover, .spine:focus-visible {
+    transform: translateY(-8px);
+    box-shadow: inset -5px 0 8px rgba(0,0,0,0.18), 0 10px 18px rgba(0,0,0,0.45);
+    outline: none;
+  }
+
+  .spine-label {
+    writing-mode: vertical-rl;
+    transform: rotate(180deg);
+    font-family: 'Jost', sans-serif;
+    font-size: 0.6rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+
+  .spine.empty {
+    background: transparent !important;
+    box-shadow: none;
+    border: 1px dashed var(--line);
+    color: var(--dimmer);
+    cursor: default;
+    height: 90px !important;
+  }
+  .spine.empty:hover { transform: none; }
+
+  .ledge {
+    height: 3px;
+    width: 100%;
+    margin: 0 auto;
+    background: linear-gradient(to right, transparent, var(--line) 10%, var(--line) 90%, transparent);
+    box-shadow: 0 10px 22px rgba(0,0,0,0.5);
+  }
+
+  .shelf-caption {
+    text-align: center;
+    margin-top: 18px;
     font-size: 0.66rem;
-    letter-spacing: 0.24em;
+    letter-spacing: 0.12em;
     text-transform: uppercase;
     color: var(--dimmer);
-    text-decoration: none;
-    transition: color 0.2s;
   }
-  nav a:hover { color: var(--dim); }
+
+  .shelf-caption a {
+    color: var(--dim);
+    text-decoration: none;
+    border-bottom: 1px solid var(--line);
+  }
+  .shelf-caption a:hover { color: var(--moonlight); }
 
   footer {
     position: relative;
@@ -202,7 +334,8 @@
   }
 
   @media (prefers-reduced-motion: reduce) {
-    .name, .tagline, .moon-wrap, .phase-label, .upcoming { animation: none; }
+    .name, .tagline, .moon-wrap, .phase-label, .upcoming, .apps, .library-shelf { animation: none; }
+    .flicker { animation: none; }
   }
 
   @media (max-width: 540px) {
@@ -233,9 +366,44 @@
     <div class="upcoming-title">What's coming</div>
     <div class="phase-row" id="phaseRow"></div>
   </section>
+
+  <section class="apps">
+    <div class="section-title">My Apps</div>
+    <div class="tile-row">
+      <a class="tile" href="work-countdown/index.html">
+        <svg class="tile-icon" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="20" cy="20" r="15" stroke="var(--moonlight)" stroke-width="1.4"/>
+          <path d="M20 11v9l7 4" stroke="var(--moonlight)" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        <div class="tile-name">Countdown</div>
+        <div class="tile-desc">Work &middot; Dogs &middot; Writing</div>
+      </a>
+      <a class="tile" href="move-pacer.html">
+        <svg class="tile-icon" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M8 27 L16 19 L22 25 L32 12" stroke="var(--moonlight)" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M25 12 H32 V19" stroke="var(--moonlight)" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        <div class="tile-name">Move Pacer</div>
+        <div class="tile-desc">Stay under your inactive-time goal</div>
+      </a>
+    </div>
+  </section>
+
+  <section class="library-shelf">
+    <div class="section-title">Library</div>
+    <div class="lamp-wrap-mini">
+      <svg id="lampGlowMini" class="flicker" width="52" height="52" viewBox="0 0 70 70" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="35" cy="35" r="30" fill="var(--lamp-soft)" />
+        <circle cx="35" cy="35" r="14" fill="var(--lamp)" opacity="0.85" />
+        <circle cx="35" cy="35" r="6" fill="#fff8ea" />
+      </svg>
+    </div>
+    <div class="shelf" id="shelf"></div>
+    <div class="ledge"></div>
+    <div class="shelf-caption">tap a spine, or <a href="library.html">open the full library</a></div>
+  </section>
 </main>
 
-<nav><a href="library.html">Megan's Library</a></nav>
 <footer id="footer"></footer>
 
 <script>
@@ -363,6 +531,24 @@
       <div class="cell-count">${when}</div>
     </div>`;
   }).join('');
+
+  // ---------- library shelf ----------
+  const books = [
+    { title: 'The Count of Monte Cristo', href: 'count-of-monte-cristo/monte-cristo-checklist.html', color: '#8b6f47', height: 130 },
+    { title: '2026 Reading Record', href: '2026-reading-stats.html', color: '#6b3a52', height: 115 },
+    { title: 'Series Tracker', href: 'series-tracker.html', color: '#a67a92', height: 120 },
+  ];
+  const EMPTY_SLOTS = 2;
+  const shelf = document.getElementById('shelf');
+  shelf.innerHTML = books.map(b => `
+    <a class="spine" href="${b.href}" style="height:${b.height}px; background:${b.color};">
+      <span class="spine-label">${b.title}</span>
+    </a>
+  `).join('') + Array.from({ length: EMPTY_SLOTS }).map((_, i) => `
+    <div class="spine empty" style="height:${85 + (i % 2) * 10}px;">
+      <span class="spine-label">&nbsp;</span>
+    </div>
+  `).join('');
 
   const dateFmt = new Intl.DateTimeFormat(undefined, { year: 'numeric', month: 'long', day: 'numeric' });
   document.getElementById('footer').textContent = dateFmt.format(now);
