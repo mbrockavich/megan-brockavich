@@ -117,6 +117,14 @@ const pastReads = [
   {title:"Onyx Storm", readDate:"January 2025", cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1766329694i/209439446.jpg"}
 ];
 
+/* Parses a "YYYY-MM-DD" dateFinished string as a local-timezone date
+   instead of UTC midnight, so it doesn't roll back a day in US timezones
+   (new Date("2026-08-01") is UTC and shifts to Jul 31 evening locally). */
+function parseLocalDate(dateStr) {
+  const [y, m, d] = dateStr.split("-").map(Number);
+  return new Date(y, m - 1, d);
+}
+
 /* Looks a title up in this year's `books` first, then in `pastReads`.
    Returns the matching object (with .cover, and either .readDate or
    .dateFinished) or null if the book hasn't been logged as read anywhere. */

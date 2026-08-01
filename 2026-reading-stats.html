@@ -438,11 +438,11 @@ const GENRE_EMOJI = {
 };
 
 /* ---------------- date helpers ---------------- */
-const TODAY = new Date("2026-07-08");
+const TODAY = new Date();
 const YEAR = 2026;
 const MONTH_LABELS = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
 
-function monthIndex(dateStr){ return new Date(dateStr).getMonth(); } // 0-11
+function monthIndex(dateStr){ return parseLocalDate(dateStr).getMonth(); } // 0-11
 
 /* ---------------- aggregate ---------------- */
 const totalRead = books.length;
@@ -478,10 +478,10 @@ const authorCounts = {};
 books.forEach(b => { authorCounts[b.author] = (authorCounts[b.author]||0)+1; });
 const topAuthor = Object.entries(authorCounts).sort((a,b)=>b[1]-a[1])[0];
 
-const sortedByDate = [...books].sort((a,b) => new Date(a.dateFinished) - new Date(b.dateFinished));
+const sortedByDate = [...books].sort((a,b) => parseLocalDate(a.dateFinished) - parseLocalDate(b.dateFinished));
 let fastestGap = Infinity, slowestGap = 0, gapSum = 0, gapCount = 0;
 for(let i=1;i<sortedByDate.length;i++){
-  const gap = (new Date(sortedByDate[i].dateFinished) - new Date(sortedByDate[i-1].dateFinished)) / 86400000;
+  const gap = (parseLocalDate(sortedByDate[i].dateFinished) - parseLocalDate(sortedByDate[i-1].dateFinished)) / 86400000;
   fastestGap = Math.min(fastestGap, gap);
   slowestGap = Math.max(slowestGap, gap);
   gapSum += gap; gapCount++;
@@ -585,7 +585,7 @@ const modalClose = document.getElementById("modalClose");
 function openGenreModal(genre, spineColor){
   const genreBooks = books
     .filter(b => b.genre === genre)
-    .sort((a,b) => a.author.localeCompare(b.author) || new Date(a.dateFinished) - new Date(b.dateFinished));
+    .sort((a,b) => a.author.localeCompare(b.author) || parseLocalDate(a.dateFinished) - parseLocalDate(b.dateFinished));
 
   modalTitle.textContent = `${GENRE_EMOJI[genre] || "📚"} ${genre}`;
   modalSub.textContent = `${genreBooks.length} book${genreBooks.length === 1 ? "" : "s"} finished in 2026`;
@@ -595,7 +595,7 @@ function openGenreModal(genre, spineColor){
     const item = document.createElement("div");
     item.className = "modal-book";
     const coverHtml = `<div class="modal-book-cover" style="background:${spineColor};"><span>${b.title}</span>${b.cover ? `<img src="${b.cover}" alt="Cover of ${b.title}" loading="lazy" onerror="this.remove()">` : ""}</div>`;
-    const niceDate = new Date(b.dateFinished).toLocaleDateString('en-US', {month:'short', day:'numeric'});
+    const niceDate = parseLocalDate(b.dateFinished).toLocaleDateString('en-US', {month:'short', day:'numeric'});
     item.innerHTML = `
       ${coverHtml}
       <div class="modal-book-title">${b.title}</div>
