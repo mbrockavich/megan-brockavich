@@ -164,6 +164,25 @@
   .grid-2{ display:grid; grid-template-columns: 1fr 1fr; gap: 22px; margin-bottom: 30px; }
   @media (max-width: 720px){ .grid-2{ grid-template-columns: 1fr; } }
 
+  @media (max-width: 640px){
+    body{ padding: 32px 12px 60px; }
+    .hero-card{ padding: 22px 16px 20px; }
+    .hero-top{ padding-bottom: 12px; margin-bottom: 16px; }
+    .hero-count{ text-align:left; }
+    .stamp-grid{
+      grid-template-columns: repeat(6, 1fr);
+      gap: 30px 8px;
+      margin-bottom: 30px;
+    }
+    .month-slot .stamp-mark{ font-size: 12px; }
+    .month-slot .stamp-mark small{ font-size: 7px; }
+    .month-slot .mlabel{ font-size: 8px; bottom: -16px; }
+    .panel{ padding: 20px 18px 22px; }
+    .shelf-panel{ padding: 22px 18px 24px; }
+    .spine-name{ width: 110px; font-size: 12px; }
+    .missing-panel{ padding: 20px 18px; }
+  }
+
   .panel{ padding: 24px 26px 26px; }
   .panel h2{
     font-family:'Fraunces', serif;
