@@ -12,7 +12,7 @@ const books = [
   {title:"Sunrise on the Reaping", cover:"https://covers.openlibrary.org/b/isbn/1546171460-L.jpg", author:"Suzanne Collins", genre:"Science Fiction", pages:419, dateFinished:"2026-01-03"},
   {title:"Feral Wolf", cover:"https://covers.openlibrary.org/b/id/15130580-L.jpg", author:"Caroline Peckham & Susanne Valenti", genre:"Romantasy", pages:408, dateFinished:"2026-01-08"},
   {title:"Untamed", cover:"https://m.media-amazon.com/images/I/51YkYhYbRdL.jpg", author:"Glennon Doyle", genre:"Memoir", pages:352, dateFinished:"2026-01-10"},
-  {title:"Red Rising", cover:"https://covers.openlibrary.org/b/id/7316188-L.jpg", author:"Pierce Brown", genre:"Science Fiction", pages:401, dateFinished:"2026-01-17"},
+  {title:"Red Rising", cover:"https://covers.openlibrary.org/b/isbn/9780345539786-L.jpg", author:"Pierce Brown", genre:"Science Fiction", pages:401, dateFinished:"2026-01-17"},
   {title:"Golden Son", cover:"https://covers.openlibrary.org/b/id/8454351-L.jpg", author:"Pierce Brown", genre:"Science Fiction", pages:466, dateFinished:"2026-01-22"},
   {title:"Morning Star", cover:"https://covers.openlibrary.org/b/id/8566174-L.jpg", author:"Pierce Brown", genre:"Science Fiction", pages:526, dateFinished:"2026-01-31"},
   {title:"A Mystical Legacy", cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1701384644i/203011116.jpg", author:"Rowan Dillon", genre:"Mystery", pages:32, dateFinished:"2026-01-31"},
@@ -53,7 +53,8 @@ const books = [
   {title:"107 Days", cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1753912443i/232466984.jpg", author:"Kamala Harris", genre:"Memoir", pages:304, dateFinished:"2026-07-13"},
   {title:"The Count of Monte Cristo", cover:"count-of-monte-cristo/monte-cristo-cover.jpg", author:"Alexandre Dumas", genre:"Classic Literature", pages:1566, dateFinished:"2026-08-01"},
   {title:"Funny Story", cover:"https://covers.openlibrary.org/b/isbn/9780593441282-L.jpg", author:"Emily Henry", genre:"Contemporary Romance", pages:384, dateFinished:"2026-08-02"},
-  {title:"Light Bringer", cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1667655583i/29227774.jpg", author:"Pierce Brown", genre:"Science Fiction", pages:672, dateFinished:"2026-08-08"}
+  {title:"Light Bringer", cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1667655583i/29227774.jpg", author:"Pierce Brown", genre:"Science Fiction", pages:672, dateFinished:"2026-08-08"},
+  {title:"Atomic Habits", cover:"https://covers.openlibrary.org/b/isbn/9780735211292-L.jpg", author:"James Clear", genre:"Nonfiction", pages:320, dateFinished:"2026-08-09"}
 ];
 
 /* Everything finished before 2026 that still shows up as "read" on a
