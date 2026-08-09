@@ -21,11 +21,11 @@ const books = [
   {title:"Dawn of the North", cover:"https://covers.openlibrary.org/b/id/15215659-L.jpg", author:"Demi Winters", genre:"Romantasy", pages:608, dateFinished:"2026-02-28"},
   {title:"Flock", cover:"https://m.media-amazon.com/images/I/41yC9PdU0gL.jpg", author:"Kate Stewart", genre:"Contemporary Romance", pages:450, dateFinished:"2026-03-01"},
   {title:"Exodus", cover:"https://m.media-amazon.com/images/I/41XHkcLHMEL.jpg", author:"Kate Stewart", genre:"Contemporary Romance", pages:500, dateFinished:"2026-03-10"},
-  {title:"The Comfy Cozy Witch's Guide to Making Magic in Your Everyday Life", cover:"https://covers.openlibrary.org/b/id/14804484-L.jpg", author:"Jennie Blonde", genre:"Nonfiction", pages:208, dateFinished:"2026-03-12"},
+  {title:"The Comfy Cozy Witch's Guide to Making Magic in Your Everyday Life", cover:"https://covers.openlibrary.org/b/id/14804484-L.jpg", author:"Jennie Blonde", genre:"Nonfiction", subgenre:"Spirituality", pages:208, dateFinished:"2026-03-12"},
   {title:"The Finish Line", cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1610549876i/56182388.jpg", author:"Kate Stewart", genre:"Contemporary Romance", pages:560, dateFinished:"2026-03-15"},
   {title:"Project Hail Mary", cover:"https://covers.openlibrary.org/b/id/11200092-L.jpg", author:"Andy Weir", genre:"Science Fiction", pages:496, dateFinished:"2026-03-20"},
   {title:"Just For the Cameras", cover:"https://covers.openlibrary.org/b/id/15170471-L.jpg", author:"Meghan Quinn", genre:"Contemporary Romance", pages:637, dateFinished:"2026-03-22"},
-  {title:"We Should All Be Feminists", cover:"https://covers.openlibrary.org/b/id/11324542-L.jpg", author:"Chimamanda Ngozi Adichie", genre:"Nonfiction", pages:64, dateFinished:"2026-03-25"},
+  {title:"We Should All Be Feminists", cover:"https://covers.openlibrary.org/b/id/11324542-L.jpg", author:"Chimamanda Ngozi Adichie", genre:"Nonfiction", subgenre:"Essays", pages:64, dateFinished:"2026-03-25"},
   {title:"Dear Debbie", cover:"https://covers.openlibrary.org/b/id/15171146-L.jpg", author:"Freida McFadden", genre:"Thriller", pages:336, dateFinished:"2026-03-27"},
   {title:"Cleopatra", cover:"https://m.media-amazon.com/images/I/61SqZSwLTvL.jpg", author:"Saara El-Arifi", genre:"Historical Fiction", pages:448, dateFinished:"2026-04-01"},
   {title:"A Wrinkle in Time: The Graphic Novel", cover:"https://covers.openlibrary.org/b/id/7364130-L.jpg", author:"Madeleine L'Engle", genre:"Graphic Novel", pages:392, dateFinished:"2026-04-01"},
@@ -41,11 +41,11 @@ const books = [
   {title:"Crown Me Dead", cover:"https://covers.openlibrary.org/b/id/15226806-L.jpg", author:"Liv Zander", genre:"Romantasy", pages:270, dateFinished:"2026-05-21"},
   {title:"Crown Me Yours", cover:"https://covers.openlibrary.org/b/id/15228557-L.jpg", author:"Liv Zander", genre:"Romantasy", pages:244, dateFinished:"2026-05-25"},
   {title:"My Husband's Wife", cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1747668611i/231127462.jpg", author:"Alice Feeney", genre:"Thriller", pages:320, dateFinished:"2026-05-26"},
-  {title:"The Devil at His Elbow", cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1712842498i/210454076.jpg", author:"Valerie Bauerlein", genre:"Nonfiction", pages:489, dateFinished:"2026-06-03"},
+  {title:"The Devil at His Elbow", cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1712842498i/210454076.jpg", author:"Valerie Bauerlein", genre:"Nonfiction", subgenre:"True Crime", pages:489, dateFinished:"2026-06-03"},
   {title:"Wild Wolf", cover:"https://m.media-amazon.com/images/I/41kTxqoYBwL.jpg", author:"Caroline Peckham & Susanne Valenti", genre:"Romantasy", pages:430, dateFinished:"2026-06-06"},
   {title:"Remarkably Bright Creatures", cover:"https://covers.openlibrary.org/b/id/12019989-L.jpg", author:"Shelby Van Pelt", genre:"Literary Fiction", pages:368, dateFinished:"2026-06-07"},
   {title:"Iron Gold", cover:"https://covers.openlibrary.org/b/id/14511722-L.jpg", author:"Pierce Brown", genre:"Science Fiction", pages:605, dateFinished:"2026-06-14"},
-  {title:"Pendulum Magic for Beginners", cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1386166779i/19176827.jpg", author:"Richard Webster", genre:"Nonfiction", pages:241, dateFinished:"2026-06-28"},
+  {title:"Pendulum Magic for Beginners", cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1386166779i/19176827.jpg", author:"Richard Webster", genre:"Nonfiction", subgenre:"Spirituality", pages:241, dateFinished:"2026-06-28"},
   {title:"Doctor Sleep", cover:"https://covers.openlibrary.org/b/id/14652972-L.jpg", author:"Stephen King", genre:"Horror", pages:531, dateFinished:"2026-06-28"},
   {title:"The Housemaid's Wedding", cover:"https://covers.openlibrary.org/b/id/14840898-L.jpg", author:"Freida McFadden", genre:"Thriller", pages:86, dateFinished:"2026-06-29"},
   {title:"Dark Age", cover:"https://covers.openlibrary.org/b/id/8748017-L.jpg", author:"Pierce Brown", genre:"Science Fiction", pages:776, dateFinished:"2026-07-03"},
@@ -54,7 +54,7 @@ const books = [
   {title:"The Count of Monte Cristo", cover:"count-of-monte-cristo/monte-cristo-cover.jpg", author:"Alexandre Dumas", genre:"Classic Literature", pages:1566, dateFinished:"2026-08-01"},
   {title:"Funny Story", cover:"https://covers.openlibrary.org/b/isbn/9780593441282-L.jpg", author:"Emily Henry", genre:"Contemporary Romance", pages:384, dateFinished:"2026-08-02"},
   {title:"Light Bringer", cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1667655583i/29227774.jpg", author:"Pierce Brown", genre:"Science Fiction", pages:672, dateFinished:"2026-08-08"},
-  {title:"Atomic Habits", cover:"https://covers.openlibrary.org/b/isbn/9780735211292-L.jpg", author:"James Clear", genre:"Nonfiction", pages:320, dateFinished:"2026-08-09"}
+  {title:"Atomic Habits", cover:"https://covers.openlibrary.org/b/isbn/9780735211292-L.jpg", author:"James Clear", genre:"Nonfiction", subgenre:"Self-Development", pages:320, dateFinished:"2026-08-09"}
 ];
 
 /* Everything finished before 2026 that still shows up as "read" on a

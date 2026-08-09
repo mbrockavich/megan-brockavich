@@ -258,6 +258,7 @@
     grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
     gap: 20px;
   }
+  .modal-subgroups{ display:flex; flex-direction:column; }
   .modal-book{ text-align:center; }
   .modal-book-cover{
     width:100%; aspect-ratio: 2/3;
@@ -281,6 +282,11 @@
   .modal-book-title{ font-size:11.5px; font-weight:600; line-height:1.3; margin-bottom:2px; }
   .modal-book-author{ font-size:10.5px; color:var(--ink-soft); }
   .modal-book-date{ font-family:'Space Mono',monospace; font-size:9.5px; color:var(--ink-soft); margin-top:2px; }
+  .modal-subgroup-heading{
+    font-family:'Space Mono',monospace; font-size:10px; text-transform:uppercase;
+    letter-spacing:0.12em; color:var(--stamp); margin:20px 0 12px;
+  }
+  .modal-subgroup-heading:first-child{ margin-top:0; }
   .spine-name{ width: 150px; flex-shrink:0; font-size: 13px; font-weight:600; }
   .spine-track{ flex:1; height: 26px; background: rgba(43,33,24,0.06); border-radius: 2px; position:relative; }
   .spine-fill{
@@ -601,16 +607,8 @@ const modalSub = document.getElementById("modalSub");
 const modalBookGrid = document.getElementById("modalBookGrid");
 const modalClose = document.getElementById("modalClose");
 
-function openGenreModal(genre, spineColor){
-  const genreBooks = books
-    .filter(b => b.genre === genre)
-    .sort((a,b) => a.author.localeCompare(b.author) || parseLocalDate(a.dateFinished) - parseLocalDate(b.dateFinished));
-
-  modalTitle.textContent = `${GENRE_EMOJI[genre] || "📚"} ${genre}`;
-  modalSub.textContent = `${genreBooks.length} book${genreBooks.length === 1 ? "" : "s"} finished in 2026`;
-
-  modalBookGrid.innerHTML = "";
-  genreBooks.forEach(b => {
+function renderBookGrid(bookList, container, spineColor){
+  bookList.forEach(b => {
     const item = document.createElement("div");
     item.className = "modal-book";
     const coverHtml = `<div class="modal-book-cover" style="background:${spineColor};"><span>${b.title}</span>${b.cover ? `<img src="${b.cover}" alt="Cover of ${b.title}" loading="lazy" onerror="this.remove()">` : ""}</div>`;
@@ -621,8 +619,45 @@ function openGenreModal(genre, spineColor){
       <div class="modal-book-author">${b.author}</div>
       <div class="modal-book-date">Finished ${niceDate}</div>
     `;
-    modalBookGrid.appendChild(item);
+    container.appendChild(item);
   });
+}
+
+function openGenreModal(genre, spineColor){
+  const genreBooks = books
+    .filter(b => b.genre === genre)
+    .sort((a,b) => a.author.localeCompare(b.author) || parseLocalDate(a.dateFinished) - parseLocalDate(b.dateFinished));
+
+  modalTitle.textContent = `${GENRE_EMOJI[genre] || "📚"} ${genre}`;
+  modalSub.textContent = `${genreBooks.length} book${genreBooks.length === 1 ? "" : "s"} finished in 2026`;
+
+  modalBookGrid.innerHTML = "";
+
+  const hasSubgenres = genreBooks.some(b => b.subgenre);
+  if(hasSubgenres){
+    modalBookGrid.className = "modal-subgroups";
+    const bySubgenre = {};
+    genreBooks.forEach(b => {
+      const key = b.subgenre || "Other";
+      (bySubgenre[key] = bySubgenre[key] || []).push(b);
+    });
+    Object.keys(bySubgenre)
+      .sort((a,b) => bySubgenre[b].length - bySubgenre[a].length || a.localeCompare(b))
+      .forEach(key => {
+        const group = bySubgenre[key];
+        const heading = document.createElement("div");
+        heading.className = "modal-subgroup-heading";
+        heading.textContent = `${key} · ${group.length}`;
+        modalBookGrid.appendChild(heading);
+        const grid = document.createElement("div");
+        grid.className = "modal-book-grid";
+        renderBookGrid(group, grid, spineColor);
+        modalBookGrid.appendChild(grid);
+      });
+  } else {
+    modalBookGrid.className = "modal-book-grid";
+    renderBookGrid(genreBooks, modalBookGrid, spineColor);
+  }
 
   modalOverlay.classList.add("open");
   modalClose.focus();
