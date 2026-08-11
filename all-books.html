@@ -134,11 +134,26 @@
 
   /* favorites: cover cards, per genre. standalone = single cover,
      series = stacked covers you can open to see the whole series. */
-  .fav-genre-panel{ padding: 26px 28px 30px; margin-bottom: 26px; }
-  .fav-genre-title{ font-family:'Fraunces',serif; font-weight:600; font-size:19px; margin:0 0 3px; }
-  .fav-genre-sub{ font-family:'Space Mono',monospace; font-size:10px; text-transform:uppercase; letter-spacing:0.1em; color:var(--ink-soft); margin-bottom:22px; }
+  .fav-genre-panel{ padding: 30px 28px 30px; margin-bottom: 26px; }
+  .top6-banner{ text-align:center; margin-bottom:26px; }
+  .ribbon{
+    position:relative; display:inline-block; width:340px; height:68px;
+    margin-bottom:16px; transform:rotate(-1.5deg);
+  }
+  .ribbon-svg{ position:absolute; inset:0; width:100%; height:100%; filter:drop-shadow(0 5px 10px rgba(226,120,154,0.45)); }
+  .ribbon-text{
+    position:absolute; inset:0; display:flex; align-items:center; justify-content:center;
+    font-family:'Space Mono',monospace; font-weight:700; font-size:19px; letter-spacing:0.12em;
+    text-transform:uppercase; color:#fff; gap:8px;
+  }
+  .top6-banner-genre{ font-family:'Fraunces',serif; font-weight:700; font-size:28px; color:var(--ink); line-height:1.2; }
+  .top6-banner-count{
+    font-family:'Space Mono',monospace; font-size:10px; text-transform:uppercase;
+    letter-spacing:0.1em; color:var(--ink-soft); margin-top:5px;
+  }
 
-  .fav-grid{ display:grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 30px 20px; }
+  .fav-grid{ display:grid; grid-template-columns: repeat(5, 1fr); gap: 24px 14px; }
+  @media (max-width: 560px){ .fav-grid{ gap: 16px 8px; } }
   .fav-item{ cursor:pointer; }
   .fav-item:focus-visible{ outline:2px solid var(--stamp); outline-offset:4px; border-radius:4px; }
   .fav-stack-wrap{ position:relative; margin-bottom: 12px; transition: transform 0.18s ease; }
@@ -192,6 +207,7 @@
   .series-book-cover.best{ box-shadow: 0 0 0 3px var(--gold), 0 6px 14px rgba(0,0,0,0.25); }
   .series-book-best-star{ position:absolute; top:-8px; left:50%; transform:translateX(-50%); font-size:15px; z-index:1; filter: drop-shadow(0 1px 1px rgba(0,0,0,0.4)); }
   .series-book-title{ font-size:11.5px; font-weight:600; line-height:1.3; color: var(--ink); }
+  .series-book-num{ font-family:'Space Mono',monospace; font-weight:400; font-size:10px; color: var(--ink-soft); }
 
   /* stats strip */
   .stats-strip{
@@ -223,14 +239,34 @@
     font-family:'Space Mono', monospace; font-size: 8px; text-transform: uppercase; letter-spacing: 0.04em;
     padding: 3px 6px; border-radius: 20px; color: #fff; background: rgba(0,0,0,0.55);
   }
-  .master-spice-tag{
-    position:absolute; bottom:6px; right:6px; z-index:1;
-    font-size: 11px; line-height:1; padding: 3px 6px; border-radius: 20px;
-    background: rgba(0,0,0,0.55);
+  .master-badges{ position:absolute; bottom:6px; left:6px; z-index:2; display:flex; gap:4px; align-items:flex-end; }
+  .master-spicy-badge{
+    font-size: 13px; line-height:1;
+    background: #fff5f2;
+    width: 22px; height: 22px; border-radius: 50%;
+    display:flex; align-items:center; justify-content:center;
+    transform: rotate(8deg);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.35);
+    border: 1.5px solid rgba(255,255,255,0.65);
   }
   .master-title{ font-family:'Fraunces', serif; font-weight:600; font-size: 12.5px; line-height:1.3; color: var(--card); }
   .master-author{ font-size: 10.5px; color: var(--brass); margin-top: 2px; }
   .no-results{ color: #e0c3d1; font-size: 13.5px; font-style: italic; padding: 20px 4px; }
+
+  /* series collapsed into one stacked card on the Master List */
+  .master-card-series{ cursor:pointer; }
+  .master-card-series:focus-visible{ outline:2px solid var(--stamp); outline-offset:3px; border-radius:4px; }
+  .master-stack-wrap{ position:relative; margin-bottom: 8px; transition: transform 0.15s ease; }
+  .master-card-series:hover .master-stack-wrap, .master-card-series:focus-visible .master-stack-wrap{ transform: translateY(-4px); }
+  .master-stack-behind{
+    position:absolute; inset:0; border-radius:4px; background: var(--wood-dark);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.08);
+  }
+  .master-count-badge{
+    position:absolute; bottom:6px; right:6px; z-index:2;
+    font-family:'Space Mono', monospace; font-size: 8px; font-weight:700;
+    background: rgba(0,0,0,0.7); color: #fff; padding: 3px 6px; border-radius: 20px;
+  }
 
   /* book detail modal (single favorites) */
   .modal-overlay{
@@ -288,7 +324,7 @@
   </nav>
 
   <header>
-    <div class="eyebrow">📚 Under This Moon, A Card Catalog</div>
+    <div class="eyebrow">"Books are a uniquely portable magic." · Stephen King</div>
     <h1>Everything I've Read</h1>
     <p id="heroSub">Loading the shelves...</p>
   </header>
@@ -308,12 +344,7 @@
 <div class="page">
 
   <!-- FAVORITES -->
-  <section class="block">
-    <div class="section-head">
-      <div class="label">Top 8, By Genre</div>
-      <h2>Your Top 8</h2>
-      <p>MySpace rules apply: up to 8 per genre, ranked left to right. A series stacks into one cover you can tap to see every book inside.</p>
-    </div>
+  <section class="block" id="favoritesSection">
     <div id="favoritesContainer"></div>
   </section>
 
@@ -371,7 +402,7 @@ const GENRE_EMOJI = {
   "Contemporary Fiction":"📖","Contemporary Romance":"💛","Fantasy":"🐉",
   "Science Fiction":"🚀","Thriller":"🔪","Mystery":"🔎","Horror":"🕯️","Nonfiction":"🧠",
   "Memoir / Biography":"🪞","Literary Fiction":"🖋️","Historical Fiction":"🏛️","Graphic Novel":"🎨",
-  "Young Adult":"🎒","Classic Literature":"🕰️"
+  "Classic Literature":"🕰️","Mythology":"🏺","Young Adult":"🎒"
 };
 const SPINE_COLORS = ["#e2789a","#b8c4e8","#a8d5ba","#f0c987","#c9a0c9","#e8a87c","#8fc9ce","#d9a4c0"];
 const TAG_COLORS = SPINE_COLORS;
@@ -379,6 +410,11 @@ const TAG_COLORS = SPINE_COLORS;
 /* ---------------- build title -> series author lookup ---------------- */
 const seriesAuthorMap = {};
 SERIES.forEach(s => s.books.forEach(b => { seriesAuthorMap[b.title] = s.author; }));
+
+/* title -> full SERIES entry, used to collapse a series into one stacked
+   card on the Master List instead of one card per book. */
+const seriesByBookTitle = new Map();
+SERIES.forEach(s => s.books.forEach(b => { seriesByBookTitle.set(b.title, s); }));
 
 /* ---------------- parse "Month YYYY" strings from pastReads ---------------- */
 function parsePastDate(str){
@@ -401,7 +437,7 @@ function normalizeAll(){
       genre: b.genre || "Uncategorized",
       cover: b.cover,
       rating: b.rating,
-      spice: b.spice,
+      spicy: b.spicy,
       note: b.note,
       dateLabel: d ? d.toLocaleDateString('en-US',{month:'short',year:'numeric'}) : "Undated",
       sortTime: d ? d.getTime() : -8640000000000000,
@@ -419,7 +455,7 @@ function normalizeAll(){
       genre: b.genre,
       cover: b.cover,
       rating: b.rating,
-      spice: b.spice,
+      spicy: b.spicy,
       note: b.note,
       dateLabel: d.toLocaleDateString('en-US',{month:'short',year:'numeric'}),
       sortTime: d.getTime(),
@@ -536,6 +572,10 @@ const shelfGrid = document.getElementById("shelfGrid");
 const shelfCount = document.getElementById("shelfCount");
 const noResults = document.getElementById("noResults");
 
+function genreColorFor(genre){
+  return TAG_COLORS[genreList.findIndex(([g]) => g === genre) % TAG_COLORS.length] || TAG_COLORS[0];
+}
+
 function renderShelf(){
   const filtered = MASTER_SORTED.filter(b => {
     const genreMatch = activeGenre === "All" || b.genre === activeGenre;
@@ -545,24 +585,81 @@ function renderShelf(){
     return genreMatch && searchMatch;
   });
 
+  // collapse every book that belongs to a series (2+ books read) into one
+  // stacked card, in the order its first-appearing book was sorted
+  const seenSeries = new Set();
+  const items = [];
+  filtered.forEach(b => {
+    const series = seriesByBookTitle.get(b.title);
+    if(!series){ items.push({kind: "book", book: b}); return; }
+    if(seenSeries.has(series.name)) return;
+    seenSeries.add(series.name);
+    const seriesBooks = series.books.map(sb => ALL_BOOKS_BY_TITLE.get(sb.title)).filter(Boolean);
+    if(seriesBooks.length < 2){ items.push({kind: "book", book: b}); return; }
+    items.push({kind: "series", name: series.name, author: series.author, books: seriesBooks});
+  });
+
   shelfCount.textContent = `Showing ${filtered.length} of ${ALL_BOOKS.length} books`;
   shelfGrid.innerHTML = "";
   noResults.style.display = filtered.length === 0 ? "block" : "none";
 
-  filtered.forEach(b => {
-    const color = TAG_COLORS[genreList.findIndex(([g]) => g === b.genre) % TAG_COLORS.length] || TAG_COLORS[0];
+  items.forEach(item => {
+    if(item.kind === "book"){
+      const b = item.book;
+      const color = genreColorFor(b.genre);
+      const card = document.createElement("div");
+      card.className = "master-card";
+      card.innerHTML = `
+        <div class="master-cover">
+          <div class="master-genre-tag" style="background:${color};">${b.genre}</div>
+          ${b.spicy ? `
+            <div class="master-badges">
+              <div class="master-spicy-badge">🌶️</div>
+            </div>
+          ` : ""}
+          <span>${b.title}</span>
+          ${b.cover ? `<img src="${b.cover}" alt="Cover of ${b.title}" loading="lazy" onerror="this.remove()">` : ""}
+        </div>
+        <div class="master-title">${b.title}</div>
+        <div class="master-author">${b.author}</div>
+      `;
+      shelfGrid.appendChild(card);
+      return;
+    }
+
+    const top = item.books[0];
+    const color = genreColorFor(top.genre);
+    const behindLayers = Math.min(item.books.length - 1, 2);
+    let behindHTML = "";
+    for(let L = behindLayers; L >= 1; L--){
+      behindHTML += `<div class="master-stack-behind" style="transform: translate(${L*4}px, ${L*4}px);"></div>`;
+    }
     const card = document.createElement("div");
-    card.className = "master-card";
+    card.className = "master-card master-card-series";
+    card.setAttribute("tabindex", "0");
+    card.setAttribute("role", "button");
+    card.setAttribute("aria-label", `Open ${item.name} series, ${item.books.length} books`);
     card.innerHTML = `
-      <div class="master-cover">
-        <div class="master-genre-tag" style="background:${color};">${b.genre}</div>
-        ${b.spice ? `<div class="master-spice-tag">${"🌶️".repeat(b.spice)}</div>` : ""}
-        <span>${b.title}</span>
-        ${b.cover ? `<img src="${b.cover}" alt="Cover of ${b.title}" loading="lazy" onerror="this.remove()">` : ""}
+      <div class="master-stack-wrap">
+        ${behindHTML}
+        <div class="master-cover">
+          <div class="master-genre-tag" style="background:${color};">${top.genre}</div>
+          ${top.spicy ? `
+            <div class="master-badges">
+              <div class="master-spicy-badge">🌶️</div>
+            </div>
+          ` : ""}
+          <span>${top.title}</span>
+          ${top.cover ? `<img src="${top.cover}" alt="Cover of ${top.title}" loading="lazy" onerror="this.remove()">` : ""}
+        </div>
+        <div class="master-count-badge">${item.books.length} books</div>
       </div>
-      <div class="master-title">${b.title}</div>
-      <div class="master-author">${b.author}</div>
+      <div class="master-title">${item.name}</div>
+      <div class="master-author">${item.author}</div>
     `;
+    const open = () => openSeriesModal(item, null);
+    card.addEventListener("click", open);
+    card.addEventListener("keydown", (e) => { if(e.key === "Enter" || e.key === " "){ e.preventDefault(); open(); } });
     shelfGrid.appendChild(card);
   });
 }
@@ -581,117 +678,152 @@ function coverSlotHTML(b, extraClass){
   `;
 }
 
-const MAX_TOP8 = 8;
+const MAX_TOP10 = 10;
 
+const MIN_BOOKS_FOR_TOP10 = 20;
+
+function resolvePicks(genre, picks){
+  if((picks || []).length > MAX_TOP10){
+    console.warn(`TOP_PICKS: "${genre}" has ${picks.length} picks. Only the first ${MAX_TOP10} will show.`);
+  }
+  return (picks || []).slice(0, MAX_TOP10)
+    .map(p => typeof p === "string" ? {title: p} : p)
+    .map(pick => {
+      if(pick.series){
+        const s = seriesByName.get(pick.series);
+        if(!s){ console.warn(`TOP_PICKS: series "${pick.series}" not found in SERIES`); return null; }
+        const seriesBooks = s.books
+          .map(sb => ALL_BOOKS_BY_TITLE.get(sb.title))
+          .filter(Boolean);
+        if(seriesBooks.length === 0) return null;
+        return {kind: "series", name: pick.series, author: s.author, books: seriesBooks, best: pick.best || []};
+      }
+      const b = ALL_BOOKS_BY_TITLE.get(pick.title);
+      if(!b){ console.warn(`TOP_PICKS: "${pick.title}" not found in books/pastReads`); return null; }
+      return {kind: "book", book: {...b, note: pick.note || b.note}};
+    })
+    .filter(Boolean);
+}
+
+function makeFavItem(entry, rank){
+  const item = document.createElement("div");
+  item.className = "fav-item";
+  item.setAttribute("tabindex", "0");
+  item.setAttribute("role", "button");
+
+  if(entry.kind === "book"){
+    const b = entry.book;
+    item.setAttribute("aria-label", `View details for ${b.title}`);
+    item.innerHTML = `
+      <div class="fav-stack-wrap">
+        <div class="fav-rank-badge">#${rank}</div>
+        ${coverSlotHTML(b)}
+      </div>
+      <div class="fav-title">${b.title}</div>
+      <div class="fav-author">${b.author}</div>
+    `;
+    const open = () => openBookModal(b, `#${rank}`, false);
+    item.addEventListener("click", open);
+    item.addEventListener("keydown", (e) => { if(e.key === "Enter" || e.key === " "){ e.preventDefault(); open(); } });
+  } else {
+    const top = entry.books[0];
+    const behindLayers = Math.min(entry.books.length - 1, 2);
+    let behindHTML = "";
+    for(let L = behindLayers; L >= 1; L--){
+      behindHTML += `<div class="fav-stack-behind" style="transform: translate(${L*5}px, ${L*5}px);"></div>`;
+    }
+    item.setAttribute("aria-label", `Open ${entry.name} series`);
+    item.innerHTML = `
+      <div class="fav-stack-wrap">
+        <div class="fav-rank-badge">#${rank}</div>
+        ${behindHTML}
+        ${coverSlotHTML(top)}
+        <div class="fav-count-badge">${entry.books.length} books</div>
+      </div>
+      <div class="fav-title">${entry.name}</div>
+      <div class="fav-author">${entry.author}</div>
+    `;
+    const open = () => openSeriesModal(entry, rank);
+    item.addEventListener("click", open);
+    item.addEventListener("keydown", (e) => { if(e.key === "Enter" || e.key === " "){ e.preventDefault(); open(); } });
+  }
+  return item;
+}
+
+const favoritesSection = document.getElementById("favoritesSection");
 function renderFavorites(){
+  renderFavoritesInner();
+  favoritesSection.style.display = favoritesContainer.children.length === 0 ? "none" : "";
+}
+
+function renderFavoritesInner(){
   favoritesContainer.innerHTML = "";
 
   if(!TOP_PICKS || TOP_PICKS.length === 0){
-    favoritesContainer.innerHTML = `
-      <div class="card empty-card">
-        No Top 8 picked yet. This section is entirely up to you, not auto-computed from ratings.
-        Add an entry to the <code>TOP_PICKS</code> array in <code>reading-data.js</code>, e.g.
-        <code>{ genre: "Fantasy", picks: ["The Magicians", { series: "The Magicians Trilogy", best: ["The Magician King"] }] }</code>,
-        up to 8 per genre, in the order you want them ranked. Standalone books show as a single cover;
-        a <code>series</code> pick shows as a stack of covers you can tap to open the whole series, with
-        any <code>best</code> titles highlighted in gold.
-      </div>
-    `;
     return;
   }
 
-  const genresToShow = activeGenre === "All" ? TOP_PICKS : TOP_PICKS.filter(tp => tp.genre === activeGenre);
+  // a genre only gets a Top 10 once you've actually read enough of it
+  const eligible = TOP_PICKS.filter(tp => (genreCounts[tp.genre] || 0) >= MIN_BOOKS_FOR_TOP10);
 
-  if(genresToShow.length === 0){
-    favoritesContainer.innerHTML = `
-      <div class="card empty-card">
-        No Top 8 picked for ${activeGenre} yet. Add a <code>{ genre: "${activeGenre}", picks: [...] }</code>
-        entry to <code>TOP_PICKS</code> in <code>reading-data.js</code> whenever you're ready.
-      </div>
-    `;
-    return;
-  }
-
-  genresToShow.forEach(({genre, picks}) => {
-    if((picks || []).length > MAX_TOP8){
-      console.warn(`TOP_PICKS: "${genre}" has ${picks.length} picks. Only the first ${MAX_TOP8} will show.`);
+  if(activeGenre === "All"){
+    // condensed overview: just the #1 pick from each eligible genre
+    if(eligible.length === 0){
+      return;
     }
-    const resolved = (picks || []).slice(0, MAX_TOP8)
-      .map(p => typeof p === "string" ? {title: p} : p)
-      .map(pick => {
-        if(pick.series){
-          const s = seriesByName.get(pick.series);
-          if(!s){ console.warn(`TOP_PICKS: series "${pick.series}" not found in SERIES`); return null; }
-          const seriesBooks = s.books
-            .map(sb => ALL_BOOKS_BY_TITLE.get(sb.title))
-            .filter(Boolean);
-          if(seriesBooks.length === 0) return null;
-          return {kind: "series", name: pick.series, author: s.author, books: seriesBooks, best: pick.best || []};
-        }
-        const b = ALL_BOOKS_BY_TITLE.get(pick.title);
-        if(!b){ console.warn(`TOP_PICKS: "${pick.title}" not found in books/pastReads`); return null; }
-        return {kind: "book", book: {...b, note: pick.note || b.note}};
-      })
-      .filter(Boolean);
-    if(resolved.length === 0) return;
-
     const panel = document.createElement("div");
     panel.className = "card fav-genre-panel";
     panel.innerHTML = `
       <div class="card-inner">
-        <div class="fav-genre-title">${GENRE_EMOJI[genre] || "📚"} ${genre}</div>
-        <div class="fav-genre-sub">${resolved.length === MAX_TOP8 ? "The full Top 8" : `${resolved.length} of your Top 8`}, ranked</div>
+        <div class="section-head" style="text-align:center; margin-bottom:22px;">
+          <div class="label">One Favorite Per Genre</div>
+          <h2 style="color:var(--ink);">Your #1s</h2>
+          <p style="margin:6px auto 0; color:var(--ink-soft);">Pick a genre above to see its full Top 10.</p>
+        </div>
         <div class="fav-grid"></div>
       </div>
     `;
     favoritesContainer.appendChild(panel);
     const gridEl = panel.querySelector(".fav-grid");
-
-    resolved.forEach((entry, i) => {
-      const item = document.createElement("div");
-      item.className = "fav-item";
-      item.setAttribute("tabindex", "0");
-      item.setAttribute("role", "button");
-
-      if(entry.kind === "book"){
-        const b = entry.book;
-        item.setAttribute("aria-label", `View details for ${b.title}`);
-        item.innerHTML = `
-          <div class="fav-stack-wrap">
-            <div class="fav-rank-badge">#${i+1}</div>
-            ${coverSlotHTML(b)}
-          </div>
-          <div class="fav-title">${b.title}</div>
-          <div class="fav-author">${b.author}</div>
-        `;
-        const open = () => openBookModal(b, `#${i+1}`, false);
-        item.addEventListener("click", open);
-        item.addEventListener("keydown", (e) => { if(e.key === "Enter" || e.key === " "){ e.preventDefault(); open(); } });
-      } else {
-        const top = entry.books[0];
-        const behindLayers = Math.min(entry.books.length - 1, 2);
-        let behindHTML = "";
-        for(let L = behindLayers; L >= 1; L--){
-          behindHTML += `<div class="fav-stack-behind" style="transform: translate(${L*5}px, ${L*5}px);"></div>`;
-        }
-        item.setAttribute("aria-label", `Open ${entry.name} series`);
-        item.innerHTML = `
-          <div class="fav-stack-wrap">
-            <div class="fav-rank-badge">#${i+1}</div>
-            ${behindHTML}
-            ${coverSlotHTML(top)}
-            <div class="fav-count-badge">${entry.books.length} books</div>
-          </div>
-          <div class="fav-title">${entry.name}</div>
-          <div class="fav-author">${entry.author}</div>
-        `;
-        const open = () => openSeriesModal(entry, i+1);
-        item.addEventListener("click", open);
-        item.addEventListener("keydown", (e) => { if(e.key === "Enter" || e.key === " "){ e.preventDefault(); open(); } });
-      }
+    eligible.forEach(({genre, picks}) => {
+      const resolved = resolvePicks(genre, picks);
+      if(resolved.length === 0) return;
+      const item = makeFavItem(resolved[0], 1);
+      item.querySelector(".fav-rank-badge").textContent = GENRE_EMOJI[genre] || "📚";
       gridEl.appendChild(item);
     });
-  });
+    return;
+  }
+
+  // a specific genre is selected
+  const match = eligible.find(tp => tp.genre === activeGenre);
+  if(!match){
+    return;
+  }
+
+  const resolved = resolvePicks(match.genre, match.picks);
+  if(resolved.length === 0) return;
+
+  const panel = document.createElement("div");
+  panel.className = "card fav-genre-panel";
+  panel.innerHTML = `
+    <div class="card-inner">
+      <div class="top6-banner">
+        <div class="ribbon">
+          <svg class="ribbon-svg" viewBox="0 0 320 50" preserveAspectRatio="none">
+            <polygon points="34,8 286,8 320,0 296,25 320,50 286,42 34,42 0,50 24,25 0,0" fill="var(--stamp)"/>
+          </svg>
+          <span class="ribbon-text">🏆 Top 10</span>
+        </div>
+        <div class="top6-banner-genre">${GENRE_EMOJI[match.genre] || "📚"} ${match.genre}</div>
+        <div class="top6-banner-count">${resolved.length === MAX_TOP10 ? "the full lineup, ranked" : `${resolved.length} of 10 picked, ranked`}</div>
+      </div>
+      <div class="fav-grid"></div>
+    </div>
+  `;
+  favoritesContainer.appendChild(panel);
+  const gridEl = panel.querySelector(".fav-grid");
+  resolved.forEach((entry, i) => gridEl.appendChild(makeFavItem(entry, i + 1)));
 }
 renderFavorites();
 
@@ -730,11 +862,11 @@ const seriesModalGrid = document.getElementById("seriesModalGrid");
 const seriesModalClose = document.getElementById("seriesModalClose");
 
 function openSeriesModal(entry, rank){
-  seriesModalRank.textContent = `Favorite #${rank}`;
+  seriesModalRank.textContent = rank ? `Favorite #${rank}` : "Series";
   seriesModalTitle.textContent = entry.name;
   seriesModalSub.textContent = `${entry.author} · ${entry.books.length} book${entry.books.length===1?"":"s"} read`;
-  seriesModalGrid.innerHTML = entry.books.map(b => {
-    const isBest = entry.best.includes(b.title);
+  seriesModalGrid.innerHTML = entry.books.map((b, i) => {
+    const isBest = (entry.best || []).includes(b.title);
     return `
       <div class="series-book">
         <div class="series-book-cover${isBest ? ' best' : ''}">
@@ -742,7 +874,7 @@ function openSeriesModal(entry, rank){
           <span>${b.title}</span>
           ${b.cover ? `<img src="${b.cover}" alt="Cover of ${b.title}" loading="lazy" onerror="this.remove()">` : ""}
         </div>
-        <div class="series-book-title">${b.title}</div>
+        <div class="series-book-title">${b.title} <span class="series-book-num">[${i + 1}]</span></div>
       </div>
     `;
   }).join("");

@@ -13,8 +13,9 @@
    whenever you're ready:
      rating: 1-5   : your star rating (not currently shown publicly, kept
                      for your own reference / future use).
-     spice: 1-3    : how spicy it is. Shown as 🌶️ x N on the Master List
-                     cover. Leave it off entirely for books with no spice.
+     spicy: true   : marks it as spicy. Shown as a single 🌶️ sticker over
+                     the bottom-left corner of the cover. Only add this when
+                     told to for a specific book, never guess.
      note: "..."   : a short one-line blurb/quote about the book, shown in
                      detail popups when the book is featured in TOP_PICKS.
    Favorites on all-books.html are entirely hand-curated via TOP_PICKS below,
@@ -163,7 +164,7 @@ const pastReads = [
   {title:"Building a Second Brain: A Proven Method to Organize Your Digital Life and Unlock Your Creative Potential", cover:"https://covers.openlibrary.org/b/id/12372866-L.jpg", genre:"Nonfiction", subgenre:"Self-Development", author:"Tiago Forte", readDate:"February 2025", rating:5, pubYear:2022},
   {title:"Caraval", cover:"https://covers.openlibrary.org/b/id/7990753-L.jpg", genre:"Fantasy", author:"Stephanie Garber", readDate:"March 2024", pubYear:2000},
   {title:"Catching Fire", cover:"https://covers.openlibrary.org/b/id/12878880-L.jpg", genre:"Science Fiction", author:"Suzanne Collins", readDate:"October 2023", rating:4, pubYear:2010},
-  {title:"Circe", cover:"https://covers.openlibrary.org/b/id/8739376-L.jpg", genre:"Fantasy", author:"Madeline Miller", readDate:"November 2018", rating:5, pubYear:2018},
+  {title:"Circe", cover:"https://covers.openlibrary.org/b/id/8739376-L.jpg", genre:"Mythology", author:"Madeline Miller", readDate:"November 2018", rating:5, pubYear:2018},
   {title:"City of Ashes", cover:"https://covers.openlibrary.org/b/id/1787130-L.jpg", genre:"Young Adult", author:"Cassandra Clare", readDate:null, pubYear:2008},
   {title:"City of Bones", cover:"https://covers.openlibrary.org/b/id/10121449-L.jpg", genre:"Young Adult", author:"Cassandra Clare", readDate:null, pubYear:2007},
   {title:"City of Glass", cover:"https://covers.openlibrary.org/b/id/8200332-L.jpg", genre:"Young Adult", author:"Cassandra Clare", readDate:null, pubYear:2009},
@@ -189,7 +190,7 @@ const pastReads = [
   {title:"Finale", cover:"https://covers.openlibrary.org/b/id/8802288-L.jpg", genre:"Fantasy", author:"Stephanie Garber", readDate:"March 2024", pubYear:2018},
   {title:"Flowers for Algernon", cover:"https://covers.openlibrary.org/b/id/12947700-L.jpg", genre:"Science Fiction", author:"Daniel Keyes", readDate:null, pubYear:1966},
   {title:"Friends, Lovers, and the Big Terrible Thing", cover:"https://covers.openlibrary.org/b/id/13133707-L.jpg", genre:"Memoir / Biography", author:"Matthew Perry", readDate:"January 2024", rating:4, pubYear:2022},
-  {title:"Galatea: A Short Story", cover:"https://covers.openlibrary.org/b/id/12871689-L.jpg", genre:"Fantasy", author:"Madeline Miller", readDate:"November 2025", pubYear:2013},
+  {title:"Galatea: A Short Story", cover:"https://covers.openlibrary.org/b/id/12871689-L.jpg", genre:"Mythology", author:"Madeline Miller", readDate:"November 2025", pubYear:2013},
   {title:"Gone Girl", cover:"https://covers.openlibrary.org/b/id/8368314-L.jpg", genre:"Thriller", author:"Gillian Flynn", readDate:"March 2024", pubYear:2011},
   {title:"Good Neighbors", genre:"Thriller", author:"Chad Zunker", readDate:"September 2025"},
   {title:"Greenlights", cover:"https://covers.openlibrary.org/b/id/10512439-L.jpg", genre:"Memoir / Biography", author:"Matthew McConaughey", readDate:"September 2025", pubYear:2020},
@@ -295,11 +296,13 @@ const pastReads = [
   {title:"The Polar Express", cover:"https://covers.openlibrary.org/b/id/394670-L.jpg", genre:"Classic Literature", author:"Chris Van Allsburg", readDate:null, pubYear:1985},
   {title:"The Princess Diaries", cover:"https://covers.openlibrary.org/b/id/6874781-L.jpg", genre:"Young Adult", author:"Meg Cabot", readDate:null, pubYear:2000},
   {title:"The Rise of Magicks", cover:"https://covers.openlibrary.org/b/id/9154264-L.jpg", genre:"Fantasy", author:"Nora Roberts", readDate:"March 2023", pubYear:2019},
+  {title:"Year One", cover:"https://covers.openlibrary.org/b/id/8841058-L.jpg", genre:"Fantasy", author:"Nora Roberts", readDate:null, pubYear:2017},
+  {title:"Of Blood and Bone", cover:"https://covers.openlibrary.org/b/id/8758039-L.jpg", genre:"Fantasy", author:"Nora Roberts", readDate:null, pubYear:2018},
   {title:"The Serpent and the Wings of Night", cover:"https://covers.openlibrary.org/b/id/15163954-L.jpg", genre:"Fantasy", author:"Carissa Broadbent", readDate:"April 2025", rating:5, pubYear:2024},
   {title:"The Silent Patient", cover:"https://covers.openlibrary.org/b/id/9407338-L.jpg", genre:"Thriller", author:"Alex Michaelides", readDate:"February 2024", rating:4, pubYear:2018},
   {title:"The Silver Chair", cover:"https://covers.openlibrary.org/b/id/6950992-L.jpg", genre:"Fantasy", author:"C.S. Lewis", readDate:null, pubYear:1953},
   {title:"The Skydivers", genre:"Thriller", author:"Chris Bohjalian", readDate:"September 2025"},
-  {title:"The Song of Achilles", cover:"https://covers.openlibrary.org/b/id/7098465-L.jpg", genre:"Fantasy", author:"Madeline Miller", readDate:"November 2025", rating:5, pubYear:2011},
+  {title:"The Song of Achilles", cover:"https://covers.openlibrary.org/b/id/7098465-L.jpg", genre:"Mythology", author:"Madeline Miller", readDate:"November 2025", rating:5, pubYear:2011},
   {title:"The Songbird & the Heart of Stone", cover:"https://covers.openlibrary.org/b/id/15148779-L.jpg", genre:"Fantasy", author:"Carissa Broadbent", readDate:"May 2025", rating:5, pubYear:2024},
   {title:"The Strength of the Few", cover:"https://covers.openlibrary.org/b/id/15150800-L.jpg", genre:"Fantasy", author:"James Islington", readDate:"November 2025", rating:5, pubYear:2025},
   {title:"The Summer I Turned Pretty", cover:"https://covers.openlibrary.org/b/id/8783502-L.jpg", genre:"Young Adult", author:"Jenny Han", readDate:"March 2024", pubYear:2000},
@@ -633,20 +636,258 @@ const SERIES = [
       {title:"The Songbird & the Heart of Stone"},
       {title:"The Fallen & the Kiss of Dusk"}
     ]
+  },
+  {
+    name: "The Witcher",
+    author: "Andrzej Sapkowski",
+    status: "ongoing",
+    books: [
+      {title:"The Last Wish"},
+      {title:"Sword of Destiny"},
+      {title:"Blood of Elves"}
+    ]
+  },
+  {
+    name: "Chronicles of Narnia",
+    author: "C.S. Lewis",
+    status: "complete",
+    books: [
+      {title:"The Magician's Nephew"},
+      {title:"The Lion, the Witch and the Wardrobe"},
+      {title:"The Horse and His Boy"},
+      {title:"Prince Caspian"},
+      {title:"The Voyage of the Dawn Treader"},
+      {title:"The Silver Chair"},
+      {title:"The Last Battle"}
+    ]
+  },
+  {
+    name: "The Mortal Instruments",
+    author: "Cassandra Clare",
+    status: "complete",
+    books: [
+      {title:"City of Bones"},
+      {title:"City of Ashes"},
+      {title:"City of Glass"}
+    ]
+  },
+  {
+    name: "It Ends with Us",
+    author: "Colleen Hoover",
+    status: "complete",
+    books: [
+      {title:"It Ends with Us"},
+      {title:"It Starts with Us"}
+    ]
+  },
+  {
+    name: "Fifty Shades",
+    author: "E.L. James",
+    status: "complete",
+    books: [
+      {title:"Fifty Shades of Grey"},
+      {title:"Fifty Shades Darker"},
+      {title:"Fifty Shades Freed"}
+    ]
+  },
+  {
+    name: "Cat and Mouse",
+    author: "H.D. Carlton",
+    status: "complete",
+    books: [
+      {title:"Haunting Adeline"},
+      {title:"Hunting Adeline"}
+    ]
+  },
+  {
+    name: "Harry Potter",
+    author: "J.K. Rowling",
+    status: "complete",
+    books: [
+      {title:"Harry Potter and the Sorcerer's Stone"},
+      {title:"Harry Potter and the Chamber of Secrets"},
+      {title:"Harry Potter and the Prisoner of Azkaban"},
+      {title:"Harry Potter and the Goblet of Fire"},
+      {title:"Harry Potter and the Order of the Phoenix"},
+      {title:"Harry Potter and the Half-Blood Prince"},
+      {title:"Harry Potter and the Deathly Hallows"},
+      {title:"Harry Potter and the Cursed Child: Parts One and Two"}
+    ]
+  },
+  {
+    name: "Hierarchy",
+    author: "James Islington",
+    status: "ongoing",
+    books: [
+      {title:"The Will of the Many"},
+      {title:"The Strength of the Few"}
+    ]
+  },
+  {
+    name: "Summer",
+    author: "Jenny Han",
+    status: "complete",
+    books: [
+      {title:"The Summer I Turned Pretty"},
+      {title:"It's Not Summer Without You"},
+      {title:"We'll Always Have Summer"}
+    ]
+  },
+  {
+    name: "Wicked Games",
+    author: "Kaylie Smith",
+    status: "ongoing",
+    books: [
+      {title:"Phantasma"},
+      {title:"Enchantra"}
+    ]
+  },
+  {
+    name: "Bloody Jack",
+    author: "L.A. Meyer",
+    status: "ongoing",
+    books: [
+      {title:"Bloody Jack: Being an Account of the Curious Adventures of Mary \"Jacky\" Faber, Ship's Boy"},
+      {title:"Curse of the Blue Tattoo: Being an Account of the Misadventures of Jacky Faber, Midshipman and Fine Lady"},
+      {title:"Under the Jolly Roger: Being an Account of the Further Nautical Adventures of Jacky Faber"}
+    ]
+  },
+  {
+    name: "Ninth House",
+    author: "Leigh Bardugo",
+    status: "ongoing",
+    books: [
+      {title:"Ninth House"},
+      {title:"Hell Bent"}
+    ]
+  },
+  {
+    name: "Time Quintet",
+    author: "Madeleine L'Engle",
+    status: "complete",
+    books: [
+      {title:"A Wrinkle in Time"},
+      {title:"A Wind in the Door"},
+      {title:"A Swiftly Tilting Planet"},
+      {title:"Many Waters"},
+      {title:"An Acceptable Time"}
+    ]
+  },
+  {
+    name: "The Handmaid's Tale",
+    author: "Margaret Atwood",
+    status: "complete",
+    books: [
+      {title:"The Handmaid's Tale"},
+      {title:"The Testaments"}
+    ]
+  },
+  {
+    name: "The Crypt Series",
+    author: "Molly R. Anderson",
+    status: "ongoing",
+    books: [
+      {title:"The Crypt of Lost Souls"},
+      {title:"Revenge of The Reaper"}
+    ]
+  },
+  {
+    name: "Hades & Persephone",
+    author: "Scarlett St. Clair",
+    status: "complete",
+    books: [
+      {title:"A Touch of Darkness"},
+      {title:"A Touch of Ruin"}
+    ]
+  },
+  {
+    name: "Uglies",
+    author: "Scott Westerfeld",
+    status: "complete",
+    books: [
+      {title:"Uglies"},
+      {title:"Pretties"},
+      {title:"Specials"},
+      {title:"Extras"}
+    ]
+  },
+  {
+    name: "Caraval",
+    author: "Stephanie Garber",
+    status: "complete",
+    books: [
+      {title:"Caraval"},
+      {title:"Legendary"},
+      {title:"Finale"}
+    ]
+  },
+  {
+    name: "Once Upon a Broken Heart",
+    author: "Stephanie Garber",
+    status: "ongoing",
+    books: [
+      {title:"Once Upon a Broken Heart"},
+      {title:"The Ballad of Never After"},
+      {title:"A Curse for True Love"}
+    ]
+  },
+  {
+    name: "The Twilight Saga",
+    author: "Stephenie Meyer",
+    status: "complete",
+    books: [
+      {title:"Twilight"},
+      {title:"New Moon"},
+      {title:"Eclipse"},
+      {title:"Breaking Dawn"},
+      {title:"Midnight Sun"}
+    ]
+  },
+  {
+    name: "The Hunger Games",
+    author: "Suzanne Collins",
+    status: "ongoing",
+    books: [
+      {title:"The Ballad of Songbirds and Snakes"},
+      {title:"Sunrise on the Reaping"},
+      {title:"The Hunger Games"},
+      {title:"Catching Fire"},
+      {title:"Mockingjay"}
+    ]
+  },
+  {
+    name: "Divergent",
+    author: "Veronica Roth",
+    status: "complete",
+    books: [
+      {title:"Divergent"},
+      {title:"Insurgent"},
+      {title:"Allegiant"}
+    ]
+  },
+  {
+    name: "Chronicles of The One",
+    author: "Nora Roberts",
+    status: "complete",
+    books: [
+      {title:"Year One"},
+      {title:"Of Blood and Bone"},
+      {title:"The Rise of Magicks"}
+    ]
   }
 ];
 
 /* =========================================================================
-   Your "Top 8" per genre for all-books.html. Entirely hand-chosen, not
-   computed from star ratings. MySpace Top 8 rules apply: up to 8 per
-   genre, in the order you want them to appear (best/most-favorite first).
+   Your "Top 6" per genre for all-books.html. Entirely hand-chosen, not
+   computed from star ratings. MySpace Top 8 rules, trimmed down: up to 6
+   per genre, in the order you want them to appear (best/most-favorite first).
 
    To edit: add, remove, or reorder entries in `picks` freely. Order = rank,
    so moving an entry up the list moves it up on the shelf. Only genres
    you've picked favorites for will show a row. A title must already exist
    in `books` or `pastReads` to show up (it's looked up by exact title).
-   Only the first 8 entries in `picks` will show. Trim your list if you
-   add a 9th.
+   Only the first 6 entries in `picks` will show. Trim your list if you
+   add a 7th.
 
    Each entry in `picks` is one of:
      "Book Title"                          : a standalone favorite
