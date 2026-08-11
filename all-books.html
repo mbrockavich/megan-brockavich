@@ -1,0 +1,759 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Every Book I've Read · Megan's Library</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📚</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Space+Mono:wght@400;700&family=Jost:wght@300;400;500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --wood: #6b3a52;
+    --wood-dark: #4a2740;
+    --wood-darker: #33192c;
+    --card: #fdf1f5;
+    --card-shadow: #f0d3de;
+    --ink: #5c3a4a;
+    --ink-soft: #a67a92;
+    --stamp: #e2789a;
+    --brass: #d9a4c0;
+    --sage: #a8d5ba;
+    --slate-blue: #b8c4e8;
+    --plum: #c9a0c9;
+    --gold: #e0b45c;
+  }
+
+  *{ box-sizing:border-box; }
+
+  body{
+    margin:0;
+    background:
+      radial-gradient(1px 1px at 8% 12%, rgba(255,235,242,0.6), transparent),
+      radial-gradient(1px 1px at 22% 68%, rgba(255,235,242,0.45), transparent),
+      radial-gradient(1px 1px at 38% 24%, rgba(255,235,242,0.55), transparent),
+      radial-gradient(1.5px 1.5px at 54% 82%, rgba(255,235,242,0.45), transparent),
+      radial-gradient(1px 1px at 68% 14%, rgba(255,235,242,0.5), transparent),
+      radial-gradient(1.5px 1.5px at 79% 55%, rgba(255,235,242,0.55), transparent),
+      radial-gradient(1px 1px at 91% 30%, rgba(255,235,242,0.45), transparent),
+      radial-gradient(1px 1px at 12% 88%, rgba(255,235,242,0.4), transparent),
+      radial-gradient(1px 1px at 63% 92%, rgba(255,235,242,0.4), transparent),
+      radial-gradient(1.5px 1.5px at 88% 78%, rgba(255,235,242,0.45), transparent),
+      radial-gradient(ellipse at top, var(--wood) 0%, var(--wood-dark) 65%, var(--wood-darker) 100%);
+    background-attachment:fixed;
+    background-size: cover;
+    font-family:'Inter', sans-serif;
+    color: var(--card);
+    padding: 0 0 80px;
+  }
+
+  a{ color:inherit; }
+  .page{ max-width: 1100px; margin:0 auto; padding: 40px 20px 0; }
+
+  /* nav */
+  .topnav{
+    text-align:center; margin-bottom: 30px;
+    font-family:'Space Mono', monospace; font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase;
+  }
+  .topnav a{ color: var(--brass); text-decoration:none; }
+  .topnav a:hover{ text-decoration:underline; }
+  .topnav .sep{ color: rgba(255,255,255,0.25); margin: 0 10px; }
+
+  /* header */
+  header{ text-align:center; margin-bottom: 40px; }
+  header .eyebrow{
+    font-family:'Space Mono', monospace; letter-spacing: 0.28em; font-size: 11px;
+    text-transform: uppercase; color: var(--brass); margin-bottom: 10px;
+  }
+  header h1{
+    font-family:'Fraunces', serif; font-optical-sizing:auto; font-weight:600;
+    font-size: clamp(34px, 5vw, 54px); margin: 0 0 8px; color: var(--card);
+  }
+  header p{ font-size: 15px; color: #f0c9dc; margin:0; }
+
+  /* generic index card, matches 2026 stats page */
+  .card{
+    background: var(--card); color: var(--ink); border-radius: 3px;
+    box-shadow: 0 10px 0 -4px var(--card-shadow), 0 14px 24px rgba(0,0,0,0.35);
+    position: relative;
+  }
+  .card::before{
+    content:""; position:absolute; left:0; right:0; top: 46px; height:1px;
+    background: repeating-linear-gradient(to bottom, transparent, transparent 27px, rgba(43,33,24,0.12) 27px, rgba(43,33,24,0.12) 28px);
+    bottom: 16px; pointer-events:none; opacity: 0.5;
+  }
+  .card .card-inner{ position:relative; z-index:1; }
+
+  /* filter bar */
+  .filter-bar{
+    position: sticky; top:0; z-index: 40;
+    background: rgba(51,25,44,0.94);
+    backdrop-filter: blur(8px);
+    padding: 16px 0 16px;
+    margin: 0 -20px 40px;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+  }
+  .filter-bar-inner{ max-width:1100px; margin:0 auto; padding:0 20px; }
+  .search-input{
+    width:100%; padding: 11px 18px; border: 1.5px solid rgba(255,255,255,0.18);
+    border-radius: 30px; font-family:'Inter', sans-serif; font-size: 14px;
+    background: rgba(255,255,255,0.08); color: var(--card); outline:none; margin-bottom:12px;
+  }
+  .search-input::placeholder{ color: rgba(253,241,245,0.5); }
+  .search-input:focus{ border-color: var(--stamp); }
+  .pills{ display:flex; flex-wrap:wrap; gap: 7px; }
+  .pill{
+    font-family:'Space Mono', monospace; font-size: 10.5px; letter-spacing: 0.03em;
+    padding: 6px 12px; border-radius: 20px; border: 1.5px solid rgba(255,255,255,0.18);
+    background: rgba(255,255,255,0.06); color: var(--brass); cursor:pointer;
+    display:flex; align-items:center; gap:5px; transition: all .12s ease;
+  }
+  .pill:hover{ border-color: var(--stamp); }
+  .pill.active{ background: var(--stamp); color: var(--wood-darker); border-color: var(--stamp); font-weight:700; }
+  .pill .count{ opacity:0.7; font-size:9.5px; }
+
+  section.section-head{ margin: 0 0 20px; text-align:left; }
+  section.section-head .label{
+    font-family:'Space Mono', monospace; text-transform: uppercase; letter-spacing: 0.25em;
+    font-size: 11px; color: var(--stamp); margin-bottom: 6px;
+  }
+  section.section-head h2{ font-family:'Fraunces',serif; font-size:26px; font-weight:600; margin:0; color:var(--card); }
+  section.section-head p{ margin: 6px 0 0; font-size:13px; color:#d8bccb; max-width:560px; }
+
+  section.block{ margin-bottom: 54px; }
+
+  /* empty state */
+  .empty-card{
+    padding: 26px 28px; font-size: 13.5px; line-height: 1.7;
+  }
+  .empty-card code{
+    background: var(--card-shadow); padding: 2px 7px; border-radius: 4px;
+    font-family:'Space Mono', monospace; font-size: 12px; color: var(--wood);
+  }
+
+  /* favorites: cover cards, per genre. standalone = single cover,
+     series = stacked covers you can open to see the whole series. */
+  .fav-genre-panel{ padding: 26px 28px 30px; margin-bottom: 26px; }
+  .fav-genre-title{ font-family:'Fraunces',serif; font-weight:600; font-size:19px; margin:0 0 3px; }
+  .fav-genre-sub{ font-family:'Space Mono',monospace; font-size:10px; text-transform:uppercase; letter-spacing:0.1em; color:var(--ink-soft); margin-bottom:22px; }
+
+  .fav-grid{ display:grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 30px 20px; }
+  .fav-item{ cursor:pointer; }
+  .fav-item:focus-visible{ outline:2px solid var(--stamp); outline-offset:4px; border-radius:4px; }
+  .fav-stack-wrap{ position:relative; margin-bottom: 12px; transition: transform 0.18s ease; }
+  .fav-item:hover .fav-stack-wrap, .fav-item:focus-visible .fav-stack-wrap{ transform: translateY(-6px); }
+  .fav-cover-slot{
+    width:100%; aspect-ratio: 2/3; border-radius: 4px; overflow:hidden;
+    background: var(--wood-dark); position:relative;
+    box-shadow: 0 8px 16px rgba(0,0,0,0.4);
+    display:flex; align-items:center; justify-content:center; padding: 8px;
+    font-family:'Fraunces', serif; font-weight:600; font-size:11px; line-height:1.25;
+    color: rgba(255,255,255,0.85); text-align:center;
+  }
+  .fav-cover-slot img{ position:absolute; inset:0; width:100%; height:100%; object-fit:cover; }
+  /* extra layers peeking out from behind the top cover, for series stacks */
+  .fav-stack-behind{
+    position:absolute; inset:0; border-radius:4px; background: var(--wood-dark);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.08);
+  }
+  .fav-rank-badge{
+    position:absolute; top:-9px; left:-9px; z-index:3;
+    font-family:'Space Mono', monospace; font-size: 10px; font-weight:700;
+    background: var(--stamp); color: var(--wood-darker);
+    width:24px; height:24px; border-radius:50%;
+    display:flex; align-items:center; justify-content:center;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.35);
+  }
+  .fav-count-badge{
+    position:absolute; bottom:6px; right:6px; z-index:3;
+    font-family:'Space Mono', monospace; font-size: 9px; font-weight:700;
+    background: rgba(0,0,0,0.65); color: #fff;
+    padding: 3px 7px; border-radius: 20px;
+  }
+  .fav-title{ font-family:'Fraunces',serif; font-weight:600; font-size:13px; line-height:1.3; color: var(--card); }
+  .fav-author{ font-size: 10.5px; color: var(--brass); margin-top: 2px; }
+
+  /* series-expanded modal */
+  .series-modal-panel{ max-width: 700px; }
+  .series-modal-head{ margin-bottom: 20px; }
+  .series-modal-eyebrow{ font-family:'Space Mono',monospace; font-size:10px; text-transform:uppercase; letter-spacing:0.15em; color: var(--stamp); margin-bottom:6px; }
+  .series-modal-title{ font-family:'Fraunces',serif; font-weight:700; font-size:26px; margin:0 0 4px; }
+  .series-modal-sub{ font-size:13px; color:var(--ink-soft); }
+  .series-book-grid{ display:grid; grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 20px; }
+  .series-book{ text-align:center; }
+  .series-book-cover{
+    width:100%; aspect-ratio:2/3; border-radius:3px 8px 8px 3px/2px; overflow:hidden; position:relative;
+    background: var(--wood-dark); box-shadow: 0 6px 14px rgba(0,0,0,0.25); margin-bottom:8px;
+    display:flex; align-items:center; justify-content:center; padding:8px;
+    font-family:'Fraunces',serif; font-weight:600; font-size:11px; line-height:1.25; color:rgba(255,255,255,0.85);
+  }
+  .series-book-cover img{ position:absolute; inset:0; width:100%; height:100%; object-fit:cover; }
+  .series-book-cover.best{ box-shadow: 0 0 0 3px var(--gold), 0 6px 14px rgba(0,0,0,0.25); }
+  .series-book-best-star{ position:absolute; top:-8px; left:50%; transform:translateX(-50%); font-size:15px; z-index:1; filter: drop-shadow(0 1px 1px rgba(0,0,0,0.4)); }
+  .series-book-title{ font-size:11.5px; font-weight:600; line-height:1.3; color: var(--ink); }
+
+  /* stats strip */
+  .stats-strip{
+    display:flex; flex-wrap:wrap; gap: 24px; justify-content:center;
+    padding: 26px 28px;
+  }
+  .stat{ text-align:center; min-width: 90px; }
+  .stat .v{ font-family:'Fraunces', serif; font-weight:700; font-size: 24px; color: var(--ink); }
+  .stat .l{ font-family:'Space Mono', monospace; font-size: 9.5px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--ink-soft); margin-top: 3px; }
+
+  /* master catalog: cover-only grid, no ratings shown */
+  .catalog-count{
+    font-family:'Space Mono', monospace; font-size: 11px; color: var(--brass);
+    margin-bottom: 16px; text-transform: uppercase; letter-spacing: 0.08em;
+  }
+  .master-grid{ display:grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 26px 16px; }
+  .master-card{ text-align:left; }
+  .master-cover{
+    width:100%; aspect-ratio: 2/3; border-radius: 4px; overflow:hidden;
+    box-shadow: 0 6px 14px rgba(0,0,0,0.35); margin-bottom: 8px; position:relative;
+    background: var(--wood-dark);
+    display:flex; align-items:center; justify-content:center; padding: 8px;
+    font-family:'Fraunces', serif; font-weight:600; font-size:11px; line-height:1.25;
+    color: rgba(255,255,255,0.85); text-align:center;
+  }
+  .master-cover img{ position:absolute; inset:0; width:100%; height:100%; object-fit:cover; }
+  .master-genre-tag{
+    position:absolute; top:6px; left:6px; z-index:1;
+    font-family:'Space Mono', monospace; font-size: 8px; text-transform: uppercase; letter-spacing: 0.04em;
+    padding: 3px 6px; border-radius: 20px; color: #fff; background: rgba(0,0,0,0.55);
+  }
+  .master-spice-tag{
+    position:absolute; bottom:6px; right:6px; z-index:1;
+    font-size: 11px; line-height:1; padding: 3px 6px; border-radius: 20px;
+    background: rgba(0,0,0,0.55);
+  }
+  .master-title{ font-family:'Fraunces', serif; font-weight:600; font-size: 12.5px; line-height:1.3; color: var(--card); }
+  .master-author{ font-size: 10.5px; color: var(--brass); margin-top: 2px; }
+  .no-results{ color: #e0c3d1; font-size: 13.5px; font-style: italic; padding: 20px 4px; }
+
+  /* book detail modal (single favorites) */
+  .modal-overlay{
+    display:none; position:fixed; inset:0; z-index:500;
+    background: rgba(51,25,44,0.75); align-items:flex-start; justify-content:center;
+    padding: 60px 20px; overflow-y:auto;
+  }
+  .modal-overlay.open{ display:flex; }
+  .modal-panel{
+    background: var(--card); color: var(--ink); border-radius: 10px;
+    max-width: 420px; width: 100%; padding: 30px 30px 32px; position: relative;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.4); display:flex; gap:20px;
+  }
+  .modal-close{
+    position:absolute; top:14px; right:14px; background: rgba(92,58,74,0.08);
+    border:0; border-radius:50%; width:32px; height:32px; font-size:16px; line-height:1;
+    cursor:pointer; color:var(--ink); display:flex; align-items:center; justify-content:center;
+  }
+  .modal-close:hover{ background: rgba(92,58,74,0.16); }
+  .modal-cover{
+    width: 110px; height:165px; flex-shrink:0; border-radius: 3px; overflow:hidden;
+    box-shadow: 0 8px 18px rgba(0,0,0,0.3); position:relative; background: var(--wood-dark);
+  }
+  .modal-cover img{ position:absolute; inset:0; width:100%; height:100%; object-fit:cover; }
+  .modal-rank{
+    font-family:'Space Mono',monospace; font-size:10px; text-transform:uppercase;
+    letter-spacing:0.12em; color: var(--stamp); margin-bottom:6px; font-weight:700;
+  }
+  .modal-title2{ font-family:'Fraunces',serif; font-weight:700; font-size:19px; margin:0 0 3px; line-height:1.2; }
+  .modal-author2{ font-size:12.5px; color:var(--ink-soft); margin-bottom:8px; }
+  .modal-stars2{ color: var(--gold); font-size:14px; letter-spacing:2px; margin-bottom:10px; }
+  .modal-note2{ font-size:12.5px; font-style:italic; color:var(--ink-soft); line-height:1.5; border-left:2px solid var(--stamp); padding-left:10px; }
+
+  footer.page-foot{
+    text-align:center; font-family:'Space Mono', monospace; font-size: 11px;
+    letter-spacing: 0.1em; color: #e3aec9; margin-top: 10px; padding: 0 20px;
+  }
+
+  @media (max-width: 560px){
+    .modal-panel{ flex-direction:column; }
+    .modal-cover{ width:100%; height:220px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="page">
+
+  <nav class="topnav">
+    <a href="library.html">← Megan's Library</a>
+    <span class="sep">·</span>
+    <a href="2026-reading-stats.html">2026 Stats</a>
+    <span class="sep">·</span>
+    <a href="series-tracker.html">Series Tracker</a>
+  </nav>
+
+  <header>
+    <div class="eyebrow">📚 Under This Moon, A Card Catalog</div>
+    <h1>Everything I've Read</h1>
+    <p id="heroSub">Loading the shelves...</p>
+  </header>
+
+  <div class="card stats-strip" id="statsStrip"></div>
+  <div style="height:36px;"></div>
+
+</div>
+
+<div class="filter-bar">
+  <div class="filter-bar-inner">
+    <input type="text" class="search-input" id="searchInput" placeholder="Search by title or author...">
+    <div class="pills" id="genrePills"></div>
+  </div>
+</div>
+
+<div class="page">
+
+  <!-- FAVORITES -->
+  <section class="block">
+    <div class="section-head">
+      <div class="label">Top 8, By Genre</div>
+      <h2>Your Top 8</h2>
+      <p>MySpace rules apply: up to 8 per genre, ranked left to right. A series stacks into one cover you can tap to see every book inside.</p>
+    </div>
+    <div id="favoritesContainer"></div>
+  </section>
+
+  <!-- MASTER CATALOG -->
+  <section class="block">
+    <div class="section-head">
+      <div class="label">The Master List</div>
+      <h2>Every Book, All Time</h2>
+      <p>2026 reads and everything before it, in one place. Add a book to your 2026 list and it shows up here automatically.</p>
+    </div>
+    <div class="catalog-count" id="shelfCount"></div>
+    <div class="master-grid" id="shelfGrid"></div>
+    <div class="no-results" id="noResults" style="display:none;">Nothing matches that search. Try a different title, author, or genre.</div>
+  </section>
+
+  <footer class="page-foot" id="pageFoot"></footer>
+
+</div>
+
+<!-- BOOK DETAIL MODAL -->
+<div class="modal-overlay" id="bookModalOverlay">
+  <div class="modal-panel" role="dialog" aria-modal="true" aria-labelledby="modalTitle2">
+    <button class="modal-close" id="modalClose" aria-label="Close">✕</button>
+    <div class="modal-cover" id="modalCover"></div>
+    <div>
+      <div class="modal-rank" id="modalRank"></div>
+      <h3 class="modal-title2" id="modalTitle2"></h3>
+      <div class="modal-author2" id="modalAuthor2"></div>
+      <div class="modal-stars2" id="modalStars2"></div>
+      <div class="modal-note2" id="modalNote2"></div>
+    </div>
+  </div>
+</div>
+
+<!-- SERIES EXPANDED MODAL -->
+<div class="modal-overlay" id="seriesModalOverlay">
+  <div class="modal-panel series-modal-panel" role="dialog" aria-modal="true" aria-labelledby="seriesModalTitle">
+    <button class="modal-close" id="seriesModalClose" aria-label="Close">✕</button>
+    <div style="width:100%;">
+      <div class="series-modal-head">
+        <div class="series-modal-eyebrow" id="seriesModalRank"></div>
+        <h3 class="series-modal-title" id="seriesModalTitle"></h3>
+        <div class="series-modal-sub" id="seriesModalSub"></div>
+      </div>
+      <div class="series-book-grid" id="seriesModalGrid"></div>
+    </div>
+  </div>
+</div>
+
+<script src="reading-data.js"></script>
+<script>
+/* books, pastReads, SERIES, TOP_PICKS, findRead come from reading-data.js */
+
+const GENRE_EMOJI = {
+  "Contemporary Fiction":"📖","Contemporary Romance":"💛","Fantasy":"🐉",
+  "Science Fiction":"🚀","Thriller":"🔪","Mystery":"🔎","Horror":"🕯️","Nonfiction":"🧠",
+  "Memoir":"🪞","Literary Fiction":"🖋️","Historical Fiction":"🏛️","Graphic Novel":"🎨",
+  "Poetry":"🌸","Young Adult":"🎒","Classics":"🕰️","Biography":"👤","Self-Help":"🌱"
+};
+const SPINE_COLORS = ["#e2789a","#b8c4e8","#a8d5ba","#f0c987","#c9a0c9","#e8a87c","#8fc9ce","#d9a4c0"];
+const TAG_COLORS = SPINE_COLORS;
+
+/* ---------------- build title -> series author lookup ---------------- */
+const seriesAuthorMap = {};
+SERIES.forEach(s => s.books.forEach(b => { seriesAuthorMap[b.title] = s.author; }));
+
+/* ---------------- parse "Month YYYY" strings from pastReads ---------------- */
+function parsePastDate(str){
+  if(!str) return null;
+  const m = str.match(/^(\w+)\s+(\d{4})$/);
+  if(!m) return null;
+  const d = new Date(`${m[1]} 1, ${m[2]}`);
+  return isNaN(d.getTime()) ? null : d;
+}
+
+/* ---------------- merge books + pastReads into one list ---------------- */
+function normalizeAll(){
+  const map = new Map();
+
+  pastReads.forEach(b => {
+    const d = parsePastDate(b.readDate);
+    map.set(b.title, {
+      title: b.title,
+      author: b.author || seriesAuthorMap[b.title] || "Unknown",
+      genre: b.genre || "Uncategorized",
+      cover: b.cover,
+      rating: b.rating,
+      spice: b.spice,
+      note: b.note,
+      dateLabel: d ? d.toLocaleDateString('en-US',{month:'short',year:'numeric'}) : "Undated",
+      sortTime: d ? d.getTime() : -8640000000000000,
+      pages: null,
+      pubYear: b.pubYear || null,
+      source: "past"
+    });
+  });
+
+  books.forEach(b => {
+    const d = new Date(b.dateFinished);
+    map.set(b.title, {
+      title: b.title,
+      author: b.author,
+      genre: b.genre,
+      cover: b.cover,
+      rating: b.rating,
+      spice: b.spice,
+      note: b.note,
+      dateLabel: d.toLocaleDateString('en-US',{month:'short',year:'numeric'}),
+      sortTime: d.getTime(),
+      pages: b.pages,
+      pubYear: b.pubYear || null,
+      source: "2026"
+    });
+  });
+
+  return Array.from(map.values()).sort((a,b) => b.sortTime - a.sortTime);
+}
+
+const ALL_BOOKS = normalizeAll();
+const ALL_BOOKS_BY_TITLE = new Map(ALL_BOOKS.map(b => [b.title, b]));
+
+/* Master List order: author, then publication year (oldest first within
+   an author), then title as a final tiebreak. Separate from ALL_BOOKS,
+   which stays sorted by date-read for the stats strip's "oldest/newest". */
+const MASTER_SORTED = [...ALL_BOOKS].sort((a, b) => {
+  const authorCmp = a.author.localeCompare(b.author);
+  if(authorCmp !== 0) return authorCmp;
+  const ay = a.pubYear ?? Infinity;
+  const by = b.pubYear ?? Infinity;
+  if(ay !== by) return ay - by;
+  return a.title.localeCompare(b.title);
+});
+
+function starString(r){
+  if(!r) return "";
+  r = Math.max(1, Math.min(5, Math.round(r)));
+  return "★".repeat(r) + "☆".repeat(5-r);
+}
+
+/* ---------------- hero + footer ---------------- */
+const genreCounts = {};
+ALL_BOOKS.forEach(b => { genreCounts[b.genre] = (genreCounts[b.genre]||0)+1; });
+const genreList = Object.entries(genreCounts).sort((a,b) => b[1]-a[1]);
+
+const datedBooks = ALL_BOOKS.filter(b => b.dateLabel !== "Undated");
+const oldest = datedBooks[datedBooks.length-1];
+const newest = datedBooks[0];
+
+document.getElementById("heroSub").textContent =
+  (oldest && newest ? `Every book, from ${oldest.dateLabel} to ${newest.dateLabel}` : "Every book, all in one place.");
+
+document.getElementById("pageFoot").textContent =
+  "📚 Pulled live from reading-data.js. Add a book to the 2026 list and it lands here too.";
+
+/* ---------------- stats strip (reactive to the selected genre) ---------------- */
+const statsStrip = document.getElementById("statsStrip");
+function renderStats(){
+  const scoped = activeGenre === "All" ? ALL_BOOKS : ALL_BOOKS.filter(b => b.genre === activeGenre);
+
+  const authorCounts = {};
+  scoped.forEach(b => { authorCounts[b.author] = (authorCounts[b.author]||0)+1; });
+  const topAuthor = Object.entries(authorCounts).filter(([a])=>a!=="Unknown").sort((a,b)=>b[1]-a[1])[0];
+
+  const seriesInScope = SERIES.filter(s => s.books.some(sb => {
+    const b = ALL_BOOKS_BY_TITLE.get(sb.title);
+    return b && (activeGenre === "All" || b.genre === activeGenre);
+  })).length;
+
+  const scopedDated = scoped.filter(b => b.dateLabel !== "Undated");
+  const oldestInScope = scopedDated[scopedDated.length - 1];
+  const sinceYear = oldestInScope ? oldestInScope.dateLabel.split(" ")[1] : "N/A";
+
+  const stats = [
+    {v: scoped.length, l: activeGenre === "All" ? "Total Books" : `${activeGenre} Books`},
+    {v: topAuthor ? topAuthor[0] : "N/A", l: "Most Read Author"},
+    {v: seriesInScope, l: "Series"},
+    {v: sinceYear, l: "Reading Since"}
+  ];
+  statsStrip.innerHTML = "";
+  stats.forEach(s => {
+    const el = document.createElement("div");
+    el.className = "stat";
+    el.innerHTML = `<div class="v">${s.v}</div><div class="l">${s.l}</div>`;
+    statsStrip.appendChild(el);
+  });
+}
+
+/* ---------------- filter state ---------------- */
+let activeGenre = "All";
+let searchTerm = "";
+
+/* ---------------- genre pills ---------------- */
+const pillsContainer = document.getElementById("genrePills");
+function renderPills(){
+  pillsContainer.innerHTML = "";
+  const allPill = document.createElement("button");
+  allPill.className = "pill" + (activeGenre === "All" ? " active" : "");
+  allPill.innerHTML = `All <span class="count">${ALL_BOOKS.length}</span>`;
+  allPill.addEventListener("click", () => { activeGenre = "All"; renderPills(); renderShelf(); renderStats(); renderFavorites(); });
+  pillsContainer.appendChild(allPill);
+
+  genreList.forEach(([genre, count]) => {
+    const pill = document.createElement("button");
+    pill.className = "pill" + (activeGenre === genre ? " active" : "");
+    pill.innerHTML = `${GENRE_EMOJI[genre] || "📚"} ${genre} <span class="count">${count}</span>`;
+    pill.addEventListener("click", () => { activeGenre = genre; renderPills(); renderShelf(); renderStats(); renderFavorites(); });
+    pillsContainer.appendChild(pill);
+  });
+}
+renderPills();
+renderStats();
+
+document.getElementById("searchInput").addEventListener("input", (e) => {
+  searchTerm = e.target.value.trim().toLowerCase();
+  renderShelf();
+});
+
+/* ---------------- master catalog list ---------------- */
+const shelfGrid = document.getElementById("shelfGrid");
+const shelfCount = document.getElementById("shelfCount");
+const noResults = document.getElementById("noResults");
+
+function renderShelf(){
+  const filtered = MASTER_SORTED.filter(b => {
+    const genreMatch = activeGenre === "All" || b.genre === activeGenre;
+    const searchMatch = !searchTerm ||
+      b.title.toLowerCase().includes(searchTerm) ||
+      b.author.toLowerCase().includes(searchTerm);
+    return genreMatch && searchMatch;
+  });
+
+  shelfCount.textContent = `Showing ${filtered.length} of ${ALL_BOOKS.length} books`;
+  shelfGrid.innerHTML = "";
+  noResults.style.display = filtered.length === 0 ? "block" : "none";
+
+  filtered.forEach(b => {
+    const color = TAG_COLORS[genreList.findIndex(([g]) => g === b.genre) % TAG_COLORS.length] || TAG_COLORS[0];
+    const card = document.createElement("div");
+    card.className = "master-card";
+    card.innerHTML = `
+      <div class="master-cover">
+        <div class="master-genre-tag" style="background:${color};">${b.genre}</div>
+        ${b.spice ? `<div class="master-spice-tag">${"🌶️".repeat(b.spice)}</div>` : ""}
+        <span>${b.title}</span>
+        ${b.cover ? `<img src="${b.cover}" alt="Cover of ${b.title}" loading="lazy" onerror="this.remove()">` : ""}
+      </div>
+      <div class="master-title">${b.title}</div>
+      <div class="master-author">${b.author}</div>
+    `;
+    shelfGrid.appendChild(card);
+  });
+}
+renderShelf();
+
+/* ---------------- favorites: cover cards, per genre (hand-curated via TOP_PICKS) ---------------- */
+const favoritesContainer = document.getElementById("favoritesContainer");
+const seriesByName = new Map(SERIES.map(s => [s.name, s]));
+
+function coverSlotHTML(b, extraClass){
+  return `
+    <div class="fav-cover-slot${extraClass ? ' '+extraClass : ''}">
+      <span>${b.title}</span>
+      ${b.cover ? `<img src="${b.cover}" alt="Cover of ${b.title}" loading="lazy" onerror="this.remove()">` : ""}
+    </div>
+  `;
+}
+
+const MAX_TOP8 = 8;
+
+function renderFavorites(){
+  favoritesContainer.innerHTML = "";
+
+  if(!TOP_PICKS || TOP_PICKS.length === 0){
+    favoritesContainer.innerHTML = `
+      <div class="card empty-card">
+        No Top 8 picked yet. This section is entirely up to you, not auto-computed from ratings.
+        Add an entry to the <code>TOP_PICKS</code> array in <code>reading-data.js</code>, e.g.
+        <code>{ genre: "Fantasy", picks: ["The Magicians", { series: "The Magicians Trilogy", best: ["The Magician King"] }] }</code>,
+        up to 8 per genre, in the order you want them ranked. Standalone books show as a single cover;
+        a <code>series</code> pick shows as a stack of covers you can tap to open the whole series, with
+        any <code>best</code> titles highlighted in gold.
+      </div>
+    `;
+    return;
+  }
+
+  const genresToShow = activeGenre === "All" ? TOP_PICKS : TOP_PICKS.filter(tp => tp.genre === activeGenre);
+
+  if(genresToShow.length === 0){
+    favoritesContainer.innerHTML = `
+      <div class="card empty-card">
+        No Top 8 picked for ${activeGenre} yet. Add a <code>{ genre: "${activeGenre}", picks: [...] }</code>
+        entry to <code>TOP_PICKS</code> in <code>reading-data.js</code> whenever you're ready.
+      </div>
+    `;
+    return;
+  }
+
+  genresToShow.forEach(({genre, picks}) => {
+    if((picks || []).length > MAX_TOP8){
+      console.warn(`TOP_PICKS: "${genre}" has ${picks.length} picks. Only the first ${MAX_TOP8} will show.`);
+    }
+    const resolved = (picks || []).slice(0, MAX_TOP8)
+      .map(p => typeof p === "string" ? {title: p} : p)
+      .map(pick => {
+        if(pick.series){
+          const s = seriesByName.get(pick.series);
+          if(!s){ console.warn(`TOP_PICKS: series "${pick.series}" not found in SERIES`); return null; }
+          const seriesBooks = s.books
+            .map(sb => ALL_BOOKS_BY_TITLE.get(sb.title))
+            .filter(Boolean);
+          if(seriesBooks.length === 0) return null;
+          return {kind: "series", name: pick.series, author: s.author, books: seriesBooks, best: pick.best || []};
+        }
+        const b = ALL_BOOKS_BY_TITLE.get(pick.title);
+        if(!b){ console.warn(`TOP_PICKS: "${pick.title}" not found in books/pastReads`); return null; }
+        return {kind: "book", book: {...b, note: pick.note || b.note}};
+      })
+      .filter(Boolean);
+    if(resolved.length === 0) return;
+
+    const panel = document.createElement("div");
+    panel.className = "card fav-genre-panel";
+    panel.innerHTML = `
+      <div class="card-inner">
+        <div class="fav-genre-title">${GENRE_EMOJI[genre] || "📚"} ${genre}</div>
+        <div class="fav-genre-sub">${resolved.length === MAX_TOP8 ? "The full Top 8" : `${resolved.length} of your Top 8`}, ranked</div>
+        <div class="fav-grid"></div>
+      </div>
+    `;
+    favoritesContainer.appendChild(panel);
+    const gridEl = panel.querySelector(".fav-grid");
+
+    resolved.forEach((entry, i) => {
+      const item = document.createElement("div");
+      item.className = "fav-item";
+      item.setAttribute("tabindex", "0");
+      item.setAttribute("role", "button");
+
+      if(entry.kind === "book"){
+        const b = entry.book;
+        item.setAttribute("aria-label", `View details for ${b.title}`);
+        item.innerHTML = `
+          <div class="fav-stack-wrap">
+            <div class="fav-rank-badge">#${i+1}</div>
+            ${coverSlotHTML(b)}
+          </div>
+          <div class="fav-title">${b.title}</div>
+          <div class="fav-author">${b.author}</div>
+        `;
+        const open = () => openBookModal(b, `#${i+1}`, false);
+        item.addEventListener("click", open);
+        item.addEventListener("keydown", (e) => { if(e.key === "Enter" || e.key === " "){ e.preventDefault(); open(); } });
+      } else {
+        const top = entry.books[0];
+        const behindLayers = Math.min(entry.books.length - 1, 2);
+        let behindHTML = "";
+        for(let L = behindLayers; L >= 1; L--){
+          behindHTML += `<div class="fav-stack-behind" style="transform: translate(${L*5}px, ${L*5}px);"></div>`;
+        }
+        item.setAttribute("aria-label", `Open ${entry.name} series`);
+        item.innerHTML = `
+          <div class="fav-stack-wrap">
+            <div class="fav-rank-badge">#${i+1}</div>
+            ${behindHTML}
+            ${coverSlotHTML(top)}
+            <div class="fav-count-badge">${entry.books.length} books</div>
+          </div>
+          <div class="fav-title">${entry.name}</div>
+          <div class="fav-author">${entry.author}</div>
+        `;
+        const open = () => openSeriesModal(entry, i+1);
+        item.addEventListener("click", open);
+        item.addEventListener("keydown", (e) => { if(e.key === "Enter" || e.key === " "){ e.preventDefault(); open(); } });
+      }
+      gridEl.appendChild(item);
+    });
+  });
+}
+renderFavorites();
+
+/* ---------------- book detail modal ---------------- */
+const modalOverlay = document.getElementById("bookModalOverlay");
+const modalCover = document.getElementById("modalCover");
+const modalRank = document.getElementById("modalRank");
+const modalTitle2 = document.getElementById("modalTitle2");
+const modalAuthor2 = document.getElementById("modalAuthor2");
+const modalStars2 = document.getElementById("modalStars2");
+const modalNote2 = document.getElementById("modalNote2");
+const modalClose = document.getElementById("modalClose");
+
+function openBookModal(b, rankLabel, best){
+  modalRank.textContent = best ? "⭐ Favorite of the series" : (rankLabel ? `Favorite ${rankLabel}` : "Favorite");
+  modalTitle2.textContent = b.title;
+  modalAuthor2.textContent = b.author;
+  modalStars2.textContent = starString(b.rating);
+  modalNote2.textContent = b.note || "";
+  modalNote2.style.display = b.note ? "block" : "none";
+  modalCover.innerHTML = `<span style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;padding:10px;font-family:'Fraunces',serif;font-size:12px;text-align:center;color:#fff;">${b.title}</span>${b.cover ? `<img src="${b.cover}" alt="Cover of ${b.title}" loading="lazy" onerror="this.remove()">` : ""}`;
+  modalOverlay.classList.add("open");
+  modalClose.focus();
+}
+function closeBookModal(){ modalOverlay.classList.remove("open"); }
+modalClose.addEventListener("click", closeBookModal);
+modalOverlay.addEventListener("click", (e) => { if(e.target === modalOverlay) closeBookModal(); });
+document.addEventListener("keydown", (e) => { if(e.key === "Escape" && modalOverlay.classList.contains("open")) closeBookModal(); });
+
+/* ---------------- series-expanded modal ---------------- */
+const seriesModalOverlay = document.getElementById("seriesModalOverlay");
+const seriesModalRank = document.getElementById("seriesModalRank");
+const seriesModalTitle = document.getElementById("seriesModalTitle");
+const seriesModalSub = document.getElementById("seriesModalSub");
+const seriesModalGrid = document.getElementById("seriesModalGrid");
+const seriesModalClose = document.getElementById("seriesModalClose");
+
+function openSeriesModal(entry, rank){
+  seriesModalRank.textContent = `Favorite #${rank}`;
+  seriesModalTitle.textContent = entry.name;
+  seriesModalSub.textContent = `${entry.author} · ${entry.books.length} book${entry.books.length===1?"":"s"} read`;
+  seriesModalGrid.innerHTML = entry.books.map(b => {
+    const isBest = entry.best.includes(b.title);
+    return `
+      <div class="series-book">
+        <div class="series-book-cover${isBest ? ' best' : ''}">
+          ${isBest ? `<div class="series-book-best-star">⭐</div>` : ""}
+          <span>${b.title}</span>
+          ${b.cover ? `<img src="${b.cover}" alt="Cover of ${b.title}" loading="lazy" onerror="this.remove()">` : ""}
+        </div>
+        <div class="series-book-title">${b.title}</div>
+      </div>
+    `;
+  }).join("");
+  seriesModalOverlay.classList.add("open");
+  seriesModalClose.focus();
+}
+function closeSeriesModal(){ seriesModalOverlay.classList.remove("open"); }
+seriesModalClose.addEventListener("click", closeSeriesModal);
+seriesModalOverlay.addEventListener("click", (e) => { if(e.target === seriesModalOverlay) closeSeriesModal(); });
+document.addEventListener("keydown", (e) => { if(e.key === "Escape" && seriesModalOverlay.classList.contains("open")) closeSeriesModal(); });
+</script>
+
+</body>
+</html>
