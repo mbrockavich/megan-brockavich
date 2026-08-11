@@ -161,6 +161,7 @@
     font-size: 12px;
   }
   .set-btn:active { transform: scale(0.96); }
+  .add-row input[type="number"] { flex: 1; width: auto; }
   .controls {
     display: flex;
     gap: 8px;
@@ -259,6 +260,11 @@
             '<input type="number" min="0.25" max="16" step="0.25" value="8" inputmode="decimal" />' +
             '<button class="set-btn">Set</button>' +
           '</div>' +
+          '<div class="setup-row add-row">' +
+            '<label>+Min</label>' +
+            '<input type="number" class="add-input" min="1" step="1" inputmode="numeric" placeholder="20" />' +
+            '<button class="set-btn add-btn">Add</button>' +
+          '</div>' +
           '<div class="controls">' +
             '<button class="action toggle-btn">Start</button>' +
             '<button class="action reset-btn">Reset</button>' +
@@ -272,6 +278,8 @@
     var display = card.querySelector('.time-display');
     var hoursInput = card.querySelector('input[type="number"]');
     var setBtn = card.querySelector('.set-btn');
+    var addInput = card.querySelector('.add-input');
+    var addBtn = card.querySelector('.add-btn');
     var toggleBtn = card.querySelector('.toggle-btn');
     var resetBtn = card.querySelector('.reset-btn');
 
@@ -362,6 +370,28 @@
       state.lastTs = null;
       render();
       save();
+    });
+
+    function addTime() {
+      var m = parseFloat(addInput.value);
+      if (isNaN(m) || m <= 0) return;
+      state.remaining -= m * 60;
+      if (state.remaining < 0) state.remaining = 0;
+      if (state.remaining <= 0) {
+        state.running = false;
+        stopTimer();
+      }
+      addInput.value = '';
+      render();
+      save();
+    }
+
+    addBtn.addEventListener('click', addTime);
+    addInput.addEventListener('keydown', function (e) {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        addTime();
+      }
     });
 
     toggleBtn.addEventListener('click', function () {

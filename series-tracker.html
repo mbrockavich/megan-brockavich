@@ -239,7 +239,7 @@ function seriesLastReadTime(s) {
   s.books.forEach(b => {
     const m = findRead(b.title);
     if(!m) return;
-    const t = m.dateFinished ? new Date(m.dateFinished).getTime()
+    const t = m.dateFinished ? parseLocalDate(m.dateFinished).getTime()
       : m.readDate ? new Date(m.readDate).getTime()
       : 0;
     if(t > max) max = t;
@@ -282,7 +282,7 @@ sortedSeries.forEach(s => {
       if(b.match.readDate){
         posLabel = `Read ${b.match.readDate}`;
       } else if(b.match.dateFinished){
-        posLabel = `Read ${new Date(b.match.dateFinished).toLocaleDateString('en-US', {month:'long', year:'numeric'})}`;
+        posLabel = `Read ${parseLocalDate(b.match.dateFinished).toLocaleDateString('en-US', {month:'long', year:'numeric'})}`;
       } else {
         posLabel = "Read";
       }
