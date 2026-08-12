@@ -611,13 +611,13 @@ const SERIES = [
     author: "Rowan Dillon",
     status: "ongoing",
     books: [
-      {title:"A Mystical Legacy"},
-      {title:"Bogs, Brews, and Banshees", cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1699539434i/201899519.jpg"},
-      {title:"Whispers, Whiskey, and Wishes", cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1708359064i/208878163.jpg"},
-      {title:"Pranks, Poitin, and Pucas", cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1724848086i/217912014.jpg"},
-      {title:"Roots, Rum, and Revenants", cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1758805415i/242063842.jpg"},
-      {title:"Spectacles, Sangria, and Selkies", cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1782483297i/254609775.jpg"},
-      {title:"Greed, Guinness, and Grogochs", comingSoon:"April 2027"}
+      {title:"A Mystical Legacy", number:"0.5"},
+      {title:"Bogs, Brews, and Banshees", number:"1", cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1699539434i/201899519.jpg"},
+      {title:"Whispers, Whiskey, and Wishes", number:"2", cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1708359064i/208878163.jpg"},
+      {title:"Pranks, Poitin, and Pucas", number:"3", cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1724848086i/217912014.jpg"},
+      {title:"Roots, Rum, and Revenants", number:"4", cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1758805415i/242063842.jpg"},
+      {title:"Spectacles, Sangria, and Selkies", number:"5", cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1782483297i/254609775.jpg"},
+      {title:"Greed, Guinness, and Grogochs", number:"6", comingSoon:"April 2027"}
     ]
   },
   {
@@ -890,7 +890,7 @@ const SERIES = [
     author: "Frank Herbert",
     status: "complete",
     books: [
-      {title:"Dune"},
+      {title:"Dune", cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1555447414i/44767458.jpg"},
       {title:"Dune Messiah"},
       {title:"Children of Dune"},
       {title:"God Emperor of Dune"},
@@ -915,7 +915,7 @@ const SERIES = [
     author: "Christopher Paolini",
     status: "ongoing",
     books: [
-      {title:"Eragon"},
+      {title:"Eragon", cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1366212852i/113436.jpg"},
       {title:"Eldest"},
       {title:"Brisingr"},
       {title:"Inheritance"},
