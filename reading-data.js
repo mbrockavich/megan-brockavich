@@ -166,7 +166,7 @@ const pastReads = [
   {title:"Catching Fire", cover:"https://covers.openlibrary.org/b/id/12878880-L.jpg", genre:"Science Fiction", author:"Suzanne Collins", readDate:"October 2023", rating:4, pubYear:2010},
   {title:"Circe", cover:"https://covers.openlibrary.org/b/id/8739376-L.jpg", genre:"Mythology", author:"Madeline Miller", readDate:"November 2018", rating:5, pubYear:2018},
   {title:"City of Ashes", cover:"https://covers.openlibrary.org/b/id/1787130-L.jpg", genre:"Young Adult", author:"Cassandra Clare", readDate:null, pubYear:2008},
-  {title:"City of Bones", cover:"https://covers.openlibrary.org/b/id/10121449-L.jpg", genre:"Young Adult", author:"Cassandra Clare", readDate:null, pubYear:2007},
+  {title:"City of Bones", cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1432730315i/256683.jpg", genre:"Young Adult", author:"Cassandra Clare", readDate:null, pubYear:2007},
   {title:"City of Glass", cover:"https://covers.openlibrary.org/b/id/8200332-L.jpg", genre:"Young Adult", author:"Cassandra Clare", readDate:null, pubYear:2009},
   {title:"Conflicted: How Productive Disagreements Lead to Better Outcomes", cover:"https://covers.openlibrary.org/b/id/10657607-L.jpg", genre:"Nonfiction", author:"Ian Leslie", readDate:"June 2024", pubYear:2021},
   {title:"Curse of the Blue Tattoo: Being an Account of the Misadventures of Jacky Faber, Midshipman and Fine Lady", genre:"Young Adult", author:"L.A. Meyer", readDate:null, cover:"https://is1-ssl.mzstatic.com/image/thumb/Publication116/v4/1d/8f/52/1d8f526d-2825-dfc7-93ae-5de20a7eb176/9780547415871.jpg/600x600bb.jpg"},
@@ -671,7 +671,10 @@ const SERIES = [
     books: [
       {title:"City of Bones"},
       {title:"City of Ashes"},
-      {title:"City of Glass"}
+      {title:"City of Glass"},
+      {title:"City of Fallen Angels"},
+      {title:"City of Lost Souls"},
+      {title:"City of Heavenly Fire"}
     ]
   },
   {
