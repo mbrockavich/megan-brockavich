@@ -273,7 +273,7 @@ const pastReads = [
   {title:"The Fault in Our Stars", cover:"https://covers.openlibrary.org/b/id/7418786-L.jpg", genre:"Young Adult", author:"John Green", readDate:null, pubYear:2010},
   {title:"The Giver", cover:"https://covers.openlibrary.org/b/id/8352502-L.jpg", genre:"Middle Grade", author:"Lois Lowry", readDate:null, rating:5, pubYear:1993},
   {title:"The Giving Tree", cover:"https://covers.openlibrary.org/b/id/8981758-L.jpg", genre:"Classic Literature", author:"Shel Silverstein", readDate:null, pubYear:1964},
-  {title:"The Golden Compass", cover:"https://covers.openlibrary.org/b/id/7896630-L.jpg", genre:"Fantasy", author:"Philip Pullman", readDate:null, rating:4, pubYear:2016},
+  {title:"The Golden Compass", cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1505766203i/119322.jpg", genre:"Fantasy", author:"Philip Pullman", readDate:null, rating:4, pubYear:2016},
   {title:"The Handmaid's Tale", cover:"https://covers.openlibrary.org/b/id/8231851-L.jpg", genre:"Literary Fiction", author:"Margaret Atwood", readDate:null, rating:5, pubYear:1985},
   {title:"The Handmaid's Tale: The Graphic Novel", cover:"https://covers.openlibrary.org/b/id/14339099-L.jpg", genre:"Graphic Novel", author:"Renee Nault", readDate:"November 2024", rating:4, pubYear:2019},
   {title:"The Help", cover:"https://covers.openlibrary.org/b/id/8387264-L.jpg", genre:"Historical Fiction", author:"Kathryn Stockett", readDate:null, rating:4, pubYear:2009},
@@ -292,7 +292,7 @@ const pastReads = [
   {title:"The Death Cure", cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1303997647i/7864437.jpg", genre:"Science Fiction", author:"James Dashner", readDate:null, pubYear:2011},
   {title:"The Fever Code", cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1449687382i/23267628.jpg", genre:"Science Fiction", author:"James Dashner", readDate:null, pubYear:2016},
   {title:"The Kill Order", cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1330636153i/13089710.jpg", genre:"Science Fiction", author:"James Dashner", readDate:null, pubYear:2012},
-  {title:"The Maze Runner", cover:"https://covers.openlibrary.org/b/id/10464801-L.jpg", genre:"Science Fiction", author:"James Dashner", readDate:null, pubYear:2009},
+  {title:"The Maze Runner", cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1375596592i/6186357.jpg", genre:"Science Fiction", author:"James Dashner", readDate:null, pubYear:2009},
   {title:"The Scorch Trials", cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1388240248i/7631105.jpg", genre:"Science Fiction", author:"James Dashner", readDate:null, pubYear:2010},
   {title:"The Odyssey", cover:"https://covers.openlibrary.org/b/id/12474938-L.jpg", genre:"Classic Literature", author:"Homer", readDate:null, rating:5, pubYear:1946},
   {title:"The Perfect Child", cover:"https://covers.openlibrary.org/b/id/8807977-L.jpg", genre:"Thriller", author:"Lucinda Berry", readDate:"June 2024", pubYear:2019},
@@ -927,9 +927,14 @@ const SERIES = [
     author: "Philip Pullman",
     status: "complete",
     books: [
-      {title:"The Golden Compass"},
-      {title:"The Subtle Knife"},
-      {title:"The Amber Spyglass"}
+      {title:"Once Upon a Time in the North", number:"0.5"},
+      {title:"The Collectors", number:"0.6"},
+      {title:"The Golden Compass", number:"1"},
+      {title:"The Subtle Knife", number:"2"},
+      {title:"The Amber Spyglass", number:"3"},
+      {title:"Lyra's Oxford", number:"3.5"},
+      {title:"Serpentine", number:"3.6"},
+      {title:"The Imagination Chamber", number:"3.7"}
     ]
   },
   {

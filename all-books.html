@@ -181,14 +181,6 @@
     position:absolute; inset:0; border-radius:4px; background: var(--wood-dark);
     box-shadow: 0 4px 10px rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.08);
   }
-  .fav-rank-badge{
-    position:absolute; top:-9px; left:-9px; z-index:3;
-    font-family:'Space Mono', monospace; font-size: 10px; font-weight:700;
-    background: var(--stamp); color: var(--wood-darker);
-    width:24px; height:24px; border-radius:50%;
-    display:flex; align-items:center; justify-content:center;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.35);
-  }
   .fav-count-badge{
     position:absolute; bottom:6px; right:6px; z-index:3;
     font-family:'Space Mono', monospace; font-size: 9px; font-weight:700;
@@ -196,7 +188,6 @@
     padding: 3px 7px; border-radius: 20px;
   }
   .fav-title{ font-family:'Fraunces',serif; font-weight:600; font-size:13px; line-height:1.3; color: var(--card); }
-  .fav-author{ font-size: 10.5px; color: var(--brass); margin-top: 2px; }
 
   /* series-expanded modal */
   .modal-panel.series-modal-panel{ max-width: 700px; }
@@ -214,7 +205,6 @@
   }
   .series-book-cover img{ position:absolute; inset:0; width:100%; height:100%; object-fit:cover; }
   .series-book-cover.best{ box-shadow: 0 0 0 3px var(--gold), 0 6px 14px rgba(0,0,0,0.25); }
-  .series-book-best-star{ position:absolute; top:-8px; left:50%; transform:translateX(-50%); font-size:15px; z-index:1; filter: drop-shadow(0 1px 1px rgba(0,0,0,0.4)); }
   .series-book-cover.unread{ opacity:0.45; box-shadow:none; border: 1.5px dashed rgba(255,255,255,0.3); }
   .series-book-status{ font-size:9.5px; font-family:'Space Mono',monospace; text-transform:uppercase; letter-spacing:0.05em; color: var(--ink-soft); margin-top:2px; }
   .series-book-title{ font-size:11.5px; font-weight:600; line-height:1.3; color: var(--ink); }
@@ -308,7 +298,6 @@
   }
   .modal-title2{ font-family:'Fraunces',serif; font-weight:700; font-size:19px; margin:0 0 3px; line-height:1.2; }
   .modal-author2{ font-size:12.5px; color:var(--ink-soft); margin-bottom:8px; }
-  .modal-stars2{ color: var(--gold); font-size:14px; letter-spacing:2px; margin-bottom:10px; }
   .modal-note2{ font-size:12.5px; font-style:italic; color:var(--ink-soft); line-height:1.5; border-left:2px solid var(--stamp); padding-left:10px; }
 
   footer.page-foot{
@@ -382,7 +371,6 @@
       <div class="modal-rank" id="modalRank"></div>
       <h3 class="modal-title2" id="modalTitle2"></h3>
       <div class="modal-author2" id="modalAuthor2"></div>
-      <div class="modal-stars2" id="modalStars2"></div>
       <div class="modal-note2" id="modalNote2"></div>
     </div>
   </div>
@@ -492,12 +480,6 @@ const MASTER_SORTED = [...ALL_BOOKS].sort((a, b) => {
   if(ay !== by) return ay - by;
   return a.title.localeCompare(b.title);
 });
-
-function starString(r){
-  if(!r) return "";
-  r = Math.max(1, Math.min(5, Math.round(r)));
-  return "★".repeat(r) + "☆".repeat(5-r);
-}
 
 /* ---------------- hero + footer ---------------- */
 const genreCounts = {};
@@ -846,7 +828,7 @@ function resolvePicks(genre, picks){
     .filter(Boolean);
 }
 
-function makeFavItem(entry, rank){
+function makeFavItem(entry){
   const item = document.createElement("div");
   item.className = "fav-item";
   item.setAttribute("tabindex", "0");
@@ -857,13 +839,11 @@ function makeFavItem(entry, rank){
     item.setAttribute("aria-label", `View details for ${b.title}`);
     item.innerHTML = `
       <div class="fav-stack-wrap">
-        <div class="fav-rank-badge">#${rank}</div>
         ${coverSlotHTML(b)}
       </div>
       <div class="fav-title">${b.title}</div>
-      <div class="fav-author">${b.author}</div>
     `;
-    const open = () => openBookModal(b, `#${rank}`, false);
+    const open = () => openBookModal(b, null, false);
     item.addEventListener("click", open);
     item.addEventListener("keydown", (e) => { if(e.key === "Enter" || e.key === " "){ e.preventDefault(); open(); } });
   } else {
@@ -876,15 +856,13 @@ function makeFavItem(entry, rank){
     item.setAttribute("aria-label", `Open ${entry.name} series`);
     item.innerHTML = `
       <div class="fav-stack-wrap">
-        <div class="fav-rank-badge">#${rank}</div>
         ${behindHTML}
         ${coverSlotHTML(top)}
         <div class="fav-count-badge">${entry.books.length} books</div>
       </div>
       <div class="fav-title">${entry.name}</div>
-      <div class="fav-author">${entry.author}</div>
     `;
-    const open = () => openSeriesModal(entry, rank);
+    const open = () => openSeriesModal(entry, null);
     item.addEventListener("click", open);
     item.addEventListener("keydown", (e) => { if(e.key === "Enter" || e.key === " "){ e.preventDefault(); open(); } });
   }
@@ -929,8 +907,7 @@ function renderFavoritesInner(){
     eligible.forEach(({genre, picks}) => {
       const resolved = resolvePicks(genre, picks);
       if(resolved.length === 0) return;
-      const item = makeFavItem(resolved[0], 1);
-      item.querySelector(".fav-rank-badge").textContent = GENRE_EMOJI[genre] || "📚";
+      const item = makeFavItem(resolved[0]);
       gridEl.appendChild(item);
     });
     return;
@@ -954,9 +931,9 @@ function renderFavoritesInner(){
           <svg class="ribbon-svg" viewBox="0 0 320 50" preserveAspectRatio="none">
             <polygon points="34,8 286,8 320,0 296,25 320,50 286,42 34,42 0,50 24,25 0,0" fill="var(--stamp)"/>
           </svg>
-          <span class="ribbon-text">🏆 Top 10</span>
+          <span class="ribbon-text">Top 10</span>
         </div>
-        <div class="top6-banner-genre">${GENRE_EMOJI[match.genre] || "📚"} ${match.genre}</div>
+        <div class="top6-banner-genre">${match.genre}</div>
         <div class="top6-banner-count">${resolved.length === MAX_TOP10 ? "the full lineup, ranked" : `${resolved.length} of 10 picked, ranked`}</div>
       </div>
       <div class="fav-grid"></div>
@@ -964,7 +941,7 @@ function renderFavoritesInner(){
   `;
   favoritesContainer.appendChild(panel);
   const gridEl = panel.querySelector(".fav-grid");
-  resolved.forEach((entry, i) => gridEl.appendChild(makeFavItem(entry, i + 1)));
+  resolved.forEach(entry => gridEl.appendChild(makeFavItem(entry)));
 }
 renderFavorites();
 
@@ -974,15 +951,13 @@ const modalCover = document.getElementById("modalCover");
 const modalRank = document.getElementById("modalRank");
 const modalTitle2 = document.getElementById("modalTitle2");
 const modalAuthor2 = document.getElementById("modalAuthor2");
-const modalStars2 = document.getElementById("modalStars2");
 const modalNote2 = document.getElementById("modalNote2");
 const modalClose = document.getElementById("modalClose");
 
 function openBookModal(b, rankLabel, best){
-  modalRank.textContent = best ? "⭐ Favorite of the series" : (rankLabel ? `Favorite ${rankLabel}` : "Favorite");
+  modalRank.textContent = best ? "Favorite of the series" : (rankLabel ? `Favorite ${rankLabel}` : "Favorite");
   modalTitle2.textContent = b.title;
   modalAuthor2.textContent = b.author;
-  modalStars2.textContent = starString(b.rating);
   modalNote2.textContent = b.note || "";
   modalNote2.style.display = b.note ? "block" : "none";
   modalCover.innerHTML = `<span style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;padding:10px;font-family:'Fraunces',serif;font-size:12px;text-align:center;color:#fff;">${b.title}</span>${b.cover ? `<img src="${b.cover}" alt="Cover of ${b.title}" loading="lazy" onerror="this.remove()">` : ""}`;
@@ -1027,7 +1002,6 @@ function openSeriesModal(entry, rank){
     return `
       <div class="series-book">
         <div class="series-book-cover${isBest ? ' best' : ''}">
-          ${isBest ? `<div class="series-book-best-star">⭐</div>` : ""}
           <span>${b.title}</span>
           ${b.cover ? `<img src="${b.cover}" alt="Cover of ${b.title}" loading="lazy" onerror="this.remove()">` : ""}
         </div>
