@@ -646,12 +646,18 @@ function seriesStatus(s){
    same visual language as a genre shelf but the top-left tag shows
    completion status instead of genre, and the count badge is always
    read/total (not just when partially read). */
+const SERIES_STATUS_RANK = {progress: 0, caughtup: 1, complete: 2};
+
 function renderSeriesGrid(){
   const term = searchTerm;
   const matching = SERIES.filter(s => !term ||
     s.name.toLowerCase().includes(term) ||
     s.author.toLowerCase().includes(term)
-  ).sort((a, b) => seriesLastReadTime(b) - seriesLastReadTime(a));
+  ).sort((a, b) => {
+    const rankDiff = SERIES_STATUS_RANK[seriesStatus(a).cls] - SERIES_STATUS_RANK[seriesStatus(b).cls];
+    if(rankDiff !== 0) return rankDiff;
+    return seriesLastReadTime(b) - seriesLastReadTime(a);
+  });
 
   shelfCount.textContent = `Showing ${matching.length} of ${SERIES.length} series`;
   shelfGrid.innerHTML = "";
