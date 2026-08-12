@@ -298,7 +298,7 @@ const pastReads = [
   {title:"The Rise of Magicks", cover:"https://covers.openlibrary.org/b/id/9154264-L.jpg", genre:"Fantasy", author:"Nora Roberts", readDate:"March 2023", pubYear:2019},
   {title:"Year One", cover:"https://covers.openlibrary.org/b/id/8841058-L.jpg", genre:"Fantasy", author:"Nora Roberts", readDate:null, pubYear:2017},
   {title:"Of Blood and Bone", cover:"https://covers.openlibrary.org/b/id/8758039-L.jpg", genre:"Fantasy", author:"Nora Roberts", readDate:null, pubYear:2018},
-  {title:"The Serpent and the Wings of Night", cover:"https://covers.openlibrary.org/b/id/15163954-L.jpg", genre:"Fantasy", author:"Carissa Broadbent", readDate:"April 2025", rating:5, pubYear:2024},
+  {title:"The Serpent and the Wings of Night", cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1711665394i/60714999.jpg", genre:"Fantasy", author:"Carissa Broadbent", readDate:"April 2025", rating:5, pubYear:2024},
   {title:"The Silent Patient", cover:"https://covers.openlibrary.org/b/id/9407338-L.jpg", genre:"Thriller", author:"Alex Michaelides", readDate:"February 2024", rating:4, pubYear:2018},
   {title:"The Silver Chair", cover:"https://covers.openlibrary.org/b/id/6950992-L.jpg", genre:"Middle Grade", author:"C.S. Lewis", readDate:null, pubYear:1953},
   {title:"The Skydivers", genre:"Thriller", author:"Chris Bohjalian", readDate:"September 2025"},
@@ -630,12 +630,14 @@ const SERIES = [
     author: "Carissa Broadbent",
     status: "ongoing",
     books: [
-      {title:"The Serpent and the Wings of Night"},
-      {title:"Six Scorched Roses"},
-      {title:"The Ashes & the Star-Cursed King"},
-      {title:"Slaying the Vampire Conqueror"},
-      {title:"The Songbird & the Heart of Stone"},
-      {title:"The Fallen & the Kiss of Dusk"}
+      {title:"The Serpent and the Wings of Night", number:"1"},
+      {title:"Six Scorched Roses", number:"1.5"},
+      {title:"The Ashes & the Star-Cursed King", number:"2"},
+      {title:"Slaying the Vampire Conqueror", number:"2.5"},
+      {title:"The Songbird & the Heart of Stone", number:"3"},
+      {title:"The Fallen & the Kiss of Dusk", number:"4"},
+      {title:"The Lion & the Deathless Dark", number:"5"},
+      {title:"Crowns of Nyaxia Book 6", number:"6", comingSoon:"Soon (still being written)"}
     ]
   },
   {
