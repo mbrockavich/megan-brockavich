@@ -478,22 +478,23 @@ const SERIES = [
   {
     name: "Zodiac Academy",
     author: "Caroline Peckham & Susanne Valenti",
-    status: "complete",
+    status: "ongoing",
     books: [
-      {title:"The Awakening"},
-      {title:"Ruthless Fae"},
-      {title:"The Reckoning"},
-      {title:"Origins of an Academy Bully"},
-      {title:"Shadow Princess"},
-      {title:"Cursed Fates"},
-      {title:"The Big A.S.S. Party"},
-      {title:"Fated Throne"},
-      {title:"The Awakening as Told by the Boys"},
-      {title:"Heartless Sky"},
-      {title:"Sorrow and Starlight"},
-      {title:"Beyond the Veil"},
-      {title:"Live and Let Lionel"},
-      {title:"Restless Stars"}
+      {title:"Origins of an Academy Bully", number:"0.5"},
+      {title:"The Awakening", number:"1"},
+      {title:"Ruthless Fae", number:"2"},
+      {title:"The Reckoning", number:"3"},
+      {title:"Shadow Princess", number:"4"},
+      {title:"Cursed Fates", number:"5"},
+      {title:"The Big A.S.S. Party", number:"5.5"},
+      {title:"Fated Throne", number:"6"},
+      {title:"The Awakening as Told by the Boys", number:"1.5"},
+      {title:"Heartless Sky", number:"7"},
+      {title:"Sorrow and Starlight", number:"8"},
+      {title:"Beyond the Veil", number:"8.5"},
+      {title:"Live and Let Lionel", number:"Bonus"},
+      {title:"Restless Stars", number:"9"},
+      {title:"On the Cursed Day of Christmas", number:"10", comingSoon:true}
     ]
   },
   {
@@ -873,6 +874,120 @@ const SERIES = [
       {title:"Year One"},
       {title:"Of Blood and Bone"},
       {title:"The Rise of Magicks"}
+    ]
+  },
+  {
+    name: "Dune Chronicles",
+    author: "Frank Herbert",
+    status: "complete",
+    books: [
+      {title:"Dune"},
+      {title:"Dune Messiah"},
+      {title:"Children of Dune"},
+      {title:"God Emperor of Dune"},
+      {title:"Heretics of Dune"},
+      {title:"Chapterhouse: Dune"}
+    ]
+  },
+  {
+    name: "The Maze Runner",
+    author: "James Dashner",
+    status: "complete",
+    books: [
+      {title:"The Maze Runner"},
+      {title:"The Scorch Trials"},
+      {title:"The Death Cure"},
+      {title:"The Kill Order"},
+      {title:"The Fever Code"}
+    ]
+  },
+  {
+    name: "The Inheritance Cycle",
+    author: "Christopher Paolini",
+    status: "ongoing",
+    books: [
+      {title:"Eragon"},
+      {title:"Eldest"},
+      {title:"Brisingr"},
+      {title:"Inheritance"},
+      {title:"Murtagh"}
+    ]
+  },
+  {
+    name: "His Dark Materials",
+    author: "Philip Pullman",
+    status: "complete",
+    books: [
+      {title:"The Golden Compass"},
+      {title:"The Subtle Knife"},
+      {title:"The Amber Spyglass"}
+    ]
+  },
+  {
+    name: "The Giver Quartet",
+    author: "Lois Lowry",
+    status: "complete",
+    books: [
+      {title:"The Giver"},
+      {title:"Gathering Blue"},
+      {title:"Messenger"},
+      {title:"Son"}
+    ]
+  },
+  {
+    name: "Anne of Green Gables",
+    author: "L.M. Montgomery",
+    status: "complete",
+    books: [
+      {title:"Anne of Green Gables"},
+      {title:"Anne of Avonlea"},
+      {title:"Anne of the Island"},
+      {title:"Anne of Windy Poplars"},
+      {title:"Anne's House of Dreams"},
+      {title:"Anne of Ingleside"},
+      {title:"Rainbow Valley"},
+      {title:"Rilla of Ingleside"}
+    ]
+  },
+  {
+    name: "The Princess Diaries",
+    author: "Meg Cabot",
+    status: "complete",
+    books: [
+      {title:"The Princess Diaries"},
+      {title:"Princess in the Spotlight"},
+      {title:"Princess in Love"},
+      {title:"Princess in Waiting"},
+      {title:"Princess in Pink"},
+      {title:"Princess in Training"},
+      {title:"Party Princess"},
+      {title:"Princess on the Brink"},
+      {title:"Princess Mia"},
+      {title:"Forever Princess"},
+      {title:"Royal Wedding"},
+      {title:"The Quarantine Princess Diaries"}
+    ]
+  },
+  {
+    name: "A Dickens of a Crime",
+    author: "Heather Redmond",
+    status: "ongoing",
+    books: [
+      {title:"A Tale of Two Murders"},
+      {title:"Grave Expectations"},
+      {title:"A Christmas Carol Murder"},
+      {title:"The Pickwick Murders"},
+      {title:"A Twist of Murder"}
+    ]
+  },
+  {
+    name: "The Host",
+    author: "Stephenie Meyer",
+    status: "ongoing",
+    books: [
+      {title:"The Host"},
+      {title:"The Seeker", comingSoon:true},
+      {title:"The Soul", comingSoon:true}
     ]
   }
 ];

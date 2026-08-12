@@ -113,6 +113,80 @@
   .pill.active{ background: var(--stamp); color: var(--wood-darker); border-color: var(--stamp); font-weight:700; }
   .pill .count{ opacity:0.7; font-size:9.5px; }
 
+  /* series tracker view (folded into the master list via the Series pill) */
+  .strk-panel{ padding: 24px 26px 26px; margin-bottom: 24px; }
+  .strk-panel h2{ font-family:'Fraunces',serif; font-weight:600; font-size:20px; margin:0 0 3px; }
+  .strk-bucket-count{
+    font-family:'Space Mono',monospace; font-weight:400; font-size:12px;
+    color: var(--ink-soft); vertical-align: middle; margin-left: 4px;
+  }
+  .strk-panel .sub{ font-family:'Space Mono',monospace; font-size:10px; text-transform:uppercase; letter-spacing:0.1em; color:var(--ink-soft); margin-bottom:22px; }
+  .strk-empty{ font-size:12.5px; font-style:italic; color:var(--ink-soft); }
+
+  .strk-row{ margin-bottom: 26px; padding: 14px; border-radius: 6px; cursor:pointer; }
+  .strk-row:last-child{ margin-bottom: 0; }
+  .strk-row:hover, .strk-row:focus-visible{ background: rgba(226,120,154,0.06); outline:none; }
+  .strk-row.fully-read{
+    background: rgba(168,213,186,0.14);
+    box-shadow: inset 0 0 0 1.5px rgba(168,213,186,0.4);
+  }
+  .strk-head{ display:flex; align-items:baseline; flex-wrap:wrap; gap: 8px 12px; margin-bottom: 12px; }
+  .strk-name{ font-family:'Fraunces',serif; font-weight:600; font-size:15.5px; }
+  .strk-author{ font-family:'Space Mono',monospace; font-size:10.5px; color:var(--ink-soft); }
+  .strk-progress{
+    margin-left:auto;
+    font-family:'Space Mono',monospace; font-size:10px; text-transform:uppercase; letter-spacing:0.08em;
+    padding: 3px 9px; border-radius: 20px;
+    background: rgba(226,120,154,0.15); color: var(--stamp);
+  }
+  .strk-progress.complete{ background: rgba(168,213,186,0.25); color:#3f7a54; }
+
+  .strk-books{ display:flex; flex-wrap:wrap; gap: 14px; }
+  .strk-book{ width: 84px; text-align:center; }
+  .strk-book-cover{
+    width:100%; aspect-ratio: 2/3;
+    border-radius: 3px 8px 8px 3px/2px;
+    box-shadow: 0 6px 14px rgba(0,0,0,0.25);
+    position:relative; overflow:hidden;
+    margin-bottom:6px;
+  }
+  .strk-book-cover img{ position:absolute; inset:0; width:100%; height:100%; object-fit:cover; border-radius:inherit; display:block; }
+  .strk-book-cover.read img{ filter: grayscale(0.85) brightness(0.8); }
+  .strk-book-cover.read::before{ content:""; position:absolute; inset:0; background: rgba(43,33,24,0.1); }
+  .strk-read-badge{
+    position:absolute; top:5px; right:5px;
+    width:20px; height:20px; border-radius:50%;
+    background: var(--stamp);
+    display:flex; align-items:center; justify-content:center;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.4), 0 0 0 2px rgba(255,255,255,0.85);
+  }
+  .strk-read-badge svg{ width:11px; height:11px; }
+  .strk-book-pos{ font-family:'Space Mono',monospace; font-size:9px; color:var(--ink-soft); margin-top:1px; }
+  .strk-book-pos.unread{ color: var(--ink-soft); font-style: italic; }
+  .strk-book-pos.coming{ color: var(--stamp); font-style: italic; }
+  .strk-book-title{ font-size:10.5px; font-weight:600; line-height:1.25; color: var(--ink); }
+  .strk-book-num{ font-family:'Space Mono',monospace; font-weight:400; font-size:9.5px; color: var(--ink-soft); }
+  .strk-book.unread .strk-book-title{ color: var(--ink-soft); }
+
+  .strk-book.unread .strk-book-cover{
+    box-shadow:none; border: 1.5px dashed var(--ink-soft);
+    background: repeating-linear-gradient(45deg, transparent, transparent 6px, rgba(43,33,24,0.05) 6px, rgba(43,33,24,0.05) 12px);
+    display:flex; align-items:center; justify-content:center;
+  }
+  .strk-book.unread .strk-book-cover span{
+    font-family:'Space Mono',monospace; font-size:9px; text-transform:uppercase; letter-spacing:0.06em;
+    color: var(--ink-soft); padding: 6px;
+  }
+  .strk-book-cover.upcoming{
+    box-shadow:none; border: 1.5px dashed var(--stamp);
+    background: repeating-linear-gradient(45deg, transparent, transparent 6px, rgba(226,120,154,0.06) 6px, rgba(226,120,154,0.06) 12px);
+    display:flex; align-items:center; justify-content:center;
+  }
+  .strk-book-cover.upcoming span{
+    font-family:'Space Mono',monospace; font-size:9px; text-transform:uppercase; letter-spacing:0.06em;
+    color: var(--stamp); padding: 6px;
+  }
+
   section.section-head{ margin: 0 0 20px; text-align:left; }
   section.section-head .label{
     font-family:'Space Mono', monospace; text-transform: uppercase; letter-spacing: 0.25em;
@@ -321,8 +395,6 @@
     <a href="library.html">← Megan's Library</a>
     <span class="sep">·</span>
     <a href="2026-reading-stats.html">2026 Stats</a>
-    <span class="sep">·</span>
-    <a href="series-tracker.html">Series Tracker</a>
   </nav>
 
   <header>
@@ -359,6 +431,7 @@
     </div>
     <div class="catalog-count" id="shelfCount"></div>
     <div class="master-grid" id="shelfGrid"></div>
+    <div id="seriesTrackerView" style="display:none;"></div>
     <div class="no-results" id="noResults" style="display:none;">Nothing matches that search. Try a different title, author, or genre.</div>
   </section>
 
@@ -472,6 +545,7 @@ function normalizeAll(){
 
 const ALL_BOOKS = normalizeAll();
 const ALL_BOOKS_BY_TITLE = new Map(ALL_BOOKS.map(b => [b.title, b]));
+const seriesByName = new Map(SERIES.map(s => [s.name, s]));
 
 /* Master List order: author, then publication year (oldest first within
    an author), then title as a final tiebreak. Separate from ALL_BOOKS,
@@ -509,6 +583,26 @@ document.getElementById("pageFoot").textContent =
 /* ---------------- stats strip (reactive to the selected genre) ---------------- */
 const statsStrip = document.getElementById("statsStrip");
 function renderStats(){
+  if(activeGenre === "Series"){
+    const completed = SERIES.filter(s => seriesIsCaughtUp(s) && s.status === "complete").length;
+    const caughtUp = SERIES.filter(s => seriesIsCaughtUp(s) && s.status !== "complete").length;
+    const inProgress = SERIES.length - completed - caughtUp;
+    const stats = [
+      {v: SERIES.length, l: "Total Series"},
+      {v: inProgress, l: "In Progress"},
+      {v: caughtUp, l: "Caught Up"},
+      {v: completed, l: "Completed"}
+    ];
+    statsStrip.innerHTML = "";
+    stats.forEach(s => {
+      const el = document.createElement("div");
+      el.className = "stat";
+      el.innerHTML = `<div class="v">${s.v}</div><div class="l">${s.l}</div>`;
+      statsStrip.appendChild(el);
+    });
+    return;
+  }
+
   const scoped = activeGenre === "All" ? ALL_BOOKS : ALL_BOOKS.filter(b => b.genre === activeGenre);
 
   const authorCounts = {};
@@ -545,22 +639,33 @@ let searchTerm = "";
 
 /* ---------------- genre pills ---------------- */
 const pillsContainer = document.getElementById("genrePills");
+function selectFilter(value){
+  activeGenre = value;
+  renderPills(); renderShelf(); renderStats(); renderFavorites();
+}
 function renderPills(){
   pillsContainer.innerHTML = "";
   const allPill = document.createElement("button");
   allPill.className = "pill" + (activeGenre === "All" ? " active" : "");
   allPill.innerHTML = `All <span class="count">${ALL_BOOKS.length}</span>`;
-  allPill.addEventListener("click", () => { activeGenre = "All"; renderPills(); renderShelf(); renderStats(); renderFavorites(); });
+  allPill.addEventListener("click", () => selectFilter("All"));
   pillsContainer.appendChild(allPill);
+
+  const seriesPill = document.createElement("button");
+  seriesPill.className = "pill" + (activeGenre === "Series" ? " active" : "");
+  seriesPill.innerHTML = `📚 Series <span class="count">${SERIES.length}</span>`;
+  seriesPill.addEventListener("click", () => selectFilter("Series"));
+  pillsContainer.appendChild(seriesPill);
 
   genreList.forEach(([genre, count]) => {
     const pill = document.createElement("button");
     pill.className = "pill" + (activeGenre === genre ? " active" : "");
     pill.innerHTML = `${GENRE_EMOJI[genre] || "📚"} ${genre} <span class="count">${count}</span>`;
-    pill.addEventListener("click", () => { activeGenre = genre; renderPills(); renderShelf(); renderStats(); renderFavorites(); });
+    pill.addEventListener("click", () => selectFilter(genre));
     pillsContainer.appendChild(pill);
   });
 }
+if(location.hash === "#series") activeGenre = "Series";
 renderPills();
 renderStats();
 
@@ -578,7 +683,146 @@ function genreColorFor(genre){
   return TAG_COLORS[genreList.findIndex(([g]) => g === genre) % TAG_COLORS.length] || TAG_COLORS[0];
 }
 
+const seriesTrackerView = document.getElementById("seriesTrackerView");
+
+function seriesLastReadTime(s){
+  let max = -Infinity;
+  s.books.forEach(b => {
+    const m = findRead(b.title);
+    if(!m) return;
+    const t = m.dateFinished ? parseLocalDate(m.dateFinished).getTime()
+      : m.readDate ? new Date(m.readDate).getTime()
+      : 0;
+    if(t > max) max = t;
+  });
+  return max;
+}
+
+function seriesIsCaughtUp(s){
+  const released = s.books.filter(b => !b.comingSoon);
+  return released.length > 0 && released.every(b => findRead(b.title));
+}
+
+function renderSeriesTrackerView(){
+  const term = searchTerm;
+  const matching = SERIES.filter(s => !term ||
+    s.name.toLowerCase().includes(term) ||
+    s.author.toLowerCase().includes(term) ||
+    s.books.some(b => b.title.toLowerCase().includes(term))
+  ).sort((a, b) => seriesLastReadTime(b) - seriesLastReadTime(a));
+
+  shelfCount.textContent = `Showing ${matching.length} of ${SERIES.length} series`;
+  noResults.style.display = matching.length === 0 ? "block" : "none";
+
+  const buckets = {progress: [], caughtUp: [], complete: []};
+  matching.forEach(s => {
+    const caughtUp = seriesIsCaughtUp(s);
+    if(caughtUp && s.status === "complete") buckets.complete.push(s);
+    else if(caughtUp) buckets.caughtUp.push(s);
+    else buckets.progress.push(s);
+  });
+
+  const readBadgeSvg = `<div class="strk-read-badge"><svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M5 13l4 4L19 7" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></div>`;
+
+  function renderBucket(list){
+    if(list.length === 0) return `<div class="strk-empty">Nothing here yet.</div>`;
+    return list.map(s => {
+      const enriched = s.books.map(b => ({...b, match: findRead(b.title)}));
+      const released = enriched.filter(b => !b.comingSoon);
+      const readCount = released.filter(b => b.match).length;
+      const total = released.length;
+      const caughtUp = total > 0 && readCount === total;
+      const seriesDone = s.status === "complete";
+
+      let badgeText, badgeClass;
+      if(caughtUp && seriesDone){ badgeText = "Complete"; badgeClass = "complete"; }
+      else if(caughtUp){ badgeText = "Caught Up"; badgeClass = "complete"; }
+      else { badgeText = `${readCount}/${total} read`; badgeClass = ""; }
+
+      const booksHtml = enriched.map((b, i) => {
+        const isRead = !!b.match;
+        const cover = (b.match && b.match.cover) || b.cover || null;
+        const comingSoonLabel = b.comingSoon ? (typeof b.comingSoon === "string" ? `Coming ${b.comingSoon}` : "Coming Soon") : null;
+        const coverHtml = cover
+          ? `<img src="${cover}" alt="Cover of ${b.title}" loading="lazy" onerror="this.remove()">`
+          : (isRead ? "" : (b.comingSoon ? `<span>${comingSoonLabel}</span>` : `<span>Not Read Yet</span>`));
+
+        let posLabel, posClass = "";
+        if(isRead){
+          if(b.match.readDate) posLabel = `Read ${b.match.readDate}`;
+          else if(b.match.dateFinished) posLabel = `Read ${parseLocalDate(b.match.dateFinished).toLocaleDateString('en-US', {month:'long', year:'numeric'})}`;
+          else posLabel = "Read";
+        } else if(b.comingSoon){ posLabel = comingSoonLabel; posClass = "coming"; }
+        else { posLabel = "Not Read Yet"; posClass = "unread"; }
+
+        const coverClass = isRead ? " read" : (b.comingSoon ? " upcoming" : "");
+        const num = b.number || (i + 1);
+        return `
+          <div class="strk-book ${isRead ? "" : "unread"}">
+            <div class="strk-book-cover${coverClass}">${coverHtml}${isRead ? readBadgeSvg : ""}</div>
+            <div class="strk-book-title">${b.title} <span class="strk-book-num">[${num}]</span></div>
+            <div class="strk-book-pos ${posClass}">${posLabel}</div>
+          </div>
+        `;
+      }).join("");
+
+      return `
+        <div class="strk-row${caughtUp && seriesDone ? " fully-read" : ""}" tabindex="0" role="button" aria-label="Open ${s.name} series detail" data-series="${s.name.replace(/"/g, '&quot;')}">
+          <div class="strk-head">
+            <div class="strk-name">${s.name}</div>
+            <div class="strk-author">${s.author}</div>
+            <div class="strk-progress${badgeClass ? " " + badgeClass : ""}">${badgeText}</div>
+          </div>
+          <div class="strk-books">${booksHtml}</div>
+        </div>
+      `;
+    }).join("");
+  }
+
+  seriesTrackerView.innerHTML = `
+    <div class="card strk-panel">
+      <div class="card-inner">
+        <h2>In Progress <span class="strk-bucket-count">${buckets.progress.length}</span></h2>
+        <div class="sub">Series you're still working through</div>
+        ${renderBucket(buckets.progress)}
+      </div>
+    </div>
+    <div class="card strk-panel">
+      <div class="card-inner">
+        <h2>Caught Up <span class="strk-bucket-count">${buckets.caughtUp.length}</span></h2>
+        <div class="sub">Read everything out so far, waiting on the next one</div>
+        ${renderBucket(buckets.caughtUp)}
+      </div>
+    </div>
+    <div class="card strk-panel">
+      <div class="card-inner">
+        <h2>Completed <span class="strk-bucket-count">${buckets.complete.length}</span></h2>
+        <div class="sub">Read in full, nothing left to come</div>
+        ${renderBucket(buckets.complete)}
+      </div>
+    </div>
+  `;
+
+  seriesTrackerView.querySelectorAll(".strk-row").forEach(row => {
+    const s = seriesByName.get(row.getAttribute("data-series"));
+    if(!s) return;
+    const seriesBooks = s.books.map(sb => ALL_BOOKS_BY_TITLE.get(sb.title)).filter(Boolean);
+    const open = () => openSeriesModal({name: s.name, author: s.author, books: seriesBooks}, null);
+    row.addEventListener("click", open);
+    row.addEventListener("keydown", (e) => { if(e.key === "Enter" || e.key === " "){ e.preventDefault(); open(); } });
+  });
+}
+
 function renderShelf(){
+  if(activeGenre === "Series"){
+    shelfGrid.style.display = "none";
+    seriesTrackerView.style.display = "";
+    renderSeriesTrackerView();
+    return;
+  }
+  shelfGrid.style.display = "";
+  seriesTrackerView.style.display = "none";
+
   const filtered = MASTER_SORTED.filter(b => {
     const genreMatch = activeGenre === "All" || b.genre === activeGenre;
     const searchMatch = !searchTerm ||
@@ -683,7 +927,6 @@ renderShelf();
 
 /* ---------------- favorites: cover cards, per genre (hand-curated via TOP_PICKS) ---------------- */
 const favoritesContainer = document.getElementById("favoritesContainer");
-const seriesByName = new Map(SERIES.map(s => [s.name, s]));
 
 function coverSlotHTML(b, extraClass){
   return `
@@ -884,15 +1127,17 @@ function openSeriesModal(entry, rank){
   seriesModalTitle.textContent = entry.name;
   seriesModalSub.textContent = `${entry.author} · ${entry.books.length} of ${allBooks.length} book${allBooks.length===1?"":"s"} read`;
   seriesModalGrid.innerHTML = allBooks.map((sb, i) => {
+    const num = sb.number || (i + 1);
     const b = ALL_BOOKS_BY_TITLE.get(sb.title);
     if(!b){
+      const comingLabel = sb.comingSoon ? (typeof sb.comingSoon === "string" ? `Coming ${sb.comingSoon}` : "Coming Soon") : "Not read yet";
       return `
         <div class="series-book">
           <div class="series-book-cover unread">
-            <span>${sb.title}</span>
+            ${sb.cover ? `<img src="${sb.cover}" alt="Cover of ${sb.title}" loading="lazy" onerror="this.remove()">` : `<span>${sb.title}</span>`}
           </div>
-          <div class="series-book-title">${sb.title} <span class="series-book-num">[${i + 1}]</span></div>
-          <div class="series-book-status">Not read yet</div>
+          <div class="series-book-title">${sb.title} <span class="series-book-num">[${num}]</span></div>
+          <div class="series-book-status">${comingLabel}</div>
         </div>
       `;
     }
@@ -904,7 +1149,7 @@ function openSeriesModal(entry, rank){
           <span>${b.title}</span>
           ${b.cover ? `<img src="${b.cover}" alt="Cover of ${b.title}" loading="lazy" onerror="this.remove()">` : ""}
         </div>
-        <div class="series-book-title">${b.title} <span class="series-book-num">[${i + 1}]</span></div>
+        <div class="series-book-title">${b.title} <span class="series-book-num">[${num}]</span></div>
       </div>
     `;
   }).join("");
