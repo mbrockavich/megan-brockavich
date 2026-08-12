@@ -206,6 +206,8 @@
   .series-book-cover img{ position:absolute; inset:0; width:100%; height:100%; object-fit:cover; }
   .series-book-cover.best{ box-shadow: 0 0 0 3px var(--gold), 0 6px 14px rgba(0,0,0,0.25); }
   .series-book-best-star{ position:absolute; top:-8px; left:50%; transform:translateX(-50%); font-size:15px; z-index:1; filter: drop-shadow(0 1px 1px rgba(0,0,0,0.4)); }
+  .series-book-cover.unread{ opacity:0.45; box-shadow:none; border: 1.5px dashed rgba(255,255,255,0.3); }
+  .series-book-status{ font-size:9.5px; font-family:'Space Mono',monospace; text-transform:uppercase; letter-spacing:0.05em; color: var(--ink-soft); margin-top:2px; }
   .series-book-title{ font-size:11.5px; font-weight:600; line-height:1.3; color: var(--ink); }
   .series-book-num{ font-family:'Space Mono',monospace; font-weight:400; font-size:10px; color: var(--ink-soft); }
 
@@ -591,12 +593,16 @@ function renderShelf(){
   const items = [];
   filtered.forEach(b => {
     const series = seriesByBookTitle.get(b.title);
-    if(!series){ items.push({kind: "book", book: b}); return; }
+    if(!series || series.books.length < 2){ items.push({kind: "book", book: b}); return; }
     if(seenSeries.has(series.name)) return;
     seenSeries.add(series.name);
     const seriesBooks = series.books.map(sb => ALL_BOOKS_BY_TITLE.get(sb.title)).filter(Boolean);
-    if(seriesBooks.length < 2){ items.push({kind: "book", book: b}); return; }
-    items.push({kind: "series", name: series.name, author: series.author, books: seriesBooks});
+    // fewer than 2 read yet: not enough covers to stack, but still flag it as a series
+    if(seriesBooks.length < 2){
+      items.push({kind: "book", book: b, seriesInfo: {name: series.name, author: series.author, total: series.books.length, read: seriesBooks.length}});
+      return;
+    }
+    items.push({kind: "series", name: series.name, author: series.author, books: seriesBooks, total: series.books.length});
   });
 
   shelfCount.textContent = `Showing ${filtered.length} of ${ALL_BOOKS.length} books`;
@@ -608,7 +614,7 @@ function renderShelf(){
       const b = item.book;
       const color = genreColorFor(b.genre);
       const card = document.createElement("div");
-      card.className = "master-card";
+      card.className = "master-card" + (item.seriesInfo ? " master-card-series" : "");
       card.innerHTML = `
         <div class="master-cover">
           <div class="master-genre-tag" style="background:${color};">${b.genre}</div>
@@ -619,10 +625,19 @@ function renderShelf(){
           ` : ""}
           <span>${b.title}</span>
           ${b.cover ? `<img src="${b.cover}" alt="Cover of ${b.title}" loading="lazy" onerror="this.remove()">` : ""}
+          ${item.seriesInfo ? `<div class="master-count-badge">📚 ${item.seriesInfo.read}/${item.seriesInfo.total}</div>` : ""}
         </div>
         <div class="master-title">${b.title}</div>
         <div class="master-author">${b.author}</div>
       `;
+      if(item.seriesInfo){
+        card.setAttribute("tabindex", "0");
+        card.setAttribute("role", "button");
+        card.setAttribute("aria-label", `Open ${item.seriesInfo.name} series, ${item.seriesInfo.read} of ${item.seriesInfo.total} read`);
+        const open = () => openSeriesModal({name: item.seriesInfo.name, author: item.seriesInfo.author, books: [b]}, null);
+        card.addEventListener("click", open);
+        card.addEventListener("keydown", (e) => { if(e.key === "Enter" || e.key === " "){ e.preventDefault(); open(); } });
+      }
       shelfGrid.appendChild(card);
       return;
     }
@@ -634,11 +649,12 @@ function renderShelf(){
     for(let L = behindLayers; L >= 1; L--){
       behindHTML += `<div class="master-stack-behind" style="transform: translate(${L*4}px, ${L*4}px);"></div>`;
     }
+    const countLabel = item.books.length < item.total ? `${item.books.length}/${item.total} books` : `${item.total} books`;
     const card = document.createElement("div");
     card.className = "master-card master-card-series";
     card.setAttribute("tabindex", "0");
     card.setAttribute("role", "button");
-    card.setAttribute("aria-label", `Open ${item.name} series, ${item.books.length} books`);
+    card.setAttribute("aria-label", `Open ${item.name} series, ${item.books.length} of ${item.total} books read`);
     card.innerHTML = `
       <div class="master-stack-wrap">
         ${behindHTML}
@@ -652,7 +668,7 @@ function renderShelf(){
           <span>${top.title}</span>
           ${top.cover ? `<img src="${top.cover}" alt="Cover of ${top.title}" loading="lazy" onerror="this.remove()">` : ""}
         </div>
-        <div class="master-count-badge">${item.books.length} books</div>
+        <div class="master-count-badge">${countLabel}</div>
       </div>
       <div class="master-title">${item.name}</div>
       <div class="master-author">${item.author}</div>
@@ -862,10 +878,24 @@ const seriesModalGrid = document.getElementById("seriesModalGrid");
 const seriesModalClose = document.getElementById("seriesModalClose");
 
 function openSeriesModal(entry, rank){
+  const full = seriesByName.get(entry.name);
+  const allBooks = full ? full.books : entry.books.map(b => ({title: b.title}));
   seriesModalRank.textContent = rank ? `Favorite #${rank}` : "Series";
   seriesModalTitle.textContent = entry.name;
-  seriesModalSub.textContent = `${entry.author} · ${entry.books.length} book${entry.books.length===1?"":"s"} read`;
-  seriesModalGrid.innerHTML = entry.books.map((b, i) => {
+  seriesModalSub.textContent = `${entry.author} · ${entry.books.length} of ${allBooks.length} book${allBooks.length===1?"":"s"} read`;
+  seriesModalGrid.innerHTML = allBooks.map((sb, i) => {
+    const b = ALL_BOOKS_BY_TITLE.get(sb.title);
+    if(!b){
+      return `
+        <div class="series-book">
+          <div class="series-book-cover unread">
+            <span>${sb.title}</span>
+          </div>
+          <div class="series-book-title">${sb.title} <span class="series-book-num">[${i + 1}]</span></div>
+          <div class="series-book-status">Not read yet</div>
+        </div>
+      `;
+    }
     const isBest = (entry.best || []).includes(b.title);
     return `
       <div class="series-book">
