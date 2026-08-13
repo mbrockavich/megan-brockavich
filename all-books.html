@@ -619,6 +619,12 @@ function seriesIsCaughtUp(s){
   return released.length > 0 && released.every(b => findRead(b.title));
 }
 
+/* Released-but-unread books left before an in-progress series is caught up. */
+function seriesRemaining(s){
+  const released = s.books.filter(b => !b.comingSoon);
+  return released.filter(b => !findRead(b.title)).length;
+}
+
 function seriesStatus(s){
   const caughtUp = seriesIsCaughtUp(s);
   if(caughtUp && s.status === "complete") return {text: "Series Complete", cls: "complete"};
@@ -638,8 +644,13 @@ function renderSeriesGrid(){
     s.name.toLowerCase().includes(term) ||
     s.author.toLowerCase().includes(term)
   ).sort((a, b) => {
-    const rankDiff = SERIES_STATUS_RANK[seriesStatus(a).cls] - SERIES_STATUS_RANK[seriesStatus(b).cls];
+    const statusA = seriesStatus(a).cls, statusB = seriesStatus(b).cls;
+    const rankDiff = SERIES_STATUS_RANK[statusA] - SERIES_STATUS_RANK[statusB];
     if(rankDiff !== 0) return rankDiff;
+    if(statusA === "progress"){
+      const remDiff = seriesRemaining(a) - seriesRemaining(b);
+      if(remDiff !== 0) return remDiff;
+    }
     return seriesLastReadTime(b) - seriesLastReadTime(a);
   });
 
