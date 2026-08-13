@@ -11,8 +11,9 @@
 
    Optional fields you can add to any book entry (in `books` or `pastReads`),
    whenever you're ready:
-     rating: 1-5   : your star rating (not currently shown publicly, kept
-                     for your own reference / future use).
+     rating: 1-5   : your star rating (half-stars like 3.5 are fine). Shown
+                     as ★ marks wherever the book appears — master list
+                     cards, series pop-ups, and the 2026 genre shelf.
      spicy: true   : marks it as spicy. Shown as a single 🌶️ sticker over
                      the bottom-left corner of the cover. Only add this when
                      told to for a specific book, never guess.
@@ -69,7 +70,7 @@ const books = [
   {title:"Funny Story", cover:"https://covers.openlibrary.org/b/id/14625690-L.jpg", author:"Emily Henry", genre:"Contemporary Romance", pages:384, dateFinished:"2026-08-02", rating:5, pubYear:2024},
   {title:"Light Bringer", cover:"https://covers.openlibrary.org/b/id/15157697-L.jpg", author:"Pierce Brown", genre:"Science Fiction", pages:682, dateFinished:"2026-08-08", rating:5, pubYear:2022},
   {title:"Atomic Habits", cover:"https://covers.openlibrary.org/b/id/12539702-L.jpg", author:"James Clear", genre:"Nonfiction", subgenre:"Self-Development", pages:319, dateFinished:"2026-08-09", pubYear:2016},
-  {title:"Dungeon Crawler Carl", cover:"https://covers.openlibrary.org/b/olid/OL42227193M-L.jpg", author:"Matt Dinniman", genre:"Science Fiction", pages:450, dateFinished:"2026-08-13", pubYear:2020},
+  {title:"Dungeon Crawler Carl", cover:"https://covers.openlibrary.org/b/olid/OL42227193M-L.jpg", author:"Matt Dinniman", genre:"Science Fiction", pages:450, dateFinished:"2026-08-13", rating:4.5, pubYear:2020},
 ];
 
 /* Everything finished before 2026 that still shows up as "read" on a
@@ -352,6 +353,15 @@ function findRead(title) {
   return books.find(b => b.title === title) || pastReads.find(b => b.title === title) || null;
 }
 
+/* Renders a `rating` (1-5, halves allowed) as star glyphs, e.g. 4.5 -> "★★★★½".
+   Returns "" for a missing rating so callers can skip the line entirely. */
+function formatRating(rating) {
+  if (rating == null) return "";
+  const full = Math.floor(rating);
+  const half = rating - full >= 0.5;
+  return "★".repeat(full) + (half ? "½" : "");
+}
+
 /* Multi-book series touched by the 2026 shelf, in reading order.
    Read/unread is computed via findRead() above, not stored per book.
    Entries here are just {title}, plus optional `cover` (a preview image
@@ -522,6 +532,14 @@ const SERIES = [
       {title:"Kingdom of Claw"},
       {title:"Roots of Darkness"},
       {title:"Dawn of the North"}
+    ]
+  },
+  {
+    name: "Dungeon Crawler Carl",
+    author: "Matt Dinniman",
+    status: "ongoing",
+    books: [
+      {title:"Dungeon Crawler Carl"}
     ]
   },
   {
