@@ -539,7 +539,15 @@ const SERIES = [
     author: "Matt Dinniman",
     status: "ongoing",
     books: [
-      {title:"Dungeon Crawler Carl"}
+      {title:"Dungeon Crawler Carl", number:"1"},
+      {title:"Carl's Doomsday Scenario", number:"2"},
+      {title:"The Dungeon Anarchist's Cookbook", number:"3"},
+      {title:"The Gate of the Feral Gods", number:"4"},
+      {title:"The Butcher's Masquerade", number:"5"},
+      {title:"The Eye of the Bedlam Bride", number:"6"},
+      {title:"This Inevitable Ruin", number:"7"},
+      {title:"A Parade of Horribles", number:"8"},
+      {title:"Dungeon Crawler Carl Book 9", number:"9", comingSoon:true}
     ]
   },
   {
