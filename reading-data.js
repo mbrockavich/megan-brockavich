@@ -460,11 +460,11 @@ const SERIES = [
     author: "Lauren Roberts",
     status: "ongoing",
     books: [
-      {title:"Powerless"},
-      {title:"Powerful"},
-      {title:"Reckless"},
-      {title:"Fearless"},
-      {title:"Fearful", cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1749656949i/220161171.jpg"}
+      {title:"Powerless", number:"1"},
+      {title:"Powerful", number:"1.5"},
+      {title:"Reckless", number:"2"},
+      {title:"Fearless", number:"3"},
+      {title:"Fearful", number:"3.5", cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1749656949i/220161171.jpg"}
     ]
   },
   {
@@ -547,7 +547,7 @@ const SERIES = [
       {title:"The Eye of the Bedlam Bride", number:"6"},
       {title:"This Inevitable Ruin", number:"7"},
       {title:"A Parade of Horribles", number:"8"},
-      {title:"Dungeon Crawler Carl Book 9", number:"9", comingSoon:true}
+      {title:"The Beautiful Place", number:"9", comingSoon:true}
     ]
   },
   {
@@ -676,9 +676,15 @@ const SERIES = [
     author: "Andrzej Sapkowski",
     status: "ongoing",
     books: [
-      {title:"The Last Wish"},
-      {title:"Sword of Destiny"},
-      {title:"Blood of Elves"}
+      {title:"The Last Wish", number:"1"},
+      {title:"Sword of Destiny", number:"2"},
+      {title:"Blood of Elves", number:"3"},
+      {title:"Time of Contempt", number:"4"},
+      {title:"Baptism of Fire", number:"5"},
+      {title:"The Tower of the Swallow", number:"6"},
+      {title:"The Lady of the Lake", number:"7"},
+      {title:"Season of Storms", number:"8"},
+      {title:"Crossroads of Ravens", number:"9"}
     ]
   },
   {
@@ -1062,11 +1068,32 @@ const TOP_PICKS = [
     { series: "The Empyrean (Fourth Wing)" },
     { series: "Fae & Alchemy" },
     { series: "Crowns of Nyaxia" },
+    { series: "The Magicians Trilogy" },
     { series: "The Ashen" },
     "Manacled",
     { series: "Zodiac Academy" },
-    "The Princess Bride",
-    { series: "The Magicians Trilogy" }
+    "The Princess Bride"
+  ] },
+  { genre: "Nonfiction", picks: [
+    "Loud: Accept Nothing Less Than the Life You Deserve",
+    "Building a Second Brain: A Proven Method to Organize Your Digital Life and Unlock Your Creative Potential",
+    "The Bullet Journal Method: Track Your Past, Order Your Present, Plan Your Future",
+    "The 90-Day Novel",
+    "Atomic Habits",
+    "Shape Up: Stop Running in Circles and Ship Work that Matters",
+    "Inside of a Dog: What Dogs See, Smell, and Know",
+    "On Writing: A Memoir of the Craft",
+    "Extreme Ownership: How U.S. Navy SEALs Lead and Win",
+    "He's Just Not That Into You: The No-Excuses Truth to Understanding Guys"
+  ] },
+  { genre: "Thriller", picks: [
+    "Saving Noah",
+    "The Teacher",
+    "The Silent Patient",
+    "Death Row",
+    "Gone Girl",
+    "Dear Debbie",
+    "My Husband's Wife"
   ] },
   { genre: "Young Adult", picks: [
     { series: "Uglies" },
@@ -1074,13 +1101,65 @@ const TOP_PICKS = [
     { series: "Arc of a Scythe" },
     { series: "Summer" }
   ] },
-  { genre: "Nonfiction", picks: [
-    "Shape Up: Stop Running in Circles and Ship Work that Matters",
-    "Loud: Accept Nothing Less Than the Life You Deserve",
-    "He's Just Not That Into You: The No-Excuses Truth to Understanding Guys",
-    "Atomic Habits",
-    "Building a Second Brain: A Proven Method to Organize Your Digital Life and Unlock Your Creative Potential",
-    "The 90-Day Novel",
-    "The Bullet Journal Method: Track Your Past, Order Your Present, Plan Your Future"
+  { genre: "Science Fiction", picks: [
+    { series: "The Hunger Games" },
+    { series: "Red Rising Saga" },
+    { series: "The Maze Runner" },
+    "Project Hail Mary",
+    "Dungeon Crawler Carl"
+  ] },
+  { genre: "Classic Literature", picks: [
+    "The Odyssey",
+    "The Iliad",
+    "Jane Eyre",
+    "Black Beauty",
+    "The Count of Monte Cristo",
+    "A Christmas Carol",
+    "Macbeth",
+    "Hamlet",
+    "Romeo and Juliet",
+    "The Call of the Wild"
+  ] },
+  { genre: "Middle Grade", picks: [
+    { series: "Time Quintet" },
+    { series: "Chronicles of Narnia" },
+    "The Giver",
+    "Ella Enchanted"
+  ] },
+  { genre: "Memoir / Biography", picks: [
+    "107 Days",
+    "Untamed",
+    "Nobody's Girl: A Memoir of Surviving Abuse and Fighting for Justice",
+    "The Babysitter: My Summers with a Serial Killer",
+    "Friends, Lovers, and the Big Terrible Thing",
+    "Who Could Ever Love You: A Family Memoir",
+    "Greenlights"
+  ] },
+  { genre: "Contemporary Romance", picks: [
+    "Funny Story",
+    "The Last Letter",
+    { series: "It Ends with Us" }
+  ] },
+  { genre: "Horror", picks: [
+    { series: "The Crypt Series" },
+    "Ushers",
+    "The Bewitching",
+    { series: "The Shining" }
+  ] },
+  { genre: "Literary Fiction", picks: [
+    { series: "The Handmaid's Tale" },
+    "Remarkably Bright Creatures"
+  ] },
+  { genre: "Historical Fiction", picks: [
+    "Homegoing",
+    "The Help",
+    "Water for Elephants"
+  ] },
+  { genre: "Mythology", picks: [
+    "Circe",
+    "The Song of Achilles"
+  ] },
+  { genre: "Contemporary Fiction", picks: [
+    { series: "Firefly Lane" }
   ] },
 ];

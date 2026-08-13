@@ -559,6 +559,7 @@ let searchTerm = "";
 const pillsContainer = document.getElementById("genrePills");
 function selectFilter(value){
   activeGenre = value;
+  try{ localStorage.setItem("activeGenre", value); }catch(e){}
   renderPills(); renderShelf(); renderStats(); renderFavorites();
 }
 function renderPills(){
@@ -583,7 +584,10 @@ function renderPills(){
     pillsContainer.appendChild(pill);
   });
 }
+let savedGenre = null;
+try{ savedGenre = localStorage.getItem("activeGenre"); }catch(e){}
 if(location.hash === "#series") activeGenre = "Series";
+else if(savedGenre) activeGenre = savedGenre;
 renderPills();
 renderStats();
 
@@ -619,10 +623,17 @@ function seriesIsCaughtUp(s){
   return released.length > 0 && released.every(b => findRead(b.title));
 }
 
-/* Released-but-unread books left before an in-progress series is caught up. */
-function seriesRemaining(s){
+function seriesBooksRemaining(s){
   const released = s.books.filter(b => !b.comingSoon);
-  return released.filter(b => !findRead(b.title)).length;
+  const readCount = released.filter(b => findRead(b.title)).length;
+  return released.length - readCount;
+}
+
+function seriesNextReleaseTime(s){
+  const upcoming = s.books.find(b => b.comingSoon);
+  if(!upcoming) return Infinity;
+  const d = typeof upcoming.comingSoon === "string" ? parsePastDate(upcoming.comingSoon) : null;
+  return d ? d.getTime() : Infinity;
 }
 
 function seriesStatus(s){
@@ -644,13 +655,11 @@ function renderSeriesGrid(){
     s.name.toLowerCase().includes(term) ||
     s.author.toLowerCase().includes(term)
   ).sort((a, b) => {
-    const statusA = seriesStatus(a).cls, statusB = seriesStatus(b).cls;
-    const rankDiff = SERIES_STATUS_RANK[statusA] - SERIES_STATUS_RANK[statusB];
+    const clsA = seriesStatus(a).cls, clsB = seriesStatus(b).cls;
+    const rankDiff = SERIES_STATUS_RANK[clsA] - SERIES_STATUS_RANK[clsB];
     if(rankDiff !== 0) return rankDiff;
-    if(statusA === "progress"){
-      const remDiff = seriesRemaining(a) - seriesRemaining(b);
-      if(remDiff !== 0) return remDiff;
-    }
+    if(clsA === "progress") return seriesBooksRemaining(a) - seriesBooksRemaining(b);
+    if(clsA === "caughtup") return seriesNextReleaseTime(a) - seriesNextReleaseTime(b);
     return seriesLastReadTime(b) - seriesLastReadTime(a);
   });
 
