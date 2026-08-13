@@ -236,10 +236,11 @@
     color: rgba(255,255,255,0.85); text-align:center;
   }
   .master-cover img{ position:absolute; inset:0; width:100%; height:100%; object-fit:cover; }
-  .master-genre-tag{
+  .master-series-tag{
     position:absolute; top:6px; left:6px; z-index:1;
-    font-family:'Space Mono', monospace; font-size: 8px; text-transform: uppercase; letter-spacing: 0.04em;
-    padding: 3px 6px; border-radius: 20px; color: #fff; background: rgba(0,0,0,0.55);
+    font-family:'Space Mono', monospace; font-size: 9.5px; font-weight:700; text-transform: uppercase; letter-spacing: 0.05em;
+    padding: 4px 8px; border-radius: 20px; color: var(--wood-darker); background: var(--stamp);
+    box-shadow: 0 2px 5px rgba(0,0,0,0.35);
   }
   .master-badges{ position:absolute; bottom:6px; left:6px; z-index:2; display:flex; gap:4px; align-items:flex-end; }
   .master-spicy-badge{
@@ -259,6 +260,7 @@
   /* series collapsed into one stacked card on the Master List */
   .master-card-series{ cursor:pointer; }
   .master-card-series:focus-visible{ outline:2px solid var(--stamp); outline-offset:3px; border-radius:4px; }
+  .master-card-series .master-cover{ box-shadow: 0 0 0 2.5px var(--stamp), 0 6px 14px rgba(0,0,0,0.35); }
   .master-stack-wrap{ position:relative; margin-bottom: 8px; transition: transform 0.15s ease; }
   .master-card-series:hover .master-stack-wrap, .master-card-series:focus-visible .master-stack-wrap{ transform: translateY(-4px); }
   .master-stack-behind{
@@ -403,9 +405,6 @@ const GENRE_EMOJI = {
   "Memoir / Biography":"🪞","Literary Fiction":"🖋️","Historical Fiction":"🏛️","Graphic Novel":"🎨",
   "Classic Literature":"🕰️","Mythology":"🏺","Young Adult":"🎒","Middle Grade":"🧸"
 };
-const SPINE_COLORS = ["#e2789a","#b8c4e8","#a8d5ba","#f0c987","#c9a0c9","#e8a87c","#8fc9ce","#d9a4c0"];
-const TAG_COLORS = SPINE_COLORS;
-
 /* ---------------- build title -> series author lookup ---------------- */
 const seriesAuthorMap = {};
 SERIES.forEach(s => s.books.forEach(b => { seriesAuthorMap[b.title] = s.author; }));
@@ -601,10 +600,6 @@ const shelfGrid = document.getElementById("shelfGrid");
 const shelfCount = document.getElementById("shelfCount");
 const noResults = document.getElementById("noResults");
 
-function genreColorFor(genre){
-  return TAG_COLORS[genreList.findIndex(([g]) => g === genre) % TAG_COLORS.length] || TAG_COLORS[0];
-}
-
 function seriesLastReadTime(s){
   let max = -Infinity;
   s.books.forEach(b => {
@@ -742,12 +737,11 @@ function renderShelf(){
   items.forEach(item => {
     if(item.kind === "book"){
       const b = item.book;
-      const color = genreColorFor(b.genre);
       const card = document.createElement("div");
       card.className = "master-card" + (item.seriesInfo ? " master-card-series" : "");
       card.innerHTML = `
         <div class="master-cover">
-          <div class="master-genre-tag" style="background:${color};">${b.genre}</div>
+          ${item.seriesInfo ? `<div class="master-series-tag">📚 Series</div>` : ""}
           ${b.spicy ? `
             <div class="master-badges">
               <div class="master-spicy-badge">🌶️</div>
@@ -755,7 +749,7 @@ function renderShelf(){
           ` : ""}
           <span>${b.title}</span>
           ${b.cover ? `<img src="${b.cover}" alt="Cover of ${b.title}" loading="lazy" onerror="this.remove()">` : ""}
-          ${item.seriesInfo ? `<div class="master-count-badge">📚 ${item.seriesInfo.read}/${item.seriesInfo.total}</div>` : ""}
+          ${item.seriesInfo ? `<div class="master-count-badge">${item.seriesInfo.read}/${item.seriesInfo.total}</div>` : ""}
         </div>
         <div class="master-title">${b.title}</div>
         <div class="master-author">${b.author}</div>
@@ -774,7 +768,6 @@ function renderShelf(){
     }
 
     const top = item.books[0];
-    const color = genreColorFor(top.genre);
     const behindLayers = Math.min(item.books.length - 1, 2);
     let behindHTML = "";
     for(let L = behindLayers; L >= 1; L--){
@@ -790,7 +783,7 @@ function renderShelf(){
       <div class="master-stack-wrap">
         ${behindHTML}
         <div class="master-cover">
-          <div class="master-genre-tag" style="background:${color};">${top.genre}</div>
+          <div class="master-series-tag">📚 Series</div>
           ${top.spicy ? `
             <div class="master-badges">
               <div class="master-spicy-badge">🌶️</div>
