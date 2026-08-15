@@ -71,6 +71,7 @@ const books = [
   {title:"Light Bringer", cover:"https://covers.openlibrary.org/b/id/15157697-L.jpg", author:"Pierce Brown", genre:"Science Fiction", pages:682, dateFinished:"2026-08-08", rating:5, pubYear:2022},
   {title:"Atomic Habits", cover:"https://covers.openlibrary.org/b/id/12539702-L.jpg", author:"James Clear", genre:"Nonfiction", subgenre:"Self-Development", pages:319, dateFinished:"2026-08-09", pubYear:2016},
   {title:"Dungeon Crawler Carl", cover:"https://covers.openlibrary.org/b/olid/OL42227193M-L.jpg", author:"Matt Dinniman", genre:"Science Fiction", pages:450, dateFinished:"2026-08-13", rating:4.5, pubYear:2020},
+  {title:"Sharp Objects", cover:"https://covers.openlibrary.org/b/isbn/9780307341556-L.jpg", author:"Gillian Flynn", genre:"Thriller", pages:254, dateFinished:"2026-08-15", pubYear:2006},
 ];
 
 /* Everything finished before 2026 that still shows up as "read" on a
