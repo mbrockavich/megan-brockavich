@@ -72,6 +72,7 @@ const books = [
   {title:"Atomic Habits", cover:"https://covers.openlibrary.org/b/id/12539702-L.jpg", author:"James Clear", genre:"Nonfiction", subgenre:"Self-Development", pages:319, dateFinished:"2026-08-09", pubYear:2016},
   {title:"Dungeon Crawler Carl", cover:"https://covers.openlibrary.org/b/olid/OL42227193M-L.jpg", author:"Matt Dinniman", genre:"Science Fiction", pages:450, dateFinished:"2026-08-13", rating:4.5, pubYear:2020},
   {title:"Sharp Objects", cover:"https://covers.openlibrary.org/b/isbn/9780307341556-L.jpg", author:"Gillian Flynn", genre:"Thriller", pages:254, dateFinished:"2026-08-15", pubYear:2006},
+  {title:"And Now, Back to You", cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1748482477i/217513554.jpg", author:"B.K. Borison", genre:"Contemporary Romance", pages:464, dateFinished:"2026-08-16", rating:2, pubYear:2026},
 ];
 
 /* Everything finished before 2026 that still shows up as "read" on a
@@ -117,7 +118,7 @@ const pastReads = [
   {title:"Fearless", genre:"Young Adult", readDate:"August 2025", cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1730330746i/214151222.jpg", pubYear:2025},
   {title:"Wicked: Everyone Deserves the Chance to Fly", genre:"Fantasy", readDate:"December 2024", cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1733855486i/30241301.jpg", pubYear:1995},
   {title:"Assistant to the Villain", genre:"Fantasy", readDate:"August 2024", cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1702057336i/123257687.jpg", pubYear:2023},
-  {title:"First-Time Caller", genre:"Contemporary Romance", readDate:"July 2025", cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1718283728i/213243908.jpg", pubYear:2025},
+  {title:"First-Time Caller", genre:"Contemporary Romance", readDate:"July 2025", cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1718283728i/213243908.jpg", rating:2, pubYear:2025},
   {title:"The Assassin's Blade", genre:"Fantasy", readDate:"November 2023", cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1680869667i/126062562.jpg", rating:5, pubYear:2014},
   {title:"Throne of Glass", genre:"Fantasy", readDate:"October 2023", cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1673566495i/76703559.jpg", rating:5, pubYear:2012},
   {title:"Crown of Midnight", genre:"Fantasy", readDate:"October 2023", cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1673566594i/76705490.jpg", rating:5, pubYear:2013},
