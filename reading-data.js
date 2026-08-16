@@ -17,8 +17,10 @@
      spicy: true   : marks it as spicy. Shown as a single 🌶️ sticker over
                      the bottom-left corner of the cover. Only add this when
                      told to for a specific book, never guess.
-     note: "..."   : a short one-line blurb/quote about the book, shown in
-                     detail popups when the book is featured in TOP_PICKS.
+     note: "..."   : your thoughts/review of the book. Tap any cover on the
+                     Master List, inside a series pop-up, or on a 2026 genre
+                     shelf to see it in a detail popup. Keep it as short or
+                     long as you want — plain text only, no HTML.
    Favorites on all-books.html are entirely hand-curated via TOP_PICKS below,
    not computed from ratings.
    ========================================================================= */
@@ -72,7 +74,7 @@ const books = [
   {title:"Atomic Habits", cover:"https://covers.openlibrary.org/b/id/12539702-L.jpg", author:"James Clear", genre:"Nonfiction", subgenre:"Self-Development", pages:319, dateFinished:"2026-08-09", pubYear:2016},
   {title:"Dungeon Crawler Carl", cover:"https://covers.openlibrary.org/b/olid/OL42227193M-L.jpg", author:"Matt Dinniman", genre:"Science Fiction", pages:450, dateFinished:"2026-08-13", rating:4.5, pubYear:2020},
   {title:"Sharp Objects", cover:"https://covers.openlibrary.org/b/isbn/9780307341556-L.jpg", author:"Gillian Flynn", genre:"Thriller", pages:254, dateFinished:"2026-08-15", pubYear:2006},
-  {title:"And Now, Back to You", cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1748482477i/217513554.jpg", author:"B.K. Borison", genre:"Contemporary Romance", pages:464, dateFinished:"2026-08-16", rating:2, pubYear:2026},
+  {title:"And Now, Back to You", cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1748482477i/217513554.jpg", author:"B.K. Borison", genre:"Contemporary Romance", pages:464, dateFinished:"2026-08-16", rating:2, pubYear:2026, note:"Listened on audiobook. The one-bed, stuck-together trope felt more corny than swoony this time, and I skipped past the spicy scenes. Two meteorologists ending up working together was a fun premise, but this one just didn't click for me — probably won't continue the series."},
 ];
 
 /* Everything finished before 2026 that still shows up as "read" on a

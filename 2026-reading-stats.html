@@ -288,6 +288,25 @@
     letter-spacing:0.12em; color:var(--stamp); margin:20px 0 12px;
   }
   .modal-subgroup-heading:first-child{ margin-top:0; }
+  .modal-book{ cursor:pointer; }
+  .modal-book:focus-visible{ outline:2px solid var(--stamp); outline-offset:3px; border-radius:4px; }
+
+  /* book note popup, nested above the genre modal */
+  #bookNoteModalOverlay{ z-index:600; }
+  .modal-panel.book-note-panel{ max-width:420px; display:flex; gap:20px; padding:30px 30px 32px; }
+  .book-note-cover{
+    width:110px; height:165px; flex-shrink:0; border-radius:3px; overflow:hidden;
+    box-shadow:0 8px 18px rgba(0,0,0,0.3); position:relative; background: var(--wood-dark, #3a2a30);
+  }
+  .book-note-cover img{ position:absolute; inset:0; width:100%; height:100%; object-fit:cover; }
+  .book-note-title{ font-family:'Fraunces',serif; font-weight:700; font-size:19px; margin:0 0 3px; line-height:1.2; }
+  .book-note-author{ font-size:12.5px; color:var(--ink-soft); margin-bottom:6px; }
+  .book-note-meta{ font-size:11.5px; color:var(--stamp); letter-spacing:0.02em; margin-bottom:10px; }
+  .book-note-text{ font-size:12.5px; font-style:italic; color:var(--ink-soft); line-height:1.5; border-left:2px solid var(--stamp); padding-left:10px; }
+  @media (max-width:560px){
+    .modal-panel.book-note-panel{ flex-direction:column; }
+    .book-note-cover{ width:100%; height:220px; }
+  }
   .spine-name{ width: 150px; flex-shrink:0; font-size: 13px; font-weight:600; }
   .spine-track{ flex:1; height: 26px; background: rgba(43,33,24,0.06); border-radius: 2px; position:relative; }
   .spine-fill{
@@ -439,6 +458,20 @@
     <h2 class="modal-title" id="modalTitle"></h2>
     <div class="modal-sub" id="modalSub"></div>
     <div class="modal-book-grid" id="modalBookGrid"></div>
+  </div>
+</div>
+
+<!-- BOOK NOTE MODAL (nested on top of the genre modal) -->
+<div class="modal-overlay" id="bookNoteModalOverlay">
+  <div class="modal-panel book-note-panel" role="dialog" aria-modal="true" aria-labelledby="bookNoteTitle">
+    <button class="modal-close" id="bookNoteClose" aria-label="Close">✕</button>
+    <div class="book-note-cover" id="bookNoteCover"></div>
+    <div>
+      <h3 class="book-note-title" id="bookNoteTitle"></h3>
+      <div class="book-note-author" id="bookNoteAuthor"></div>
+      <div class="book-note-meta" id="bookNoteMeta"></div>
+      <div class="book-note-text" id="bookNoteText"></div>
+    </div>
   </div>
 </div>
 
@@ -612,6 +645,9 @@ function renderBookGrid(bookList, container, spineColor){
   bookList.forEach(b => {
     const item = document.createElement("div");
     item.className = "modal-book";
+    item.setAttribute("tabindex", "0");
+    item.setAttribute("role", "button");
+    item.setAttribute("aria-label", `View details for ${b.title}`);
     const coverHtml = `<div class="modal-book-cover" style="background:${spineColor};"><span>${b.title}</span>${b.cover ? `<img src="${b.cover}" alt="Cover of ${b.title}" loading="lazy" onerror="this.remove()">` : ""}</div>`;
     const niceDate = parseLocalDate(b.dateFinished).toLocaleDateString('en-US', {month:'short', day:'numeric'});
     item.innerHTML = `
@@ -621,9 +657,36 @@ function renderBookGrid(bookList, container, spineColor){
       <div class="modal-book-date">Finished ${niceDate}</div>
       ${b.rating ? `<div class="modal-book-rating">${formatRating(b.rating)}</div>` : ""}
     `;
+    const open = () => openBookNoteModal(b, niceDate);
+    item.addEventListener("click", open);
+    item.addEventListener("keydown", (e) => { if(e.key === "Enter" || e.key === " "){ e.preventDefault(); open(); } });
     container.appendChild(item);
   });
 }
+
+/* ---------------- book note popup (nested above the genre modal) ---------------- */
+const bookNoteModalOverlay = document.getElementById("bookNoteModalOverlay");
+const bookNoteCover = document.getElementById("bookNoteCover");
+const bookNoteTitle = document.getElementById("bookNoteTitle");
+const bookNoteAuthor = document.getElementById("bookNoteAuthor");
+const bookNoteMeta = document.getElementById("bookNoteMeta");
+const bookNoteText = document.getElementById("bookNoteText");
+const bookNoteClose = document.getElementById("bookNoteClose");
+
+function openBookNoteModal(b, niceDate){
+  bookNoteTitle.textContent = b.title;
+  bookNoteAuthor.textContent = b.author;
+  bookNoteMeta.textContent = [`Finished ${niceDate}`, b.rating ? formatRating(b.rating) : null].filter(Boolean).join(" · ");
+  bookNoteText.textContent = b.note || "";
+  bookNoteText.style.display = b.note ? "block" : "none";
+  bookNoteCover.innerHTML = `<span style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;padding:10px;font-family:'Fraunces',serif;font-size:12px;text-align:center;color:#fff;">${b.title}</span>${b.cover ? `<img src="${b.cover}" alt="Cover of ${b.title}" loading="lazy" onerror="this.remove()">` : ""}`;
+  bookNoteModalOverlay.classList.add("open");
+  bookNoteClose.focus();
+}
+function closeBookNoteModal(){ bookNoteModalOverlay.classList.remove("open"); }
+bookNoteClose.addEventListener("click", closeBookNoteModal);
+bookNoteModalOverlay.addEventListener("click", (e) => { if(e.target === bookNoteModalOverlay) closeBookNoteModal(); });
+document.addEventListener("keydown", (e) => { if(e.key === "Escape" && bookNoteModalOverlay.classList.contains("open")) closeBookNoteModal(); });
 
 function openGenreModal(genre, spineColor){
   const genreBooks = books

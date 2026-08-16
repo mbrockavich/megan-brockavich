@@ -197,6 +197,8 @@
   .series-modal-sub{ font-size:13px; color:var(--ink-soft); }
   .series-book-grid{ display:grid; grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 20px; }
   .series-book{ text-align:center; }
+  .series-book[tabindex]{ cursor:pointer; }
+  .series-book[tabindex]:focus-visible{ outline:2px solid var(--stamp); outline-offset:3px; border-radius:4px; }
   .series-book-cover{
     width:100%; aspect-ratio:2/3; border-radius:3px 8px 8px 3px/2px; overflow:hidden; position:relative;
     background: var(--wood-dark); box-shadow: 0 6px 14px rgba(0,0,0,0.25); margin-bottom:8px;
@@ -226,7 +228,8 @@
     margin-bottom: 16px; text-transform: uppercase; letter-spacing: 0.08em;
   }
   .master-grid{ display:grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 26px 16px; }
-  .master-card{ text-align:left; }
+  .master-card{ text-align:left; cursor:pointer; }
+  .master-card:focus-visible{ outline:2px solid var(--stamp); outline-offset:3px; border-radius:4px; }
   .master-cover{
     width:100%; aspect-ratio: 2/3; border-radius: 4px; overflow:hidden;
     box-shadow: 0 6px 14px rgba(0,0,0,0.35); margin-bottom: 8px; position:relative;
@@ -280,6 +283,8 @@
     padding: 60px 20px; overflow-y:auto;
   }
   .modal-overlay.open{ display:flex; }
+  /* stacks on top when opened from inside the series pop-up */
+  #bookModalOverlay{ z-index:600; }
   .modal-panel{
     background: var(--card); color: var(--ink); border-radius: 10px;
     max-width: 420px; width: 100%; padding: 30px 30px 32px; position: relative;
@@ -301,7 +306,8 @@
     letter-spacing:0.12em; color: var(--stamp); margin-bottom:6px; font-weight:700;
   }
   .modal-title2{ font-family:'Fraunces',serif; font-weight:700; font-size:19px; margin:0 0 3px; line-height:1.2; }
-  .modal-author2{ font-size:12.5px; color:var(--ink-soft); margin-bottom:8px; }
+  .modal-author2{ font-size:12.5px; color:var(--ink-soft); margin-bottom:6px; }
+  .modal-meta2{ font-size:11.5px; color:var(--gold); letter-spacing:0.02em; margin-bottom:10px; }
   .modal-note2{ font-size:12.5px; font-style:italic; color:var(--ink-soft); line-height:1.5; border-left:2px solid var(--stamp); padding-left:10px; }
 
   footer.page-foot{
@@ -375,6 +381,7 @@
       <div class="modal-rank" id="modalRank"></div>
       <h3 class="modal-title2" id="modalTitle2"></h3>
       <div class="modal-author2" id="modalAuthor2"></div>
+      <div class="modal-meta2" id="modalMeta2"></div>
       <div class="modal-note2" id="modalNote2"></div>
     </div>
   </div>
@@ -755,11 +762,16 @@ function renderShelf(){
         <div class="master-author">${b.author}</div>
         ${b.rating ? `<div class="master-rating">${formatRating(b.rating)}</div>` : ""}
       `;
+      card.setAttribute("tabindex", "0");
+      card.setAttribute("role", "button");
       if(item.seriesInfo){
-        card.setAttribute("tabindex", "0");
-        card.setAttribute("role", "button");
         card.setAttribute("aria-label", `Open ${item.seriesInfo.name} series, ${item.seriesInfo.read} of ${item.seriesInfo.total} read`);
         const open = () => openSeriesModal({name: item.seriesInfo.name, author: item.seriesInfo.author, books: [b]}, null);
+        card.addEventListener("click", open);
+        card.addEventListener("keydown", (e) => { if(e.key === "Enter" || e.key === " "){ e.preventDefault(); open(); } });
+      } else {
+        card.setAttribute("aria-label", `View details for ${b.title}`);
+        const open = () => openBookModal(b);
         card.addEventListener("click", open);
         card.addEventListener("keydown", (e) => { if(e.key === "Enter" || e.key === " "){ e.preventDefault(); open(); } });
       }
@@ -859,7 +871,7 @@ function makeFavItem(entry){
       </div>
       <div class="fav-title">${b.title}</div>
     `;
-    const open = () => openBookModal(b, null, false);
+    const open = () => openBookModal(b, "Favorite");
     item.addEventListener("click", open);
     item.addEventListener("keydown", (e) => { if(e.key === "Enter" || e.key === " "){ e.preventDefault(); open(); } });
   } else {
@@ -967,13 +979,19 @@ const modalCover = document.getElementById("modalCover");
 const modalRank = document.getElementById("modalRank");
 const modalTitle2 = document.getElementById("modalTitle2");
 const modalAuthor2 = document.getElementById("modalAuthor2");
+const modalMeta2 = document.getElementById("modalMeta2");
 const modalNote2 = document.getElementById("modalNote2");
 const modalClose = document.getElementById("modalClose");
 
-function openBookModal(b, rankLabel, best){
-  modalRank.textContent = best ? "Favorite of the series" : (rankLabel ? `Favorite ${rankLabel}` : "Favorite");
+/* eyebrow: optional badge text above the title (e.g. "Favorite"). Pass
+   nothing for a plain book detail popup. */
+function openBookModal(b, eyebrow){
+  modalRank.textContent = eyebrow || "";
+  modalRank.style.display = eyebrow ? "block" : "none";
   modalTitle2.textContent = b.title;
   modalAuthor2.textContent = b.author;
+  modalMeta2.textContent = [b.dateLabel, b.rating ? formatRating(b.rating) : null].filter(Boolean).join(" · ");
+  modalMeta2.style.display = modalMeta2.textContent ? "block" : "none";
   modalNote2.textContent = b.note || "";
   modalNote2.style.display = b.note ? "block" : "none";
   modalCover.innerHTML = `<span style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;padding:10px;font-family:'Fraunces',serif;font-size:12px;text-align:center;color:#fff;">${b.title}</span>${b.cover ? `<img src="${b.cover}" alt="Cover of ${b.title}" loading="lazy" onerror="this.remove()">` : ""}`;
@@ -1016,7 +1034,7 @@ function openSeriesModal(entry, rank){
     }
     const isBest = (entry.best || []).includes(b.title);
     return `
-      <div class="series-book">
+      <div class="series-book" tabindex="0" role="button" aria-label="View details for ${b.title}" data-title="${b.title.replace(/"/g,'&quot;')}">
         <div class="series-book-cover${isBest ? ' best' : ''}">
           <span>${b.title}</span>
           ${b.cover ? `<img src="${b.cover}" alt="Cover of ${b.title}" loading="lazy" onerror="this.remove()">` : ""}
@@ -1026,6 +1044,13 @@ function openSeriesModal(entry, rank){
       </div>
     `;
   }).join("");
+  seriesModalGrid.querySelectorAll(".series-book[data-title]").forEach(el => {
+    const b = ALL_BOOKS_BY_TITLE.get(el.dataset.title);
+    if(!b) return;
+    const open = () => openBookModal(b);
+    el.addEventListener("click", open);
+    el.addEventListener("keydown", (e) => { if(e.key === "Enter" || e.key === " "){ e.preventDefault(); open(); } });
+  });
   seriesModalOverlay.classList.add("open");
   seriesModalClose.focus();
 }
