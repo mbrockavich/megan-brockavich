@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>My Book Collection · Megan</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#3a1256">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📼</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bungee&family=Permanent+Marker&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --pink:#ff3f8e;
+    --hotpink:#ff1a75;
+    --purple:#7c3aed;
+    --violet:#5b21b6;
+    --teal:#17d6c2;
+    --cyan:#2dd4ee;
+    --yellow:#ffd23f;
+    --orange:#ff7a29;
+    --paper:#fff8ec;
+    --ink:#1a1030;
+    --grey:#d8d8de;
+    --grey-dark:#9a9aa6;
+  }
+
+  *{ box-sizing:border-box; }
+  html{ overflow-x:hidden; }
+
+  body{
+    margin:0;
+    color:var(--paper);
+    font-family:'Space Mono', monospace;
+    background:
+      repeating-linear-gradient(45deg, rgba(255,255,255,0.035) 0 2px, transparent 2px 42px),
+      radial-gradient(circle at 15% 10%, rgba(255,255,255,0.10), transparent 42%),
+      radial-gradient(circle at 85% 88%, rgba(255,255,255,0.08), transparent 45%),
+      linear-gradient(160deg, #2c1250 0%, #4a1665 28%, #7c1a6b 55%, #a3225a 78%, #c9294a 100%);
+    background-attachment: fixed;
+    overflow-x:hidden;
+    -webkit-tap-highlight-color: transparent;
+    padding-bottom: 70px;
+  }
+
+  a{ color:inherit; }
+
+  /* decorative floating shapes */
+  .deco{ position:fixed; z-index:0; pointer-events:none; opacity:0.5; animation: float 7s ease-in-out infinite; }
+  .deco.d1{ top:8%; left:5%; font-size:34px; animation-delay:0s; }
+  .deco.d2{ top:18%; right:7%; font-size:26px; animation-delay:1.1s; }
+  .deco.d3{ bottom:22%; left:4%; font-size:30px; animation-delay:2.2s; }
+  .deco.d4{ bottom:10%; right:6%; font-size:38px; animation-delay:0.6s; }
+  .deco.d5{ top:46%; right:2%; font-size:22px; animation-delay:1.8s; }
+  @keyframes float{
+    0%,100%{ transform: translateY(0) rotate(-4deg); }
+    50%{ transform: translateY(-14px) rotate(4deg); }
+  }
+  @media (max-width: 720px){ .deco{ display:none; } }
+
+  /* marquee */
+  .marquee{
+    position:relative; z-index:1;
+    background: var(--ink);
+    border-bottom: 3px solid var(--yellow);
+    overflow:hidden;
+    padding: 8px 0;
+  }
+  .marquee-track{
+    display:flex; white-space:nowrap;
+    width: max-content;
+    animation: scroll-left 18s linear infinite;
+    font-family:'Bungee', cursive;
+    font-size: 12px;
+    letter-spacing: 0.04em;
+  }
+  .marquee-track span{ padding: 0 22px; color: var(--yellow); }
+  .marquee-track span:nth-child(even){ color: var(--teal); }
+  @keyframes scroll-left{ from{ transform:translateX(0); } to{ transform:translateX(-50%); } }
+  @media (prefers-reduced-motion: reduce){
+    .marquee-track{ animation:none; }
+    .deco{ animation:none; }
+  }
+
+  .page{ position:relative; z-index:1; max-width: 1000px; margin:0 auto; padding: 36px 20px 0; }
+  @media (max-width:560px){ .page{ padding: 24px 14px 0; } }
+
+  .topnav{
+    text-align:center; margin-bottom: 26px;
+    font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase;
+  }
+  .topnav a{ color: var(--teal); text-decoration:none; }
+  .topnav a:hover{ text-decoration:underline; }
+  .topnav .sep{ color: rgba(255,255,255,0.3); margin: 0 10px; }
+
+  header{ text-align:center; margin-bottom: 30px; }
+  .eyebrow{
+    display:inline-block; font-family:'Permanent Marker', cursive; font-size: 15px;
+    color: var(--yellow); transform: rotate(-3deg); margin-bottom: 6px;
+  }
+  h1.title{
+    font-family:'Bungee', cursive; font-weight:400;
+    font-size: clamp(28px, 7vw, 52px); line-height:1.15; margin: 0 0 10px;
+    color: var(--paper);
+    text-shadow: 3px 3px 0 var(--hotpink), 6px 6px 0 var(--ink);
+  }
+  header p.tagline{ font-size: 12.5px; color: #f3d4e6; margin:0; letter-spacing:0.02em; }
+
+  /* scoreboard stat strip */
+  .scoreboard{
+    display:flex; justify-content:center; flex-wrap:wrap; gap: 14px;
+    margin: 26px 0 8px;
+  }
+  .score-chip{
+    background: var(--ink); border: 3px solid var(--yellow); border-radius: 8px;
+    padding: 10px 18px; text-align:center; box-shadow: 4px 4px 0 rgba(0,0,0,0.35);
+  }
+  .score-chip .n{ font-family:'Bungee', cursive; font-size: 22px; color: var(--yellow); }
+  .score-chip .l{ font-size: 9px; letter-spacing:0.12em; text-transform:uppercase; color: var(--grey); margin-top:2px; }
+
+  /* jump pills */
+  .jump{
+    position: sticky; top: 0; z-index: 30;
+    display:flex; justify-content:center; gap: 10px; flex-wrap:wrap;
+    padding: 16px 12px; margin: 28px -20px 0;
+    background: rgba(26,16,48,0.88); backdrop-filter: blur(6px);
+    border-bottom: 3px solid var(--purple);
+  }
+  .jump a{
+    text-decoration:none; font-family:'Bungee', cursive; font-size: 11px;
+    padding: 9px 16px; border-radius: 20px; border: 2.5px solid var(--paper);
+    color: var(--paper); background: transparent;
+    transition: transform .12s ease, background .12s ease;
+    display:inline-flex; align-items:center; gap:6px;
+  }
+  .jump a:hover{ transform: translateY(-2px); }
+  .jump a.k{ background: var(--cyan); color: var(--ink); border-color: var(--cyan); }
+  .jump a.a{ background: var(--pink); color: var(--ink); border-color: var(--pink); }
+  .jump a.p{ background: var(--yellow); color: var(--ink); border-color: var(--yellow); }
+  .jump a .c{ opacity:0.75; font-size:9.5px; }
+
+  /* section shell */
+  section.fmt{ margin: 64px 0 20px; scroll-margin-top: 84px; }
+  .fmt-banner{ text-align:center; margin-bottom: 26px; }
+  .fmt-eyebrow{
+    font-family:'Space Mono', monospace; font-size: 10.5px; letter-spacing:0.3em;
+    text-transform:uppercase; color: var(--teal); margin-bottom: 8px;
+  }
+  .fmt-title{
+    font-family:'Bungee', cursive; font-size: clamp(22px, 4.6vw, 34px);
+    margin: 0 0 6px;
+  }
+  #kindle .fmt-title{ color: var(--cyan); text-shadow: 3px 3px 0 var(--ink); }
+  #audible .fmt-title{ color: var(--pink); text-shadow: 3px 3px 0 var(--ink); }
+  #physical .fmt-title{ color: var(--yellow); text-shadow: 3px 3px 0 var(--ink); }
+  .fmt-sub{ font-size: 12px; color:#e9d3e6; }
+  .fmt-empty{
+    text-align:center; font-size: 12.5px; color:#e9d3e6; font-style:italic;
+    padding: 20px; border: 2px dashed rgba(255,255,255,0.3); border-radius: 10px; max-width:480px; margin:0 auto;
+  }
+
+  /* ---------------- KINDLE: cartoon e-reader ---------------- */
+  .kindle-device{ max-width: 400px; margin: 0 auto; }
+  .kindle-bezel{
+    background: linear-gradient(160deg,#eeeef2,#c9c9d4 55%,#a9a9b6);
+    border-radius: 24px; padding: 22px 18px 30px; position:relative;
+    box-shadow: 0 16px 0 -6px rgba(0,0,0,0.3), 0 26px 40px rgba(0,0,0,0.5),
+      inset 0 2px 0 rgba(255,255,255,0.7);
+  }
+  .kindle-cam{
+    width:7px; height:7px; border-radius:50%; margin: 0 auto 12px;
+    background:#6c6c78; box-shadow: inset 0 1px 2px rgba(0,0,0,0.6);
+  }
+  .kindle-screen{
+    background: #e8e4d8; border-radius: 4px; padding: 16px 12px 12px;
+    box-shadow: inset 0 0 0 2px #b3aea0, inset 0 4px 12px rgba(0,0,0,0.18);
+    min-height: 150px;
+  }
+  .kindle-screen-head{
+    display:flex; justify-content:space-between; align-items:center;
+    font-size: 8.5px; color:#59544a; letter-spacing:0.06em; text-transform:uppercase;
+    margin-bottom: 10px; padding-bottom: 8px; border-bottom: 1px solid #c7c2b3;
+  }
+  .kindle-grid{ display:grid; grid-template-columns:repeat(3, 1fr); gap: 12px; }
+  .kindle-book{ cursor:pointer; text-align:center; border:0; background:none; padding:0; font-family:inherit; }
+  .kindle-cover{
+    aspect-ratio: 2/3; border-radius: 2px; overflow:hidden; position:relative;
+    background:#cfcabb; box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+    display:flex; align-items:center; justify-content:center; padding:4px;
+    font-size: 7px; color:#4a453c; line-height:1.2;
+  }
+  .kindle-cover img{
+    position:absolute; inset:0; width:100%; height:100%; object-fit:cover;
+    filter: grayscale(1) contrast(1.08) brightness(1.02);
+  }
+  .kindle-cover:hover img, .kindle-book:focus-visible .kindle-cover img{ filter:none; }
+  .kindle-title{ font-size: 8px; margin-top: 5px; color:#3a352c; line-height:1.25; }
+  .kindle-buttons{ display:flex; justify-content:center; align-items:center; gap: 12px; margin-top: 20px; }
+  .kindle-btn{
+    width:30px; height:30px; border-radius:50%;
+    background: linear-gradient(160deg,#f4f4f7,#c3c3cd);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.35), inset 0 1px 1px rgba(255,255,255,0.85);
+  }
+  .kindle-btn.wide{ width:96px; height:22px; border-radius:14px; }
+  .kindle-wordmark{
+    text-align:center; margin-top:14px; font-size: 9px; letter-spacing:0.3em;
+    text-transform:uppercase; color:#7a7686;
+  }
+  .kindle-book:focus-visible{ outline:2px solid var(--purple); outline-offset:3px; border-radius:4px; }
+
+  /* ---------------- AUDIBLE: boombox + cassettes ---------------- */
+  .boombox{ display:flex; justify-content:center; margin-bottom: 30px; }
+  .boombox-body{
+    width: min(280px, 80vw); background: linear-gradient(160deg,#2a2038,#160f24);
+    border: 3px solid var(--ink); border-radius: 14px; padding: 14px 16px;
+    box-shadow: 5px 5px 0 rgba(0,0,0,0.35);
+    display:flex; align-items:center; justify-content:space-between; gap:10px;
+  }
+  .bb-speaker{
+    width:44px; height:44px; border-radius:50%;
+    background: radial-gradient(circle at 35% 30%, #4a3a66, #1c1430 70%);
+    border: 3px solid #0d0818; flex-shrink:0;
+  }
+  .bb-eq{ display:flex; align-items:flex-end; gap:3px; height:34px; flex:1; justify-content:center; }
+  .bb-eq span{
+    width:5px; border-radius:2px 2px 0 0;
+    background: linear-gradient(to top, var(--teal), var(--cyan));
+    animation: eq 1.1s ease-in-out infinite;
+  }
+  .bb-eq span:nth-child(1){ height:40%; animation-delay:0s; }
+  .bb-eq span:nth-child(2){ height:80%; animation-delay:0.15s; }
+  .bb-eq span:nth-child(3){ height:55%; animation-delay:0.3s; }
+  .bb-eq span:nth-child(4){ height:95%; animation-delay:0.45s; }
+  .bb-eq span:nth-child(5){ height:65%; animation-delay:0.2s; }
+  .bb-eq span:nth-child(6){ height:35%; animation-delay:0.5s; }
+  @keyframes eq{ 0%,100%{ transform:scaleY(0.5); } 50%{ transform:scaleY(1); } }
+  @media (prefers-reduced-motion: reduce){ .bb-eq span{ animation:none; } }
+
+  .cassette-grid{ display:grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 22px; }
+  .cassette{
+    cursor:pointer; border:0; text-align:left; font-family:inherit; width:100%;
+    background: var(--cassette-color, var(--pink));
+    border: 3px solid var(--ink); border-radius: 8px; padding: 12px;
+    box-shadow: 4px 4px 0 var(--ink);
+    transition: transform .14s ease, box-shadow .14s ease;
+    position:relative;
+  }
+  .cassette:hover, .cassette:focus-visible{ transform: translate(-2px,-2px); box-shadow: 6px 6px 0 var(--ink); outline:none; }
+  .cassette-sticker{
+    position:absolute; top:-10px; right:-8px; width:38px; height:38px; border-radius:50%;
+    overflow:hidden; border: 3px solid var(--paper); box-shadow: 0 3px 6px rgba(0,0,0,0.4);
+    background: var(--grey-dark); transform: rotate(8deg);
+  }
+  .cassette-sticker img{ width:100%; height:100%; object-fit:cover; }
+  .cassette-window{
+    background: #1a1030; border-radius:5px; padding: 10px; margin-bottom: 10px;
+    display:flex; align-items:center; justify-content:center; gap: 16px;
+  }
+  .cassette-reel{
+    width:28px; height:28px; border-radius:50%; position:relative;
+    background: repeating-conic-gradient(#3a2c5c 0deg 10deg, #221838 10deg 20deg);
+    border: 3px solid #0d0818;
+  }
+  .cassette-reel::after{ content:""; position:absolute; inset:36%; background:#0d0818; border-radius:50%; }
+  .cassette:hover .cassette-reel, .cassette:focus-visible .cassette-reel{ animation: spin 1.2s linear infinite; }
+  @keyframes spin{ to{ transform: rotate(360deg); } }
+  @media (prefers-reduced-motion: reduce){ .cassette:hover .cassette-reel{ animation:none; } }
+  .cassette-label{ background: var(--paper); border-radius:4px; padding: 8px 8px 7px; }
+  .cassette-title{ font-weight:700; font-size: 11.5px; color: var(--ink); line-height:1.3; }
+  .cassette-author{ font-size: 9.5px; color:#6a6070; margin-top:4px; }
+
+  /* ---------------- PHYSICAL: neon shelf ---------------- */
+  .shelf-90s{
+    display:flex; align-items:flex-end; justify-content:center; flex-wrap:wrap;
+    gap: 10px; padding: 10px 10px 0; min-height: 170px;
+  }
+  .spine-90s{
+    width: 54px; height: 160px; border-radius: 5px 5px 2px 2px;
+    display:flex; align-items:flex-end; justify-content:center; padding-bottom: 14px;
+    cursor:pointer; border: 3px solid var(--ink); box-shadow: 4px 4px 0 var(--ink);
+    transition: transform .15s ease; text-decoration:none; background: none;
+  }
+  .spine-90s:hover, .spine-90s:focus-visible{ transform: translateY(-10px) rotate(-1.5deg); outline:none; }
+  .spine-90s .label{
+    writing-mode: vertical-rl; transform: rotate(180deg);
+    font-family:'Bungee', cursive; font-size: 9.5px; letter-spacing:0.02em;
+    color:#fff; text-shadow: 1px 1px 0 rgba(0,0,0,0.3); white-space:nowrap;
+  }
+  .ledge-90s{
+    height: 12px; max-width: 900px; margin: 0 auto;
+    background: repeating-linear-gradient(-45deg, var(--yellow) 0 14px, var(--ink) 14px 18px);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.45); border-radius: 3px;
+  }
+
+  footer.page-foot{
+    text-align:center; font-size: 10.5px; letter-spacing:0.08em; color:#e9c9dd;
+    margin-top: 60px; padding: 0 20px;
+  }
+
+  /* ---------------- shared detail modal ---------------- */
+  .modal-overlay{
+    display:none; position:fixed; inset:0; z-index:500; align-items:flex-start; justify-content:center;
+    background: rgba(20,10,36,0.82); padding: 60px 20px; overflow-y:auto;
+  }
+  .modal-overlay.open{ display:flex; }
+  .modal-panel{
+    background: var(--paper); color: var(--ink); border-radius: 12px;
+    max-width: 400px; width:100%; padding: 26px 26px 28px; position:relative;
+    border: 3px solid var(--ink); box-shadow: 8px 8px 0 rgba(0,0,0,0.4);
+    display:flex; gap: 18px;
+  }
+  .modal-close{
+    position:absolute; top:12px; right:12px; width:30px; height:30px; border-radius:50%;
+    border: 2px solid var(--ink); background: var(--yellow); cursor:pointer;
+    font-size:14px; line-height:1; display:flex; align-items:center; justify-content:center;
+  }
+  .modal-close:hover{ background: var(--orange); }
+  .modal-cover{
+    width: 96px; height:144px; flex-shrink:0; border-radius:4px; overflow:hidden;
+    box-shadow: 3px 3px 0 rgba(0,0,0,0.25); position:relative; background:#ddd7c8;
+  }
+  .modal-cover img{ position:absolute; inset:0; width:100%; height:100%; object-fit:cover; }
+  .modal-badge{
+    display:inline-block; font-family:'Bungee', cursive; font-size: 9.5px;
+    padding: 4px 10px; border-radius: 20px; margin-bottom: 8px; color: var(--ink);
+  }
+  .modal-badge.k{ background: var(--cyan); }
+  .modal-badge.a{ background: var(--pink); }
+  .modal-badge.p{ background: var(--yellow); }
+  .modal-title{ font-family:'Bungee', cursive; font-size: 16px; margin: 0 0 4px; line-height:1.3; }
+  .modal-author{ font-size: 11.5px; color:#6a6070; margin-bottom: 6px; }
+  .modal-extra{ font-size: 11px; color:#8a8092; font-style:italic; }
+
+  @media (max-width: 560px){
+    .modal-panel{ flex-direction:column; padding: 22px 18px 24px; }
+    .modal-cover{ width:100%; height:200px; }
+  }
+</style>
+</head>
+<body>
+
+<span class="deco d1" aria-hidden="true">✦</span>
+<span class="deco d2" aria-hidden="true">◆</span>
+<span class="deco d3" aria-hidden="true">★</span>
+<span class="deco d4" aria-hidden="true">✦</span>
+<span class="deco d5" aria-hidden="true">●</span>
+
+<div class="marquee" aria-hidden="true">
+  <div class="marquee-track">
+    <span>★ WELCOME TO MY BOOKSHELF ★</span>
+    <span>◆ NOW WITH 100% MORE COWBELL ◆</span>
+    <span>★ BE KIND, REWIND ★</span>
+    <span>◆ TOTALLY RAD READS ◆</span>
+    <span>★ WELCOME TO MY BOOKSHELF ★</span>
+    <span>◆ NOW WITH 100% MORE COWBELL ◆</span>
+    <span>★ BE KIND, REWIND ★</span>
+    <span>◆ TOTALLY RAD READS ◆</span>
+  </div>
+</div>
+
+<div class="page">
+
+  <nav class="topnav">
+    <a href="index.html">← Home</a>
+    <span class="sep">·</span>
+    <a href="library.html">Megan's Library</a>
+    <span class="sep">·</span>
+    <a href="all-books.html">Everything I've Read</a>
+  </nav>
+
+  <header>
+    <div class="eyebrow">for real, in my house</div>
+    <h1 class="title">My Book Collection</h1>
+    <p class="tagline">every book I actually own, sorted by however I got it</p>
+  </header>
+
+  <div class="scoreboard" id="scoreboard"></div>
+
+</div>
+
+<div class="jump">
+  <a href="#kindle" class="k" id="jumpKindle">📱 Kindle <span class="c"></span></a>
+  <a href="#audible" class="a" id="jumpAudible">🎧 Audible <span class="c"></span></a>
+  <a href="#physical" class="p" id="jumpPhysical">📚 Physical <span class="c"></span></a>
+</div>
+
+<div class="page">
+
+  <section class="fmt" id="kindle">
+    <div class="fmt-banner">
+      <div class="fmt-eyebrow">Format 01</div>
+      <h2 class="fmt-title">On the Kindle</h2>
+      <div class="fmt-sub">e-ink, zero clutter, infinite storage</div>
+    </div>
+    <div class="kindle-device">
+      <div class="kindle-bezel">
+        <div class="kindle-cam"></div>
+        <div class="kindle-screen">
+          <div class="kindle-screen-head"><span>Library</span><span id="kindleBattery">100%</span></div>
+          <div class="kindle-grid" id="kindleGrid"></div>
+        </div>
+        <div class="kindle-buttons">
+          <div class="kindle-btn"></div>
+          <div class="kindle-btn wide"></div>
+          <div class="kindle-btn"></div>
+        </div>
+        <div class="kindle-wordmark">kindle</div>
+      </div>
+    </div>
+  </section>
+
+  <section class="fmt" id="audible">
+    <div class="fmt-banner">
+      <div class="fmt-eyebrow">Format 02</div>
+      <h2 class="fmt-title">On Audible</h2>
+      <div class="fmt-sub">books for when my hands are busy</div>
+    </div>
+    <div class="boombox" aria-hidden="true">
+      <div class="boombox-body">
+        <div class="bb-speaker"></div>
+        <div class="bb-eq"><span></span><span></span><span></span><span></span><span></span><span></span></div>
+        <div class="bb-speaker"></div>
+      </div>
+    </div>
+    <div class="cassette-grid" id="audibleGrid"></div>
+  </section>
+
+  <section class="fmt" id="physical">
+    <div class="fmt-banner">
+      <div class="fmt-eyebrow">Format 03</div>
+      <h2 class="fmt-title">On the Shelf IRL</h2>
+      <div class="fmt-sub">the ones you can actually hold</div>
+    </div>
+    <div class="shelf-90s" id="physicalShelf"></div>
+    <div class="ledge-90s"></div>
+  </section>
+
+  <footer class="page-foot" id="pageFoot"></footer>
+
+</div>
+
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal-panel" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <button class="modal-close" id="modalClose" aria-label="Close">✕</button>
+    <div class="modal-cover" id="modalCover"></div>
+    <div>
+      <div class="modal-badge" id="modalBadge"></div>
+      <h3 class="modal-title" id="modalTitle"></h3>
+      <div class="modal-author" id="modalAuthor"></div>
+      <div class="modal-extra" id="modalExtra"></div>
+    </div>
+  </div>
+</div>
+
+<script src="owned-books-data.js"></script>
+<script>
+(function(){
+  const PALETTE = ['#ff3f8e', '#7c3aed', '#17d6c2', '#ffd23f', '#ff7a29', '#2dd4ee'];
+
+  const kindleBooks = OWNED_BOOKS.kindle || [];
+  const audibleBooks = OWNED_BOOKS.audible || [];
+  const physicalBooks = OWNED_BOOKS.physical || [];
+
+  /* ---------------- scoreboard + jump counts ---------------- */
+  const total = kindleBooks.length + audibleBooks.length + physicalBooks.length;
+  document.getElementById('scoreboard').innerHTML = [
+    {n: total, l: 'Total Owned'},
+    {n: kindleBooks.length, l: 'Kindle'},
+    {n: audibleBooks.length, l: 'Audible'},
+    {n: physicalBooks.length, l: 'Physical'},
+  ].map(s => `<div class="score-chip"><div class="n">${s.n}</div><div class="l">${s.l}</div></div>`).join('');
+
+  document.querySelector('#jumpKindle .c').textContent = `(${kindleBooks.length})`;
+  document.querySelector('#jumpAudible .c').textContent = `(${audibleBooks.length})`;
+  document.querySelector('#jumpPhysical .c').textContent = `(${physicalBooks.length})`;
+
+  /* ---------------- shared modal ---------------- */
+  const modalOverlay = document.getElementById('modalOverlay');
+  const modalCover = document.getElementById('modalCover');
+  const modalBadge = document.getElementById('modalBadge');
+  const modalTitle = document.getElementById('modalTitle');
+  const modalAuthor = document.getElementById('modalAuthor');
+  const modalExtra = document.getElementById('modalExtra');
+  const modalClose = document.getElementById('modalClose');
+
+  const BADGE_INFO = {
+    k: {cls: 'k', label: '📱 Kindle'},
+    a: {cls: 'a', label: '🎧 Audible'},
+    p: {cls: 'p', label: '📚 Physical'},
+  };
+
+  function openModal(book, fmt){
+    const info = BADGE_INFO[fmt];
+    modalBadge.className = 'modal-badge ' + info.cls;
+    modalBadge.textContent = info.label;
+    modalTitle.textContent = book.title;
+    modalAuthor.textContent = book.author || '';
+    modalAuthor.style.display = book.author ? 'block' : 'none';
+    modalExtra.textContent = fmt === 'a' && book.narrator ? `Narrated by ${book.narrator}` : '';
+    modalExtra.style.display = modalExtra.textContent ? 'block' : 'none';
+    modalCover.innerHTML = `<span style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;padding:8px;font-family:'Bungee',cursive;font-size:10px;text-align:center;color:#5a5548;">${book.title}</span>${book.cover ? `<img src="${book.cover}" alt="Cover of ${book.title}" loading="lazy" onerror="this.remove()">` : ''}`;
+    modalOverlay.classList.add('open');
+    modalClose.focus();
+  }
+  function closeModal(){ modalOverlay.classList.remove('open'); }
+  modalClose.addEventListener('click', closeModal);
+  modalOverlay.addEventListener('click', (e) => { if(e.target === modalOverlay) closeModal(); });
+  document.addEventListener('keydown', (e) => { if(e.key === 'Escape' && modalOverlay.classList.contains('open')) closeModal(); });
+
+  /* ---------------- Kindle: e-reader grid ---------------- */
+  const kindleGrid = document.getElementById('kindleGrid');
+  if(kindleBooks.length === 0){
+    kindleGrid.innerHTML = `<div class="fmt-empty" style="grid-column:1/-1;">Nothing on here yet — add a book to <code>owned-books-data.js</code>.</div>`;
+  } else {
+    kindleBooks.forEach(b => {
+      const btn = document.createElement('button');
+      btn.className = 'kindle-book';
+      btn.setAttribute('aria-label', `View details for ${b.title}`);
+      btn.innerHTML = `
+        <div class="kindle-cover">
+          <span>${b.title}</span>
+          ${b.cover ? `<img src="${b.cover}" alt="Cover of ${b.title}" loading="lazy" onerror="this.remove()">` : ''}
+        </div>
+        <div class="kindle-title">${b.title}</div>
+      `;
+      btn.addEventListener('click', () => openModal(b, 'k'));
+      kindleGrid.appendChild(btn);
+    });
+  }
+
+  /* ---------------- Audible: cassette grid ---------------- */
+  const audibleGrid = document.getElementById('audibleGrid');
+  if(audibleBooks.length === 0){
+    audibleGrid.innerHTML = `<div class="fmt-empty">Nothing on here yet — add a book to <code>owned-books-data.js</code>.</div>`;
+  } else {
+    audibleBooks.forEach((b, i) => {
+      const btn = document.createElement('button');
+      btn.className = 'cassette';
+      btn.style.setProperty('--cassette-color', PALETTE[i % PALETTE.length]);
+      btn.setAttribute('aria-label', `View details for ${b.title}`);
+      btn.innerHTML = `
+        ${b.cover ? `<div class="cassette-sticker"><img src="${b.cover}" alt="" loading="lazy" onerror="this.parentElement.remove()"></div>` : ''}
+        <div class="cassette-window">
+          <div class="cassette-reel"></div>
+          <div class="cassette-reel"></div>
+        </div>
+        <div class="cassette-label">
+          <div class="cassette-title">${b.title}</div>
+          ${b.author ? `<div class="cassette-author">${b.author}</div>` : ''}
+        </div>
+      `;
+      btn.addEventListener('click', () => openModal(b, 'a'));
+      audibleGrid.appendChild(btn);
+    });
+  }
+
+  /* ---------------- Physical: neon shelf ---------------- */
+  const physicalShelf = document.getElementById('physicalShelf');
+  if(physicalBooks.length === 0){
+    physicalShelf.innerHTML = `<div class="fmt-empty">Nothing on here yet — add a book to <code>owned-books-data.js</code>.</div>`;
+  } else {
+    physicalBooks.forEach((b, i) => {
+      const btn = document.createElement('button');
+      btn.className = 'spine-90s';
+      btn.style.background = b.color || PALETTE[i % PALETTE.length];
+      btn.setAttribute('aria-label', `View details for ${b.title}`);
+      btn.innerHTML = `<span class="label">${b.title}</span>`;
+      btn.addEventListener('click', () => openModal(b, 'p'));
+      physicalShelf.appendChild(btn);
+    });
+  }
+
+  /* ---------------- footer ---------------- */
+  const dateFmt = new Intl.DateTimeFormat(undefined, { year: 'numeric', month: 'long', day: 'numeric' });
+  document.getElementById('pageFoot').textContent = `📼 ${dateFmt.format(new Date())} · pulled live from owned-books-data.js`;
+})();
+</script>
+
+</body>
+</html>
