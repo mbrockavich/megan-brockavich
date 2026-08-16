@@ -3,7 +3,11 @@
 <head>
 <meta charset="UTF-8">
 <title>Every Book I've Read · Megan's Library</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#4a2740">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📚</text></svg>">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -26,6 +30,7 @@
   }
 
   *{ box-sizing:border-box; }
+  html{ overflow-x:hidden; }
 
   body{
     margin:0;
@@ -45,11 +50,17 @@
     background-size: cover;
     font-family:'Inter', sans-serif;
     color: var(--card);
-    padding: 0 0 80px;
+    padding: 0 0 calc(80px + env(safe-area-inset-bottom));
+    overflow-x: hidden;
+    -webkit-tap-highlight-color: transparent;
   }
 
   a{ color:inherit; }
   .page{ max-width: 1100px; margin:0 auto; padding: 40px 20px 0; }
+  @media (max-width: 560px){
+    .page{ padding: 26px 16px 0; }
+    header{ margin-bottom: 28px; }
+  }
 
   /* nav */
   .topnav{
@@ -97,8 +108,9 @@
   .filter-bar-inner{ max-width:1100px; margin:0 auto; padding:0 20px; }
   .search-input{
     width:100%; padding: 11px 18px; border: 1.5px solid rgba(255,255,255,0.18);
-    border-radius: 30px; font-family:'Inter', sans-serif; font-size: 14px;
+    border-radius: 30px; font-family:'Inter', sans-serif; font-size: 16px;
     background: rgba(255,255,255,0.08); color: var(--card); outline:none; margin-bottom:12px;
+    -webkit-appearance:none; appearance:none;
   }
   .search-input::placeholder{ color: rgba(253,241,245,0.5); }
   .search-input:focus{ border-color: var(--stamp); }
@@ -108,10 +120,22 @@
     padding: 6px 12px; border-radius: 20px; border: 1.5px solid rgba(255,255,255,0.18);
     background: rgba(255,255,255,0.06); color: var(--brass); cursor:pointer;
     display:flex; align-items:center; gap:5px; transition: all .12s ease;
+    -webkit-tap-highlight-color: transparent;
   }
   .pill:hover{ border-color: var(--stamp); }
   .pill.active{ background: var(--stamp); color: var(--wood-darker); border-color: var(--stamp); font-weight:700; }
   .pill .count{ opacity:0.7; font-size:9.5px; }
+
+  @media (max-width: 700px){
+    .filter-bar{ padding: 12px 0 12px; }
+    .search-input{ padding: 12px 16px; margin-bottom: 10px; }
+    .pills{
+      flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none;
+      margin: 0 -16px; padding: 0 16px 2px; -webkit-overflow-scrolling: touch;
+    }
+    .pills::-webkit-scrollbar{ display:none; }
+    .pill{ flex: 0 0 auto; padding: 8px 13px; font-size: 11px; }
+  }
 
   /* series-tab stacked cards: same master-card-series look, status pill instead of genre tag */
   .master-status-tag{ position:absolute; top:6px; left:6px; z-index:1;
@@ -146,7 +170,7 @@
   .fav-genre-panel{ padding: 30px 28px 30px; margin-bottom: 26px; }
   .top6-banner{ text-align:center; margin-bottom:26px; }
   .ribbon{
-    position:relative; display:inline-block; width:340px; height:68px;
+    position:relative; display:inline-block; width:min(340px, 100%); height:68px;
     margin-bottom:16px; transform:rotate(-1.5deg);
   }
   .ribbon-svg{ position:absolute; inset:0; width:100%; height:100%; filter:drop-shadow(0 5px 10px rgba(226,120,154,0.45)); }
@@ -162,7 +186,10 @@
   }
 
   .fav-grid{ display:grid; grid-template-columns: repeat(5, 1fr); gap: 24px 14px; }
-  @media (max-width: 560px){ .fav-grid{ gap: 16px 8px; } }
+  @media (max-width: 900px){ .fav-grid{ grid-template-columns: repeat(4, 1fr); } }
+  @media (max-width: 640px){ .fav-grid{ grid-template-columns: repeat(3, 1fr); gap: 16px 8px; } }
+  @media (max-width: 400px){ .fav-grid{ grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 640px){ .fav-genre-panel{ padding: 22px 16px 24px; } }
   .fav-item{ cursor:pointer; }
   .fav-item:focus-visible{ outline:2px solid var(--stamp); outline-offset:4px; border-radius:4px; }
   .fav-stack-wrap{ position:relative; margin-bottom: 12px; transition: transform 0.18s ease; }
@@ -219,8 +246,13 @@
     padding: 26px 28px;
   }
   .stat{ text-align:center; min-width: 90px; }
-  .stat .v{ font-family:'Fraunces', serif; font-weight:700; font-size: 24px; color: var(--ink); }
+  .stat .v{ font-family:'Fraunces', serif; font-weight:700; font-size: 24px; color: var(--ink); word-break: break-word; }
   .stat .l{ font-family:'Space Mono', monospace; font-size: 9.5px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--ink-soft); margin-top: 3px; }
+  @media (max-width: 560px){
+    .stats-strip{ gap: 14px 20px; padding: 20px 16px; }
+    .stat{ min-width: 40%; max-width: 46%; }
+    .stat .v{ font-size: 20px; }
+  }
 
   /* master catalog: cover grid with a star-rating line under each title */
   .catalog-count{
@@ -228,6 +260,9 @@
     margin-bottom: 16px; text-transform: uppercase; letter-spacing: 0.08em;
   }
   .master-grid{ display:grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 26px 16px; }
+  @media (max-width: 480px){
+    .master-grid{ grid-template-columns: repeat(3, 1fr); gap: 18px 10px; }
+  }
   .master-card{ text-align:left; cursor:pointer; }
   .master-card:focus-visible{ outline:2px solid var(--stamp); outline-offset:3px; border-radius:4px; }
   .master-cover{
@@ -316,8 +351,12 @@
   }
 
   @media (max-width: 560px){
-    .modal-panel{ flex-direction:column; }
+    .modal-overlay{ padding: 16px 12px calc(16px + env(safe-area-inset-bottom)); align-items:flex-start; }
+    .modal-panel{ flex-direction:column; padding: 26px 20px 28px; border-radius:8px; }
     .modal-cover{ width:100%; height:220px; }
+    .series-modal-panel{ max-width:none; }
+    .series-book-grid{ grid-template-columns: repeat(auto-fill, minmax(92px, 1fr)); gap: 16px; }
+    .modal-close{ top:10px; right:10px; width:40px; height:40px; font-size:15px; }
   }
 </style>
 </head>
