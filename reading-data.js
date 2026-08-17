@@ -17,8 +17,10 @@
      spicy: true   : marks it as spicy. Shown as a single 🌶️ sticker over
                      the bottom-left corner of the cover. Only add this when
                      told to for a specific book, never guess.
-     note: "..."   : a short one-line blurb/quote about the book, shown in
-                     detail popups when the book is featured in TOP_PICKS.
+     note: "..."   : your thoughts/review of the book. Tap any cover on the
+                     Master List, inside a series pop-up, or on a 2026 genre
+                     shelf to see it in a detail popup. Keep it as short or
+                     long as you want — plain text only, no HTML.
    Favorites on all-books.html are entirely hand-curated via TOP_PICKS below,
    not computed from ratings.
    ========================================================================= */
@@ -66,11 +68,13 @@ const books = [
   {title:"Dark Age", cover:"https://covers.openlibrary.org/b/id/8748017-L.jpg", author:"Pierce Brown", genre:"Science Fiction", pages:776, dateFinished:"2026-07-03", rating:4, pubYear:2015},
   {title:"Fly Away", cover:"https://covers.openlibrary.org/b/id/9418741-L.jpg", author:"Kristin Hannah", genre:"Contemporary Fiction", pages:416, dateFinished:"2026-07-07", rating:4, pubYear:2001},
   {title:"107 Days", cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1753912443i/232466984.jpg", author:"Kamala Harris", genre:"Memoir / Biography", pages:304, dateFinished:"2026-07-13", rating:4, pubYear:2025},
-  {title:"The Count of Monte Cristo", cover:"count-of-monte-cristo/monte-cristo-cover.jpg", author:"Alexandre Dumas", genre:"Classic Literature", pages:1566, dateFinished:"2026-08-01", pubYear:1844},
+  {title:"The Count of Monte Cristo", cover:"count-of-monte-cristo/monte-cristo-cover.jpg", author:"Alexandre Dumas", genre:"Classic Literature", pages:1566, dateFinished:"2026-08-01", rating:3.5, pubYear:1844, note:"I liked it. It's about this guy who has like literally everyone out to get him, so then he got back at them and spent years just trying to get revenge. It's pretty epic and I did enjoy it... but oh my goodness it was LOOOOONG. 3.5 stars I think lol"},
   {title:"Funny Story", cover:"https://covers.openlibrary.org/b/id/14625690-L.jpg", author:"Emily Henry", genre:"Contemporary Romance", pages:384, dateFinished:"2026-08-02", rating:5, pubYear:2024},
   {title:"Light Bringer", cover:"https://covers.openlibrary.org/b/id/15157697-L.jpg", author:"Pierce Brown", genre:"Science Fiction", pages:682, dateFinished:"2026-08-08", rating:5, pubYear:2022},
   {title:"Atomic Habits", cover:"https://covers.openlibrary.org/b/id/12539702-L.jpg", author:"James Clear", genre:"Nonfiction", subgenre:"Self-Development", pages:319, dateFinished:"2026-08-09", pubYear:2016},
   {title:"Dungeon Crawler Carl", cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1715780755i/211721806.jpg", author:"Matt Dinniman", genre:"Science Fiction", pages:450, dateFinished:"2026-08-13", rating:4.5, pubYear:2020},
+  {title:"Sharp Objects", cover:"https://covers.openlibrary.org/b/isbn/9780307341556-L.jpg", author:"Gillian Flynn", genre:"Thriller", pages:254, dateFinished:"2026-08-15", pubYear:2006},
+  {title:"And Now, Back to You", cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1748482477i/217513554.jpg", author:"B.K. Borison", genre:"Contemporary Romance", pages:464, dateFinished:"2026-08-16", rating:2, pubYear:2026, note:"Listened on audiobook. The one-bed, stuck-together trope felt more corny than swoony this time, and I skipped past the spicy scenes. Two meteorologists ending up working together was a fun premise, but this one just didn't click for me — probably won't continue the series."},
 ];
 
 /* Everything finished before 2026 that still shows up as "read" on a
@@ -116,7 +120,7 @@ const pastReads = [
   {title:"Fearless", genre:"Young Adult", readDate:"August 2025", cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1730330746i/214151222.jpg", pubYear:2025},
   {title:"Wicked: Everyone Deserves the Chance to Fly", genre:"Fantasy", readDate:"December 2024", cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1733855486i/30241301.jpg", pubYear:1995},
   {title:"Assistant to the Villain", genre:"Fantasy", readDate:"August 2024", cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1702057336i/123257687.jpg", pubYear:2023},
-  {title:"First-Time Caller", genre:"Contemporary Romance", readDate:"July 2025", cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1718283728i/213243908.jpg", pubYear:2025},
+  {title:"First-Time Caller", genre:"Contemporary Romance", readDate:"July 2025", cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1718283728i/213243908.jpg", rating:2, pubYear:2025},
   {title:"The Assassin's Blade", genre:"Fantasy", readDate:"November 2023", cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1680869667i/126062562.jpg", rating:5, pubYear:2014},
   {title:"Throne of Glass", genre:"Fantasy", readDate:"October 2023", cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1673566495i/76703559.jpg", rating:5, pubYear:2012},
   {title:"Crown of Midnight", genre:"Fantasy", readDate:"October 2023", cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1673566594i/76705490.jpg", rating:5, pubYear:2013},
