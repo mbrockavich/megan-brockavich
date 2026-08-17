@@ -14,8 +14,12 @@
      author   : "First Last"
      cover    : URL or local path to a cover image
      narrator : audible only — who reads the audiobook
-     color    : physical only — hex color for the spine. Leave it off and
-                one gets picked automatically from the garden palette.
+     color      : physical only — hex color for the spine. Leave it off and
+                  one gets picked automatically from the garden palette.
+     spineTitle : physical only — a short title to print on the spine
+                  instead of the full title, for long titles that don't
+                  fit. The full title still shows everywhere else (modal,
+                  aria-label, tooltip).
 
    Add your real collection below, section by section — order doesn't
    matter within a list.
@@ -29,6 +33,7 @@ const OWNED_BOOKS = {
     {title:"The Count of Monte Cristo", author:"Alexandre Dumas", narrator:"", cover:"count-of-monte-cristo/monte-cristo-cover.jpg"},
   ],
   physical: [
+    {title:"Control Unleashed: Creating a Focused and Confident Dog", spineTitle:"Control Unleashed", author:"Leslie McDevitt", cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1349894884i/2101812.jpg"},
   ],
 };
 

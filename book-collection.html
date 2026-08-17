@@ -284,12 +284,14 @@
     display:flex; align-items:flex-end; justify-content:center; padding-bottom: 14px;
     cursor:pointer; box-shadow: 0 8px 16px rgba(0,0,0,0.35), inset -6px 0 10px rgba(0,0,0,0.15);
     transition: transform .15s ease; text-decoration:none; background: none;
+    overflow: hidden;
   }
   .spine-90s:hover, .spine-90s:focus-visible{ transform: translateY(-10px) rotate(-1.5deg); outline:none; }
   .spine-90s .label{
     writing-mode: vertical-rl; transform: rotate(180deg);
-    font-family:'Cormorant Garamond', serif; font-weight:600; font-size: 12px; letter-spacing:0.02em;
+    font-family:'Cormorant Garamond', serif; font-weight:600; letter-spacing:0.02em;
     color: var(--cream); text-shadow: 0 1px 2px rgba(0,0,0,0.35); white-space:nowrap;
+    display:inline-block; max-height: 144px; overflow:hidden; text-overflow: ellipsis;
   }
   .ledge-90s{
     height: 16px; max-width: 900px; margin: 0 auto;
@@ -588,14 +590,37 @@
   if(physicalBooks.length === 0){
     physicalShelf.innerHTML = `<div class="fmt-empty">Nothing planted here yet — add a book to <code>owned-books-data.js</code>.</div>`;
   } else {
+    const SPINE_TARGET_HEIGHT = 132, SPINE_MIN_FONT = 8, SPINE_MAX_FONT = 20, SPINE_BASE_FONT = 12;
     physicalBooks.forEach((b, i) => {
       const btn = document.createElement('button');
       btn.className = 'spine-90s';
       btn.style.background = b.color || PALETTE[i % PALETTE.length];
       btn.setAttribute('aria-label', `View details for ${b.title}`);
-      btn.innerHTML = `<span class="label">${b.title}</span>`;
+      const spineText = b.spineTitle || b.title;
+      const label = document.createElement('span');
+      label.className = 'label';
+      label.title = b.title;
+      label.textContent = spineText;
+      label.style.fontSize = SPINE_BASE_FONT + 'px';
+      btn.appendChild(label);
       btn.addEventListener('click', () => openModal(b, 'p'));
       physicalShelf.appendChild(btn);
+
+      // Fit the label to the spine: scale font-size so the title's rendered
+      // height fills the spine (rather than leaving a gap or overflowing),
+      // measured against the real DOM box since vertical-writing-mode text
+      // metrics vary too much by font/browser to hardcode.
+      const measured = label.scrollHeight;
+      if(measured > 0){
+        const fitted = Math.max(SPINE_MIN_FONT, Math.min(SPINE_MAX_FONT, SPINE_BASE_FONT * (SPINE_TARGET_HEIGHT / measured)));
+        label.style.fontSize = fitted + 'px';
+        // still too tall even at the smallest readable size: trim with an ellipsis
+        let text = spineText;
+        while(label.scrollHeight > SPINE_TARGET_HEIGHT * 1.1 && text.length > 4){
+          text = text.slice(0, -1);
+          label.textContent = text.trimEnd() + "…";
+        }
+      }
     });
   }
 
