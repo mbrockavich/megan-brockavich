@@ -523,8 +523,10 @@ const endOfYear = new Date(YEAR, 11, 31);
 const daysLeftInYear = Math.round((endOfYear - TODAY) / 86400000);
 const daysPerBookNeeded = remaining > 0 ? (daysLeftInYear / remaining) : 0;
 
+function bookGenres(b){ return Array.isArray(b.genre) ? b.genre : [b.genre]; }
+
 const genreCounts = {};
-books.forEach(b => { genreCounts[b.genre] = (genreCounts[b.genre] || 0) + 1; });
+books.forEach(b => { bookGenres(b).forEach(g => { genreCounts[g] = (genreCounts[g] || 0) + 1; }); });
 const genreList = Object.entries(genreCounts).sort((a,b) => b[1]-a[1]);
 const missingGenres = MASTER_GENRES.filter(g => !genreCounts[g]);
 
@@ -690,7 +692,7 @@ document.addEventListener("keydown", (e) => { if(e.key === "Escape" && bookNoteM
 
 function openGenreModal(genre, spineColor){
   const genreBooks = books
-    .filter(b => b.genre === genre)
+    .filter(b => bookGenres(b).includes(genre))
     .sort((a,b) => a.author.localeCompare(b.author) || parseLocalDate(a.dateFinished) - parseLocalDate(b.dateFinished));
 
   modalTitle.textContent = `${GENRE_EMOJI[genre] || "📚"} ${genre}`;

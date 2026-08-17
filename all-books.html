@@ -447,6 +447,20 @@
     <div id="favoritesContainer"></div>
   </section>
 
+  <!-- CURRENTLY READING SPOTLIGHT (Series tab only) -->
+  <section class="block" id="currentlyReadingSection" style="display:none;">
+    <div class="card fav-genre-panel">
+      <div class="card-inner">
+        <div class="section-head" style="margin-bottom:20px;">
+          <div class="label">Currently Reading</div>
+          <h2 id="currentlyReadingTitle" style="color:var(--ink);"></h2>
+          <p id="currentlyReadingSub" style="color:var(--ink-soft);"></p>
+        </div>
+        <div class="series-book-grid" id="currentlyReadingGrid"></div>
+      </div>
+    </div>
+  </section>
+
   <!-- MASTER CATALOG -->
   <section class="block">
     <div class="section-head">
@@ -536,7 +550,7 @@ function normalizeAll(){
     map.set(b.title, {
       title: b.title,
       author: b.author || seriesAuthorMap[b.title] || "Unknown",
-      genre: b.genre || "Uncategorized",
+      genres: Array.isArray(b.genre) ? b.genre : [b.genre || "Uncategorized"],
       subgenre: b.subgenre || null,
       cover: b.cover,
       rating: b.rating,
@@ -555,7 +569,7 @@ function normalizeAll(){
     map.set(b.title, {
       title: b.title,
       author: b.author,
-      genre: b.genre,
+      genres: Array.isArray(b.genre) ? b.genre : [b.genre],
       subgenre: b.subgenre || null,
       cover: b.cover,
       rating: b.rating,
@@ -590,7 +604,7 @@ const MASTER_SORTED = [...ALL_BOOKS].sort((a, b) => {
 
 /* ---------------- hero + footer ---------------- */
 const genreCounts = {};
-ALL_BOOKS.forEach(b => { genreCounts[b.genre] = (genreCounts[b.genre]||0)+1; });
+ALL_BOOKS.forEach(b => { b.genres.forEach(g => { genreCounts[g] = (genreCounts[g]||0)+1; }); });
 const genreList = Object.entries(genreCounts).sort((a,b) => b[1]-a[1]);
 
 const datedBooks = ALL_BOOKS.filter(b => b.dateLabel !== "Undated");
@@ -626,7 +640,7 @@ function renderStats(){
     return;
   }
 
-  const scoped = activeGenre === "All" ? ALL_BOOKS : ALL_BOOKS.filter(b => b.genre === activeGenre);
+  const scoped = activeGenre === "All" ? ALL_BOOKS : ALL_BOOKS.filter(b => b.genres.includes(activeGenre));
 
   const authorCounts = {};
   scoped.forEach(b => { authorCounts[b.author] = (authorCounts[b.author]||0)+1; });
@@ -634,7 +648,7 @@ function renderStats(){
 
   const seriesInScope = SERIES.filter(s => s.books.some(sb => {
     const b = ALL_BOOKS_BY_TITLE.get(sb.title);
-    return b && (activeGenre === "All" || b.genre === activeGenre);
+    return b && (activeGenre === "All" || b.genres.includes(activeGenre));
   })).length;
 
   const scopedDated = scoped.filter(b => b.dateLabel !== "Undated");
@@ -665,7 +679,7 @@ const pillsContainer = document.getElementById("genrePills");
 function selectFilter(value){
   activeGenre = value;
   try{ localStorage.setItem("activeGenre", value); }catch(e){}
-  renderPills(); renderShelf(); renderStats(); renderFavorites();
+  renderPills(); renderShelf(); renderStats(); renderFavorites(); renderCurrentlyReading();
 }
 function renderPills(){
   pillsContainer.innerHTML = "";
@@ -811,7 +825,7 @@ function renderShelf(){
   }
 
   const filtered = MASTER_SORTED.filter(b => {
-    const genreMatch = activeGenre === "All" || b.genre === activeGenre;
+    const genreMatch = activeGenre === "All" || b.genres.includes(activeGenre);
     const searchMatch = !searchTerm ||
       b.title.toLowerCase().includes(searchTerm) ||
       b.author.toLowerCase().includes(searchTerm);
@@ -1185,13 +1199,11 @@ const seriesModalSub = document.getElementById("seriesModalSub");
 const seriesModalGrid = document.getElementById("seriesModalGrid");
 const seriesModalClose = document.getElementById("seriesModalClose");
 
-function openSeriesModal(entry, rank){
-  const full = seriesByName.get(entry.name);
-  const allBooks = full ? full.books : entry.books.map(b => ({title: b.title}));
-  seriesModalRank.textContent = rank ? `Favorite #${rank}` : "Series";
-  seriesModalTitle.textContent = entry.name;
-  seriesModalSub.textContent = `${entry.author} · ${entry.books.length} of ${allBooks.length} book${allBooks.length===1?"":"s"} read`;
-  seriesModalGrid.innerHTML = allBooks.map((sb, i) => {
+/* Shared by the series modal and the inline "Currently Reading" spotlight:
+   renders every book in a series as read (cover + rating) or unread
+   (dashed placeholder + coming-soon/not-read-yet label). */
+function seriesBookGridHTML(allBooks, best){
+  return allBooks.map((sb, i) => {
     const num = sb.number || (i + 1);
     const b = ALL_BOOKS_BY_TITLE.get(sb.title);
     if(!b){
@@ -1206,7 +1218,7 @@ function openSeriesModal(entry, rank){
         </div>
       `;
     }
-    const isBest = (entry.best || []).includes(b.title);
+    const isBest = (best || []).includes(b.title);
     return `
       <div class="series-book" tabindex="0" role="button" aria-label="View details for ${b.title}" data-title="${b.title.replace(/"/g,'&quot;')}">
         <div class="series-book-cover${isBest ? ' best' : ''}">
@@ -1218,13 +1230,52 @@ function openSeriesModal(entry, rank){
       </div>
     `;
   }).join("");
-  seriesModalGrid.querySelectorAll(".series-book[data-title]").forEach(el => {
+}
+
+function wireSeriesBookGrid(gridEl){
+  gridEl.querySelectorAll(".series-book[data-title]").forEach(el => {
     const b = ALL_BOOKS_BY_TITLE.get(el.dataset.title);
     if(!b) return;
     const open = () => openBookModal(b);
     el.addEventListener("click", open);
     el.addEventListener("keydown", (e) => { if(e.key === "Enter" || e.key === " "){ e.preventDefault(); open(); } });
   });
+}
+
+/* "Currently Reading" spotlight: pinned to the top of the Series tab,
+   laid out inline (no tap needed) so read/unread status is visible at a
+   glance. Which series to show is set via CURRENTLY_READING_SERIES in
+   reading-data.js. */
+const currentlyReadingSection = document.getElementById("currentlyReadingSection");
+const currentlyReadingTitle = document.getElementById("currentlyReadingTitle");
+const currentlyReadingSub = document.getElementById("currentlyReadingSub");
+const currentlyReadingGrid = document.getElementById("currentlyReadingGrid");
+
+function renderCurrentlyReading(){
+  const s = (activeGenre === "Series" && typeof CURRENTLY_READING_SERIES !== "undefined" && CURRENTLY_READING_SERIES)
+    ? seriesByName.get(CURRENTLY_READING_SERIES)
+    : null;
+  if(!s){
+    currentlyReadingSection.style.display = "none";
+    return;
+  }
+  const readCount = s.books.filter(b => findRead(b.title)).length;
+  currentlyReadingTitle.textContent = s.name;
+  currentlyReadingSub.textContent = `${s.author} · ${readCount} of ${s.books.length} book${s.books.length===1?"":"s"} read`;
+  currentlyReadingGrid.innerHTML = seriesBookGridHTML(s.books, []);
+  wireSeriesBookGrid(currentlyReadingGrid);
+  currentlyReadingSection.style.display = "";
+}
+renderCurrentlyReading();
+
+function openSeriesModal(entry, rank){
+  const full = seriesByName.get(entry.name);
+  const allBooks = full ? full.books : entry.books.map(b => ({title: b.title}));
+  seriesModalRank.textContent = rank ? `Favorite #${rank}` : "Series";
+  seriesModalTitle.textContent = entry.name;
+  seriesModalSub.textContent = `${entry.author} · ${entry.books.length} of ${allBooks.length} book${allBooks.length===1?"":"s"} read`;
+  seriesModalGrid.innerHTML = seriesBookGridHTML(allBooks, entry.best);
+  wireSeriesBookGrid(seriesModalGrid);
   seriesModalOverlay.classList.add("open");
   seriesModalClose.focus();
 }
