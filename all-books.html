@@ -263,6 +263,12 @@
   @media (max-width: 480px){
     .master-grid{ grid-template-columns: repeat(3, 1fr); gap: 18px 10px; }
   }
+  .shelf-subgroup-heading{
+    grid-column: 1 / -1;
+    font-family:'Space Mono', monospace; font-size: 11px; text-transform: uppercase;
+    letter-spacing: 0.15em; color: var(--stamp); margin: 30px 0 2px;
+  }
+  .shelf-subgroup-heading:first-of-type{ margin-top: 0; }
   .master-card{ text-align:left; cursor:pointer; }
   .master-card:focus-visible{ outline:2px solid var(--stamp); outline-offset:3px; border-radius:4px; }
   .master-cover{
@@ -479,6 +485,7 @@ function normalizeAll(){
       title: b.title,
       author: b.author || seriesAuthorMap[b.title] || "Unknown",
       genre: b.genre || "Uncategorized",
+      subgenre: b.subgenre || null,
       cover: b.cover,
       rating: b.rating,
       spicy: b.spicy,
@@ -497,6 +504,7 @@ function normalizeAll(){
       title: b.title,
       author: b.author,
       genre: b.genre,
+      subgenre: b.subgenre || null,
       cover: b.cover,
       rating: b.rating,
       spicy: b.spicy,
@@ -780,79 +788,105 @@ function renderShelf(){
   shelfGrid.innerHTML = "";
   noResults.style.display = filtered.length === 0 ? "block" : "none";
 
-  items.forEach(item => {
-    if(item.kind === "book"){
-      const b = item.book;
-      const card = document.createElement("div");
-      card.className = "master-card" + (item.seriesInfo ? " master-card-series" : "");
-      card.innerHTML = `
-        <div class="master-cover">
-          ${item.seriesInfo ? `<div class="master-series-tag">📚 Series</div>` : ""}
-          ${b.spicy ? `
-            <div class="master-badges">
-              <div class="master-spicy-badge">🌶️</div>
-            </div>
-          ` : ""}
-          <span>${b.title}</span>
-          ${b.cover ? `<img src="${b.cover}" alt="Cover of ${b.title}" loading="lazy" onerror="this.remove()">` : ""}
-          ${item.seriesInfo ? `<div class="master-count-badge">${item.seriesInfo.read}/${item.seriesInfo.total}</div>` : ""}
-        </div>
-        <div class="master-title">${b.title}</div>
-        <div class="master-author">${b.author}</div>
-        ${b.rating ? `<div class="master-rating">${formatRating(b.rating)}</div>` : ""}
-      `;
-      card.setAttribute("tabindex", "0");
-      card.setAttribute("role", "button");
-      if(item.seriesInfo){
-        card.setAttribute("aria-label", `Open ${item.seriesInfo.name} series, ${item.seriesInfo.read} of ${item.seriesInfo.total} read`);
-        const open = () => openSeriesModal({name: item.seriesInfo.name, author: item.seriesInfo.author, books: [b]}, null);
-        card.addEventListener("click", open);
-        card.addEventListener("keydown", (e) => { if(e.key === "Enter" || e.key === " "){ e.preventDefault(); open(); } });
-      } else {
-        card.setAttribute("aria-label", `View details for ${b.title}`);
-        const open = () => openBookModal(b);
-        card.addEventListener("click", open);
-        card.addEventListener("keydown", (e) => { if(e.key === "Enter" || e.key === " "){ e.preventDefault(); open(); } });
-      }
-      shelfGrid.appendChild(card);
-      return;
-    }
+  // Genres with subgenres tagged on their books (currently just Nonfiction)
+  // get grouped into labeled sections instead of one flat grid, mirroring
+  // the 2026 stats page's genre pop-up. Only kicks in for a specific genre,
+  // not "All" (mixing subgenres across every genre wouldn't mean anything).
+  const showSubgroups = activeGenre !== "All" && filtered.some(b => b.subgenre);
 
-    const top = item.books[0];
-    const behindLayers = Math.min(item.books.length - 1, 2);
-    let behindHTML = "";
-    for(let L = behindLayers; L >= 1; L--){
-      behindHTML += `<div class="master-stack-behind" style="transform: translate(${L*4}px, ${L*4}px);"></div>`;
-    }
-    const countLabel = item.books.length < item.total ? `${item.books.length}/${item.total} books` : `${item.total} books`;
+  if(showSubgroups){
+    const bySubgenre = {};
+    items.forEach(item => {
+      const b = item.kind === "book" ? item.book : item.books[0];
+      const key = (b && b.subgenre) || "Other";
+      (bySubgenre[key] = bySubgenre[key] || []).push(item);
+    });
+    Object.keys(bySubgenre)
+      .sort((a, b) => bySubgenre[b].length - bySubgenre[a].length || a.localeCompare(b))
+      .forEach(key => {
+        const group = bySubgenre[key];
+        const heading = document.createElement("div");
+        heading.className = "shelf-subgroup-heading";
+        heading.textContent = `${key} · ${group.length}`;
+        shelfGrid.appendChild(heading);
+        group.forEach(item => shelfGrid.appendChild(buildMasterCard(item)));
+      });
+  } else {
+    items.forEach(item => shelfGrid.appendChild(buildMasterCard(item)));
+  }
+}
+
+function buildMasterCard(item){
+  if(item.kind === "book"){
+    const b = item.book;
     const card = document.createElement("div");
-    card.className = "master-card master-card-series";
+    card.className = "master-card" + (item.seriesInfo ? " master-card-series" : "");
+    card.innerHTML = `
+      <div class="master-cover">
+        ${item.seriesInfo ? `<div class="master-series-tag">📚 Series</div>` : ""}
+        ${b.spicy ? `
+          <div class="master-badges">
+            <div class="master-spicy-badge">🌶️</div>
+          </div>
+        ` : ""}
+        <span>${b.title}</span>
+        ${b.cover ? `<img src="${b.cover}" alt="Cover of ${b.title}" loading="lazy" onerror="this.remove()">` : ""}
+        ${item.seriesInfo ? `<div class="master-count-badge">${item.seriesInfo.read}/${item.seriesInfo.total}</div>` : ""}
+      </div>
+      <div class="master-title">${b.title}</div>
+      <div class="master-author">${b.author}</div>
+      ${b.rating ? `<div class="master-rating">${formatRating(b.rating)}</div>` : ""}
+    `;
     card.setAttribute("tabindex", "0");
     card.setAttribute("role", "button");
-    card.setAttribute("aria-label", `Open ${item.name} series, ${item.books.length} of ${item.total} books read`);
-    card.innerHTML = `
-      <div class="master-stack-wrap">
-        ${behindHTML}
-        <div class="master-cover">
-          <div class="master-series-tag">📚 Series</div>
-          ${top.spicy ? `
-            <div class="master-badges">
-              <div class="master-spicy-badge">🌶️</div>
-            </div>
-          ` : ""}
-          <span>${top.title}</span>
-          ${top.cover ? `<img src="${top.cover}" alt="Cover of ${top.title}" loading="lazy" onerror="this.remove()">` : ""}
-        </div>
-        <div class="master-count-badge">${countLabel}</div>
+    if(item.seriesInfo){
+      card.setAttribute("aria-label", `Open ${item.seriesInfo.name} series, ${item.seriesInfo.read} of ${item.seriesInfo.total} read`);
+      const open = () => openSeriesModal({name: item.seriesInfo.name, author: item.seriesInfo.author, books: [b]}, null);
+      card.addEventListener("click", open);
+      card.addEventListener("keydown", (e) => { if(e.key === "Enter" || e.key === " "){ e.preventDefault(); open(); } });
+    } else {
+      card.setAttribute("aria-label", `View details for ${b.title}`);
+      const open = () => openBookModal(b);
+      card.addEventListener("click", open);
+      card.addEventListener("keydown", (e) => { if(e.key === "Enter" || e.key === " "){ e.preventDefault(); open(); } });
+    }
+    return card;
+  }
+
+  const top = item.books[0];
+  const behindLayers = Math.min(item.books.length - 1, 2);
+  let behindHTML = "";
+  for(let L = behindLayers; L >= 1; L--){
+    behindHTML += `<div class="master-stack-behind" style="transform: translate(${L*4}px, ${L*4}px);"></div>`;
+  }
+  const countLabel = item.books.length < item.total ? `${item.books.length}/${item.total} books` : `${item.total} books`;
+  const card = document.createElement("div");
+  card.className = "master-card master-card-series";
+  card.setAttribute("tabindex", "0");
+  card.setAttribute("role", "button");
+  card.setAttribute("aria-label", `Open ${item.name} series, ${item.books.length} of ${item.total} books read`);
+  card.innerHTML = `
+    <div class="master-stack-wrap">
+      ${behindHTML}
+      <div class="master-cover">
+        <div class="master-series-tag">📚 Series</div>
+        ${top.spicy ? `
+          <div class="master-badges">
+            <div class="master-spicy-badge">🌶️</div>
+          </div>
+        ` : ""}
+        <span>${top.title}</span>
+        ${top.cover ? `<img src="${top.cover}" alt="Cover of ${top.title}" loading="lazy" onerror="this.remove()">` : ""}
       </div>
-      <div class="master-title">${item.name}</div>
-      <div class="master-author">${item.author}</div>
-    `;
-    const open = () => openSeriesModal(item, null);
-    card.addEventListener("click", open);
-    card.addEventListener("keydown", (e) => { if(e.key === "Enter" || e.key === " "){ e.preventDefault(); open(); } });
-    shelfGrid.appendChild(card);
-  });
+      <div class="master-count-badge">${countLabel}</div>
+    </div>
+    <div class="master-title">${item.name}</div>
+    <div class="master-author">${item.author}</div>
+  `;
+  const open = () => openSeriesModal(item, null);
+  card.addEventListener("click", open);
+  card.addEventListener("keydown", (e) => { if(e.key === "Enter" || e.key === " "){ e.preventDefault(); open(); } });
+  return card;
 }
 renderShelf();
 
