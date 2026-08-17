@@ -188,6 +188,23 @@
     padding: 3px 7px; border-radius: 20px;
   }
   .fav-title{ font-family:'Fraunces',serif; font-weight:600; font-size:13px; line-height:1.3; color: var(--card); }
+  .fav-empty-slot{
+    width:100%; aspect-ratio: 2/3; border-radius: 4px;
+    border: 1.5px dashed rgba(92,58,74,0.28);
+    background: rgba(92,58,74,0.05);
+    display:flex; align-items:center; justify-content:center;
+    font-family:'Space Mono', monospace; font-size: 12px; letter-spacing:0.04em;
+    color: var(--ink-soft);
+  }
+  .fav-item-empty .fav-title{ color: var(--ink-soft); font-weight:500; }
+  .not-enough-card{ padding: 34px 28px; text-align:center; }
+  .not-enough-card h2{ color: var(--ink); }
+  .not-enough-card p{ margin: 10px auto 0; color: var(--ink-soft); max-width: 460px; }
+  .not-enough-progress{
+    width: 100%; max-width: 300px; height: 8px; border-radius: 20px;
+    background: var(--card-shadow); margin: 18px auto 0; overflow:hidden;
+  }
+  .not-enough-progress-bar{ height:100%; background: var(--stamp); border-radius:20px; }
 
   /* series-expanded modal */
   .modal-panel.series-modal-panel{ max-width: 700px; }
@@ -891,10 +908,42 @@ function renderFavorites(){
   favoritesSection.style.display = favoritesContainer.children.length === 0 ? "none" : "";
 }
 
+function makeEmptyFavSlot(rank){
+  const item = document.createElement("div");
+  item.className = "fav-item fav-item-empty";
+  item.innerHTML = `
+    <div class="fav-stack-wrap">
+      <div class="fav-empty-slot">#${rank}</div>
+    </div>
+    <div class="fav-title">Open spot</div>
+  `;
+  return item;
+}
+
+function renderNotEnoughCard(genre, count){
+  const remaining = Math.max(MIN_BOOKS_FOR_TOP10 - count, 0);
+  const pct = Math.min(100, Math.round((count / MIN_BOOKS_FOR_TOP10) * 100));
+  const panel = document.createElement("div");
+  panel.className = "card fav-genre-panel not-enough-card";
+  panel.innerHTML = `
+    <div class="card-inner">
+      <div class="label" style="text-align:center;">Top 10 Locked</div>
+      <h2 style="font-family:'Fraunces',serif; font-weight:600; font-size:26px; margin:0;">Must read ${MIN_BOOKS_FOR_TOP10} ${genre} books before we do a Top 10</h2>
+      <p>You've read ${count} of ${MIN_BOOKS_FOR_TOP10} so far — ${remaining} more and your Top 10 shelf unlocks.</p>
+      <div class="not-enough-progress"><div class="not-enough-progress-bar" style="width:${pct}%;"></div></div>
+    </div>
+  `;
+  favoritesContainer.appendChild(panel);
+}
+
 function renderFavoritesInner(){
   favoritesContainer.innerHTML = "";
 
   if(!TOP_PICKS || TOP_PICKS.length === 0){
+    return;
+  }
+
+  if(activeGenre === "Series"){
     return;
   }
 
@@ -930,13 +979,14 @@ function renderFavoritesInner(){
   }
 
   // a specific genre is selected
-  const match = eligible.find(tp => tp.genre === activeGenre);
-  if(!match){
+  const count = genreCounts[activeGenre] || 0;
+  if(count < MIN_BOOKS_FOR_TOP10){
+    renderNotEnoughCard(activeGenre, count);
     return;
   }
 
-  const resolved = resolvePicks(match.genre, match.picks);
-  if(resolved.length === 0) return;
+  const match = TOP_PICKS.find(tp => tp.genre === activeGenre);
+  const resolved = match ? resolvePicks(match.genre, match.picks) : [];
 
   const panel = document.createElement("div");
   panel.className = "card fav-genre-panel";
@@ -949,7 +999,7 @@ function renderFavoritesInner(){
           </svg>
           <span class="ribbon-text">Top 10</span>
         </div>
-        <div class="top6-banner-genre">${match.genre}</div>
+        <div class="top6-banner-genre">${activeGenre}</div>
         <div class="top6-banner-count">${resolved.length === MAX_TOP10 ? "the full lineup, ranked" : `${resolved.length} of 10 picked, ranked`}</div>
       </div>
       <div class="fav-grid"></div>
@@ -958,6 +1008,9 @@ function renderFavoritesInner(){
   favoritesContainer.appendChild(panel);
   const gridEl = panel.querySelector(".fav-grid");
   resolved.forEach(entry => gridEl.appendChild(makeFavItem(entry)));
+  for(let i = resolved.length; i < MAX_TOP10; i++){
+    gridEl.appendChild(makeEmptyFavSlot(i + 1));
+  }
 }
 renderFavorites();
 
