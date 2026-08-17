@@ -31,3 +31,14 @@ const OWNED_BOOKS = {
   physical: [
   ],
 };
+
+/* Looks a title up across all three owned-format lists. Returns an array
+   of format keys ("kindle","audible","physical") the title appears in, in
+   that order, or [] if it isn't owned in any format. Lets any page cross-
+   reference reading-data.js titles against OWNED_BOOKS without duplicating
+   the shelf logic that lives in book-collection.html. */
+function findOwnedFormats(title) {
+  return ["kindle", "audible", "physical"].filter(
+    fmt => OWNED_BOOKS[fmt].some(b => b.title === title)
+  );
+}

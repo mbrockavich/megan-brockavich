@@ -369,6 +369,15 @@
   .modal-title2{ font-family:'Fraunces',serif; font-weight:700; font-size:19px; margin:0 0 3px; line-height:1.2; }
   .modal-author2{ font-size:12.5px; color:var(--ink-soft); margin-bottom:6px; }
   .modal-meta2{ font-size:11.5px; color:var(--gold); letter-spacing:0.02em; margin-bottom:10px; }
+  .modal-owned2{ display:flex; flex-wrap:wrap; gap:5px; margin-bottom:10px; }
+  .owned-pill{
+    display:inline-flex; align-items:center; gap:3px; font-family:'Space Mono',monospace;
+    font-size:9.5px; letter-spacing:0.04em; text-transform:uppercase; color:#fff;
+    padding:3px 8px; border-radius:20px;
+  }
+  .owned-pill.k{ background:#9fb98d; }
+  .owned-pill.a{ background:#cf9aa0; }
+  .owned-pill.p{ background:#d4af6a; }
   .modal-note2{ font-size:12.5px; font-style:italic; color:var(--ink-soft); line-height:1.5; border-left:2px solid var(--stamp); padding-left:10px; }
 
   footer.page-foot{
@@ -447,6 +456,7 @@
       <h3 class="modal-title2" id="modalTitle2"></h3>
       <div class="modal-author2" id="modalAuthor2"></div>
       <div class="modal-meta2" id="modalMeta2"></div>
+      <div class="modal-owned2" id="modalOwned2"></div>
       <div class="modal-note2" id="modalNote2"></div>
     </div>
   </div>
@@ -468,6 +478,7 @@
 </div>
 
 <script src="reading-data.js"></script>
+<script src="owned-books-data.js"></script>
 <script>
 /* books, pastReads, SERIES, TOP_PICKS, findRead, formatRating come from reading-data.js */
 
@@ -1080,8 +1091,15 @@ const modalRank = document.getElementById("modalRank");
 const modalTitle2 = document.getElementById("modalTitle2");
 const modalAuthor2 = document.getElementById("modalAuthor2");
 const modalMeta2 = document.getElementById("modalMeta2");
+const modalOwned2 = document.getElementById("modalOwned2");
 const modalNote2 = document.getElementById("modalNote2");
 const modalClose = document.getElementById("modalClose");
+
+const OWNED_PILL_INFO = {
+  kindle: {cls: "k", label: "📱 Kindle"},
+  audible: {cls: "a", label: "🎧 Audible"},
+  physical: {cls: "p", label: "📚 Physical"},
+};
 
 /* eyebrow: optional badge text above the title (e.g. "Favorite"). Pass
    nothing for a plain book detail popup. */
@@ -1092,6 +1110,9 @@ function openBookModal(b, eyebrow){
   modalAuthor2.textContent = b.author;
   modalMeta2.textContent = [b.dateLabel, b.rating ? formatRating(b.rating) : null].filter(Boolean).join(" · ");
   modalMeta2.style.display = modalMeta2.textContent ? "block" : "none";
+  const ownedFormats = (typeof findOwnedFormats === "function") ? findOwnedFormats(b.title) : [];
+  modalOwned2.innerHTML = ownedFormats.map(fmt => `<span class="owned-pill ${OWNED_PILL_INFO[fmt].cls}">${OWNED_PILL_INFO[fmt].label}</span>`).join("");
+  modalOwned2.style.display = ownedFormats.length ? "flex" : "none";
   modalNote2.textContent = b.note || "";
   modalNote2.style.display = b.note ? "block" : "none";
   modalCover.innerHTML = `<span style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;padding:10px;font-family:'Fraunces',serif;font-size:12px;text-align:center;color:#fff;">${b.title}</span>${b.cover ? `<img src="${b.cover}" alt="Cover of ${b.title}" loading="lazy" onerror="this.remove()">` : ""}`;

@@ -302,6 +302,15 @@
   .book-note-title{ font-family:'Fraunces',serif; font-weight:700; font-size:19px; margin:0 0 3px; line-height:1.2; }
   .book-note-author{ font-size:12.5px; color:var(--ink-soft); margin-bottom:6px; }
   .book-note-meta{ font-size:11.5px; color:var(--stamp); letter-spacing:0.02em; margin-bottom:10px; }
+  .book-note-owned{ display:flex; flex-wrap:wrap; gap:5px; margin-bottom:10px; }
+  .owned-pill{
+    display:inline-flex; align-items:center; gap:3px; font-family:'Space Mono',monospace;
+    font-size:9.5px; letter-spacing:0.04em; text-transform:uppercase; color:#fff;
+    padding:3px 8px; border-radius:20px;
+  }
+  .owned-pill.k{ background:#9fb98d; }
+  .owned-pill.a{ background:#cf9aa0; }
+  .owned-pill.p{ background:#d4af6a; }
   .book-note-text{ font-size:12.5px; font-style:italic; color:var(--ink-soft); line-height:1.5; border-left:2px solid var(--stamp); padding-left:10px; }
   @media (max-width:560px){
     .modal-panel.book-note-panel{ flex-direction:column; }
@@ -470,12 +479,14 @@
       <h3 class="book-note-title" id="bookNoteTitle"></h3>
       <div class="book-note-author" id="bookNoteAuthor"></div>
       <div class="book-note-meta" id="bookNoteMeta"></div>
+      <div class="book-note-owned" id="bookNoteOwned"></div>
       <div class="book-note-text" id="bookNoteText"></div>
     </div>
   </div>
 </div>
 
 <script src="reading-data.js"></script>
+<script src="owned-books-data.js"></script>
 <script>
 /* GOAL, books, SERIES, and formatRating come from reading-data.js */
 /* Master list used only to figure out what's missing from the shelf. */
@@ -670,13 +681,23 @@ const bookNoteCover = document.getElementById("bookNoteCover");
 const bookNoteTitle = document.getElementById("bookNoteTitle");
 const bookNoteAuthor = document.getElementById("bookNoteAuthor");
 const bookNoteMeta = document.getElementById("bookNoteMeta");
+const bookNoteOwned = document.getElementById("bookNoteOwned");
 const bookNoteText = document.getElementById("bookNoteText");
 const bookNoteClose = document.getElementById("bookNoteClose");
+
+const OWNED_PILL_INFO = {
+  kindle: {cls: "k", label: "📱 Kindle"},
+  audible: {cls: "a", label: "🎧 Audible"},
+  physical: {cls: "p", label: "📚 Physical"},
+};
 
 function openBookNoteModal(b, niceDate){
   bookNoteTitle.textContent = b.title;
   bookNoteAuthor.textContent = b.author;
   bookNoteMeta.textContent = [`Finished ${niceDate}`, b.rating ? formatRating(b.rating) : null].filter(Boolean).join(" · ");
+  const ownedFormats = (typeof findOwnedFormats === "function") ? findOwnedFormats(b.title) : [];
+  bookNoteOwned.innerHTML = ownedFormats.map(fmt => `<span class="owned-pill ${OWNED_PILL_INFO[fmt].cls}">${OWNED_PILL_INFO[fmt].label}</span>`).join("");
+  bookNoteOwned.style.display = ownedFormats.length ? "flex" : "none";
   bookNoteText.textContent = b.note || "";
   bookNoteText.style.display = b.note ? "block" : "none";
   bookNoteCover.innerHTML = `<span style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;padding:10px;font-family:'Fraunces',serif;font-size:12px;text-align:center;color:#fff;">${b.title}</span>${b.cover ? `<img src="${b.cover}" alt="Cover of ${b.title}" loading="lazy" onerror="this.remove()">` : ""}`;
