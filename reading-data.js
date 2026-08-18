@@ -372,7 +372,7 @@ function formatRating(rating) {
    own themed row markup from this list. */
 const RATING_LEGEND = [
   {n: 5, text: "I'd totally reread this book"},
-  {n: 4, text: "I loved it, but I'd only read it once"},
+  {n: 4, text: "I loved it, but I'll only read it once"},
   {n: 3, text: "I enjoyed it"},
   {n: 2, text: "I didn't like it, or it wasn't for me"},
   {n: 1, text: "I hated it. It made me mad"},
