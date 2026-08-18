@@ -367,6 +367,24 @@ function formatRating(rating) {
   return "★".repeat(full) + (half ? "½" : "");
 }
 
+/* What each star count means, used to build the rating tooltip below. */
+const RATING_LEGEND = [
+  {n: 5, text: "Totally reread this book"},
+  {n: 4, text: "Loved it, but I'd only read it once"},
+  {n: 3, text: "Enjoyed it"},
+  {n: 2, text: "Didn't like it, or it wasn't for me"},
+  {n: 1, text: "Hated it. It made me mad"},
+];
+
+/* Builds a plain-text tooltip (for a title attribute) listing what every
+   star rating means, with an arrow marking the level closest to `rating`. */
+function ratingLegendTitle(rating) {
+  const level = rating == null ? null : Math.round(rating);
+  return RATING_LEGEND.map(r =>
+    `${r.n === level ? "→" : " "} ${"★".repeat(r.n)} - ${r.text}`
+  ).join("\n");
+}
+
 /* Multi-book series touched by the 2026 shelf, in reading order.
    Read/unread is computed via findRead() above, not stored per book.
    Entries here are just {title}, plus optional `cover` (a preview image
