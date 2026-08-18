@@ -371,11 +371,11 @@ function formatRating(rating) {
    top of all-books.html and 2026-reading-stats.html. Each page builds its
    own themed row markup from this list. */
 const RATING_LEGEND = [
-  {n: 5, text: "Totally reread this book"},
-  {n: 4, text: "Loved it, but I'd only read it once"},
-  {n: 3, text: "Enjoyed it"},
-  {n: 2, text: "Didn't like it, or it wasn't for me"},
-  {n: 1, text: "Hated it. It made me mad"},
+  {n: 5, text: "I'd totally reread this book"},
+  {n: 4, text: "I loved it, but I'd only read it once"},
+  {n: 3, text: "I enjoyed it"},
+  {n: 2, text: "I didn't like it, or it wasn't for me"},
+  {n: 1, text: "I hated it. It made me mad"},
 ];
 
 /* Multi-book series touched by the 2026 shelf, in reading order.
