@@ -368,7 +368,8 @@ function formatRating(rating) {
 }
 
 /* What each star count means. Shown as a "Rating Key" breakdown near the
-   top of all-books.html and 2026-reading-stats.html. */
+   top of all-books.html and 2026-reading-stats.html. Each page builds its
+   own themed row markup from this list. */
 const RATING_LEGEND = [
   {n: 5, text: "Totally reread this book"},
   {n: 4, text: "Loved it, but I'd only read it once"},
@@ -376,15 +377,6 @@ const RATING_LEGEND = [
   {n: 2, text: "Didn't like it, or it wasn't for me"},
   {n: 1, text: "Hated it. It made me mad"},
 ];
-
-/* Renders RATING_LEGEND as the rows for that breakdown card. Both pages
-   use the same "rating-key-row"/"rk-stars"/"rk-text" classes so they only
-   need their own CSS for it, not their own copy of the legend text. */
-function ratingKeyRowsHTML() {
-  return RATING_LEGEND.map(r =>
-    `<div class="rating-key-row"><span class="rk-stars">${"★".repeat(r.n)}</span><span class="rk-text">${r.text}</span></div>`
-  ).join("");
-}
 
 /* Multi-book series touched by the 2026 shelf, in reading order.
    Read/unread is computed via findRead() above, not stored per book.

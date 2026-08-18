@@ -27,6 +27,7 @@
     --slate-blue: #b8c4e8;
     --plum: #c9a0c9;
     --gold: #e0b45c;
+    --rose-deep: #b5607c;
   }
 
   *{ box-sizing:border-box; }
@@ -281,22 +282,53 @@
     .stat .v{ font-size: 20px; }
   }
 
-  /* rating key */
-  .rating-key{ padding: 20px 26px; margin-bottom: 20px; }
-  .rating-key-title{
-    font-family:'Space Mono', monospace; text-transform: uppercase; letter-spacing: 0.2em;
-    font-size: 10.5px; color: var(--stamp); margin-bottom: 12px;
+  /* rating key: cute bakery-card style, ribbon tab + scalloped edge */
+  .rating-card{
+    position:relative;
+    background: var(--card);
+    border-radius: 28px;
+    padding: 34px 30px 32px;
+    margin-bottom: 20px;
+    box-shadow:
+      0 1px 0 rgba(255,255,255,0.6) inset,
+      0 22px 45px -18px rgba(20,6,14,0.55),
+      0 0 0 1px rgba(180,96,124,0.08);
   }
-  .rating-key-row{
-    display:flex; align-items:baseline; gap: 12px; padding: 5px 0;
-    font-family:'Jost', sans-serif;
+  .rating-card::after{
+    content:"";
+    position:absolute; left: 14px; right:14px; bottom:-9px; height:18px;
+    background-image: radial-gradient(circle at 9px 0, var(--card-shadow) 8px, transparent 9px);
+    background-size: 18px 18px; background-repeat: repeat-x;
+    opacity:.9; z-index:-1;
   }
-  .rk-stars{ font-family:'Space Mono', monospace; color: var(--gold); font-size: 14px; min-width: 92px; letter-spacing: 0.04em; }
-  .rk-text{ font-size: 13.5px; color: var(--ink); }
+  .rating-card .ribbon{
+    position:absolute; top:-14px; left:34px; width:30px; height:46px;
+    background: linear-gradient(180deg, var(--stamp), var(--rose-deep));
+    clip-path: polygon(0 0, 100% 0, 100% 100%, 50% 78%, 0 100%);
+    box-shadow: 0 6px 12px -4px rgba(60,10,30,0.45);
+  }
+  .rating-card-heading{
+    font-family:'Fraunces', serif; font-weight:600; font-style:italic;
+    font-size: 13px; letter-spacing:.22em; text-transform:uppercase;
+    color: var(--rose-deep); margin: 4px 0 20px;
+  }
+  .legend-row{
+    display:flex; align-items:center; gap: 18px; padding: 11px 0;
+    border-bottom: 1px dashed var(--card-shadow);
+  }
+  .legend-row:last-child{ border-bottom:none; padding-bottom:2px; }
+  .legend-row:first-child{ padding-top:0; }
+  .legend-row .stars{
+    flex: 0 0 96px; font-size: 18px; letter-spacing:1px; color: var(--gold);
+  }
+  .legend-row .stars .dim{ color: #ecdcc3; }
+  .legend-row .legend-text{
+    font-family:'Fraunces', serif; font-weight:500; font-size: 15.5px; color: var(--ink);
+  }
   @media (max-width: 560px){
-    .rating-key{ padding: 18px 18px; }
-    .rk-stars{ min-width: 78px; font-size: 12.5px; }
-    .rk-text{ font-size: 12.5px; }
+    .rating-card{ padding: 26px 20px 26px; border-radius:22px; }
+    .legend-row .stars{ flex-basis: 78px; font-size: 15px; }
+    .legend-row .legend-text{ font-size: 13.5px; }
   }
 
   /* master catalog: cover grid with a star-rating line under each title */
@@ -446,11 +478,10 @@
     <p id="heroSub">Loading the shelves...</p>
   </header>
 
-  <div class="card rating-key">
-    <div class="card-inner">
-      <div class="rating-key-title">What My Stars Mean</div>
-      <div id="ratingKeyRows"></div>
-    </div>
+  <div class="rating-card">
+    <div class="ribbon"></div>
+    <div class="rating-card-heading">What My Stars Mean</div>
+    <div id="ratingKeyRows"></div>
   </div>
 
   <div class="card stats-strip" id="statsStrip"></div>
@@ -538,8 +569,12 @@
 <script>
 /* books, pastReads, SERIES, TOP_PICKS, findRead, formatRating come from reading-data.js */
 
-if(typeof ratingKeyRowsHTML === "function"){
-  document.getElementById("ratingKeyRows").innerHTML = ratingKeyRowsHTML();
+if(typeof RATING_LEGEND !== "undefined"){
+  document.getElementById("ratingKeyRows").innerHTML = RATING_LEGEND.map(r => {
+    const dim = 5 - r.n;
+    const stars = "★".repeat(r.n) + (dim > 0 ? `<span class="dim">${"★".repeat(dim)}</span>` : "");
+    return `<div class="legend-row"><div class="stars">${stars}</div><div class="legend-text">${r.text}</div></div>`;
+  }).join("");
 }
 
 const GENRE_EMOJI = {
