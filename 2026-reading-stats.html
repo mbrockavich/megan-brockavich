@@ -501,8 +501,10 @@
 <script>
 /* GOAL, books, SERIES, and formatRating come from reading-data.js */
 
-if(typeof ratingKeyRowsHTML === "function"){
-  document.getElementById("ratingKeyRows").innerHTML = ratingKeyRowsHTML();
+if(typeof RATING_LEGEND !== "undefined"){
+  document.getElementById("ratingKeyRows").innerHTML = RATING_LEGEND.map(r =>
+    `<div class="rating-key-row"><span class="rk-stars">${"★".repeat(r.n)}</span><span class="rk-text">${r.text}</span></div>`
+  ).join("");
 }
 
 /* Master list used only to figure out what's missing from the shelf. */
