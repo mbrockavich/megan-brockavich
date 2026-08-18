@@ -657,7 +657,7 @@ function renderBookGrid(bookList, container, spineColor){
       <div class="modal-book-title">${b.title}</div>
       <div class="modal-book-author">${b.author}</div>
       <div class="modal-book-date">Finished ${niceDate}</div>
-      ${b.rating ? `<div class="modal-book-rating" title="${ratingLegendTitle(b.rating)}">${formatRating(b.rating)}</div>` : ""}
+      ${b.rating ? `<div class="modal-book-rating" title="${typeof ratingLegendTitle === 'function' ? ratingLegendTitle(b.rating) : ''}">${formatRating(b.rating)}</div>` : ""}
     `;
     const open = () => openBookNoteModal(b, niceDate);
     item.addEventListener("click", open);
