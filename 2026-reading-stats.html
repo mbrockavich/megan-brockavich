@@ -93,6 +93,21 @@
   }
   .card .card-inner{ position:relative; z-index:1; }
 
+  /* rating key */
+  .rating-key{ padding: 20px 26px; margin-bottom: 20px; }
+  .rating-key-title{
+    font-family:'Space Mono', monospace; text-transform: uppercase; letter-spacing: 0.2em;
+    font-size: 10.5px; color: var(--stamp); margin-bottom: 12px;
+  }
+  .rating-key-row{ display:flex; align-items:baseline; gap: 12px; padding: 5px 0; }
+  .rk-stars{ font-family:'Space Mono', monospace; color: var(--stamp); font-size: 14px; min-width: 92px; letter-spacing: 0.04em; }
+  .rk-text{ font-family:'Inter', sans-serif; font-size: 13.5px; color: var(--ink); }
+  @media (max-width: 560px){
+    .rating-key{ padding: 18px 18px; }
+    .rk-stars{ min-width: 78px; font-size: 12.5px; }
+    .rk-text{ font-size: 12.5px; }
+  }
+
   /* HERO: due date card */
   .hero-card{ padding: 34px 32px 30px; margin-bottom: 30px; }
   .hero-top{
@@ -282,7 +297,7 @@
   .modal-book-title{ font-size:11.5px; font-weight:600; line-height:1.3; margin-bottom:2px; }
   .modal-book-author{ font-size:10.5px; color:var(--ink-soft); }
   .modal-book-date{ font-family:'Space Mono',monospace; font-size:9.5px; color:var(--ink-soft); margin-top:2px; }
-  .modal-book-rating{ font-size:11px; color:var(--stamp); margin-top:2px; letter-spacing:0.03em; cursor: help; }
+  .modal-book-rating{ font-size:11px; color:var(--stamp); margin-top:2px; letter-spacing:0.03em; }
   .modal-subgroup-heading{
     font-family:'Space Mono',monospace; font-size:10px; text-transform:uppercase;
     letter-spacing:0.12em; color:var(--stamp); margin:20px 0 12px;
@@ -386,6 +401,13 @@
     <p id="headerSub">Loading your shelf...</p>
   </header>
 
+  <div class="card rating-key">
+    <div class="card-inner">
+      <div class="rating-key-title">What My Stars Mean</div>
+      <div id="ratingKeyRows"></div>
+    </div>
+  </div>
+
   <!-- HERO -->
   <div class="card hero-card">
     <div class="card-inner">
@@ -478,6 +500,11 @@
 <script src="reading-data.js"></script>
 <script>
 /* GOAL, books, SERIES, and formatRating come from reading-data.js */
+
+if(typeof ratingKeyRowsHTML === "function"){
+  document.getElementById("ratingKeyRows").innerHTML = ratingKeyRowsHTML();
+}
+
 /* Master list used only to figure out what's missing from the shelf. */
 const MASTER_GENRES = [
   "Contemporary Fiction","Contemporary Romance","Fantasy","Science Fiction",
@@ -657,7 +684,7 @@ function renderBookGrid(bookList, container, spineColor){
       <div class="modal-book-title">${b.title}</div>
       <div class="modal-book-author">${b.author}</div>
       <div class="modal-book-date">Finished ${niceDate}</div>
-      ${b.rating ? `<div class="modal-book-rating" title="${typeof ratingLegendTitle === 'function' ? ratingLegendTitle(b.rating) : ''}">${formatRating(b.rating)}</div>` : ""}
+      ${b.rating ? `<div class="modal-book-rating">${formatRating(b.rating)}</div>` : ""}
     `;
     const open = () => openBookNoteModal(b, niceDate);
     item.addEventListener("click", open);
