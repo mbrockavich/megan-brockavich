@@ -264,7 +264,7 @@
   .series-book-cover.unread{ opacity:0.45; box-shadow:none; border: 1.5px dashed rgba(255,255,255,0.3); }
   .series-book-status{ font-size:9.5px; font-family:'Space Mono',monospace; text-transform:uppercase; letter-spacing:0.05em; color: var(--ink-soft); margin-top:2px; }
   .series-book-title{ font-size:11.5px; font-weight:600; line-height:1.3; color: var(--ink); }
-  .series-book-rating{ font-size:11px; color: var(--gold); margin-top:2px; letter-spacing:0.03em; }
+  .series-book-rating{ font-size:11px; color: var(--gold); margin-top:2px; letter-spacing:0.03em; cursor: help; }
   .series-book-num{ font-family:'Space Mono',monospace; font-weight:400; font-size:10px; color: var(--ink-soft); }
 
   /* stats strip */
@@ -335,7 +335,7 @@
   }
   .master-title{ font-family:'Fraunces', serif; font-weight:600; font-size: 12.5px; line-height:1.3; color: var(--card); }
   .master-author{ font-size: 10.5px; color: var(--brass); margin-top: 2px; }
-  .master-rating{ font-size: 11px; color: var(--gold); margin-top: 3px; letter-spacing:0.03em; }
+  .master-rating{ font-size: 11px; color: var(--gold); margin-top: 3px; letter-spacing:0.03em; cursor: help; }
   .no-results{ color: #e0c3d1; font-size: 13.5px; font-style: italic; padding: 20px 4px; }
 
   /* series collapsed into one stacked card on the Master List */
@@ -902,7 +902,7 @@ function buildMasterCard(item){
       </div>
       <div class="master-title">${b.title}</div>
       <div class="master-author">${b.author}</div>
-      ${b.rating ? `<div class="master-rating">${formatRating(b.rating)}</div>` : ""}
+      ${b.rating ? `<div class="master-rating" title="${ratingLegendTitle(b.rating)}">${formatRating(b.rating)}</div>` : ""}
     `;
     card.setAttribute("tabindex", "0");
     card.setAttribute("role", "button");
@@ -1226,7 +1226,7 @@ function seriesBookGridHTML(allBooks, best){
           ${b.cover ? `<img src="${b.cover}" alt="Cover of ${b.title}" loading="lazy" onerror="this.remove()">` : ""}
         </div>
         <div class="series-book-title">${b.title} <span class="series-book-num">[${num}]</span></div>
-        ${b.rating ? `<div class="series-book-rating">${formatRating(b.rating)}</div>` : ""}
+        ${b.rating ? `<div class="series-book-rating" title="${ratingLegendTitle(b.rating)}">${formatRating(b.rating)}</div>` : ""}
       </div>
     `;
   }).join("");
