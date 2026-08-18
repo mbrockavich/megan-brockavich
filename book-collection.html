@@ -337,7 +337,7 @@
   .modal-badge.p{ background: var(--gold); }
   .modal-title{ font-family:'Cormorant Garamond', serif; font-weight:700; font-size: 19px; margin: 0 0 3px; line-height:1.25; }
   .modal-author{ font-family:'EB Garamond', serif; font-style:italic; font-size: 13px; color:#6a5c48; margin-bottom: 6px; }
-  .modal-rating{ font-size: 15px; letter-spacing:0.04em; color: var(--clay); margin-bottom: 4px; cursor: help; }
+  .modal-rating{ font-size: 15px; letter-spacing:0.04em; color: var(--clay); margin-bottom: 4px; }
   .modal-extra{ font-family:'EB Garamond', serif; font-style:italic; font-size: 12px; color:#8a7c62; margin-bottom: 4px; }
   .modal-note{
     margin-top: 8px; padding: 10px 12px; background: rgba(92,122,78,0.1);
@@ -520,7 +520,6 @@
     const readInfo = (typeof findRead === 'function') ? findRead(book.title) : null;
     const ratingText = (readInfo && typeof formatRating === 'function') ? formatRating(readInfo.rating) : '';
     modalRating.textContent = ratingText;
-    modalRating.title = (ratingText && typeof ratingLegendTitle === 'function') ? ratingLegendTitle(readInfo.rating) : '';
     modalRating.style.display = ratingText ? 'block' : 'none';
 
     modalExtra.textContent = (fmt === 'a' && book.narrator) ? `Narrated by ${book.narrator}` : '';
