@@ -1026,9 +1026,9 @@ function coverSlotHTML(b, extraClass){
   `;
 }
 
-const MAX_TOP10 = 10;
+const MAX_FAVORITES = 10;
 
-const MIN_BOOKS_FOR_TOP10 = 20;
+const MIN_BOOKS_FOR_FAVORITES = 20;
 
 /* A book counts as part of a "series" for ranking purposes only once that
    series actually has 2+ tracked books — a lone book with a sequel that
@@ -1039,19 +1039,21 @@ function seriesForBook(title){
   return (s && s.books.length >= 2) ? s : null;
 }
 
-/* Ranks a series by how many 5-star reads it has (more = higher), then by
-   its overall average rating across every book of it you've read, as a
-   tiebreaker between series with the same 5-star count. */
+/* A series' rank is its overall average rating across every book of it
+   you've read (not just the 5-star ones) — a series with the same 5-star
+   count but a higher average across its other books ranks higher. Ties
+   broken by 5-star count, then name. */
 function seriesAvgRating(s){
   const rated = s.books.map(sb => ALL_BOOKS_BY_TITLE.get(sb.title)).filter(b => b && b.rating != null);
   return rated.length ? rated.reduce((sum, b) => sum + b.rating, 0) / rated.length : 0;
 }
 
-/* Builds a genre's (or, with genre=null, the whole library's) Top 10 from
-   5-star ratings: every 5-star book belonging to a 2+ book series is
-   grouped under that series and ranked by 5-star count (ties broken by the
-   series' overall average rating); 5-star standalones follow, alphabetical. */
-function computeTop10(genre, opts){
+/* Builds a genre's (or, with genre=null, the whole library's) favorites
+   list from 5-star ratings: every 5-star book belonging to a 2+ book series
+   is grouped under that series and ranked by the series' overall average
+   rating (ties broken by 5-star count); 5-star standalones follow,
+   alphabetical. */
+function computeFavorites(genre, opts){
   const seriesOnly = !!(opts && opts.seriesOnly);
   const fiveStar = ALL_BOOKS.filter(b => b.rating === 5 && (genre === null || b.genres.includes(genre)));
 
@@ -1068,8 +1070,8 @@ function computeTop10(genre, opts){
   });
 
   const seriesEntries = Array.from(seriesGroups.values())
-    .sort((a, b) => b.fiveStarBooks.length - a.fiveStarBooks.length
-      || seriesAvgRating(b.series) - seriesAvgRating(a.series)
+    .sort((a, b) => seriesAvgRating(b.series) - seriesAvgRating(a.series)
+      || b.fiveStarBooks.length - a.fiveStarBooks.length
       || a.series.name.localeCompare(b.series.name))
     .map(({series: s, fiveStarBooks}) => ({
       kind: "series", name: s.name, author: s.author,
@@ -1081,7 +1083,7 @@ function computeTop10(genre, opts){
     .sort((a, b) => a.title.localeCompare(b.title))
     .map(b => ({kind: "book", book: b}));
 
-  return [...seriesEntries, ...standaloneEntries].slice(0, MAX_TOP10);
+  return [...seriesEntries, ...standaloneEntries].slice(0, MAX_FAVORITES);
 }
 
 function makeFavItem(entry){
@@ -1144,22 +1146,22 @@ function makeEmptyFavSlot(rank){
 }
 
 function renderNotEnoughCard(genre, count){
-  const remaining = Math.max(MIN_BOOKS_FOR_TOP10 - count, 0);
-  const pct = Math.min(100, Math.round((count / MIN_BOOKS_FOR_TOP10) * 100));
+  const remaining = Math.max(MIN_BOOKS_FOR_FAVORITES - count, 0);
+  const pct = Math.min(100, Math.round((count / MIN_BOOKS_FOR_FAVORITES) * 100));
   const panel = document.createElement("div");
   panel.className = "card fav-genre-panel not-enough-card";
   panel.innerHTML = `
     <div class="card-inner">
-      <div class="label" style="text-align:center;">Top 10 Locked</div>
-      <h2 style="font-family:'Fraunces',serif; font-weight:600; font-size:26px; margin:0;">Must read ${MIN_BOOKS_FOR_TOP10} ${genre} books before we do a Top 10</h2>
-      <p>You've read ${count} of ${MIN_BOOKS_FOR_TOP10} so far — ${remaining} more and your Top 10 shelf unlocks.</p>
+      <div class="label" style="text-align:center;">Favorites Locked</div>
+      <h2 style="font-family:'Fraunces',serif; font-weight:600; font-size:26px; margin:0;">Must read ${MIN_BOOKS_FOR_FAVORITES} ${genre} books before your Favorites unlock</h2>
+      <p>You've read ${count} of ${MIN_BOOKS_FOR_FAVORITES} so far — ${remaining} more and your Favorites shelf unlocks.</p>
       <div class="not-enough-progress"><div class="not-enough-progress-bar" style="width:${pct}%;"></div></div>
     </div>
   `;
   favoritesContainer.appendChild(panel);
 }
 
-function renderTop10Panel(container, {eyebrow, title, sub, resolved}){
+function renderFavoritesPanel(container, {title, sub, resolved}){
   const panel = document.createElement("div");
   panel.className = "card fav-genre-panel";
   panel.innerHTML = `
@@ -1169,7 +1171,7 @@ function renderTop10Panel(container, {eyebrow, title, sub, resolved}){
           <svg class="ribbon-svg" viewBox="0 0 320 50" preserveAspectRatio="none">
             <polygon points="34,8 286,8 320,0 296,25 320,50 286,42 34,42 0,50 24,25 0,0" fill="var(--stamp)"/>
           </svg>
-          <span class="ribbon-text">${eyebrow}</span>
+          <span class="ribbon-text">Favorites</span>
         </div>
         <div class="top6-banner-genre">${title}</div>
         <div class="top6-banner-count">${sub}</div>
@@ -1181,40 +1183,39 @@ function renderTop10Panel(container, {eyebrow, title, sub, resolved}){
   container.appendChild(panel);
   const gridEl = panel.querySelector(".fav-grid");
   resolved.forEach(entry => gridEl.appendChild(makeFavItem(entry)));
-  for(let i = resolved.length; i < MAX_TOP10; i++){
+  for(let i = resolved.length; i < MAX_FAVORITES; i++){
     gridEl.appendChild(makeEmptyFavSlot(i + 1));
   }
 }
 
 function rankedSub(resolved){
-  return resolved.length === MAX_TOP10 ? "the full lineup, ranked" : `${resolved.length} of 10, ranked`;
+  return resolved.length === MAX_FAVORITES ? "the full lineup, ranked" : `${resolved.length} of ${MAX_FAVORITES}, ranked`;
 }
 
 function renderFavoritesInner(){
   favoritesContainer.innerHTML = "";
 
   if(activeGenre === "Series"){
-    // Top Series carousel: every 5-star series across the whole library,
-    // ranked by 5-star count (see computeTop10). Replaces the old
-    // hand-set "Currently Reading" spotlight.
-    const resolved = computeTop10(null, {seriesOnly: true});
+    // Favorite Series carousel: every 5-star series across the whole
+    // library, ranked by average rating (see computeFavorites). Replaces
+    // the old hand-set "Currently Reading" spotlight.
+    const resolved = computeFavorites(null, {seriesOnly: true});
     if(resolved.length === 0) return;
-    renderTop10Panel(favoritesContainer, {
-      eyebrow: "Top 10",
-      title: "Top Series",
+    renderFavoritesPanel(favoritesContainer, {
+      title: "Favorite Series",
       sub: rankedSub(resolved),
       resolved,
     });
     return;
   }
 
-  // a genre only gets a Top 10 once you've actually read enough of it
-  const eligibleGenres = genreList.map(([genre]) => genre).filter(genre => (genreCounts[genre] || 0) >= MIN_BOOKS_FOR_TOP10);
+  // a genre only gets a Favorites shelf once you've actually read enough of it
+  const eligibleGenres = genreList.map(([genre]) => genre).filter(genre => (genreCounts[genre] || 0) >= MIN_BOOKS_FOR_FAVORITES);
 
   if(activeGenre === "All"){
     // condensed overview: just the #1 pick from each eligible genre
     const picks = eligibleGenres
-      .map(genre => computeTop10(genre)[0])
+      .map(genre => computeFavorites(genre)[0])
       .filter(Boolean);
     if(picks.length === 0) return;
     const panel = document.createElement("div");
@@ -1224,7 +1225,7 @@ function renderFavoritesInner(){
         <div class="section-head" style="text-align:center; margin-bottom:22px;">
           <div class="label">One Favorite Per Genre</div>
           <h2 style="color:var(--ink);">Your #1s</h2>
-          <p style="margin:6px auto 0; color:var(--ink-soft);">Pick a genre above to see its full Top 10.</p>
+          <p style="margin:6px auto 0; color:var(--ink-soft);">Pick a genre above to see its full Favorites shelf.</p>
         </div>
         <div class="fav-grid"></div>
         <div class="fav-scroll-hint">← swipe to browse →</div>
@@ -1238,14 +1239,13 @@ function renderFavoritesInner(){
 
   // a specific genre is selected
   const count = genreCounts[activeGenre] || 0;
-  if(count < MIN_BOOKS_FOR_TOP10){
+  if(count < MIN_BOOKS_FOR_FAVORITES){
     renderNotEnoughCard(activeGenre, count);
     return;
   }
 
-  const resolved = computeTop10(activeGenre);
-  renderTop10Panel(favoritesContainer, {
-    eyebrow: "Top 10",
+  const resolved = computeFavorites(activeGenre);
+  renderFavoritesPanel(favoritesContainer, {
     title: activeGenre,
     sub: rankedSub(resolved),
     resolved,
