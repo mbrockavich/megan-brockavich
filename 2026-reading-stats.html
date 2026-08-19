@@ -296,20 +296,24 @@
 
   /* book note popup, nested above the genre modal */
   #bookNoteModalOverlay{ z-index:600; }
-  .modal-panel.book-note-panel{ max-width:420px; display:flex; gap:20px; padding:30px 30px 32px; }
+  .modal-panel.book-note-panel{
+    max-width:360px; display:flex; flex-direction:column; align-items:center; text-align:center;
+    padding:30px 30px 32px;
+  }
   .book-note-cover{
-    width:110px; height:165px; flex-shrink:0; border-radius:3px; overflow:hidden;
-    box-shadow:0 8px 18px rgba(0,0,0,0.3); position:relative; background: var(--wood-dark, #3a2a30);
+    width:100%; max-width:220px; aspect-ratio: 2/3; margin: 0 auto 16px; border-radius:6px; overflow:hidden;
+    box-shadow:0 10px 24px rgba(0,0,0,0.35); position:relative; background: var(--wood-dark, #3a2a30);
   }
-  .book-note-cover img{ position:absolute; inset:0; width:100%; height:100%; object-fit:cover; }
+  .book-note-cover img{ position:absolute; inset:0; width:100%; height:100%; object-fit:contain; }
   .book-note-title{ font-family:'Fraunces',serif; font-weight:700; font-size:19px; margin:0 0 3px; line-height:1.2; }
-  .book-note-author{ font-size:12.5px; color:var(--ink-soft); margin-bottom:6px; }
-  .book-note-meta{ font-size:11.5px; color:var(--stamp); letter-spacing:0.02em; margin-bottom:10px; }
-  .book-note-text{ font-size:12.5px; font-style:italic; color:var(--ink-soft); line-height:1.5; border-left:2px solid var(--stamp); padding-left:10px; }
-  @media (max-width:560px){
-    .modal-panel.book-note-panel{ flex-direction:column; }
-    .book-note-cover{ width:100%; height:220px; }
+  .book-note-author{ font-size:12.5px; color:var(--ink-soft); margin-bottom:8px; }
+  .book-note-genres{ display:flex; flex-wrap:wrap; justify-content:center; gap:5px; margin-bottom:8px; }
+  .book-note-genre-pill{
+    display:inline-block; font-size:10.5px; letter-spacing:0.02em; font-style:italic;
+    padding:3px 11px; border-radius:20px; background: rgba(226,120,154,0.16); color: var(--ink);
   }
+  .book-note-meta{ font-size:11.5px; color:var(--stamp); letter-spacing:0.02em; margin-bottom:10px; }
+  .book-note-text{ font-size:12.5px; font-style:italic; color:var(--ink-soft); line-height:1.5; border-left:2px solid var(--stamp); padding-left:10px; text-align:left; }
   .spine-name{ width: 150px; flex-shrink:0; font-size: 13px; font-weight:600; }
   .spine-track{ flex:1; height: 26px; background: rgba(43,33,24,0.06); border-radius: 2px; position:relative; }
   .spine-fill{
@@ -474,12 +478,11 @@
   <div class="modal-panel book-note-panel" role="dialog" aria-modal="true" aria-labelledby="bookNoteTitle">
     <button class="modal-close" id="bookNoteClose" aria-label="Close">✕</button>
     <div class="book-note-cover" id="bookNoteCover"></div>
-    <div>
-      <h3 class="book-note-title" id="bookNoteTitle"></h3>
-      <div class="book-note-author" id="bookNoteAuthor"></div>
-      <div class="book-note-meta" id="bookNoteMeta"></div>
-      <div class="book-note-text" id="bookNoteText"></div>
-    </div>
+    <h3 class="book-note-title" id="bookNoteTitle"></h3>
+    <div class="book-note-author" id="bookNoteAuthor"></div>
+    <div class="book-note-genres" id="bookNoteGenres"></div>
+    <div class="book-note-meta" id="bookNoteMeta"></div>
+    <div class="book-note-text" id="bookNoteText"></div>
   </div>
 </div>
 
@@ -701,6 +704,7 @@ const bookNoteModalOverlay = document.getElementById("bookNoteModalOverlay");
 const bookNoteCover = document.getElementById("bookNoteCover");
 const bookNoteTitle = document.getElementById("bookNoteTitle");
 const bookNoteAuthor = document.getElementById("bookNoteAuthor");
+const bookNoteGenres = document.getElementById("bookNoteGenres");
 const bookNoteMeta = document.getElementById("bookNoteMeta");
 const bookNoteText = document.getElementById("bookNoteText");
 const bookNoteClose = document.getElementById("bookNoteClose");
@@ -708,6 +712,9 @@ const bookNoteClose = document.getElementById("bookNoteClose");
 function openBookNoteModal(b, niceDate){
   bookNoteTitle.textContent = b.title;
   bookNoteAuthor.textContent = b.author;
+  const genres = bookGenres(b).filter(Boolean);
+  bookNoteGenres.innerHTML = genres.map(g => `<span class="book-note-genre-pill">${g}</span>`).join("");
+  bookNoteGenres.style.display = genres.length ? "flex" : "none";
   bookNoteMeta.textContent = [`Finished ${niceDate}`, b.rating ? formatRating(b.rating) : null].filter(Boolean).join(" · ");
   bookNoteText.textContent = b.note || "";
   bookNoteText.style.display = b.note ? "block" : "none";
