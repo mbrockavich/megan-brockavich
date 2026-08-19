@@ -1053,9 +1053,11 @@ function seriesAvgRating(s){
 
 /* Builds a genre's (or, with genre=null, the whole library's) favorites
    list from 5-star ratings: every 5-star book belonging to a 2+ book series
-   is grouped under that series and ranked by the series' overall average
-   rating (ties broken by 5-star count); 5-star standalones follow,
-   alphabetical. */
+   is grouped under that series. Series and standalone 5-star books are then
+   ranked together by average rating (a series by its overall average across
+   every rated book in it, a standalone by its own rating) so a flat 5-star
+   book ranks above a series averaging below 5, ties broken by 5-star count
+   then alphabetically. */
 function computeFavorites(genre, opts){
   const seriesOnly = !!(opts && opts.seriesOnly);
   const fiveStar = ALL_BOOKS.filter(b => b.rating === 5 && (genre === null || b.genres.includes(genre)));
@@ -1073,20 +1075,27 @@ function computeFavorites(genre, opts){
   });
 
   const seriesEntries = Array.from(seriesGroups.values())
-    .sort((a, b) => seriesAvgRating(b.series) - seriesAvgRating(a.series)
-      || b.fiveStarBooks.length - a.fiveStarBooks.length
-      || a.series.name.localeCompare(b.series.name))
     .map(({series: s, fiveStarBooks}) => ({
       kind: "series", name: s.name, author: s.author,
       books: s.books.map(sb => ALL_BOOKS_BY_TITLE.get(sb.title)).filter(Boolean),
       best: fiveStarBooks.map(b => b.title),
+      avg: seriesAvgRating(s),
+      fiveStarCount: fiveStarBooks.length,
+      sortName: s.name,
     }));
 
-  const standaloneEntries = standalones
-    .sort((a, b) => a.title.localeCompare(b.title))
-    .map(b => ({kind: "book", book: b}));
+  const standaloneEntries = standalones.map(b => ({
+    kind: "book", book: b,
+    avg: b.rating,
+    fiveStarCount: 1,
+    sortName: b.title,
+  }));
 
-  return [...seriesEntries, ...standaloneEntries].slice(0, MAX_FAVORITES);
+  return [...seriesEntries, ...standaloneEntries]
+    .sort((a, b) => b.avg - a.avg
+      || b.fiveStarCount - a.fiveStarCount
+      || a.sortName.localeCompare(b.sortName))
+    .slice(0, MAX_FAVORITES);
 }
 
 function makeFavItem(entry){
