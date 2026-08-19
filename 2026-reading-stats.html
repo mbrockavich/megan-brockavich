@@ -174,6 +174,9 @@
   .hero-foot .stat{ flex:1; min-width:150px; }
   .hero-foot .stat .v{ font-family:'Fraunces',serif; font-weight:600; font-size:22px; }
   .hero-foot .stat .l{ font-family:'Space Mono',monospace; font-size:10px; text-transform:uppercase; letter-spacing:0.1em; color: var(--ink-soft); }
+  .stretch-goal{ margin-top:20px; padding-top:18px; border-top:1.5px dashed var(--brass); }
+  .stretch-goal-title{ font-family:'Space Mono',monospace; font-size:11px; text-transform:uppercase; letter-spacing:0.12em; color: var(--ink-soft); margin-bottom:12px; }
+  .stretch-goal-title span{ margin-left:8px; color: var(--stamp); font-weight:600; text-transform:none; letter-spacing:0.02em; }
 
   /* two column stat charts */
   .grid-2{ display:grid; grid-template-columns: 1fr 1fr; gap: 22px; margin-bottom: 30px; }
@@ -422,6 +425,11 @@
       <div class="stamp-grid" id="stampGrid"></div>
 
       <div class="hero-foot" id="heroFoot"></div>
+
+      <div class="stretch-goal">
+        <div class="stretch-goal-title">🚀 Stretch Goal — 100 Books<span id="stretchProgress"></span></div>
+        <div class="hero-foot" id="stretchFoot"></div>
+      </div>
     </div>
   </div>
 
@@ -533,8 +541,10 @@ const MONTH_LABELS = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct
 function monthIndex(dateStr){ return parseLocalDate(dateStr).getMonth(); } // 0-11
 
 /* ---------------- aggregate ---------------- */
+const STRETCH_GOAL = 100;
 const totalRead = books.length;
 const remaining = Math.max(GOAL - totalRead, 0);
+const remainingStretch = Math.max(STRETCH_GOAL - totalRead, 0);
 
 const booksByMonth = new Array(12).fill(0);
 const pagesByMonth = new Array(12).fill(0);
@@ -551,6 +561,9 @@ const paceNeededPerMonth = remaining > 0 ? (remaining / monthsLeft) : 0;
 const endOfYear = new Date(YEAR, 11, 31);
 const daysLeftInYear = Math.round((endOfYear - TODAY) / 86400000);
 const daysPerBookNeeded = remaining > 0 ? (daysLeftInYear / remaining) : 0;
+
+const paceNeededPerMonthStretch = remainingStretch > 0 ? (remainingStretch / monthsLeft) : 0;
+const daysPerBookNeededStretch = remainingStretch > 0 ? (daysLeftInYear / remainingStretch) : 0;
 
 function bookGenres(b){ return Array.isArray(b.genre) ? b.genre : [b.genre]; }
 
@@ -617,6 +630,22 @@ footStats.forEach(s => {
   el.className = "stat";
   el.innerHTML = `<div class="v">${s.v}</div><div class="l">${s.l}</div>`;
   heroFoot.appendChild(el);
+});
+
+document.getElementById("stretchProgress").textContent =
+  `${totalRead}/${STRETCH_GOAL} (${Math.round((totalRead/STRETCH_GOAL)*100)}%)`;
+
+const stretchFoot = document.getElementById("stretchFoot");
+const stretchFootStats = [
+  {v: remainingStretch, l: "Books left to hit 100"},
+  {v: remainingStretch > 0 ? paceNeededPerMonthStretch.toFixed(1) : "Goal met", l: "Books per month needed"},
+  {v: remainingStretch > 0 ? daysPerBookNeededStretch.toFixed(0) + " days" : "Goal met", l: "Finish one every..."}
+];
+stretchFootStats.forEach(s => {
+  const el = document.createElement("div");
+  el.className = "stat";
+  el.innerHTML = `<div class="v">${s.v}</div><div class="l">${s.l}</div>`;
+  stretchFoot.appendChild(el);
 });
 
 /* ---------------- books / pages per month bars ---------------- */
