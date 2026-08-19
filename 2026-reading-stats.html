@@ -545,7 +545,7 @@ books.forEach(b => {
 });
 
 const currentMonth = TODAY.getMonth(); // 0-indexed, July = 6
-const monthsLeft = 12 - currentMonth; // includes current month
+const monthsLeft = Math.max(12 - currentMonth - 1, 1); // excludes current month
 const paceNeededPerMonth = remaining > 0 ? (remaining / monthsLeft) : 0;
 
 const endOfYear = new Date(YEAR, 11, 31);
