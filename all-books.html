@@ -418,6 +418,9 @@
     max-width: 420px; width: 100%; padding: 30px 30px 32px; position: relative;
     box-shadow: 0 20px 60px rgba(0,0,0,0.4); display:flex; gap:20px;
   }
+  .modal-panel.book-detail-panel{
+    max-width: 360px; flex-direction:column; align-items:center; text-align:center;
+  }
   .modal-close{
     position:absolute; top:14px; right:14px; background: rgba(92,58,74,0.08);
     border:0; border-radius:50%; width:32px; height:32px; font-size:16px; line-height:1;
@@ -425,18 +428,24 @@
   }
   .modal-close:hover{ background: rgba(92,58,74,0.16); }
   .modal-cover{
-    width: 110px; height:165px; flex-shrink:0; border-radius: 3px; overflow:hidden;
-    box-shadow: 0 8px 18px rgba(0,0,0,0.3); position:relative; background: var(--wood-dark);
+    width: 100%; max-width: 220px; aspect-ratio: 2 / 3; margin: 0 auto 16px;
+    border-radius: 6px; overflow:hidden;
+    box-shadow: 0 10px 24px rgba(0,0,0,0.35); position:relative; background: var(--wood-dark);
   }
-  .modal-cover img{ position:absolute; inset:0; width:100%; height:100%; object-fit:cover; }
+  .modal-cover img{ position:absolute; inset:0; width:100%; height:100%; object-fit:contain; }
   .modal-rank{
     font-family:'Space Mono',monospace; font-size:10px; text-transform:uppercase;
     letter-spacing:0.12em; color: var(--stamp); margin-bottom:6px; font-weight:700;
   }
   .modal-title2{ font-family:'Fraunces',serif; font-weight:700; font-size:19px; margin:0 0 3px; line-height:1.2; }
-  .modal-author2{ font-size:12.5px; color:var(--ink-soft); margin-bottom:6px; }
+  .modal-author2{ font-size:12.5px; color:var(--ink-soft); margin-bottom:8px; }
+  .modal-genres2{ display:flex; flex-wrap:wrap; justify-content:center; gap:5px; margin-bottom:8px; }
+  .genre-pill2{
+    display:inline-block; font-size:10.5px; letter-spacing:0.02em; font-style:italic;
+    padding:3px 11px; border-radius:20px; background: rgba(226,120,154,0.14); color: var(--ink);
+  }
   .modal-meta2{ font-size:11.5px; color:var(--gold); letter-spacing:0.02em; margin-bottom:10px; }
-  .modal-owned2{ display:flex; flex-wrap:wrap; gap:5px; margin-bottom:10px; }
+  .modal-owned2{ display:flex; flex-wrap:wrap; justify-content:center; gap:5px; margin-bottom:10px; }
   .owned-pill{
     display:inline-flex; align-items:center; gap:3px; font-family:'Space Mono',monospace;
     font-size:9.5px; letter-spacing:0.04em; text-transform:uppercase; color:#fff;
@@ -445,7 +454,7 @@
   .owned-pill.k{ background:#9fb98d; }
   .owned-pill.a{ background:#cf9aa0; }
   .owned-pill.p{ background:#d4af6a; }
-  .modal-note2{ font-size:12.5px; font-style:italic; color:var(--ink-soft); line-height:1.5; border-left:2px solid var(--stamp); padding-left:10px; }
+  .modal-note2{ font-size:12.5px; font-style:italic; color:var(--ink-soft); line-height:1.5; border-left:2px solid var(--stamp); padding-left:10px; text-align:left; }
 
   footer.page-foot{
     text-align:center; font-family:'Space Mono', monospace; font-size: 11px;
@@ -454,8 +463,7 @@
 
   @media (max-width: 560px){
     .modal-overlay{ padding: 16px 12px calc(16px + env(safe-area-inset-bottom)); align-items:flex-start; }
-    .modal-panel{ flex-direction:column; padding: 26px 20px 28px; border-radius:8px; }
-    .modal-cover{ width:100%; height:220px; }
+    .modal-panel{ padding: 26px 20px 28px; border-radius:8px; }
     .series-modal-panel{ max-width:none; }
     .series-book-grid{ grid-template-columns: repeat(auto-fill, minmax(92px, 1fr)); gap: 16px; }
     .modal-close{ top:10px; right:10px; width:40px; height:40px; font-size:15px; }
@@ -535,17 +543,16 @@
 
 <!-- BOOK DETAIL MODAL -->
 <div class="modal-overlay" id="bookModalOverlay">
-  <div class="modal-panel" role="dialog" aria-modal="true" aria-labelledby="modalTitle2">
+  <div class="modal-panel book-detail-panel" role="dialog" aria-modal="true" aria-labelledby="modalTitle2">
     <button class="modal-close" id="modalClose" aria-label="Close">✕</button>
     <div class="modal-cover" id="modalCover"></div>
-    <div>
-      <div class="modal-rank" id="modalRank"></div>
-      <h3 class="modal-title2" id="modalTitle2"></h3>
-      <div class="modal-author2" id="modalAuthor2"></div>
-      <div class="modal-meta2" id="modalMeta2"></div>
-      <div class="modal-owned2" id="modalOwned2"></div>
-      <div class="modal-note2" id="modalNote2"></div>
-    </div>
+    <div class="modal-rank" id="modalRank"></div>
+    <h3 class="modal-title2" id="modalTitle2"></h3>
+    <div class="modal-author2" id="modalAuthor2"></div>
+    <div class="modal-genres2" id="modalGenres2"></div>
+    <div class="modal-meta2" id="modalMeta2"></div>
+    <div class="modal-owned2" id="modalOwned2"></div>
+    <div class="modal-note2" id="modalNote2"></div>
   </div>
 </div>
 
@@ -1221,6 +1228,7 @@ const modalCover = document.getElementById("modalCover");
 const modalRank = document.getElementById("modalRank");
 const modalTitle2 = document.getElementById("modalTitle2");
 const modalAuthor2 = document.getElementById("modalAuthor2");
+const modalGenres2 = document.getElementById("modalGenres2");
 const modalMeta2 = document.getElementById("modalMeta2");
 const modalOwned2 = document.getElementById("modalOwned2");
 const modalNote2 = document.getElementById("modalNote2");
@@ -1239,6 +1247,9 @@ function openBookModal(b, eyebrow){
   modalRank.style.display = eyebrow ? "block" : "none";
   modalTitle2.textContent = b.title;
   modalAuthor2.textContent = b.author;
+  const genres = (b.genres || []).filter(Boolean);
+  modalGenres2.innerHTML = genres.map(g => `<span class="genre-pill2">${g}</span>`).join("");
+  modalGenres2.style.display = genres.length ? "flex" : "none";
   modalMeta2.textContent = [b.dateLabel, b.rating ? formatRating(b.rating) : null].filter(Boolean).join(" · ");
   modalMeta2.style.display = modalMeta2.textContent ? "block" : "none";
   const ownedFormats = (typeof findOwnedFormats === "function") ? findOwnedFormats(b.title) : [];
