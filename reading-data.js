@@ -21,8 +21,9 @@
                      Master List, inside a series pop-up, or on a 2026 genre
                      shelf to see it in a detail popup. Keep it as short or
                      long as you want — plain text only, no HTML.
-   Favorites on all-books.html are entirely hand-curated via TOP_PICKS below,
-   not computed from ratings.
+   Favorites on all-books.html are computed automatically from 5-star
+   ratings — rate a book 5 stars and it becomes eligible for its genre's
+   Top 10 (and the Series tab's Top Series carousel) with no extra setup.
    ========================================================================= */
 const GOAL = 80;
 const books = [
@@ -1053,136 +1054,4 @@ const SERIES = [
       {title:"The Soul", comingSoon:true}
     ]
   }
-];
-
-/* Which series to spotlight at the top of the Series tab on all-books.html,
-   laid out inline (read/unread covers, no tap needed) instead of tucked
-   behind a click. Must match a `name` in SERIES exactly. Set to null to
-   hide the spotlight entirely. Update this whenever you switch to a
-   different series. */
-const CURRENTLY_READING_SERIES = "Dungeon Crawler Carl";
-
-/* =========================================================================
-   Your "Top 6" per genre for all-books.html. Entirely hand-chosen, not
-   computed from star ratings. MySpace Top 8 rules, trimmed down: up to 6
-   per genre, in the order you want them to appear (best/most-favorite first).
-
-   To edit: add, remove, or reorder entries in `picks` freely. Order = rank,
-   so moving an entry up the list moves it up on the shelf. Only genres
-   you've picked favorites for will show a row. A title must already exist
-   in `books` or `pastReads` to show up (it's looked up by exact title).
-   Only the first 6 entries in `picks` will show. Trim your list if you
-   add a 7th.
-
-   Each entry in `picks` is one of:
-     "Book Title"                          : a standalone favorite
-     { title: "...", note: "..." }         : standalone, with a short blurb
-     { series: "Series Name", best: [...] }
-       : the whole series as one favorite, rendered as a stacked group of
-       every book from that series you've read. `series` must match a
-       `name` in the SERIES array below exactly. `best` is optional: list
-       the title(s) from that series that were YOUR favorites of the
-       favorites. Those get a highlighted cover in the stack.
-   ========================================================================= */
-const TOP_PICKS = [
-  { genre: "Fantasy", picks: [
-    { series: "Throne of Glass" },
-    { series: "A Court of Thorns and Roses" },
-    { series: "The Empyrean (Fourth Wing)" },
-    { series: "Fae & Alchemy" },
-    { series: "Crowns of Nyaxia" },
-    { series: "The Magicians Trilogy" },
-    { series: "The Ashen" },
-    "Manacled",
-    { series: "Zodiac Academy" },
-    "The Princess Bride"
-  ] },
-  { genre: "Nonfiction", picks: [
-    "Loud: Accept Nothing Less Than the Life You Deserve",
-    "Building a Second Brain: A Proven Method to Organize Your Digital Life and Unlock Your Creative Potential",
-    "The Bullet Journal Method: Track Your Past, Order Your Present, Plan Your Future",
-    "The 90-Day Novel",
-    "Atomic Habits",
-    "Shape Up: Stop Running in Circles and Ship Work that Matters",
-    "Inside of a Dog: What Dogs See, Smell, and Know",
-    "On Writing: A Memoir of the Craft",
-    "Extreme Ownership: How U.S. Navy SEALs Lead and Win",
-    "He's Just Not That Into You: The No-Excuses Truth to Understanding Guys"
-  ] },
-  { genre: "Thriller", picks: [
-    "Saving Noah",
-    "The Teacher",
-    "The Silent Patient",
-    "Death Row",
-    "Gone Girl",
-    "Dear Debbie",
-    "My Husband's Wife"
-  ] },
-  { genre: "Young Adult", picks: [
-    { series: "Uglies" },
-    { series: "Divergent" },
-    { series: "Arc of a Scythe" },
-    { series: "Summer" }
-  ] },
-  { genre: "Science Fiction", picks: [
-    { series: "The Hunger Games" },
-    { series: "Red Rising Saga" },
-    { series: "The Maze Runner" },
-    "Project Hail Mary",
-    "Dungeon Crawler Carl"
-  ] },
-  { genre: "Classic Literature", picks: [
-    "The Odyssey",
-    "The Iliad",
-    "Jane Eyre",
-    "Black Beauty",
-    "The Count of Monte Cristo",
-    "A Christmas Carol",
-    "Macbeth",
-    "Hamlet",
-    "Romeo and Juliet",
-    "The Call of the Wild"
-  ] },
-  { genre: "Middle Grade", picks: [
-    { series: "Time Quintet" },
-    { series: "Chronicles of Narnia" },
-    "The Giver",
-    "Ella Enchanted"
-  ] },
-  { genre: "Memoir / Biography", picks: [
-    "107 Days",
-    "Untamed",
-    "Nobody's Girl: A Memoir of Surviving Abuse and Fighting for Justice",
-    "The Babysitter: My Summers with a Serial Killer",
-    "Friends, Lovers, and the Big Terrible Thing",
-    "Who Could Ever Love You: A Family Memoir",
-    "Greenlights"
-  ] },
-  { genre: "Contemporary Romance", picks: [
-    "Funny Story",
-    "The Last Letter",
-    { series: "It Ends with Us" }
-  ] },
-  { genre: "Horror", picks: [
-    { series: "The Crypt Series" },
-    "Ushers",
-    "The Bewitching",
-    { series: "The Shining" }
-  ] },
-  { genre: "Literary Fiction", picks: [
-    { series: "The Handmaid's Tale" },
-    "Remarkably Bright Creatures"
-  ] },
-  { genre: "Historical Fiction", picks: [
-    "Homegoing",
-    "The Help",
-    "Water for Elephants"
-  ] },
-  { genre: "Mythology", picks: [
-    "Circe",
-    "The Song of Achilles"
-  ] },
-  { genre: "Contemporary Fiction", picks: [
-    { series: "Firefly Lane" }
-  ] },
 ];
