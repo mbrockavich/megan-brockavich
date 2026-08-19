@@ -93,21 +93,6 @@
   }
   .card .card-inner{ position:relative; z-index:1; }
 
-  /* rating key */
-  .rating-key{ padding: 20px 26px; margin-bottom: 20px; }
-  .rating-key-title{
-    font-family:'Space Mono', monospace; text-transform: uppercase; letter-spacing: 0.2em;
-    font-size: 10.5px; color: var(--stamp); margin-bottom: 12px;
-  }
-  .rating-key-row{ display:flex; align-items:baseline; gap: 12px; padding: 5px 0; }
-  .rk-stars{ font-family:'Space Mono', monospace; color: var(--stamp); font-size: 14px; min-width: 92px; letter-spacing: 0.04em; }
-  .rk-text{ font-family:'Inter', sans-serif; font-size: 13.5px; color: var(--ink); }
-  @media (max-width: 560px){
-    .rating-key{ padding: 18px 18px; }
-    .rk-stars{ min-width: 78px; font-size: 12.5px; }
-    .rk-text{ font-size: 12.5px; }
-  }
-
   /* HERO: due date card */
   .hero-card{ padding: 34px 32px 30px; margin-bottom: 30px; }
   .hero-top{
@@ -404,13 +389,6 @@
     <p id="headerSub">Loading your shelf...</p>
   </header>
 
-  <div class="card rating-key">
-    <div class="card-inner">
-      <div class="rating-key-title">What My Stars Mean</div>
-      <div id="ratingKeyRows"></div>
-    </div>
-  </div>
-
   <!-- HERO -->
   <div class="card hero-card">
     <div class="card-inner">
@@ -508,12 +486,6 @@
 <script src="reading-data.js"></script>
 <script>
 /* GOAL, books, SERIES, and formatRating come from reading-data.js */
-
-if(typeof RATING_LEGEND !== "undefined"){
-  document.getElementById("ratingKeyRows").innerHTML = RATING_LEGEND.map(r =>
-    `<div class="rating-key-row"><span class="rk-stars">${"★".repeat(r.n)}</span><span class="rk-text">${r.text}</span></div>`
-  ).join("");
-}
 
 /* Master list used only to figure out what's missing from the shelf. */
 const MASTER_GENRES = [
