@@ -40,7 +40,7 @@ const OWNED_BOOKS = {
     {title:"Circe", author:"Madeline Miller", cover:"https://covers.openlibrary.org/b/id/8739376-L.jpg"},
     {title:"Bloody Jack: Being an Account of the Curious Adventures of Mary \"Jacky\" Faber, Ship's Boy", spineTitle:"Bloody Jack", author:"L.A. Meyer", cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1328336242i/8488973.jpg"},
     {title:"BookMail: A Meta Horror Novel", spineTitle:"BookMail", author:"Jason R. Davis", cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1746988324i/230237670._SX300_.jpg"},
-    {title:"It Ends with Us", author:"Colleen Hoover", cover:"https://covers.openlibrary.org/b/id/10473609-L.jpg"},
+    {title:"It Ends with Us", author:"Colleen Hoover", cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1670795825i/62627512._SX300_.jpg"},
     {title:"It Starts with Us", author:"Colleen Hoover", cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1644605295i/60393672.jpg"},
     {title:"Funny Story", author:"Emily Henry", cover:"https://covers.openlibrary.org/b/id/14625690-L.jpg"},
   ],
