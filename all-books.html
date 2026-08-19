@@ -984,6 +984,8 @@ function buildMasterCard(item){
     behindHTML += `<div class="master-stack-behind" style="transform: translate(${L*4}px, ${L*4}px);"></div>`;
   }
   const countLabel = item.books.length < item.total ? `${item.books.length}/${item.total} books` : `${item.total} books`;
+  const ratedBooks = item.books.filter(bk => bk.rating);
+  const avgRating = ratedBooks.length ? Math.round((ratedBooks.reduce((sum, bk) => sum + bk.rating, 0) / ratedBooks.length) * 2) / 2 : null;
   const card = document.createElement("div");
   card.className = "master-card master-card-series";
   card.setAttribute("tabindex", "0");
@@ -1006,6 +1008,7 @@ function buildMasterCard(item){
     </div>
     <div class="master-title">${item.name}</div>
     <div class="master-author">${item.author}</div>
+    ${avgRating ? `<div class="master-rating">${formatRating(avgRating)}</div>` : ""}
   `;
   const open = () => openSeriesModal(item, null);
   card.addEventListener("click", open);
