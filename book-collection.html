@@ -112,6 +112,26 @@
   .score-chip .n{ font-family:'Cormorant Garamond', serif; font-weight:700; font-size: 26px; color: var(--gold-light); }
   .score-chip .l{ font-family:'Caveat', cursive; font-size: 13px; letter-spacing:0.03em; color: var(--sage-light); margin-top:1px; }
 
+  /* search */
+  .search-wrap{ max-width: 420px; margin: 22px auto 0; position:relative; display:flex; align-items:center; }
+  .search-icon{ position:absolute; left:16px; font-size:14px; color: var(--gold-light); pointer-events:none; }
+  .search-input{
+    width:100%; padding: 12px 40px; border-radius: 30px; box-sizing:border-box;
+    border: 1.5px solid var(--gold); background: rgba(246,239,223,0.08);
+    color: var(--cream); font-family:'EB Garamond', serif; font-size: 15px;
+    outline:none; transition: box-shadow .15s ease, background .15s ease;
+  }
+  .search-input::placeholder{ color: rgba(233,224,201,0.55); font-style:italic; }
+  .search-input:focus{ background: rgba(246,239,223,0.14); box-shadow: 0 0 0 3px rgba(212,175,106,0.25); }
+  .search-clear{
+    position:absolute; right:10px; width:24px; height:24px; border-radius:50%; border:none; cursor:pointer;
+    background: rgba(212,175,106,0.3); color: var(--cream); font-size:12px; line-height:1;
+    display:none; align-items:center; justify-content:center;
+  }
+  .search-clear:hover{ background: rgba(212,175,106,0.5); }
+  .search-count{ text-align:center; font-size: 12.5px; color: var(--sage-light); font-style:italic; margin-top:8px; min-height:1.2em; }
+  .search-empty{ margin-top:10px; }
+
   /* jump pills */
   .jump{
     position: sticky; top: 0; z-index: 30;
@@ -384,6 +404,13 @@
 
   <div class="scoreboard" id="scoreboard"></div>
 
+  <div class="search-wrap">
+    <span class="search-icon" aria-hidden="true">🔍</span>
+    <input type="text" id="bookSearch" class="search-input" placeholder="Search by title or author…" autocomplete="off">
+    <button type="button" class="search-clear" id="searchClear" aria-label="Clear search">✕</button>
+  </div>
+  <div class="search-count" id="searchCount"></div>
+
 </div>
 
 <div class="jump">
@@ -546,6 +573,7 @@
     kindleBooks.forEach(b => {
       const btn = document.createElement('button');
       btn.className = 'kindle-book';
+      btn.dataset.search = `${b.title} ${b.author || ''}`.toLowerCase();
       btn.setAttribute('aria-label', `View details for ${b.title}`);
       btn.innerHTML = `
         <div class="kindle-cover">
@@ -568,6 +596,7 @@
       const btn = document.createElement('button');
       btn.className = 'cassette';
       btn.style.setProperty('--cassette-color', PALETTE[i % PALETTE.length]);
+      btn.dataset.search = `${b.title} ${b.author || ''}`.toLowerCase();
       btn.setAttribute('aria-label', `View details for ${b.title}`);
       btn.innerHTML = `
         ${b.cover ? `<div class="cassette-sticker"><img src="${b.cover}" alt="" loading="lazy" onerror="this.parentElement.remove()"></div>` : ''}
@@ -595,6 +624,7 @@
       const btn = document.createElement('button');
       btn.className = 'spine-90s';
       btn.style.background = b.color || PALETTE[i % PALETTE.length];
+      btn.dataset.search = `${b.title} ${b.author || ''}`.toLowerCase();
       btn.setAttribute('aria-label', `View details for ${b.title}`);
       const spineText = b.spineTitle || b.title;
       const label = document.createElement('span');
@@ -623,6 +653,59 @@
       }
     });
   }
+
+  /* ---------------- search ---------------- */
+  const searchInput = document.getElementById('bookSearch');
+  const searchClear = document.getElementById('searchClear');
+  const searchCount = document.getElementById('searchCount');
+  const SEARCH_SECTIONS = [
+    {grid: kindleGrid, sel: '.kindle-book'},
+    {grid: audibleGrid, sel: '.cassette'},
+    {grid: physicalShelf, sel: '.spine-90s'},
+  ];
+
+  function applySearch(){
+    const raw = searchInput.value.trim();
+    const q = raw.toLowerCase();
+    searchClear.style.display = raw ? 'flex' : 'none';
+
+    let totalOwned = 0, totalVisible = 0;
+    SEARCH_SECTIONS.forEach(({grid, sel}) => {
+      const items = grid.querySelectorAll(sel);
+      totalOwned += items.length;
+      let visible = 0;
+      items.forEach(item => {
+        const match = !q || item.dataset.search.includes(q);
+        item.style.display = match ? '' : 'none';
+        if(match) visible++;
+      });
+      totalVisible += visible;
+
+      let emptyMsg = grid.querySelector('.search-empty');
+      if(items.length > 0 && visible === 0 && q){
+        if(!emptyMsg){
+          emptyMsg = document.createElement('div');
+          emptyMsg.className = 'fmt-empty search-empty';
+          emptyMsg.style.gridColumn = '1/-1';
+          grid.appendChild(emptyMsg);
+        }
+        emptyMsg.textContent = `No matches for "${raw}" here.`;
+        emptyMsg.style.display = '';
+      } else if(emptyMsg){
+        emptyMsg.style.display = 'none';
+      }
+    });
+
+    searchCount.textContent = (q && totalOwned > 0) ? `Showing ${totalVisible} of ${totalOwned} books` : '';
+  }
+
+  searchInput.addEventListener('input', applySearch);
+  searchClear.addEventListener('click', () => {
+    searchInput.value = '';
+    applySearch();
+    searchInput.focus();
+  });
+  applySearch();
 
   /* ---------------- footer ---------------- */
   const dateFmt = new Intl.DateTimeFormat(undefined, { year: 'numeric', month: 'long', day: 'numeric' });
