@@ -40,7 +40,7 @@ const books = [
   {title:"Exodus", cover:"https://m.media-amazon.com/images/I/41XHkcLHMEL.jpg", author:"Kate Stewart", genre:"Contemporary Romance", pages:500, dateFinished:"2026-03-10", rating:4, pubYear:2020},
   {title:"The Comfy Cozy Witch's Guide to Making Magic in Your Everyday Life", cover:"https://covers.openlibrary.org/b/id/14804484-L.jpg", author:"Jennie Blonde", genre:"Nonfiction", subgenre:"Spirituality", pages:208, dateFinished:"2026-03-12", rating:3},
   {title:"The Finish Line", cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1610549876i/56182388.jpg", author:"Kate Stewart", genre:"Contemporary Romance", pages:560, dateFinished:"2026-03-15", rating:3, pubYear:2024},
-  {title:"Project Hail Mary", cover:"https://covers.openlibrary.org/b/id/11200092-L.jpg", author:"Andy Weir", genre:"Science Fiction", pages:496, dateFinished:"2026-03-20", rating:5, pubYear:2021},
+  {title:"Project Hail Mary", cover:"https://covers.openlibrary.org/b/id/11200092-L.jpg", author:"Andy Weir", genre:"Science Fiction", pages:496, dateFinished:"2026-03-20", rating:4, pubYear:2021},
   {title:"Just For the Cameras", cover:"https://covers.openlibrary.org/b/id/15170471-L.jpg", author:"Meghan Quinn", genre:"Contemporary Romance", pages:637, dateFinished:"2026-03-22", rating:3, pubYear:2026},
   {title:"We Should All Be Feminists", cover:"https://covers.openlibrary.org/b/id/11324542-L.jpg", author:"Chimamanda Ngozi Adichie", genre:"Nonfiction", subgenre:"Essays", pages:64, dateFinished:"2026-03-25", rating:3, pubYear:2014},
   {title:"Dear Debbie", cover:"https://covers.openlibrary.org/b/id/15171146-L.jpg", author:"Freida McFadden", genre:"Thriller", pages:336, dateFinished:"2026-03-27", rating:3, pubYear:2026},
