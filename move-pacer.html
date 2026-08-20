@@ -62,6 +62,10 @@
   .note{font-size:.78rem;color:var(--muted);margin-top:16px;line-height:1.5}
   .panel{background:var(--surface);border-radius:18px;padding:20px}
   .panel p{margin:0} .panel .big{font-size:1.02rem} .panel .small{font-size:.88rem;color:var(--muted);margin-top:6px;line-height:1.5}
+  .mrow{display:flex;justify-content:space-between;align-items:baseline;padding:9px 0;border-bottom:1px solid var(--line);font-size:.92rem}
+  .mrow:last-child{border-bottom:none}
+  .mtime{color:var(--muted)}
+  .mval{color:var(--move)}
 </style>
 </head>
 <body>
@@ -88,6 +92,11 @@
       <div class="mini"><span class="lbl">Daily goal (hrs)</span><input type="number" id="goal" min="1" max="24" value="10" /></div>
       <div class="mini"><span class="lbl">Deadline (hour, 24h)</span><input type="number" id="target" min="0" max="23" value="22" /></div>
     </div>
+  </div>
+
+  <div class="card">
+    <span class="lbl">Pace targets (from daily goal &amp; deadline)</span>
+    <div id="milestones" style="margin-top:10px"></div>
   </div>
 
   <div id="result"></div>
@@ -122,6 +131,24 @@ function fmtClock(dt){
 }
 function num(id){var v=parseFloat(document.getElementById(id).value);return isNaN(v)?0:v;}
 
+// Fixed checkpoint times. Budgets are pure pace targets from midnight to the
+// deadline hour, spread proportionally across the daily goal - they never
+// factor in inactive time entered so far.
+var MILESTONES=[{h:9,label:"9 AM"},{h:12,label:"12 PM"},{h:17,label:"5 PM"},{h:19,label:"7 PM"}];
+
+function renderMilestones(goalMin,deadlineHour){
+  var el=document.getElementById("milestones");
+  if(deadlineHour<=0){
+    el.innerHTML='<p class="small" style="color:var(--muted);margin:0">Set a deadline hour to see pace targets.</p>';
+    return;
+  }
+  el.innerHTML=MILESTONES.map(function(m){
+    var budget=m.h>=deadlineHour?goalMin:goalMin*m.h/deadlineHour;
+    return '<div class="mrow"><span class="mtime">By '+m.label+'</span>'
+      +'<span class="mval mono">under '+fmtHM(budget)+'</span></div>';
+  }).join("");
+}
+
 function render(){
   var now=new Date();
   document.getElementById("clock").textContent=fmtClock(now);
@@ -134,6 +161,8 @@ function render(){
 
   document.getElementById("sub").textContent=
     "Stay under "+num("goal")+"h of inactive time by "+fmtClock(target)+".";
+
+  renderMilestones(goalMin,targetHour);
 
   var closed=until<=0;
   var over=inactive>=goalMin;
