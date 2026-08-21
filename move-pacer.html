@@ -90,7 +90,6 @@
     </div>
     <div class="settings">
       <div class="mini"><span class="lbl">Daily goal (hrs)</span><input type="number" id="goal" min="1" max="24" value="10" /></div>
-      <div class="mini"><span class="lbl">Day start (hour, 24h)</span><input type="number" id="daystart" min="0" max="23" value="6" /></div>
       <div class="mini"><span class="lbl">Deadline (hour, 24h)</span><input type="number" id="target" min="0" max="23" value="22" /></div>
     </div>
   </div>
@@ -110,7 +109,7 @@ var store={
   get:function(k,d){try{var v=localStorage.getItem(k);return v===null?d:v;}catch(e){return d;}},
   set:function(k,v){try{localStorage.setItem(k,v);}catch(e){}}
 };
-var ids=["ih","im","goal","daystart","target"];
+var ids=["ih","im","goal","target"];
 ids.forEach(function(id){
   var el=document.getElementById(id);
   var saved=store.get("pacer_"+id,null);
@@ -132,20 +131,21 @@ function fmtClock(dt){
 }
 function num(id){var v=parseFloat(document.getElementById(id).value);return isNaN(v)?0:v;}
 
-// Fixed checkpoint times. Budgets are pure pace targets from day start to the
+// Fixed checkpoint times. Budgets are pure pace targets from wake time to the
 // deadline hour, spread proportionally across the daily goal - they never
 // factor in inactive time entered so far.
+var WAKE_HOUR=6;
 var MILESTONES=[{h:9,label:"9 AM"},{h:12,label:"12 PM"},{h:17,label:"5 PM"},{h:19,label:"7 PM"}];
 
-function renderMilestones(goalMin,dayStartHour,deadlineHour){
+function renderMilestones(goalMin,deadlineHour){
   var el=document.getElementById("milestones");
-  var span=deadlineHour-dayStartHour;
+  var span=deadlineHour-WAKE_HOUR;
   if(span<=0){
-    el.innerHTML='<p class="small" style="color:var(--muted);margin:0">Day start must be before the deadline to see pace targets.</p>';
+    el.innerHTML='<p class="small" style="color:var(--muted);margin:0">Deadline must be after 6 AM to see pace targets.</p>';
     return;
   }
   el.innerHTML=MILESTONES.map(function(m){
-    var elapsed=Math.min(Math.max(m.h-dayStartHour,0),span);
+    var elapsed=Math.min(Math.max(m.h-WAKE_HOUR,0),span);
     var budget=goalMin*elapsed/span;
     return '<div class="mrow"><span class="mtime">By '+m.label+'</span>'
       +'<span class="mval mono">under '+fmtHM(budget)+'</span></div>';
@@ -158,7 +158,6 @@ function render(){
 
   var inactive=num("ih")*60+num("im");
   var goalMin=num("goal")*60;
-  var dayStartHour=Math.min(23,Math.max(0,Math.round(num("daystart"))));
   var targetHour=Math.min(23,Math.max(0,Math.round(num("target"))));
   var target=new Date(now); target.setHours(targetHour,0,0,0);
   var until=Math.floor((target-now)/60000);
@@ -166,7 +165,7 @@ function render(){
   document.getElementById("sub").textContent=
     "Stay under "+num("goal")+"h of inactive time by "+fmtClock(target)+".";
 
-  renderMilestones(goalMin,dayStartHour,targetHour);
+  renderMilestones(goalMin,targetHour);
 
   var closed=until<=0;
   var over=inactive>=goalMin;
