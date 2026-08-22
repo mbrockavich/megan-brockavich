@@ -77,6 +77,31 @@
   .bar{ height:12px; border-radius:20px; background:var(--track); overflow:hidden; }
   .bar-fill{ height:100%; border-radius:20px; background:linear-gradient(90deg, var(--pink), var(--pink-deeper)); transition:width .4s ease; }
 
+  /* position card */
+  .position-card{ text-align:center; }
+  .position-title{ font-family:'Playfair Display', serif; font-weight:700; font-size:19px; color:var(--rose-text); margin-bottom:4px; }
+  .position-title .em{ margin-right:6px; }
+  .position-sub{ font-size:12.5px; color:var(--muted); margin-bottom:16px; }
+  .position-row{ display:flex; flex-wrap:wrap; gap:10px; justify-content:center; align-items:center; }
+  .position-row select{
+    flex:1 1 260px; max-width:340px; padding:11px 14px; border-radius:20px; border:1.5px solid var(--pink);
+    background:#fff; color:var(--ink); font-family:'Quicksand',sans-serif; font-weight:600; font-size:14px; outline:none;
+  }
+  .position-row select:focus{ box-shadow:0 0 0 3px rgba(224,85,138,0.2); }
+  .position-ch-wrap{ display:flex; align-items:center; gap:6px; font-size:13.5px; color:var(--muted); font-weight:600; }
+  .position-ch-wrap input{
+    width:64px; text-align:center; padding:10px 6px; border-radius:20px; border:1.5px solid var(--pink);
+    font-family:'Quicksand',sans-serif; font-weight:700; font-size:14px; color:var(--rose-text); outline:none;
+  }
+  .position-ch-wrap input:focus{ box-shadow:0 0 0 3px rgba(224,85,138,0.2); }
+  .position-apply{
+    border:none; background:linear-gradient(90deg, var(--pink), var(--pink-deeper)); color:#fff;
+    font-family:'Quicksand',sans-serif; font-weight:700; font-size:14px; padding:11px 22px; border-radius:20px; cursor:pointer;
+  }
+  .position-apply:hover{ filter:brightness(1.06); }
+  .position-note{ margin-top:14px; font-size:12px; color:var(--muted); line-height:1.5; }
+  .position-toast{ margin-top:10px; font-size:12.5px; color:var(--pink-deeper); font-weight:600; min-height:1.4em; }
+
   /* jump nav */
   .jump{ position:sticky; top:0; z-index:20; display:flex; justify-content:center; gap:10px; flex-wrap:wrap;
     padding:12px; margin:0 -20px 26px; background:rgba(255,242,247,0.92); backdrop-filter:blur(6px); border-bottom:1.5px solid var(--line); }
@@ -96,9 +121,13 @@
     border:1.5px solid transparent; cursor:pointer; transition:background .15s ease, border-color .15s ease;
   }
   .book-row:hover{ background:var(--track); }
+  .book-row.partial{ border-color:var(--pink); background:rgba(255,157,189,0.08); }
   .book-row input[type=checkbox]{ width:20px; height:20px; accent-color:var(--pink-deep); flex-shrink:0; cursor:pointer; }
-  .book-row .book-title{ flex:1; font-weight:600; font-size:15.5px; }
+  .book-row .book-title-wrap{ flex:1; display:flex; align-items:baseline; gap:8px; min-width:0; }
+  .book-row .book-title{ font-weight:600; font-size:15.5px; }
   .book-row.done .book-title{ text-decoration:line-through; color:var(--muted); }
+  .book-row .read-badge{ font-size:11.5px; font-weight:700; color:var(--pink-deeper); background:var(--track); padding:2px 8px; border-radius:20px; flex-shrink:0; }
+  .book-row .read-badge:empty{ display:none; }
   .book-row .book-chapters{ display:flex; align-items:center; gap:4px; font-size:12.5px; color:var(--muted); flex-shrink:0; }
   .book-row .book-chapters input{ width:44px; text-align:right; padding:4px 6px; border-radius:8px; border:1px solid var(--line); font-family:'Quicksand',sans-serif; font-size:12.5px; color:var(--ink); }
   .book-row.locked{ opacity:0.55; cursor:default; }
@@ -166,6 +195,21 @@
       <div class="progress-label"><span>Overall reread progress</span><span id="progressPct">0%</span></div>
       <div class="bar"><div class="bar-fill" id="progressBar" style="width:0%"></div></div>
     </div>
+  </section>
+
+  <section class="card position-card">
+    <div class="position-title"><span class="em">📍</span>Where are you starting today?</div>
+    <div class="position-sub">Pick your book and the chapter you're about to start</div>
+    <div class="position-row">
+      <select id="posBook"></select>
+      <span class="position-ch-wrap" id="posChWrap">
+        <span>ch.</span>
+        <input type="number" id="posChapter" min="1" value="1">
+      </span>
+      <button class="position-apply" id="posApply" type="button">Set my spot</button>
+    </div>
+    <div class="position-note" id="posNote"></div>
+    <div class="position-toast" id="posToast"></div>
   </section>
 
   <nav class="jump">
@@ -238,6 +282,9 @@ var CC_UPCOMING = [
   {title:"Crescent City Book 4", date:"TBA"}
 ];
 
+/* the full reread in reading order — used by the "where are you starting" tool */
+var MASTER_ORDER = TOG_BOOKS.concat(ACOTAR_BOOKS, CC_BOOKS);
+
 /* tandem read order, transcribed from the Bookish Goblin tandem reading guide */
 function code2item(c){
   if(c==='EN') return {book:'EOS', label:'Nightfall', special:true};
@@ -257,27 +304,57 @@ var TANDEM_ITEMS = TANDEM_CODES.map(function(c,i){
 
 /* ---------- state ---------- */
 var chaptersOverride = store.get('sjm_chapters', {});
-var done = store.get('sjm_done', {});
+var readState = store.get('sjm_read', {});   // non-tandem books: { id: chaptersReadSoFar }
+var done = store.get('sjm_done', {});         // tandem chapters: { itemId: true }
 
 function getChapters(id, def){ return (chaptersOverride[id] !== undefined) ? chaptersOverride[id] : def; }
 function setChapters(id, v){ chaptersOverride[id] = v; store.set('sjm_chapters', chaptersOverride); }
+function getRead(id){ return readState[id] || 0; }
+function setRead(id, v){ readState[id] = Math.max(0, v); store.set('sjm_read', readState); }
 function isDone(id){ return !!done[id]; }
 function setDone(id, v){ if(v) done[id]=true; else delete done[id]; store.set('sjm_done', done); }
 
+var bookRefreshers = {};   // id -> function() that repaints one book row from current state
+var tandemRefresh = null;  // function() that repaints the whole tandem checklist from current state
+
 /* ---------- render book rows ---------- */
 function renderBookRow(book){
-  var c = getChapters(book.id, book.chapters);
   var row = document.createElement('div');
-  row.className = 'book-row' + (isDone(book.id) ? ' done' : '');
+  row.className = 'book-row';
   row.innerHTML =
-    '<input type="checkbox" '+(isDone(book.id)?'checked':'')+'>' +
-    '<span class="book-title">'+book.title+'</span>' +
-    '<span class="book-chapters"><input type="number" step="1" min="1" value="'+c+'"> ch</span>';
+    '<input type="checkbox">' +
+    '<span class="book-title-wrap"><span class="book-title">'+book.title+'</span><span class="read-badge"></span></span>' +
+    '<span class="book-chapters"><input type="number" step="1" min="1"> ch</span>';
   var cb = row.querySelector('input[type=checkbox]');
-  var ci = row.querySelector('input[type=number]');
-  cb.addEventListener('change', function(){ setDone(book.id, cb.checked); row.classList.toggle('done', cb.checked); recalc(); });
-  ci.addEventListener('input', function(){ var v=parseInt(ci.value,10); if(!isNaN(v) && v>0){ setChapters(book.id, v); recalc(); } });
+  var badge = row.querySelector('.read-badge');
+  var ci = row.querySelector('.book-chapters input');
+
+  function refresh(){
+    var chapters = getChapters(book.id, book.chapters);
+    var read = Math.min(getRead(book.id), chapters);
+    var full = chapters > 0 && read >= chapters;
+    var partial = read > 0 && !full;
+    row.classList.toggle('done', full);
+    row.classList.toggle('partial', partial);
+    cb.checked = full;
+    cb.indeterminate = partial;
+    badge.textContent = partial ? (read + '/' + chapters) : '';
+    if(document.activeElement !== ci) ci.value = chapters;
+  }
+
+  cb.addEventListener('change', function(){
+    var chapters = getChapters(book.id, book.chapters);
+    setRead(book.id, cb.checked ? chapters : 0);
+    refresh(); recalc();
+  });
+  ci.addEventListener('input', function(){
+    var v = parseInt(ci.value, 10);
+    if(!isNaN(v) && v > 0){ setChapters(book.id, v); refresh(); recalc(); }
+  });
   ci.addEventListener('click', function(e){ e.stopPropagation(); });
+
+  refresh();
+  bookRefreshers[book.id] = refresh;
   return row;
 }
 
@@ -292,14 +369,11 @@ function renderLockedRow(item){
 }
 
 function renderTandemRow(book){
-  var doneCount = TANDEM_ITEMS.filter(function(it){ return isDone(it.id); }).length;
   var wrap = document.createElement('div');
 
   var toggle = document.createElement('div');
   toggle.className = 'tandem-toggle';
-  toggle.innerHTML =
-    '<span>📖 '+book.title+'</span>' +
-    '<span class="tsub">'+doneCount+' / '+TANDEM_ITEMS.length+' chapters</span>';
+  toggle.innerHTML = '<span>📖 '+book.title+'</span><span class="tsub"></span>';
 
   var panel = document.createElement('div');
   panel.className = 'tandem-panel';
@@ -311,17 +385,19 @@ function renderTandemRow(book){
 
   var grid = document.createElement('div');
   grid.className = 'tandem-grid';
+  var cells = [];
   TANDEM_ITEMS.forEach(function(it){
     var cell = document.createElement('label');
-    cell.className = 'tandem-item ' + (it.book==='EOS'?'eos':'tod') + (isDone(it.id)?' checked':'');
-    cell.innerHTML = '<input type="checkbox" '+(isDone(it.id)?'checked':'')+'><span class="tag">'+(it.book==='EOS'?'EOS':'TOD')+'</span><span class="lab">'+it.label+'</span>';
+    cell.className = 'tandem-item ' + (it.book==='EOS'?'eos':'tod');
+    cell.innerHTML = '<input type="checkbox"><span class="tag">'+(it.book==='EOS'?'EOS':'TOD')+'</span><span class="lab">'+it.label+'</span>';
     var cb = cell.querySelector('input');
     cb.addEventListener('change', function(){
       setDone(it.id, cb.checked);
       cell.classList.toggle('checked', cb.checked);
-      updateTandemProgress(panel, toggle, book);
+      updateTandemProgress();
       recalc();
     });
+    cells.push({ it:it, cb:cb, cell:cell });
     grid.appendChild(cell);
   });
   panel.appendChild(grid);
@@ -333,18 +409,28 @@ function renderTandemRow(book){
 
   toggle.addEventListener('click', function(){ panel.classList.toggle('open'); });
 
+  function updateTandemProgress(){
+    var doneCount = TANDEM_ITEMS.filter(function(it){ return isDone(it.id); }).length;
+    var pct = Math.round(doneCount / TANDEM_ITEMS.length * 100);
+    panel.querySelector('.tdBar').style.width = pct + '%';
+    panel.querySelector('.tdPctLabel').textContent = pct + '%';
+    toggle.querySelector('.tsub').textContent = doneCount + ' / ' + TANDEM_ITEMS.length + ' chapters';
+  }
+
+  function refreshAll(){
+    cells.forEach(function(c){
+      var d = isDone(c.it.id);
+      c.cb.checked = d;
+      c.cell.classList.toggle('checked', d);
+    });
+    updateTandemProgress();
+  }
+
   wrap.appendChild(toggle);
   wrap.appendChild(panel);
-  updateTandemProgress(panel, toggle, book);
+  refreshAll();
+  tandemRefresh = refreshAll;
   return wrap;
-}
-
-function updateTandemProgress(panel, toggle, book){
-  var doneCount = TANDEM_ITEMS.filter(function(it){ return isDone(it.id); }).length;
-  var pct = Math.round(doneCount / TANDEM_ITEMS.length * 100);
-  panel.querySelector('.tdBar').style.width = pct + '%';
-  panel.querySelector('.tdPctLabel').textContent = pct + '%';
-  toggle.querySelector('.tsub').textContent = doneCount + ' / ' + TANDEM_ITEMS.length + ' chapters';
 }
 
 /* ---------- build sections ---------- */
@@ -365,35 +451,97 @@ CC_UPCOMING.forEach(function(u){ document.getElementById('crescentList').appendC
 var ccNote = document.createElement('p'); ccNote.className='upcoming-note'; ccNote.textContent="🔒 not out yet — doesn't count toward the countdown";
 document.getElementById('crescentList').appendChild(ccNote);
 
-/* ---------- calc ---------- */
-function allActiveItems(){
-  var items = [];
-  TOG_BOOKS.forEach(function(b){ if(!b.tandem) items.push({id:b.id, chapters:getChapters(b.id,b.chapters)}); });
-  TANDEM_ITEMS.forEach(function(it){ items.push({id:it.id, chapters:1}); });
-  ACOTAR_BOOKS.forEach(function(b){ items.push({id:b.id, chapters:getChapters(b.id,b.chapters)}); });
-  CC_BOOKS.forEach(function(b){ items.push({id:b.id, chapters:getChapters(b.id,b.chapters)}); });
-  return items;
+/* ---------- "where are you starting" position tool ---------- */
+var posBook = document.getElementById('posBook');
+var posChWrap = document.getElementById('posChWrap');
+var posChapter = document.getElementById('posChapter');
+var posApply = document.getElementById('posApply');
+var posNote = document.getElementById('posNote');
+var posToast = document.getElementById('posToast');
+
+MASTER_ORDER.forEach(function(b){
+  var opt = document.createElement('option');
+  opt.value = b.id;
+  opt.textContent = b.title;
+  posBook.appendChild(opt);
+});
+
+var savedPos = store.get('sjm_pos', null);
+if(savedPos && MASTER_ORDER.some(function(b){ return b.id === savedPos.bookId; })){
+  posBook.value = savedPos.bookId;
+  posChapter.value = savedPos.chapter || 1;
 }
 
+function currentPosBook(){
+  return MASTER_ORDER.filter(function(b){ return b.id === posBook.value; })[0];
+}
+
+function updatePosUI(){
+  var book = currentPosBook();
+  if(!book) return;
+  if(book.tandem){
+    posChWrap.style.display = 'none';
+    posNote.textContent = "Marks everything before the tandem read as finished. Check off Empire of Storms & Tower of Dawn chapters in the checklist below as you go.";
+  } else {
+    posChWrap.style.display = 'flex';
+    posChapter.max = getChapters(book.id, book.chapters);
+    posNote.textContent = "Marks every earlier book finished, and " + book.title + " read up through the chapter before the one you enter.";
+  }
+}
+posBook.addEventListener('change', updatePosUI);
+updatePosUI();
+
+posApply.addEventListener('click', function(){
+  var book = currentPosBook();
+  if(!book) return;
+  var idx = MASTER_ORDER.indexOf(book);
+
+  MASTER_ORDER.forEach(function(b, i){
+    if(b.tandem){
+      if(i < idx) TANDEM_ITEMS.forEach(function(it){ setDone(it.id, true); });
+      else if(i > idx) TANDEM_ITEMS.forEach(function(it){ setDone(it.id, false); });
+      return;
+    }
+    var chapters = getChapters(b.id, b.chapters);
+    if(i < idx) setRead(b.id, chapters);
+    else if(i > idx) setRead(b.id, 0);
+    else {
+      var startCh = Math.max(1, parseInt(posChapter.value, 10) || 1);
+      setRead(b.id, Math.min(chapters, startCh - 1));
+    }
+  });
+
+  store.set('sjm_pos', { bookId: book.id, chapter: parseInt(posChapter.value, 10) || 1 });
+
+  Object.keys(bookRefreshers).forEach(function(id){ bookRefreshers[id](); });
+  if(tandemRefresh) tandemRefresh();
+  recalc();
+
+  posToast.textContent = '✨ spot updated — ' + book.title + (book.tandem ? '' : ', chapter ' + posChapter.value);
+  setTimeout(function(){ posToast.textContent = ''; }, 3500);
+});
+
+/* ---------- calc ---------- */
 var ticker = document.getElementById('ticker');
 var heroSub = document.getElementById('heroSub');
 
 function recalc(){
-  var items = allActiveItems();
   var totalChapters = 0, remainingChapters = 0, booksLeft = 0, totalBooks = 0;
-  items.forEach(function(it){
-    totalChapters += it.chapters;
-    if(!isDone(it.id)) remainingChapters += it.chapters;
-  });
-  // "books left" counts whole books (not tandem chapters) not yet checked, plus tandem as 1 unit if incomplete
-  [TOG_BOOKS, ACOTAR_BOOKS, CC_BOOKS].forEach(function(list){
-    list.forEach(function(b){
-      totalBooks++;
-      if(b.tandem){
-        var allTandemDone = TANDEM_ITEMS.every(function(it){ return isDone(it.id); });
-        if(!allTandemDone) booksLeft++;
-      } else if(!isDone(b.id)) booksLeft++;
-    });
+
+  TOG_BOOKS.concat(ACOTAR_BOOKS, CC_BOOKS).forEach(function(b){
+    totalBooks++;
+    if(b.tandem){
+      totalChapters += TANDEM_ITEMS.length;
+      var undone = TANDEM_ITEMS.filter(function(it){ return !isDone(it.id); }).length;
+      remainingChapters += undone;
+      if(undone > 0) booksLeft++;
+    } else {
+      var chapters = getChapters(b.id, b.chapters);
+      var read = Math.min(getRead(b.id), chapters);
+      totalChapters += chapters;
+      remainingChapters += (chapters - read);
+      if(read < chapters) booksLeft++;
+    }
   });
 
   var now = new Date();
