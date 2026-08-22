@@ -129,15 +129,16 @@
   .tandem-panel{ display:none; margin:10px 0 18px; padding:16px; background:var(--track); border-radius:16px; }
   .tandem-panel.open{ display:block; }
   .tandem-progress{ margin-bottom:14px; }
-  .tandem-grid{ display:grid; grid-template-columns:repeat(3,1fr); gap:4px 14px; }
-  @media (max-width:640px){ .tandem-grid{ grid-template-columns:repeat(2,1fr); } }
-  @media (max-width:420px){ .tandem-grid{ grid-template-columns:1fr; } }
-  .tandem-item{ display:flex; align-items:center; gap:7px; padding:4px 2px; font-size:12.5px; border-radius:8px; }
-  .tandem-item input{ width:15px; height:15px; accent-color:var(--pink-deep); flex-shrink:0; }
-  .tandem-item.eos .lab{ color:var(--eos); font-weight:700; }
-  .tandem-item.tod .lab{ color:var(--tod); font-weight:700; }
+  .tandem-grid{ display:flex; flex-direction:column; }
+  .tandem-item{ display:flex; align-items:center; gap:12px; padding:9px 6px; font-size:14px; border-bottom:1px solid rgba(194,59,116,0.10); }
+  .tandem-item:last-child{ border-bottom:none; }
+  .tandem-item:hover{ background:rgba(255,255,255,0.5); }
+  .tandem-item input{ width:17px; height:17px; accent-color:var(--pink-deep); flex-shrink:0; }
+  .tandem-item .tag{ flex-shrink:0; min-width:42px; text-align:center; padding:3px 9px; border-radius:20px; font-size:11px; font-weight:700; letter-spacing:0.03em; color:#fff; }
+  .tandem-item.eos .tag{ background:var(--eos); }
+  .tandem-item.tod .tag{ background:var(--tod); }
   .tandem-item.checked .lab{ text-decoration:line-through; opacity:0.5; }
-  .tandem-item .lab{ white-space:nowrap; }
+  .tandem-item .lab{ font-weight:600; }
   .tandem-credit{ margin-top:14px; font-size:11px; color:var(--muted); text-align:right; font-style:italic; }
 
   .upcoming-note{ font-size:12.5px; color:var(--muted); margin:10px 2px 0; }
@@ -343,7 +344,7 @@ function renderTandemRow(book){
   TANDEM_ITEMS.forEach(function(it){
     var cell = document.createElement('label');
     cell.className = 'tandem-item ' + (it.book==='EOS'?'eos':'tod') + (isDone(it.id)?' checked':'');
-    cell.innerHTML = '<input type="checkbox" '+(isDone(it.id)?'checked':'')+'><span class="lab">'+(it.book==='EOS'?'EOS':'TOD')+' – '+it.label+'</span>';
+    cell.innerHTML = '<input type="checkbox" '+(isDone(it.id)?'checked':'')+'><span class="tag">'+(it.book==='EOS'?'EOS':'TOD')+'</span><span class="lab">'+it.label+'</span>';
     var cb = cell.querySelector('input');
     cb.addEventListener('change', function(){
       setDone(it.id, cb.checked);
