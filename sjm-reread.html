@@ -125,7 +125,14 @@
     font-family:'Quicksand',sans-serif; font-weight:700; font-size:15px; color:var(--rose-text);
     display:flex; justify-content:space-between; align-items:center; gap:10px;
   }
-  .tandem-toggle .tsub{ font-weight:500; font-size:12.5px; color:var(--muted); }
+  .tandem-toggle-label{ flex:1; min-width:0; }
+  .tandem-toggle .book-hours{ display:flex; align-items:center; gap:4px; font-size:12.5px; font-weight:500; color:var(--muted); flex-shrink:0; }
+  .tandem-toggle .book-hours input{ width:52px; text-align:right; padding:4px 6px; border-radius:8px; border:1px solid var(--line); font-family:'Quicksand',sans-serif; font-weight:600; font-size:12.5px; color:var(--ink); }
+  .tandem-toggle .tsub{ font-weight:500; font-size:12.5px; color:var(--muted); flex-shrink:0; }
+  @media (max-width:560px){
+    .tandem-toggle{ flex-wrap:wrap; }
+    .tandem-toggle-label{ flex:1 1 100%; }
+  }
   .tandem-panel{ display:none; margin:10px 0 18px; padding:16px; background:var(--track); border-radius:16px; }
   .tandem-panel.open{ display:block; }
   .tandem-progress{ margin-bottom:14px; }
@@ -266,8 +273,9 @@ var CC_UPCOMING = [
 ];
 
 /* tandem read order, transcribed from the Bookish Goblin tandem reading guide */
-var EOS_HOURS = 24.25, TOD_HOURS = 22.75, SPECIAL_H = 0.33;
-var EOS_CH = 75, TOD_CH = 68;
+var EOS_HOURS_DEFAULT = 24.25, TOD_HOURS_DEFAULT = 22.75;
+var TANDEM_HOURS_DEFAULT = EOS_HOURS_DEFAULT + TOD_HOURS_DEFAULT;
+var EOS_SHARE = EOS_HOURS_DEFAULT / TANDEM_HOURS_DEFAULT, TOD_SHARE = TOD_HOURS_DEFAULT / TANDEM_HOURS_DEFAULT;
 function code2item(c){
   if(c==='EN') return {book:'EOS', label:'Nightfall', special:true};
   if(c==='TF') return {book:'TOD', label:'Fireheart', special:true};
@@ -281,9 +289,10 @@ var TANDEM_CODES = (
 ).split(",");
 var TANDEM_ITEMS = TANDEM_CODES.map(function(c,i){
   var it = code2item(c); it.id = 'td'+i;
-  it.weight = it.special ? SPECIAL_H : (it.book==='EOS' ? (EOS_HOURS-SPECIAL_H)/EOS_CH : (TOD_HOURS-SPECIAL_H)/TOD_CH);
   return it;
 });
+var EOS_ITEM_COUNT = TANDEM_ITEMS.filter(function(it){ return it.book==='EOS'; }).length;
+var TOD_ITEM_COUNT = TANDEM_ITEMS.filter(function(it){ return it.book==='TOD'; }).length;
 
 /* ---------- state ---------- */
 var hoursOverride = store.get('sjm_hours', {});
@@ -324,12 +333,15 @@ function renderLockedRow(item){
 
 function renderTandemRow(book){
   var doneCount = TANDEM_ITEMS.filter(function(it){ return isDone(it.id); }).length;
+  var h = getHours(book.id, TANDEM_HOURS_DEFAULT);
   var wrap = document.createElement('div');
 
-  var toggle = document.createElement('button');
+  var toggle = document.createElement('div');
   toggle.className = 'tandem-toggle';
-  toggle.type = 'button';
-  toggle.innerHTML = '<span>📖 '+book.title+'</span><span class="tsub">'+doneCount+' / '+TANDEM_ITEMS.length+' chapters</span>';
+  toggle.innerHTML =
+    '<span class="tandem-toggle-label">📖 '+book.title+'</span>' +
+    '<span class="book-hours"><input type="number" step="0.1" min="0" value="'+h.toFixed(2)+'"> hrs</span>' +
+    '<span class="tsub">'+doneCount+' / '+TANDEM_ITEMS.length+' chapters</span>';
 
   var panel = document.createElement('div');
   panel.className = 'tandem-panel';
@@ -362,6 +374,9 @@ function renderTandemRow(book){
   panel.appendChild(credit);
 
   toggle.addEventListener('click', function(){ panel.classList.toggle('open'); });
+  var hoursInput = toggle.querySelector('.book-hours input');
+  hoursInput.addEventListener('click', function(e){ e.stopPropagation(); });
+  hoursInput.addEventListener('input', function(){ var v=parseFloat(hoursInput.value); if(!isNaN(v)){ setHours(book.id, v); recalc(); } });
 
   wrap.appendChild(toggle);
   wrap.appendChild(panel);
@@ -414,10 +429,14 @@ speedCustom.addEventListener('input', function(){
 applySpeedUI();
 
 /* ---------- calc ---------- */
+function tandemItemHours(it){
+  var totalHours = getHours('tandem', TANDEM_HOURS_DEFAULT);
+  return it.book==='EOS' ? (totalHours*EOS_SHARE)/EOS_ITEM_COUNT : (totalHours*TOD_SHARE)/TOD_ITEM_COUNT;
+}
 function allActiveItems(){
   var items = [];
   TOG_BOOKS.forEach(function(b){ if(!b.tandem) items.push({id:b.id, hours:getHours(b.id,b.hours)}); });
-  TANDEM_ITEMS.forEach(function(it){ items.push({id:it.id, hours:it.weight}); });
+  TANDEM_ITEMS.forEach(function(it){ items.push({id:it.id, hours:tandemItemHours(it)}); });
   ACOTAR_BOOKS.forEach(function(b){ items.push({id:b.id, hours:getHours(b.id,b.hours)}); });
   CC_BOOKS.forEach(function(b){ items.push({id:b.id, hours:getHours(b.id,b.hours)}); });
   return items;
