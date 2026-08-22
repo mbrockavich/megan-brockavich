@@ -66,20 +66,6 @@
   .hero-sub{ margin-top:6px; font-size:14px; color:var(--muted); }
   .deadline-note{ margin-top:14px; font-size:13px; color:var(--rose-text); background:var(--track); display:inline-block; padding:8px 16px; border-radius:30px; }
 
-  .speed-row{ display:flex; flex-wrap:wrap; gap:8px; justify-content:center; margin-top:20px; }
-  .speed-btn{
-    border:1.5px solid var(--pink); background:#fff; color:var(--rose-text); font-family:'Quicksand',sans-serif;
-    font-weight:600; font-size:14px; padding:8px 16px; border-radius:20px; cursor:pointer; transition:all .15s ease;
-  }
-  .speed-btn:hover{ background:var(--track); }
-  .speed-btn.active{ background:var(--pink-deep); border-color:var(--pink-deep); color:#fff; }
-  .speed-custom{ display:flex; align-items:center; gap:6px; }
-  .speed-custom input{
-    width:64px; text-align:center; padding:7px 4px; border-radius:20px; border:1.5px solid var(--pink);
-    font-family:'Quicksand',sans-serif; font-weight:600; font-size:14px; color:var(--rose-text); outline:none;
-  }
-  .speed-custom input:focus{ box-shadow:0 0 0 3px rgba(224,85,138,0.2); }
-
   .stat-grid{ display:grid; grid-template-columns:repeat(3,1fr); gap:12px; margin-top:22px; }
   .stat{ background:var(--track); border-radius:14px; padding:12px 10px; text-align:center; }
   .stat b{ display:block; font-family:'Playfair Display',serif; font-size:20px; color:var(--pink-deeper); }
@@ -113,8 +99,8 @@
   .book-row input[type=checkbox]{ width:20px; height:20px; accent-color:var(--pink-deep); flex-shrink:0; cursor:pointer; }
   .book-row .book-title{ flex:1; font-weight:600; font-size:15.5px; }
   .book-row.done .book-title{ text-decoration:line-through; color:var(--muted); }
-  .book-row .book-hours{ display:flex; align-items:center; gap:4px; font-size:12.5px; color:var(--muted); flex-shrink:0; }
-  .book-row .book-hours input{ width:48px; text-align:right; padding:4px 6px; border-radius:8px; border:1px solid var(--line); font-family:'Quicksand',sans-serif; font-size:12.5px; color:var(--ink); }
+  .book-row .book-chapters{ display:flex; align-items:center; gap:4px; font-size:12.5px; color:var(--muted); flex-shrink:0; }
+  .book-row .book-chapters input{ width:44px; text-align:right; padding:4px 6px; border-radius:8px; border:1px solid var(--line); font-family:'Quicksand',sans-serif; font-size:12.5px; color:var(--ink); }
   .book-row.locked{ opacity:0.55; cursor:default; }
   .book-row.locked:hover{ background:none; }
   .book-row.locked .lock-date{ font-size:11.5px; background:#fff; border:1px solid var(--line); padding:4px 10px; border-radius:20px; color:var(--muted); }
@@ -125,14 +111,7 @@
     font-family:'Quicksand',sans-serif; font-weight:700; font-size:15px; color:var(--rose-text);
     display:flex; justify-content:space-between; align-items:center; gap:10px;
   }
-  .tandem-toggle-label{ flex:1; min-width:0; }
-  .tandem-toggle .book-hours{ display:flex; align-items:center; gap:4px; font-size:12.5px; font-weight:500; color:var(--muted); flex-shrink:0; }
-  .tandem-toggle .book-hours input{ width:52px; text-align:right; padding:4px 6px; border-radius:8px; border:1px solid var(--line); font-family:'Quicksand',sans-serif; font-weight:600; font-size:12.5px; color:var(--ink); }
   .tandem-toggle .tsub{ font-weight:500; font-size:12.5px; color:var(--muted); flex-shrink:0; }
-  @media (max-width:560px){
-    .tandem-toggle{ flex-wrap:wrap; }
-    .tandem-toggle-label{ flex:1 1 100%; }
-  }
   .tandem-panel{ display:none; margin:10px 0 18px; padding:16px; background:var(--track); border-radius:16px; }
   .tandem-panel.open{ display:block; }
   .tandem-progress{ margin-bottom:14px; }
@@ -171,29 +150,15 @@
   </header>
 
   <section class="card hero">
-    <span class="lbl">You need to listen to</span>
+    <span class="lbl">You need to read</span>
     <div class="ticker" id="ticker">--</div>
-    <div class="ticker-unit">minutes / day</div>
+    <div class="ticker-unit">chapters / day</div>
     <div class="hero-sub" id="heroSub">calculating…</div>
     <div class="deadline-note">🎯 A Court of Splintered Harmony (ACOTAR 6) — October 27, 2026</div>
 
-    <div class="speed-row" id="speedRow">
-      <button class="speed-btn" data-speed="1">1.0×</button>
-      <button class="speed-btn" data-speed="1.25">1.25×</button>
-      <button class="speed-btn" data-speed="1.5">1.5×</button>
-      <button class="speed-btn" data-speed="1.75">1.75×</button>
-      <button class="speed-btn" data-speed="2">2.0×</button>
-      <button class="speed-btn" data-speed="2.5">2.5×</button>
-      <button class="speed-btn" data-speed="3">3.0×</button>
-      <span class="speed-custom">
-        <input type="number" id="speedCustom" min="0.5" max="5" step="0.05" value="1.5">
-        <span style="font-size:13px;color:var(--muted);">× custom</span>
-      </span>
-    </div>
-
     <div class="stat-grid">
       <div class="stat"><b id="statDays">–</b><span>days left</span></div>
-      <div class="stat"><b id="statRemainHrs">–</b><span>hrs remaining</span></div>
+      <div class="stat"><b id="statRemainCh">–</b><span>chapters left</span></div>
       <div class="stat"><b id="statBooksLeft">–</b><span>books left</span></div>
     </div>
 
@@ -228,7 +193,7 @@
     <div id="crescentList"></div>
   </section>
 
-  <footer>tap any hour value to correct it to your audiobook app &middot; <a href="index.html">back home</a></footer>
+  <footer>tap any chapter count to correct it to your edition &middot; <a href="index.html">back home</a></footer>
 </div>
 
 <script>
@@ -241,22 +206,23 @@ var store = {
 var DEADLINE = new Date('2026-10-27T00:00:00');
 
 /* ---------- data ---------- */
+/* chapter counts are best-effort defaults (from published chapter-summary guides) — tap to correct to your edition */
 var TOG_BOOKS = [
-  {id:'ab',  title:"The Assassin's Blade", hours:12.75},
-  {id:'tog1',title:"Throne of Glass",        hours:12.70},
-  {id:'tog2',title:"Crown of Midnight",       hours:13.70},
-  {id:'tog3',title:"Heir of Fire",            hours:15.55},
-  {id:'tog4',title:"Queen of Shadows",        hours:20.75},
+  {id:'ab',  title:"The Assassin's Blade", chapters:35},
+  {id:'tog1',title:"Throne of Glass",        chapters:55},
+  {id:'tog2',title:"Crown of Midnight",       chapters:56},
+  {id:'tog3',title:"Heir of Fire",            chapters:68},
+  {id:'tog4',title:"Queen of Shadows",        chapters:89},
   {id:'tandem', title:"Empire of Storms & Tower of Dawn — Tandem Read", tandem:true},
-  {id:'tog7',title:"Kingdom of Ash",          hours:33.75}
+  {id:'tog7',title:"Kingdom of Ash",          chapters:98}
 ];
 
 var ACOTAR_BOOKS = [
-  {id:'ac1', title:"A Court of Thorns and Roses", hours:16.10},
-  {id:'ac2', title:"A Court of Mist and Fury",     hours:18.50},
-  {id:'ac3', title:"A Court of Wings and Ruin",    hours:19.65},
-  {id:'ac4', title:"A Court of Frost and Starlight", hours:5.10},
-  {id:'ac5', title:"A Court of Silver Flames",     hours:17.10}
+  {id:'ac1', title:"A Court of Thorns and Roses", chapters:46},
+  {id:'ac2', title:"A Court of Mist and Fury",     chapters:69},
+  {id:'ac3', title:"A Court of Wings and Ruin",    chapters:82},
+  {id:'ac4', title:"A Court of Frost and Starlight", chapters:28},
+  {id:'ac5', title:"A Court of Silver Flames",     chapters:80}
 ];
 var ACOTAR_UPCOMING = [
   {title:"A Court of Splintered Harmony (Book 6)", date:"Oct 27, 2026"},
@@ -264,18 +230,15 @@ var ACOTAR_UPCOMING = [
 ];
 
 var CC_BOOKS = [
-  {id:'cc1', title:"House of Earth and Blood", hours:25.35},
-  {id:'cc2', title:"House of Sky and Breath",   hours:25.70},
-  {id:'cc3', title:"House of Flame and Shadow", hours:29.25}
+  {id:'cc1', title:"House of Earth and Blood", chapters:83},
+  {id:'cc2', title:"House of Sky and Breath",   chapters:78},
+  {id:'cc3', title:"House of Flame and Shadow", chapters:102}
 ];
 var CC_UPCOMING = [
   {title:"Crescent City Book 4", date:"TBA"}
 ];
 
 /* tandem read order, transcribed from the Bookish Goblin tandem reading guide */
-var EOS_HOURS_DEFAULT = 24.25, TOD_HOURS_DEFAULT = 22.75;
-var TANDEM_HOURS_DEFAULT = EOS_HOURS_DEFAULT + TOD_HOURS_DEFAULT;
-var EOS_SHARE = EOS_HOURS_DEFAULT / TANDEM_HOURS_DEFAULT, TOD_SHARE = TOD_HOURS_DEFAULT / TANDEM_HOURS_DEFAULT;
 function code2item(c){
   if(c==='EN') return {book:'EOS', label:'Nightfall', special:true};
   if(c==='TF') return {book:'TOD', label:'Fireheart', special:true};
@@ -291,33 +254,30 @@ var TANDEM_ITEMS = TANDEM_CODES.map(function(c,i){
   var it = code2item(c); it.id = 'td'+i;
   return it;
 });
-var EOS_ITEM_COUNT = TANDEM_ITEMS.filter(function(it){ return it.book==='EOS'; }).length;
-var TOD_ITEM_COUNT = TANDEM_ITEMS.filter(function(it){ return it.book==='TOD'; }).length;
 
 /* ---------- state ---------- */
-var hoursOverride = store.get('sjm_hours', {});
+var chaptersOverride = store.get('sjm_chapters', {});
 var done = store.get('sjm_done', {});
-var speed = store.get('sjm_speed', 1.5);
 
-function getHours(id, def){ return (hoursOverride[id] !== undefined) ? hoursOverride[id] : def; }
-function setHours(id, v){ hoursOverride[id] = v; store.set('sjm_hours', hoursOverride); }
+function getChapters(id, def){ return (chaptersOverride[id] !== undefined) ? chaptersOverride[id] : def; }
+function setChapters(id, v){ chaptersOverride[id] = v; store.set('sjm_chapters', chaptersOverride); }
 function isDone(id){ return !!done[id]; }
 function setDone(id, v){ if(v) done[id]=true; else delete done[id]; store.set('sjm_done', done); }
 
 /* ---------- render book rows ---------- */
 function renderBookRow(book){
-  var h = getHours(book.id, book.hours);
+  var c = getChapters(book.id, book.chapters);
   var row = document.createElement('div');
   row.className = 'book-row' + (isDone(book.id) ? ' done' : '');
   row.innerHTML =
     '<input type="checkbox" '+(isDone(book.id)?'checked':'')+'>' +
     '<span class="book-title">'+book.title+'</span>' +
-    '<span class="book-hours"><input type="number" step="0.05" min="0" value="'+h.toFixed(2)+'"> hrs</span>';
+    '<span class="book-chapters"><input type="number" step="1" min="1" value="'+c+'"> ch</span>';
   var cb = row.querySelector('input[type=checkbox]');
-  var hi = row.querySelector('input[type=number]');
+  var ci = row.querySelector('input[type=number]');
   cb.addEventListener('change', function(){ setDone(book.id, cb.checked); row.classList.toggle('done', cb.checked); recalc(); });
-  hi.addEventListener('input', function(){ var v=parseFloat(hi.value); if(!isNaN(v)){ setHours(book.id, v); recalc(); } });
-  hi.addEventListener('click', function(e){ e.stopPropagation(); });
+  ci.addEventListener('input', function(){ var v=parseInt(ci.value,10); if(!isNaN(v) && v>0){ setChapters(book.id, v); recalc(); } });
+  ci.addEventListener('click', function(e){ e.stopPropagation(); });
   return row;
 }
 
@@ -333,14 +293,12 @@ function renderLockedRow(item){
 
 function renderTandemRow(book){
   var doneCount = TANDEM_ITEMS.filter(function(it){ return isDone(it.id); }).length;
-  var h = getHours(book.id, TANDEM_HOURS_DEFAULT);
   var wrap = document.createElement('div');
 
   var toggle = document.createElement('div');
   toggle.className = 'tandem-toggle';
   toggle.innerHTML =
-    '<span class="tandem-toggle-label">📖 '+book.title+'</span>' +
-    '<span class="book-hours"><input type="number" step="0.1" min="0" value="'+h.toFixed(2)+'"> hrs</span>' +
+    '<span>📖 '+book.title+'</span>' +
     '<span class="tsub">'+doneCount+' / '+TANDEM_ITEMS.length+' chapters</span>';
 
   var panel = document.createElement('div');
@@ -374,9 +332,6 @@ function renderTandemRow(book){
   panel.appendChild(credit);
 
   toggle.addEventListener('click', function(){ panel.classList.toggle('open'); });
-  var hoursInput = toggle.querySelector('.book-hours input');
-  hoursInput.addEventListener('click', function(e){ e.stopPropagation(); });
-  hoursInput.addEventListener('input', function(){ var v=parseFloat(hoursInput.value); if(!isNaN(v)){ setHours(book.id, v); recalc(); } });
 
   wrap.appendChild(toggle);
   wrap.appendChild(panel);
@@ -410,35 +365,13 @@ CC_UPCOMING.forEach(function(u){ document.getElementById('crescentList').appendC
 var ccNote = document.createElement('p'); ccNote.className='upcoming-note'; ccNote.textContent="🔒 not out yet — doesn't count toward the countdown";
 document.getElementById('crescentList').appendChild(ccNote);
 
-/* ---------- speed controls ---------- */
-var speedRow = document.getElementById('speedRow');
-var speedCustom = document.getElementById('speedCustom');
-function applySpeedUI(){
-  speedRow.querySelectorAll('.speed-btn').forEach(function(btn){
-    btn.classList.toggle('active', Math.abs(parseFloat(btn.dataset.speed) - speed) < 0.001);
-  });
-  speedCustom.value = speed;
-}
-speedRow.querySelectorAll('.speed-btn').forEach(function(btn){
-  btn.addEventListener('click', function(){ speed = parseFloat(btn.dataset.speed); store.set('sjm_speed', speed); applySpeedUI(); recalc(); });
-});
-speedCustom.addEventListener('input', function(){
-  var v = parseFloat(speedCustom.value);
-  if(!isNaN(v) && v > 0){ speed = v; store.set('sjm_speed', speed); applySpeedUI(); recalc(); }
-});
-applySpeedUI();
-
 /* ---------- calc ---------- */
-function tandemItemHours(it){
-  var totalHours = getHours('tandem', TANDEM_HOURS_DEFAULT);
-  return it.book==='EOS' ? (totalHours*EOS_SHARE)/EOS_ITEM_COUNT : (totalHours*TOD_SHARE)/TOD_ITEM_COUNT;
-}
 function allActiveItems(){
   var items = [];
-  TOG_BOOKS.forEach(function(b){ if(!b.tandem) items.push({id:b.id, hours:getHours(b.id,b.hours)}); });
-  TANDEM_ITEMS.forEach(function(it){ items.push({id:it.id, hours:tandemItemHours(it)}); });
-  ACOTAR_BOOKS.forEach(function(b){ items.push({id:b.id, hours:getHours(b.id,b.hours)}); });
-  CC_BOOKS.forEach(function(b){ items.push({id:b.id, hours:getHours(b.id,b.hours)}); });
+  TOG_BOOKS.forEach(function(b){ if(!b.tandem) items.push({id:b.id, chapters:getChapters(b.id,b.chapters)}); });
+  TANDEM_ITEMS.forEach(function(it){ items.push({id:it.id, chapters:1}); });
+  ACOTAR_BOOKS.forEach(function(b){ items.push({id:b.id, chapters:getChapters(b.id,b.chapters)}); });
+  CC_BOOKS.forEach(function(b){ items.push({id:b.id, chapters:getChapters(b.id,b.chapters)}); });
   return items;
 }
 
@@ -447,13 +380,12 @@ var heroSub = document.getElementById('heroSub');
 
 function recalc(){
   var items = allActiveItems();
-  var totalHours = 0, remainingHours = 0, booksLeft = 0, totalBooks = 0;
+  var totalChapters = 0, remainingChapters = 0, booksLeft = 0, totalBooks = 0;
   items.forEach(function(it){
-    totalHours += it.hours;
-    var d = isDone(it.id);
-    if(!d) remainingHours += it.hours;
+    totalChapters += it.chapters;
+    if(!isDone(it.id)) remainingChapters += it.chapters;
   });
-  // "books left" counts whole audiobooks (not tandem chapters) not yet checked, plus tandem as 1 unit if incomplete
+  // "books left" counts whole books (not tandem chapters) not yet checked, plus tandem as 1 unit if incomplete
   [TOG_BOOKS, ACOTAR_BOOKS, CC_BOOKS].forEach(function(list){
     list.forEach(function(b){
       totalBooks++;
@@ -468,9 +400,7 @@ function recalc(){
   var msLeft = DEADLINE - now;
   var daysLeft = Math.max(1, Math.ceil(msLeft / 86400000));
 
-  var remainingMinutesAudio = remainingHours * 60;
-  var remainingMinutesListening = remainingMinutesAudio / speed;
-  var minutesPerDay = remainingMinutesListening / daysLeft;
+  var chaptersPerDay = remainingChapters / daysLeft;
 
   ticker.classList.add('pulse');
   setTimeout(function(){ ticker.classList.remove('pulse'); }, 250);
@@ -478,20 +408,19 @@ function recalc(){
   if(msLeft <= 0){
     ticker.textContent = '🎉';
     heroSub.textContent = 'The next book is out — happy reading!';
-  } else if(remainingHours <= 0.001){
+  } else if(remainingChapters <= 0){
     ticker.textContent = '0';
     heroSub.textContent = "You're all caught up. ✨";
   } else {
-    ticker.textContent = minutesPerDay >= 100 ? Math.round(minutesPerDay) : minutesPerDay.toFixed(1);
-    var hrsPerDay = minutesPerDay/60;
-    heroSub.textContent = 'about ' + hrsPerDay.toFixed(1) + ' hrs/day at ' + speed.toFixed(2).replace(/\.?0+$/,'') + '× speed to finish by Oct 27';
+    ticker.textContent = chaptersPerDay >= 10 ? Math.round(chaptersPerDay) : chaptersPerDay.toFixed(1);
+    heroSub.textContent = remainingChapters + ' chapters left across ' + daysLeft + ' days to Oct 27';
   }
 
   document.getElementById('statDays').textContent = daysLeft;
-  document.getElementById('statRemainHrs').textContent = remainingHours.toFixed(1);
+  document.getElementById('statRemainCh').textContent = remainingChapters;
   document.getElementById('statBooksLeft').textContent = booksLeft + ' / ' + totalBooks;
 
-  var pct = totalHours > 0 ? Math.round((1 - remainingHours/totalHours) * 100) : 0;
+  var pct = totalChapters > 0 ? Math.round((1 - remainingChapters/totalChapters) * 100) : 0;
   document.getElementById('progressPct').textContent = pct + '%';
   document.getElementById('progressBar').style.width = pct + '%';
 }
