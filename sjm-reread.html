@@ -100,6 +100,13 @@
   }
   .position-apply:hover{ filter:brightness(1.06); }
   .position-note{ margin-top:14px; font-size:12px; color:var(--muted); line-height:1.5; }
+  .position-target{ margin-top:14px; }
+  .position-target:empty{ display:none; }
+  .position-target .chip{
+    display:inline-block; background:var(--track); color:var(--rose-text); font-weight:700; font-size:13.5px;
+    padding:9px 18px; border-radius:20px; line-height:1.4;
+  }
+  .position-target .stale{ display:block; margin-top:6px; font-size:11.5px; color:var(--muted); font-weight:500; }
   .position-toast{ margin-top:10px; font-size:12.5px; color:var(--pink-deeper); font-weight:600; min-height:1.4em; }
 
   /* jump nav */
@@ -209,6 +216,7 @@
       <button class="position-apply" id="posApply" type="button">Set my spot</button>
     </div>
     <div class="position-note" id="posNote"></div>
+    <div class="position-target" id="posTarget"></div>
     <div class="position-toast" id="posToast"></div>
   </section>
 
@@ -248,6 +256,7 @@ var store = {
 };
 
 var DEADLINE = new Date('2026-10-27T00:00:00');
+function todayKey(){ var d = new Date(); return d.getFullYear() + '-' + (d.getMonth()+1) + '-' + d.getDate(); }
 
 /* ---------- data ---------- */
 /* chapter counts are best-effort defaults (from published chapter-summary guides) — tap to correct to your edition */
@@ -511,7 +520,7 @@ posApply.addEventListener('click', function(){
     }
   });
 
-  store.set('sjm_pos', { bookId: book.id, chapter: parseInt(posChapter.value, 10) || 1 });
+  store.set('sjm_pos', { bookId: book.id, chapter: parseInt(posChapter.value, 10) || 1, dateSet: todayKey() });
 
   Object.keys(bookRefreshers).forEach(function(id){ bookRefreshers[id](); });
   if(tandemRefresh) tandemRefresh();
@@ -524,6 +533,55 @@ posApply.addEventListener('click', function(){
 /* ---------- calc ---------- */
 var ticker = document.getElementById('ticker');
 var heroSub = document.getElementById('heroSub');
+var posTarget = document.getElementById('posTarget');
+
+/* walks forward from a saved starting position by chaptersToday chapters,
+   rolling into the next book (and lumping the tandem read as one block) as needed */
+function computeTodayTarget(pos, chaptersToday){
+  var idx = MASTER_ORDER.findIndex(function(b){ return b.id === pos.bookId; });
+  if(idx === -1) return null;
+  var startBook = MASTER_ORDER[idx];
+  if(startBook.tandem){
+    return { tandem:true };
+  }
+  var remaining = chaptersToday;
+  var i = idx, ch = Math.max(1, pos.chapter || 1);
+  while(i < MASTER_ORDER.length){
+    var b = MASTER_ORDER[i];
+    if(b.tandem){
+      var span = TANDEM_ITEMS.length;
+      if(remaining < span) return { tandem:true, mid:true };
+      remaining -= span; i++; ch = 1; continue;
+    }
+    var total = getChapters(b.id, b.chapters);
+    var target = ch + remaining;
+    if(target <= total) return { book:b, chapter:target };
+    remaining -= (total - ch + 1); i++; ch = 1;
+  }
+  return { finished:true };
+}
+
+function renderTodayTarget(chaptersPerDay, remainingChapters, msLeft){
+  var pos = store.get('sjm_pos', null);
+  if(!pos || msLeft <= 0 || remainingChapters <= 0){ posTarget.innerHTML = ''; return; }
+
+  var chaptersToday = Math.max(1, Math.ceil(chaptersPerDay));
+  var result = computeTodayTarget(pos, chaptersToday);
+  var stale = pos.dateSet && pos.dateSet !== todayKey();
+  var staleNote = stale ? '<span class="stale">using your spot from ' + pos.dateSet + ' — update above for today\'s exact target</span>' : '';
+
+  var chipText;
+  if(!result || result.finished){
+    chipText = "🎉 you're ahead of pace — no target needed today!";
+  } else if(result.tandem){
+    chipText = result.mid
+      ? '📖 read about ' + chaptersToday + ' more chapters into the tandem checklist today'
+      : '📖 check off about ' + chaptersToday + ' tandem chapters today';
+  } else {
+    chipText = '🎯 reach <u>' + result.book.title + ', ch. ' + result.chapter + '</u> by tonight';
+  }
+  posTarget.innerHTML = '<span class="chip">' + chipText + '</span>' + staleNote;
+}
 
 function recalc(){
   var totalChapters = 0, remainingChapters = 0, booksLeft = 0, totalBooks = 0;
@@ -560,7 +618,7 @@ function recalc(){
     ticker.textContent = '0';
     heroSub.textContent = "You're all caught up. ✨";
   } else {
-    ticker.textContent = chaptersPerDay >= 10 ? Math.round(chaptersPerDay) : chaptersPerDay.toFixed(1);
+    ticker.textContent = Math.ceil(chaptersPerDay);
     heroSub.textContent = remainingChapters + ' chapters left across ' + daysLeft + ' days to Oct 27';
   }
 
@@ -571,6 +629,8 @@ function recalc(){
   var pct = totalChapters > 0 ? Math.round((1 - remainingChapters/totalChapters) * 100) : 0;
   document.getElementById('progressPct').textContent = pct + '%';
   document.getElementById('progressBar').style.width = pct + '%';
+
+  renderTodayTarget(chaptersPerDay, remainingChapters, msLeft);
 }
 
 recalc();
