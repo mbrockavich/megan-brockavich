@@ -538,8 +538,9 @@
     { title: '2026 Reading Record', href: '2026-reading-stats.html', color: '#6b3a52', height: 155 },
     { title: 'Every Book I’ve Read', href: 'all-books.html', color: '#c1502e', height: 165 },
     { title: 'My Book Collection', href: 'book-collection.html', color: '#a3225a', height: 175 },
+    { title: 'SJM Reread Countdown', href: 'sjm-reread.html', color: '#e0558a', height: 168 },
   ];
-  const EMPTY_SLOTS = 2;
+  const EMPTY_SLOTS = 1;
   const shelf = document.getElementById('shelf');
   shelf.innerHTML = books.map(b => `
     <a class="spine" href="${b.href}" style="height:${b.height}px; background:${b.color};">
