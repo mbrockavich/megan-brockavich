@@ -4,10 +4,11 @@
    without being read yet, or read without being owned (library loans,
    borrowed copies, etc).
 
-   Used by book-collection.html, which also cross-references reading-data.js
-   by title — if a book here has also been logged as read there, its rating
-   and note show up automatically when you tap it. Nothing to do on this
-   end for that to work, just make sure the title matches exactly.
+   Used by the format filter (Kindle / Audible / Physical) on all-books.html,
+   which also cross-references reading-data.js by title — if a book here has
+   also been logged as read there, its rating and note show up automatically
+   when you tap it. Nothing to do on this end for that to work, just make
+   sure the title matches exactly.
 
    Each entry needs at least a title. Everything else is optional but
    makes the shelf look much better:
@@ -52,9 +53,8 @@ const OWNED_BOOKS = {
 
 /* Looks a title up across all three owned-format lists. Returns an array
    of format keys ("kindle","audible","physical") the title appears in, in
-   that order, or [] if it isn't owned in any format. Lets any page cross-
-   reference reading-data.js titles against OWNED_BOOKS without duplicating
-   the shelf logic that lives in book-collection.html. */
+   that order, or [] if it isn't owned in any format. Powers the Kindle /
+   Audible / Physical filter pills on all-books.html. */
 function findOwnedFormats(title) {
   return ["kindle", "audible", "physical"].filter(
     fmt => OWNED_BOOKS[fmt].some(b => b.title === title)

@@ -116,6 +116,7 @@
   .search-input::placeholder{ color: rgba(253,241,245,0.5); }
   .search-input:focus{ border-color: var(--stamp); }
   .pills{ display:flex; flex-wrap:wrap; gap: 7px; }
+  .pills.pills-secondary{ margin-top: 7px; }
   .pill{
     font-family:'Space Mono', monospace; font-size: 10.5px; letter-spacing: 0.03em;
     padding: 6px 12px; border-radius: 20px; border: 1.5px solid rgba(255,255,255,0.18);
@@ -501,6 +502,7 @@
   <div class="filter-bar-inner">
     <input type="text" class="search-input" id="searchInput" placeholder="Search by title or author...">
     <div class="pills" id="genrePills"></div>
+    <div class="pills pills-secondary" id="formatPills"></div>
   </div>
 </div>
 
@@ -678,11 +680,12 @@ document.getElementById("pageFoot").textContent =
 const statsStrip = document.getElementById("statsStrip");
 function renderStats(){
   if(activeGenre === "Series"){
-    const completed = SERIES.filter(s => seriesIsCaughtUp(s) && s.status === "complete").length;
-    const caughtUp = SERIES.filter(s => seriesIsCaughtUp(s) && s.status !== "complete").length;
-    const inProgress = SERIES.length - completed - caughtUp;
+    const seriesScope = SERIES.filter(seriesMatchesFormat);
+    const completed = seriesScope.filter(s => seriesIsCaughtUp(s) && s.status === "complete").length;
+    const caughtUp = seriesScope.filter(s => seriesIsCaughtUp(s) && s.status !== "complete").length;
+    const inProgress = seriesScope.length - completed - caughtUp;
     const stats = [
-      {v: SERIES.length, l: "Total Series"},
+      {v: seriesScope.length, l: "Total Series"},
       {v: inProgress, l: "In Progress"},
       {v: caughtUp, l: "Caught Up"},
       {v: completed, l: "Completed"}
@@ -697,7 +700,11 @@ function renderStats(){
     return;
   }
 
-  const scoped = activeGenre === "All" ? ALL_BOOKS : ALL_BOOKS.filter(b => b.genres.includes(activeGenre));
+  const scoped = ALL_BOOKS.filter(b => {
+    const genreMatch = activeGenre === "All" || b.genres.includes(activeGenre);
+    const formatMatch = activeFormat === "All" || (hasOwnedLookup && findOwnedFormats(b.title).includes(activeFormat));
+    return genreMatch && formatMatch;
+  });
 
   const authorCounts = {};
   scoped.forEach(b => { authorCounts[b.author] = (authorCounts[b.author]||0)+1; });
@@ -705,7 +712,9 @@ function renderStats(){
 
   const seriesInScope = SERIES.filter(s => s.books.some(sb => {
     const b = ALL_BOOKS_BY_TITLE.get(sb.title);
-    return b && (activeGenre === "All" || b.genres.includes(activeGenre));
+    const genreMatch = activeGenre === "All" || (b && b.genres.includes(activeGenre));
+    const formatMatch = activeFormat === "All" || (hasOwnedLookup && findOwnedFormats(sb.title).includes(activeFormat));
+    return b && genreMatch && formatMatch;
   })).length;
 
   const scopedDated = scoped.filter(b => b.dateLabel !== "Undated");
@@ -729,6 +738,7 @@ function renderStats(){
 
 /* ---------------- filter state ---------------- */
 let activeGenre = "All";
+let activeFormat = "All";
 let searchTerm = "";
 
 /* ---------------- genre pills ---------------- */
@@ -737,6 +747,45 @@ function selectFilter(value){
   activeGenre = value;
   try{ localStorage.setItem("activeGenre", value); }catch(e){}
   renderPills(); renderShelf(); renderStats(); renderFavorites();
+}
+
+/* ---------------- owned-format pills (Kindle / Audible / Physical) ----------------
+   Additional filter on top of genre + search, sourced from OWNED_BOOKS via
+   findOwnedFormats() in owned-books-data.js. Replaces the old standalone
+   book-collection.html page. */
+const FORMAT_INFO = {
+  kindle: {emoji:"📱", label:"Kindle"},
+  audible: {emoji:"🎧", label:"Audible"},
+  physical: {emoji:"📚", label:"Physical"},
+};
+const formatPillsContainer = document.getElementById("formatPills");
+const hasOwnedLookup = typeof findOwnedFormats === "function";
+function ownedFormatCount(fmt){
+  if(!hasOwnedLookup) return 0;
+  return ALL_BOOKS.filter(b => findOwnedFormats(b.title).includes(fmt)).length;
+}
+function selectFormat(value){
+  activeFormat = value;
+  try{ localStorage.setItem("activeFormat", value); }catch(e){}
+  renderFormatPills(); renderShelf(); renderStats();
+}
+function renderFormatPills(){
+  if(!hasOwnedLookup){ formatPillsContainer.style.display = "none"; return; }
+  formatPillsContainer.innerHTML = "";
+  const allPill = document.createElement("button");
+  allPill.className = "pill" + (activeFormat === "All" ? " active" : "");
+  allPill.textContent = "All Formats";
+  allPill.addEventListener("click", () => selectFormat("All"));
+  formatPillsContainer.appendChild(allPill);
+
+  ["kindle","audible","physical"].forEach(fmt => {
+    const info = FORMAT_INFO[fmt];
+    const pill = document.createElement("button");
+    pill.className = "pill" + (activeFormat === fmt ? " active" : "");
+    pill.innerHTML = `${info.emoji} ${info.label} <span class="count">${ownedFormatCount(fmt)}</span>`;
+    pill.addEventListener("click", () => selectFormat(fmt));
+    formatPillsContainer.appendChild(pill);
+  });
 }
 function renderPills(){
   pillsContainer.innerHTML = "";
@@ -762,9 +811,15 @@ function renderPills(){
 }
 let savedGenre = null;
 try{ savedGenre = localStorage.getItem("activeGenre"); }catch(e){}
-if(location.hash === "#series") activeGenre = "Series";
+let savedFormat = null;
+try{ savedFormat = localStorage.getItem("activeFormat"); }catch(e){}
+const hashSlug = location.hash.replace("#", "");
+if(hashSlug === "series") activeGenre = "Series";
 else if(savedGenre) activeGenre = savedGenre;
+if(FORMAT_INFO[hashSlug]) activeFormat = hashSlug;
+else if(savedFormat) activeFormat = savedFormat;
 renderPills();
+renderFormatPills();
 renderStats();
 
 document.getElementById("searchInput").addEventListener("input", (e) => {
@@ -788,6 +843,11 @@ function seriesLastReadTime(s){
     if(t > max) max = t;
   });
   return max;
+}
+
+function seriesMatchesFormat(s){
+  if(activeFormat === "All") return true;
+  return hasOwnedLookup && s.books.some(b => findOwnedFormats(b.title).includes(activeFormat));
 }
 
 function seriesIsCaughtUp(s){
@@ -823,9 +883,9 @@ const SERIES_STATUS_RANK = {progress: 0, caughtup: 1, complete: 2};
 
 function renderSeriesGrid(){
   const term = searchTerm;
-  const matching = SERIES.filter(s => !term ||
+  const matching = SERIES.filter(s => seriesMatchesFormat(s) && (!term ||
     s.name.toLowerCase().includes(term) ||
-    s.author.toLowerCase().includes(term)
+    s.author.toLowerCase().includes(term))
   ).sort((a, b) => {
     const clsA = seriesStatus(a).cls, clsB = seriesStatus(b).cls;
     const rankDiff = SERIES_STATUS_RANK[clsA] - SERIES_STATUS_RANK[clsB];
@@ -883,10 +943,11 @@ function renderShelf(){
 
   const filtered = MASTER_SORTED.filter(b => {
     const genreMatch = activeGenre === "All" || b.genres.includes(activeGenre);
+    const formatMatch = activeFormat === "All" || (hasOwnedLookup && findOwnedFormats(b.title).includes(activeFormat));
     const searchMatch = !searchTerm ||
       b.title.toLowerCase().includes(searchTerm) ||
       b.author.toLowerCase().includes(searchTerm);
-    return genreMatch && searchMatch;
+    return genreMatch && formatMatch && searchMatch;
   });
 
   // collapse every book that belongs to a series (2+ books read) into one
