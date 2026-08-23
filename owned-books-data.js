@@ -46,6 +46,7 @@ const OWNED_BOOKS = {
     {title:"The Handmaid's Tale", author:"Margaret Atwood", cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1488552336i/34454589.jpg"},
     {title:"The Handmaid's Tale: The Graphic Novel", spineTitle:"The Handmaid's Tale (Graphic Novel)", author:"Renee Nault", cover:"https://covers.openlibrary.org/b/id/14339099-L.jpg"},
     {title:"The Testaments", author:"Margaret Atwood", cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1549292344i/42975172._SX300_.jpg"},
+    {title:"Dungeon Crawler Carl, Vol. 1 (Graphic Novel)", author:"Matt Dinniman", cover:"https://covers.openlibrary.org/b/isbn/9781638493655-L.jpg"},
   ],
 };
 

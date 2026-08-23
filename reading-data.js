@@ -78,6 +78,7 @@ const books = [
   {title:"And Now, Back to You", cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1748482477i/217513554.jpg", author:"B.K. Borison", genre:"Contemporary Romance", pages:464, dateFinished:"2026-08-16", rating:2, pubYear:2026, note:"Listened on audiobook. The one-bed, stuck-together trope felt more corny than swoony this time, and I skipped past the spicy scenes. Two meteorologists ending up working together was a fun premise, but this one just didn't click for me — probably won't continue the series."},
   {title:"Control Unleashed: Creating a Focused and Confident Dog", cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1349894884i/2101812.jpg", author:"Leslie McDevitt", genre:"Nonfiction", subgenre:"Dogs", pages:226, dateFinished:"2026-08-17", rating:2, pubYear:2007, note:"It was fine, but got pretty boring toward the end. This is really written for someone running a class or working with dogs in groups, or training sport dogs for agility-type activities — not a lot of it ended up practical for my own dogs. That said, I did pick up a few fun games and exercises out of it that I thought were cool."},
   {title:"Carl's Doomsday Scenario", cover:"https://covers.openlibrary.org/b/olid/OL51633677M-L.jpg", author:"Matt Dinniman", genre:"Science Fiction", pages:528, dateFinished:"2026-08-21", rating:5, pubYear:2021, note:"I really love the Carl & Donut dynamic — that's easily my favorite part. The video game/LitRPG stuff is growing on me too. Book 1 kind of threw me off with how weird and dark it got, but now that I know what to expect going in, I'm enjoying it a lot more."},
+  {title:"Dungeon Crawler Carl, Vol. 1 (Graphic Novel)", cover:"https://covers.openlibrary.org/b/isbn/9781638493655-L.jpg", author:"Matt Dinniman", genre:"Graphic Novel", pages:320, dateFinished:"2026-08-23", rating:5, pubYear:2026},
 ];
 
 /* Everything finished before 2026 that still shows up as "read" on a
@@ -388,6 +389,14 @@ const RATING_LEGEND = [
    whether you're caught up on it: "complete" = no more books planned,
    "ongoing" = more entries are announced or expected. */
 const SERIES = [
+  {
+    name: "Dungeon Crawler Carl (Graphic Novel)",
+    author: "Matt Dinniman",
+    status: "ongoing",
+    books: [
+      {title:"Dungeon Crawler Carl, Vol. 1 (Graphic Novel)"}
+    ]
+  },
   {
     name: "The Empyrean (Fourth Wing)",
     author: "Rebecca Yarros",
