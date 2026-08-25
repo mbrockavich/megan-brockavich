@@ -1050,8 +1050,8 @@ function buildMasterCard(item){
         ${b.cover ? `<img src="${b.cover}" alt="Cover of ${b.title}" loading="lazy" onerror="this.remove()">` : ""}
         ${item.seriesInfo ? `<div class="master-count-badge">${item.seriesInfo.read}/${item.seriesInfo.total}</div>` : ""}
       </div>
-      <div class="master-title">${b.title}</div>
-      <div class="master-author">${b.author}</div>
+      <div class="master-title">${item.seriesInfo ? item.seriesInfo.name : b.title}</div>
+      <div class="master-author">${item.seriesInfo ? item.seriesInfo.author : b.author}</div>
       ${b.rating ? `<div class="master-rating">${starRatingHTML(b.rating)}</div>` : ""}
     `;
     card.setAttribute("tabindex", "0");
