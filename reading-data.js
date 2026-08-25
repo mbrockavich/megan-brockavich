@@ -374,6 +374,19 @@ function formatRating(rating) {
   return "★".repeat(full) + (half ? "½" : "") + "☆".repeat(Math.max(empty, 0));
 }
 
+/* Renders a `rating` as a true 5-star widget: a dim 5-star track behind a
+   solid-color 5-star layer clipped to (rating/5)*100% width, so a 3.5 shows
+   as an actually-half-filled 4th star rather than a "½" glyph. Both layers
+   use currentColor, so the widget always matches whatever color/font-size
+   the caller's wrapping element sets (see .star-rating in the page CSS) —
+   nothing to configure here. Returns "" for a missing rating so callers can
+   skip the line entirely. */
+function starRatingHTML(rating) {
+  if (rating == null) return "";
+  const pct = Math.max(0, Math.min(100, (rating / 5) * 100));
+  return `<span class="star-rating" role="img" aria-label="${rating} out of 5 stars"><span class="star-rating-bg">★★★★★</span><span class="star-rating-fg" style="width:${pct}%">★★★★★</span></span>`;
+}
+
 /* What each star count means. Shown as a "Rating Key" breakdown near the
    top of all-books.html and 2026-reading-stats.html. Each page builds its
    own themed row markup from this list. */

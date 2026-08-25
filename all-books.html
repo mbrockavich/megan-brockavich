@@ -227,7 +227,7 @@
     padding: 3px 7px; border-radius: 20px;
   }
   .fav-title{ font-family:'Fraunces',serif; font-weight:600; font-size: 12px; line-height:1.3; color: var(--card); }
-  .fav-rating{ font-size: 10.5px; color: var(--gold); margin-top:2px; letter-spacing:0.03em; }
+  .fav-rating{ font-size: 14px; color: var(--gold); margin-top:3px; letter-spacing:0.03em; }
   .fav-empty-slot{
     width:100%; aspect-ratio: 2/3; border-radius: 4px;
     border: 1.5px dashed rgba(92,58,74,0.28);
@@ -267,7 +267,7 @@
   .series-book-cover.unread{ opacity:0.45; box-shadow:none; border: 1.5px dashed rgba(255,255,255,0.3); }
   .series-book-status{ font-size:9.5px; font-family:'Space Mono',monospace; text-transform:uppercase; letter-spacing:0.05em; color: var(--ink-soft); margin-top:2px; }
   .series-book-title{ font-size:11.5px; font-weight:600; line-height:1.3; color: var(--ink); }
-  .series-book-rating{ font-size:11px; color: var(--gold); margin-top:2px; letter-spacing:0.03em; }
+  .series-book-rating{ font-size:15px; color: var(--gold); margin-top:3px; letter-spacing:0.03em; }
   .series-book-num{ font-family:'Space Mono',monospace; font-weight:400; font-size:10px; color: var(--ink-soft); }
   .series-book-owned{ display:flex; justify-content:center; gap:4px; margin-top:5px; flex-wrap:wrap; }
   .series-book-owned-pill{
@@ -392,7 +392,15 @@
   }
   .master-title{ font-family:'Fraunces', serif; font-weight:600; font-size: 12.5px; line-height:1.3; color: var(--card); }
   .master-author{ font-size: 10.5px; color: var(--brass); margin-top: 2px; }
-  .master-rating{ font-size: 11px; color: var(--gold); margin-top: 3px; letter-spacing:0.03em; }
+  .master-rating{ font-size: 16px; color: var(--gold); margin-top: 4px; letter-spacing:0.03em; }
+  /* true half-filled star widget: a dim 5-star track behind a solid
+     5-star layer clipped to the rating's percentage width. Both layers
+     use currentColor so it always matches whatever color/size the
+     wrapping element (.master-rating, .fav-rating, etc) sets. */
+  .star-rating{ position:relative; display:inline-block; line-height:1; }
+  .star-rating-bg, .star-rating-fg{ display:block; white-space:nowrap; }
+  .star-rating-bg{ opacity:0.3; }
+  .star-rating-fg{ position:absolute; top:0; left:0; overflow:hidden; }
   .no-results{ color: #e0c3d1; font-size: 13.5px; font-style: italic; padding: 20px 4px; }
 
   /* series collapsed into one stacked card on the Master List */
@@ -940,7 +948,7 @@ function renderSeriesGrid(){
       </div>
       <div class="master-title">${s.name}</div>
       <div class="master-author">${s.author}</div>
-      ${avgRating != null ? `<div class="master-rating">${formatRating(avgRating)}</div>` : ""}
+      ${avgRating != null ? `<div class="master-rating">${starRatingHTML(avgRating)}</div>` : ""}
     `;
     const open = () => openSeriesModal({name: s.name, author: s.author, books: readBooks}, null);
     card.addEventListener("click", open);
@@ -1041,7 +1049,7 @@ function buildMasterCard(item){
       </div>
       <div class="master-title">${b.title}</div>
       <div class="master-author">${b.author}</div>
-      ${b.rating ? `<div class="master-rating">${formatRating(b.rating)}</div>` : ""}
+      ${b.rating ? `<div class="master-rating">${starRatingHTML(b.rating)}</div>` : ""}
     `;
     card.setAttribute("tabindex", "0");
     card.setAttribute("role", "button");
@@ -1090,7 +1098,7 @@ function buildMasterCard(item){
     </div>
     <div class="master-title">${item.name}</div>
     <div class="master-author">${item.author}</div>
-    ${avgRating ? `<div class="master-rating">${formatRating(avgRating)}</div>` : ""}
+    ${avgRating ? `<div class="master-rating">${starRatingHTML(avgRating)}</div>` : ""}
   `;
   const open = () => openSeriesModal(item, null);
   card.addEventListener("click", open);
@@ -1198,7 +1206,7 @@ function makeFavItem(entry){
         ${coverSlotHTML(b)}
       </div>
       <div class="fav-title">${b.title}</div>
-      <div class="fav-rating">${formatRating(entry.avg)}</div>
+      <div class="fav-rating">${starRatingHTML(entry.avg)}</div>
     `;
     const open = () => openBookModal(b, "Favorite");
     item.addEventListener("click", open);
@@ -1219,7 +1227,7 @@ function makeFavItem(entry){
         <div class="fav-count-badge">${entry.books.length} books</div>
       </div>
       <div class="fav-title">${entry.name}</div>
-      <div class="fav-rating">${formatRating(roundedAvg)}</div>
+      <div class="fav-rating">${starRatingHTML(roundedAvg)}</div>
     `;
     const open = () => openSeriesModal(entry, null);
     item.addEventListener("click", open);
@@ -1447,7 +1455,7 @@ function seriesBookGridHTML(allBooks, best){
           ${b.cover ? `<img src="${b.cover}" alt="Cover of ${b.title}" loading="lazy" onerror="this.remove()">` : ""}
         </div>
         <div class="series-book-title">${b.title} <span class="series-book-num">[${num}]</span></div>
-        ${b.rating ? `<div class="series-book-rating">${formatRating(b.rating)}</div>` : ""}
+        ${b.rating ? `<div class="series-book-rating">${starRatingHTML(b.rating)}</div>` : ""}
         ${ownedFormatPillsHTML(b.title)}
       </div>
     `;
