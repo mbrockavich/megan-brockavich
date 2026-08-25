@@ -36,6 +36,7 @@ const OWNED_BOOKS = {
   ],
   physical: [
     {title:"Control Unleashed: Creating a Focused and Confident Dog", spineTitle:"Control Unleashed", author:"Leslie McDevitt", cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1349894884i/2101812.jpg"},
+    {title:"Alice's Adventures in Wonderland & Through the Looking Glass: Lavishly Illustrated with Interactive Elements", spineTitle:"Alice in Wonderland", author:"Lewis Carroll", cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1554894039i/43208990.jpg"},
     {title:"The Iliad", author:"Homer", cover:"https://covers.openlibrary.org/b/id/12621988-L.jpg"},
     {title:"The Odyssey", author:"Homer", cover:"https://covers.openlibrary.org/b/id/12474938-L.jpg"},
     {title:"The Song of Achilles", author:"Madeline Miller", cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1357177533i/13623848._SX300_.jpg"},
