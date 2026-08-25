@@ -901,7 +901,12 @@ function renderSeriesGrid(){
   noResults.style.display = matching.length === 0 ? "block" : "none";
 
   matching.forEach(s => {
-    const readBooks = s.books.map(b => ALL_BOOKS_BY_TITLE.get(b.title)).filter(Boolean);
+    let readBooks = s.books.map(b => ALL_BOOKS_BY_TITLE.get(b.title)).filter(Boolean);
+    // Scoped to a format, only the books she actually owns in it should
+    // stack/count here — same rule as the main shelf's series cards.
+    if(activeFormat !== "All" && hasOwnedLookup){
+      readBooks = readBooks.filter(b => findOwnedFormats(b.title).includes(activeFormat));
+    }
     const releasedTotal = s.books.filter(b => !b.comingSoon).length;
     const status = seriesStatus(s);
     const top = readBooks[0];
