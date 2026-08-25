@@ -361,13 +361,17 @@ function findRead(title) {
   return books.find(b => b.title === title) || pastReads.find(b => b.title === title) || null;
 }
 
-/* Renders a `rating` (1-5, halves allowed) as star glyphs, e.g. 4.5 -> "★★★★½".
-   Returns "" for a missing rating so callers can skip the line entirely. */
+/* Renders a `rating` (1-5, halves allowed) as a full 5-star glyph string,
+   e.g. 4.5 -> "★★★★½☆", 3 -> "★★★☆☆" — the empty stars make it obvious at
+   a glance whether something is a 4 or a 5, instead of just counting a
+   run of filled stars. Returns "" for a missing rating so callers can
+   skip the line entirely. */
 function formatRating(rating) {
   if (rating == null) return "";
   const full = Math.floor(rating);
   const half = rating - full >= 0.5;
-  return "★".repeat(full) + (half ? "½" : "");
+  const empty = 5 - full - (half ? 1 : 0);
+  return "★".repeat(full) + (half ? "½" : "") + "☆".repeat(Math.max(empty, 0));
 }
 
 /* What each star count means. Shown as a "Rating Key" breakdown near the

@@ -910,12 +910,14 @@ function renderSeriesGrid(){
     for(let L = behindLayers; L >= 1; L--){
       behindHTML += `<div class="master-stack-behind" style="transform: translate(${L*4}px, ${L*4}px);"></div>`;
     }
+    const ratedBooks = readBooks.filter(b => b.rating != null);
+    const avgRating = ratedBooks.length ? Math.round((ratedBooks.reduce((sum, b) => sum + b.rating, 0) / ratedBooks.length) * 2) / 2 : null;
 
     const card = document.createElement("div");
     card.className = "master-card master-card-series";
     card.setAttribute("tabindex", "0");
     card.setAttribute("role", "button");
-    card.setAttribute("aria-label", `Open ${s.name} series, ${readBooks.length} of ${releasedTotal} read, ${status.text}`);
+    card.setAttribute("aria-label", `Open ${s.name} series, ${readBooks.length} of ${releasedTotal} read, ${status.text}${avgRating != null ? `, ${formatRating(avgRating)}` : ""}`);
     card.innerHTML = `
       <div class="master-stack-wrap">
         ${behindHTML}
@@ -928,6 +930,7 @@ function renderSeriesGrid(){
       </div>
       <div class="master-title">${s.name}</div>
       <div class="master-author">${s.author}</div>
+      ${avgRating != null ? `<div class="master-rating">${formatRating(avgRating)}</div>` : ""}
     `;
     const open = () => openSeriesModal({name: s.name, author: s.author, books: readBooks}, null);
     card.addEventListener("click", open);
@@ -960,7 +963,14 @@ function renderShelf(){
     if(!series || series.books.length < 2){ items.push({kind: "book", book: b}); return; }
     if(seenSeries.has(series.name)) return;
     seenSeries.add(series.name);
-    const seriesBooks = series.books.map(sb => ALL_BOOKS_BY_TITLE.get(sb.title)).filter(Boolean);
+    // When a format filter is active, only stack the books she actually
+    // owns in that format — a series she's read in full but only owns
+    // Book 1 of physically shouldn't show the whole series on the
+    // Physical shelf.
+    let seriesBooks = series.books.map(sb => ALL_BOOKS_BY_TITLE.get(sb.title)).filter(Boolean);
+    if(activeFormat !== "All" && hasOwnedLookup){
+      seriesBooks = seriesBooks.filter(sb => findOwnedFormats(sb.title).includes(activeFormat));
+    }
     // fewer than 2 read yet: not enough covers to stack, but still flag it as a series
     if(seriesBooks.length < 2){
       items.push({kind: "book", book: b, seriesInfo: {name: series.name, author: series.author, total: series.books.length, read: seriesBooks.length}});
@@ -1191,7 +1201,7 @@ function makeFavItem(entry){
       behindHTML += `<div class="fav-stack-behind" style="transform: translate(${L*5}px, ${L*5}px);"></div>`;
     }
     const roundedAvg = Math.round(entry.avg * 2) / 2;
-    item.setAttribute("aria-label", `Open ${entry.name} series, ${formatRating(roundedAvg)} average`);
+    item.setAttribute("aria-label", `Open ${entry.name} series, ${formatRating(roundedAvg)}`);
     item.innerHTML = `
       <div class="fav-stack-wrap">
         ${behindHTML}
@@ -1199,7 +1209,7 @@ function makeFavItem(entry){
         <div class="fav-count-badge">${entry.books.length} books</div>
       </div>
       <div class="fav-title">${entry.name}</div>
-      <div class="fav-rating">${formatRating(roundedAvg)} avg</div>
+      <div class="fav-rating">${formatRating(roundedAvg)}</div>
     `;
     const open = () => openSeriesModal(entry, null);
     item.addEventListener("click", open);
@@ -1436,7 +1446,7 @@ function openSeriesModal(entry, rank){
   const avg = ratedBooks.length ? Math.round((ratedBooks.reduce((sum, b) => sum + b.rating, 0) / ratedBooks.length) * 2) / 2 : null;
   seriesModalRank.textContent = rank ? `Favorite #${rank}` : "Series";
   seriesModalTitle.textContent = entry.name;
-  seriesModalSub.textContent = `${entry.author} · ${entry.books.length} of ${allBooks.length} book${allBooks.length===1?"":"s"} read${avg != null ? ` · ${formatRating(avg)} avg` : ""}`;
+  seriesModalSub.textContent = `${entry.author} · ${entry.books.length} of ${allBooks.length} book${allBooks.length===1?"":"s"} read${avg != null ? ` · ${formatRating(avg)}` : ""}`;
   seriesModalGrid.innerHTML = seriesBookGridHTML(allBooks, entry.best);
   wireSeriesBookGrid(seriesModalGrid);
   seriesModalOverlay.classList.add("open");
