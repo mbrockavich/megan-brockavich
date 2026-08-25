@@ -143,7 +143,7 @@ const pastReads = [
   {title:"House of Flame and Shadow", genre:"Fantasy", readDate:"February 2024", rating:5, cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1689809645i/52857700.jpg", pubYear:2024},
   {title:"Fourth Wing", genre:"Fantasy", readDate:"November 2023", cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1761312598i/61431922.jpg", rating:5, pubYear:2023},
   {title:"Iron Flame", genre:"Fantasy", readDate:"December 2023", cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1706724269i/90202302.jpg", rating:5, pubYear:2023},
-  {title:"Onyx Storm", genre:"Fantasy", readDate:"February 2025", cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1766329694i/209439446.jpg", rating:5, pubYear:2025},
+  {title:"Onyx Storm", genre:"Fantasy", readDate:"February 2025", cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1720446381i/209668781.jpg", rating:5, pubYear:2025},
   {title:"'Salem's Lot", cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1554318143i/18128._SX300_.jpg", genre:"Horror", author:"Stephen King", readDate:null, rating:4, pubYear:1975},
   {title:"A Christmas Carol", cover:"https://covers.openlibrary.org/b/id/12875748-L.jpg", genre:"Classic Literature", author:"Charles Dickens", readDate:"December 2025", rating:4, pubYear:1843},
   {title:"A Christmas Carol Murder", genre:"Mystery", author:"Heather Redmond", readDate:"December 2025", rating:3, cover:"https://is1-ssl.mzstatic.com/image/thumb/Publication125/v4/98/37/c6/9837c627-f9b6-cf77-2c8c-153a8392c146/9781496717207.jpg/600x600bb.jpg"},
