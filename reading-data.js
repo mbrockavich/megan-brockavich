@@ -374,17 +374,27 @@ function formatRating(rating) {
   return "★".repeat(full) + (half ? "½" : "") + "☆".repeat(Math.max(empty, 0));
 }
 
-/* Renders a `rating` as a true 5-star widget: a dim 5-star track behind a
-   solid-color 5-star layer clipped to (rating/5)*100% width, so a 3.5 shows
-   as an actually-half-filled 4th star rather than a "½" glyph. Both layers
-   use currentColor, so the widget always matches whatever color/font-size
-   the caller's wrapping element sets (see .star-rating in the page CSS) —
-   nothing to configure here. Returns "" for a missing rating so callers can
-   skip the line entirely. */
+/* A chubby, rounded-point cartoon star (not the sharp unicode ★), used by
+   starRatingHTML below. Coordinates are on a 0-100 viewBox. */
+const STAR_PATH_D = "M 45.22 13.06 Q 50 4 54.78 13.06 L 59.28 21.59 Q 64.06 30.65 74.15 32.39 L 83.65 34.04 Q 93.75 35.79 86.61 43.13 L 79.89 50.05 Q 72.75 57.39 74.21 67.53 L 75.58 77.07 Q 77.04 87.21 67.85 82.69 L 59.19 78.44 Q 50 73.92 40.81 78.44 L 32.15 82.69 Q 22.96 87.21 24.42 77.07 L 25.79 67.53 Q 27.25 57.39 20.11 50.05 L 13.39 43.13 Q 6.25 35.79 16.35 34.04 L 25.85 32.39 Q 35.94 30.65 40.72 21.59 Z";
+function starIconSVG(cls) {
+  return `<svg class="star-icon ${cls}" viewBox="0 0 100 100" aria-hidden="true"><path d="${STAR_PATH_D}"/></svg>`;
+}
+
+/* Renders a `rating` as a true 5-star widget: a dim, rounded-cartoon-star
+   outline track behind a solid-color filled star layer clipped to
+   (rating/5)*100% width, so a 3.5 shows as an actually-half-filled 4th
+   star rather than a "½" glyph. Both layers use currentColor, so the
+   widget always matches whatever color/font-size the caller's wrapping
+   element sets (see .star-rating in the page CSS) — nothing to configure
+   here. Returns "" for a missing rating so callers can skip the line
+   entirely. */
 function starRatingHTML(rating) {
   if (rating == null) return "";
   const pct = Math.max(0, Math.min(100, (rating / 5) * 100));
-  return `<span class="star-rating" role="img" aria-label="${rating} out of 5 stars"><span class="star-rating-bg">★★★★★</span><span class="star-rating-fg" style="width:${pct}%">★★★★★</span></span>`;
+  const bg = starIconSVG("star-icon-outline").repeat(5);
+  const fg = starIconSVG("star-icon-filled").repeat(5);
+  return `<span class="star-rating" role="img" aria-label="${rating} out of 5 stars"><span class="star-rating-bg">${bg}</span><span class="star-rating-fg" style="width:${pct}%">${fg}</span></span>`;
 }
 
 /* What each star count means. Shown as a "Rating Key" breakdown near the
