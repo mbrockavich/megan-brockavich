@@ -926,7 +926,10 @@ const SERIES = [
     status: "complete",
     books: [
       {title:"A Touch of Darkness"},
-      {title:"A Touch of Ruin"}
+      {title:"A Touch of Ruin"},
+      {title:"A Touch of Malice"},
+      {title:"A Touch of Chaos"},
+      {title:"A Christmas of Chaos", number:"Bonus"}
     ]
   },
   {
