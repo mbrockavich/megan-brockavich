@@ -1123,8 +1123,6 @@ function coverSlotHTML(b, extraClass){
   `;
 }
 
-const MAX_FAVORITES = 10;
-
 const MIN_BOOKS_FOR_FAVORITES = 20;
 
 /* A book counts as part of a "series" for ranking purposes only once that
@@ -1146,16 +1144,19 @@ function seriesAvgRating(s){
 }
 
 /* Builds a genre's (or, with genre=null, the whole library's) favorites
-   list from your highest ratings, not just 5-star: every rated book
-   belonging to a 2+ book series is grouped under that series. Series and
-   standalone rated books are then ranked together by average rating (a
-   series by its overall average across every rated book in it, a
-   standalone by its own rating), ties broken by how many of its books hit
-   that top rating, then alphabetically. The top 10 fill in regardless of
-   whether they're actually 5 stars. */
+   list from every 4-star-and-up rating: every such book belonging to a
+   2+ book series is grouped under that series, but the series only
+   qualifies if its overall average across every rated book in it (not
+   just the 4+ ones) is itself 4 or higher — one great book can't carry
+   a series that's mediocre overall. Standalone books qualify by their
+   own rating. Qualifying series and standalones are then ranked
+   together by rating, highest first; ties are broken by most recently
+   finished (a series uses the most recent finish date among its rated
+   books). Every qualifying entry is included — no cap on how many show
+   up. */
 function computeFavorites(genre, opts){
   const seriesOnly = !!(opts && opts.seriesOnly);
-  const rated = ALL_BOOKS.filter(b => b.rating != null && (genre === null || b.genres.includes(genre)));
+  const rated = ALL_BOOKS.filter(b => b.rating != null && b.rating >= 4 && (genre === null || b.genres.includes(genre)));
 
   const seriesGroups = new Map();
   const standalones = [];
@@ -1169,6 +1170,8 @@ function computeFavorites(genre, opts){
     }
   });
 
+  const lastFinished = (books) => Math.max(...books.map(b => b.sortTime));
+
   const seriesEntries = Array.from(seriesGroups.values())
     .map(({series: s, ratedBooks}) => {
       const topRating = Math.max(...ratedBooks.map(b => b.rating));
@@ -1177,23 +1180,23 @@ function computeFavorites(genre, opts){
         books: s.books.map(sb => ALL_BOOKS_BY_TITLE.get(sb.title)).filter(Boolean),
         best: ratedBooks.filter(b => b.rating === topRating).map(b => b.title),
         avg: seriesAvgRating(s),
-        topCount: ratedBooks.filter(b => b.rating === topRating).length,
+        lastFinished: lastFinished(ratedBooks),
         sortName: s.name,
       };
-    });
+    })
+    .filter(entry => entry.avg >= 4);
 
   const standaloneEntries = standalones.map(b => ({
     kind: "book", book: b,
     avg: b.rating,
-    topCount: 1,
+    lastFinished: lastFinished([b]),
     sortName: b.title,
   }));
 
   return [...seriesEntries, ...standaloneEntries]
     .sort((a, b) => b.avg - a.avg
-      || b.topCount - a.topCount
-      || a.sortName.localeCompare(b.sortName))
-    .slice(0, MAX_FAVORITES);
+      || b.lastFinished - a.lastFinished
+      || a.sortName.localeCompare(b.sortName));
 }
 
 function makeFavItem(entry){
@@ -1248,18 +1251,6 @@ function renderFavorites(){
   favoritesSection.style.display = favoritesContainer.children.length === 0 ? "none" : "";
 }
 
-function makeEmptyFavSlot(rank){
-  const item = document.createElement("div");
-  item.className = "fav-item fav-item-empty";
-  item.innerHTML = `
-    <div class="fav-stack-wrap">
-      <div class="fav-empty-slot">#${rank}</div>
-    </div>
-    <div class="fav-title">Open spot</div>
-  `;
-  return item;
-}
-
 function renderNotEnoughCard(genre, count){
   const remaining = Math.max(MIN_BOOKS_FOR_FAVORITES - count, 0);
   const pct = Math.min(100, Math.round((count / MIN_BOOKS_FOR_FAVORITES) * 100));
@@ -1298,13 +1289,10 @@ function renderFavoritesPanel(container, {title, sub, resolved}){
   container.appendChild(panel);
   const gridEl = panel.querySelector(".fav-grid");
   resolved.forEach(entry => gridEl.appendChild(makeFavItem(entry)));
-  for(let i = resolved.length; i < MAX_FAVORITES; i++){
-    gridEl.appendChild(makeEmptyFavSlot(i + 1));
-  }
 }
 
 function rankedSub(resolved){
-  return resolved.length === MAX_FAVORITES ? "the full lineup, ranked" : `${resolved.length} of ${MAX_FAVORITES}, ranked`;
+  return `${resolved.length} ${resolved.length === 1 ? "favorite" : "favorites"}, ranked`;
 }
 
 function renderFavoritesInner(){

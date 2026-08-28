@@ -21,9 +21,11 @@
                      Master List, inside a series pop-up, or on a 2026 genre
                      shelf to see it in a detail popup. Keep it as short or
                      long as you want — plain text only, no HTML.
-   Favorites on all-books.html are computed automatically from 5-star
-   ratings — rate a book 5 stars and it becomes eligible for its genre's
-   Top 10 (and the Series tab's Top Series carousel) with no extra setup.
+   Favorites on all-books.html are computed automatically from 4-star
+   and up ratings — rate a book 4 or 5 stars and it becomes eligible for
+   its genre's Favorites shelf (and the Series tab's Favorite Series
+   carousel) with no extra setup, no cap on count, ranked by rating then
+   by most recently finished.
    ========================================================================= */
 const GOAL = 80;
 const books = [
@@ -77,7 +79,7 @@ const books = [
   {title:"Sharp Objects", cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1475695315i/18045891._SX300_.jpg", author:"Gillian Flynn", genre:["Thriller","Mystery"], pages:254, dateFinished:"2026-08-15", rating:2, pubYear:2006},
   {title:"And Now, Back to You", cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1748482477i/217513554.jpg", author:"B.K. Borison", genre:"Contemporary Romance", pages:464, dateFinished:"2026-08-16", rating:2, pubYear:2026, note:"Listened on audiobook. The one-bed, stuck-together trope felt more corny than swoony this time, and I skipped past the spicy scenes. Two meteorologists ending up working together was a fun premise, but this one just didn't click for me — probably won't continue the series."},
   {title:"Control Unleashed: Creating a Focused and Confident Dog", cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1349894884i/2101812.jpg", author:"Leslie McDevitt", genre:"Nonfiction", subgenre:"Dogs", pages:226, dateFinished:"2026-08-17", rating:2, pubYear:2007, note:"It was fine, but got pretty boring toward the end. This is really written for someone running a class or working with dogs in groups, or training sport dogs for agility-type activities — not a lot of it ended up practical for my own dogs. That said, I did pick up a few fun games and exercises out of it that I thought were cool."},
-  {title:"Carl's Doomsday Scenario", cover:"https://covers.openlibrary.org/b/olid/OL51633677M-L.jpg", author:"Matt Dinniman", genre:"Science Fiction", pages:528, dateFinished:"2026-08-21", rating:5, pubYear:2021, note:"I really love the Carl & Donut dynamic — that's easily my favorite part. The video game/LitRPG stuff is growing on me too. Book 1 kind of threw me off with how weird and dark it got, but now that I know what to expect going in, I'm enjoying it a lot more."},
+  {title:"Carl's Doomsday Scenario", cover:"https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1719949673i/212393364._SY180_.jpg", author:"Matt Dinniman", genre:"Science Fiction", pages:528, dateFinished:"2026-08-21", rating:5, pubYear:2021, note:"I really love the Carl & Donut dynamic — that's easily my favorite part. The video game/LitRPG stuff is growing on me too. Book 1 kind of threw me off with how weird and dark it got, but now that I know what to expect going in, I'm enjoying it a lot more."},
   {title:"Dungeon Crawler Carl, Vol. 1 (Graphic Novel)", cover:"https://covers.openlibrary.org/b/isbn/9781638493655-L.jpg", author:"Matt Dinniman", genre:"Graphic Novel", pages:320, dateFinished:"2026-08-23", rating:5, pubYear:2026},
   {title:"The Assassin's Blade", cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1680869667i/126062562.jpg", author:"Sarah J. Maas", genre:["Fantasy","Young Adult"], pages:464, dateFinished:"2026-08-23", rating:5, pubYear:2014, note:"Reread — I love it just as much the second time around."},
   {title:"Throne of Glass", cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1673566495i/76703559.jpg", author:"Sarah J. Maas", genre:["Fantasy","Young Adult"], pages:404, dateFinished:"2026-08-28", rating:5, pubYear:2012, note:"Reread — read the physical copy and listened on audiobook. Love this series, easy 5 stars."},
@@ -114,7 +116,7 @@ const pastReads = [
   {title:"Divine Rivals", genre:"Fantasy", readDate:"February 2025", rating:2, cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1661929417i/62202008.jpg", pubYear:2023},
   {title:"The Shining", genre:"Horror", readDate:"October 2024", cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1353277730i/11588.jpg", rating:2, pubYear:1977},
   {title:"Firefly Lane", genre:"Contemporary Fiction", readDate:"April 2025", rating:4, cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1485338283i/3524297.jpg", pubYear:2008},
-  {title:"Dark Fae", genre:"Fantasy", readDate:"May 2025", rating:4, cover:"https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1619705977i/57892054._SY180_.jpg", pubYear:2020},
+  {title:"Dark Fae", genre:"Fantasy", readDate:"May 2025", rating:4.5, cover:"https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1619705977i/57892054._SY180_.jpg", pubYear:2020},
   {title:"Savage Fae", genre:"Fantasy", readDate:"May 2025", rating:5, cover:"https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1619382623i/57849105._SY180_.jpg", pubYear:2020},
   {title:"Vicious Fae", genre:"Fantasy", readDate:"May 2025", rating:5, cover:"https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1619382736i/57849111._SY180_.jpg", pubYear:2020},
   {title:"Broken Fae", genre:"Fantasy", readDate:"June 2025", rating:5, cover:"https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1619382818i/57849125._SY180_.jpg", pubYear:2022},
@@ -442,14 +444,14 @@ const SERIES = [
     author: "Sarah J. Maas",
     status: "complete",
     books: [
-      {title:"Throne of Glass"},
-      {title:"Crown of Midnight"},
-      {title:"Heir of Fire"},
-      {title:"The Assassin's Blade"},
-      {title:"Queen of Shadows"},
-      {title:"Empire of Storms"},
-      {title:"Tower of Dawn"},
-      {title:"Kingdom of Ash"}
+      {title:"The Assassin's Blade", number:"0.5"},
+      {title:"Throne of Glass", number:"1"},
+      {title:"Crown of Midnight", number:"2"},
+      {title:"Heir of Fire", number:"3"},
+      {title:"Queen of Shadows", number:"4"},
+      {title:"Empire of Storms", number:"5"},
+      {title:"Tower of Dawn", number:"6"},
+      {title:"Kingdom of Ash", number:"7"}
     ]
   },
   {
