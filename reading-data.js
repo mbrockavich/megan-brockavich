@@ -80,6 +80,7 @@ const books = [
   {title:"Carl's Doomsday Scenario", cover:"https://covers.openlibrary.org/b/olid/OL51633677M-L.jpg", author:"Matt Dinniman", genre:"Science Fiction", pages:528, dateFinished:"2026-08-21", rating:5, pubYear:2021, note:"I really love the Carl & Donut dynamic — that's easily my favorite part. The video game/LitRPG stuff is growing on me too. Book 1 kind of threw me off with how weird and dark it got, but now that I know what to expect going in, I'm enjoying it a lot more."},
   {title:"Dungeon Crawler Carl, Vol. 1 (Graphic Novel)", cover:"https://covers.openlibrary.org/b/isbn/9781638493655-L.jpg", author:"Matt Dinniman", genre:"Graphic Novel", pages:320, dateFinished:"2026-08-23", rating:5, pubYear:2026},
   {title:"The Assassin's Blade", cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1680869667i/126062562.jpg", author:"Sarah J. Maas", genre:["Fantasy","Young Adult"], pages:464, dateFinished:"2026-08-23", rating:5, pubYear:2014, note:"Reread — I love it just as much the second time around."},
+  {title:"Throne of Glass", cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1673566495i/76703559.jpg", author:"Sarah J. Maas", genre:["Fantasy","Young Adult"], pages:404, dateFinished:"2026-08-28", rating:5, pubYear:2012, note:"Reread — read the physical copy and listened on audiobook. Love this series, easy 5 stars."},
 ];
 
 /* Everything finished before 2026 that still shows up as "read" on a
