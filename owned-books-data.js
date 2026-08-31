@@ -62,6 +62,7 @@ const OWNED_BOOKS = {
     {title:"BookMail: A Meta Horror Novel", spineTitle:"BookMail", author:"Jason R. Davis", cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1746988324i/230237670._SX300_.jpg"},
     {title:"It Ends with Us", author:"Colleen Hoover", cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1670795825i/62627512._SX300_.jpg"},
     {title:"It Starts with Us", author:"Colleen Hoover", cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1644605295i/60393672.jpg"},
+    {title:"Verity", author:"Colleen Hoover", cover:"https://covers.openlibrary.org/b/isbn/9781791392796-L.jpg"},
     {title:"Funny Story", author:"Emily Henry", cover:"https://covers.openlibrary.org/b/id/14625690-L.jpg"},
     {title:"The Handmaid's Tale", author:"Margaret Atwood", cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1488552336i/34454589.jpg"},
     {title:"The Handmaid's Tale: The Graphic Novel", spineTitle:"The Handmaid's Tale (Graphic Novel)", author:"Renee Nault", cover:"https://covers.openlibrary.org/b/id/14339099-L.jpg"},

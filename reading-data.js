@@ -83,6 +83,7 @@ const books = [
   {title:"Dungeon Crawler Carl, Vol. 1 (Graphic Novel)", cover:"https://covers.openlibrary.org/b/isbn/9781638493655-L.jpg", author:"Matt Dinniman", genre:"Graphic Novel", pages:320, dateFinished:"2026-08-23", rating:5, pubYear:2026},
   {title:"The Assassin's Blade", cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1680869667i/126062562.jpg", author:"Sarah J. Maas", genre:["Fantasy","Young Adult"], pages:464, dateFinished:"2026-08-23", rating:5, pubYear:2014, note:"Reread — I love it just as much the second time around."},
   {title:"Throne of Glass", cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1673566495i/76703559.jpg", author:"Sarah J. Maas", genre:["Fantasy","Young Adult"], pages:404, dateFinished:"2026-08-28", rating:5, pubYear:2012, note:"Reread — read the physical copy and listened on audiobook. Love this series, easy 5 stars."},
+  {title:"Verity", cover:"https://covers.openlibrary.org/b/isbn/9781791392796-L.jpg", author:"Colleen Hoover", genre:"Thriller", pages:336, dateFinished:"2026-08-29", rating:5, pubYear:2018, note:"Messy and unsettling in the best way — everyone in this book is a little bit awful, and I'm still not sure how I feel about any of it. Now that I know how it ends, I kind of want to reread it just to decide for myself whether Verity was really the monster the manuscript makes her out to be."},
 ];
 
 /* Everything finished before 2026 that still shows up as "read" on a
