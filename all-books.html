@@ -473,6 +473,7 @@
   .owned-pill.k{ background:#9fb98d; }
   .owned-pill.a{ background:#cf9aa0; }
   .owned-pill.p{ background:#d4af6a; }
+  .owned-pill.u{ background:#8fa8cf; }
   .modal-note2{ font-size:12.5px; font-style:italic; color:var(--ink-soft); line-height:1.5; border-left:2px solid var(--stamp); padding-left:10px; text-align:left; }
 
   footer.page-foot{
@@ -777,6 +778,7 @@ const FORMAT_INFO = {
   kindle: {emoji:"📱", label:"Kindle"},
   audible: {emoji:"🎧", label:"Audible"},
   physical: {emoji:"📚", label:"Physical"},
+  kindleUnlimited: {emoji:"🔄", label:"Kindle Unlimited"},
 };
 const formatPillsContainer = document.getElementById("formatPills");
 const hasOwnedLookup = typeof findOwnedFormats === "function";
@@ -798,7 +800,7 @@ function renderFormatPills(){
   allPill.addEventListener("click", () => selectFormat("All"));
   formatPillsContainer.appendChild(allPill);
 
-  ["kindle","audible","physical"].forEach(fmt => {
+  ["kindle","audible","physical","kindleUnlimited"].forEach(fmt => {
     const info = FORMAT_INFO[fmt];
     const pill = document.createElement("button");
     pill.className = "pill" + (activeFormat === fmt ? " active" : "");
@@ -1374,6 +1376,7 @@ const OWNED_PILL_INFO = {
   kindle: {cls: "k", label: "📱 Kindle"},
   audible: {cls: "a", label: "🎧 Audible"},
   physical: {cls: "p", label: "📚 Physical"},
+  kindleUnlimited: {cls: "u", label: "🔄 Kindle Unlimited"},
 };
 
 /* eyebrow: optional badge text above the title (e.g. "Favorite"). Pass

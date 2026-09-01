@@ -4,11 +4,16 @@
    without being read yet, or read without being owned (library loans,
    borrowed copies, etc).
 
-   Used by the format filter (Kindle / Audible / Physical) on all-books.html,
-   which also cross-references reading-data.js by title — if a book here has
-   also been logged as read there, its rating and note show up automatically
-   when you tap it. Nothing to do on this end for that to work, just make
-   sure the title matches exactly.
+   Used by the format filter (Kindle / Audible / Physical / Kindle Unlimited)
+   on all-books.html, which also cross-references reading-data.js by title —
+   if a book here has also been logged as read there, its rating and note
+   show up automatically when you tap it. Nothing to do on this end for that
+   to work, just make sure the title matches exactly.
+
+   kindleUnlimited is separate from kindle: kindle means she owns/bought the
+   Kindle edition outright, kindleUnlimited means it's currently readable via
+   a Kindle Unlimited subscription (can disappear from KU later — just move
+   or remove the entry if that happens).
 
    Each entry needs at least a title. Everything else is optional but
    makes the shelf look much better:
@@ -71,14 +76,25 @@ const OWNED_BOOKS = {
     {title:"Dungeon Crawler Carl, Vol. 1 (Graphic Novel)", author:"Matt Dinniman", cover:"https://covers.openlibrary.org/b/isbn/9781638493655-L.jpg"},
     {title:"The Assassin's Blade", author:"Sarah J. Maas", cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1680869667i/126062562.jpg"},
   ],
+  kindleUnlimited: [
+    {title:"Dungeon Crawler Carl", author:"Matt Dinniman", cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1715780755i/211721806.jpg"},
+    {title:"Carl's Doomsday Scenario", author:"Matt Dinniman", cover:"https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1719949673i/212393364._SY180_.jpg"},
+    {title:"The Dungeon Anarchist's Cookbook", author:"Matt Dinniman", cover:"dungeon-crawler-carl/dungeon-anarchists-cookbook-cover.jpg"},
+    {title:"The Gate of the Feral Gods", author:"Matt Dinniman"},
+    {title:"The Butcher's Masquerade", author:"Matt Dinniman"},
+    {title:"The Eye of the Bedlam Bride", author:"Matt Dinniman"},
+    {title:"This Inevitable Ruin", author:"Matt Dinniman"},
+    {title:"A Parade of Horribles", author:"Matt Dinniman"},
+  ],
 };
 
-/* Looks a title up across all three owned-format lists. Returns an array
-   of format keys ("kindle","audible","physical") the title appears in, in
-   that order, or [] if it isn't owned in any format. Powers the Kindle /
-   Audible / Physical filter pills on all-books.html. */
+/* Looks a title up across all owned-format lists. Returns an array of
+   format keys ("kindle","audible","physical","kindleUnlimited") the title
+   appears in, in that order, or [] if it isn't owned/available in any
+   format. Powers the Kindle / Audible / Physical / Kindle Unlimited filter
+   pills on all-books.html. */
 function findOwnedFormats(title) {
-  return ["kindle", "audible", "physical"].filter(
+  return ["kindle", "audible", "physical", "kindleUnlimited"].filter(
     fmt => OWNED_BOOKS[fmt].some(b => b.title === title)
   );
 }
