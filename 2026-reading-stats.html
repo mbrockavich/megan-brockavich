@@ -149,6 +149,9 @@
     line-height:1;
   }
   .month-slot .stamp-mark small{ display:block; font-size:8px; letter-spacing:0.06em; text-align:center; }
+  .month-slot.clickable{ cursor:pointer; transition: transform .15s ease-out; }
+  .month-slot.clickable:hover{ transform: scale(1.08); }
+  .month-slot.clickable:focus-visible{ outline:2px solid var(--stamp); outline-offset:3px; }
 
   .hero-foot{
     display:flex; gap: 24px; flex-wrap:wrap;
@@ -476,7 +479,7 @@
 <div class="modal-overlay" id="genreModalOverlay">
   <div class="modal-panel" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
     <button class="modal-close" id="modalClose" aria-label="Close">✕</button>
-    <div class="modal-eyebrow">On This Shelf</div>
+    <div class="modal-eyebrow" id="modalEyebrow">On This Shelf</div>
     <h2 class="modal-title" id="modalTitle"></h2>
     <div class="modal-sub" id="modalSub"></div>
     <div class="modal-book-grid" id="modalBookGrid"></div>
@@ -540,12 +543,16 @@ books.forEach(b => {
 });
 
 const currentMonth = TODAY.getMonth(); // 0-indexed, July = 6
-const monthsLeft = Math.max(12 - currentMonth - 1, 1); // excludes current month
-const paceNeededPerMonth = remaining > 0 ? (remaining / monthsLeft) : 0;
 
 const endOfYear = new Date(YEAR, 11, 31);
 const daysLeftInYear = Math.round((endOfYear - TODAY) / 86400000);
 const daysPerBookNeeded = remaining > 0 ? (daysLeftInYear / remaining) : 0;
+
+// Fractional months left, based on actual days remaining (not whole
+// calendar months) so this stays consistent with daysPerBookNeeded above —
+// otherwise the two stats disagree depending on where in the month "today" falls.
+const monthsLeft = Math.max(daysLeftInYear / (365 / 12), 1 / 30);
+const paceNeededPerMonth = remaining > 0 ? (remaining / monthsLeft) : 0;
 
 const paceNeededPerMonthStretch = remainingStretch > 0 ? (remainingStretch / monthsLeft) : 0;
 const daysPerBookNeededStretch = remainingStretch > 0 ? (daysLeftInYear / remainingStretch) : 0;
@@ -601,6 +608,15 @@ MONTH_LABELS.forEach((label, i) => {
   lab.className = "mlabel";
   lab.textContent = label;
   slot.appendChild(lab);
+  if(count > 0){
+    slot.classList.add("clickable");
+    slot.setAttribute("tabindex", "0");
+    slot.setAttribute("role", "button");
+    slot.setAttribute("aria-label", `View ${count} book${count === 1 ? "" : "s"} read in ${label}`);
+    const open = () => openMonthModal(i, label);
+    slot.addEventListener("click", open);
+    slot.addEventListener("keydown", (e) => { if(e.key === "Enter" || e.key === " "){ e.preventDefault(); open(); } });
+  }
   stampGrid.appendChild(slot);
 });
 
@@ -681,6 +697,7 @@ genreList.forEach(([genre, count], i) => {
 
 /* ---------------- genre detail modal ---------------- */
 const modalOverlay = document.getElementById("genreModalOverlay");
+const modalEyebrow = document.getElementById("modalEyebrow");
 const modalTitle = document.getElementById("modalTitle");
 const modalSub = document.getElementById("modalSub");
 const modalBookGrid = document.getElementById("modalBookGrid");
@@ -742,6 +759,7 @@ function openGenreModal(genre, spineColor){
     .filter(b => bookGenres(b).includes(genre))
     .sort((a,b) => a.author.localeCompare(b.author) || parseLocalDate(a.dateFinished) - parseLocalDate(b.dateFinished));
 
+  modalEyebrow.textContent = "On This Shelf";
   modalTitle.textContent = `${GENRE_EMOJI[genre] || "📚"} ${genre}`;
   modalSub.textContent = `${genreBooks.length} book${genreBooks.length === 1 ? "" : "s"} finished in 2026`;
 
@@ -779,6 +797,23 @@ function openGenreModal(genre, spineColor){
 
 function closeGenreModal(){
   modalOverlay.classList.remove("open");
+}
+
+function openMonthModal(monthIdx, label){
+  const monthBooks = books
+    .filter(b => monthIndex(b.dateFinished) === monthIdx)
+    .sort((a,b) => parseLocalDate(a.dateFinished) - parseLocalDate(b.dateFinished));
+
+  modalEyebrow.textContent = "Checked Out This Month";
+  modalTitle.textContent = `📅 ${label}`;
+  modalSub.textContent = `${monthBooks.length} book${monthBooks.length === 1 ? "" : "s"} finished in ${label} 2026, in the order you read them`;
+
+  modalBookGrid.className = "modal-book-grid";
+  modalBookGrid.innerHTML = "";
+  renderBookGrid(monthBooks, modalBookGrid, "var(--stamp)");
+
+  modalOverlay.classList.add("open");
+  modalClose.focus();
 }
 
 modalClose.addEventListener("click", closeGenreModal);
