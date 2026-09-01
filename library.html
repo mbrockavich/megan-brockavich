@@ -263,9 +263,15 @@
       color: '#c1502e',
       height: 210
     },
+    {
+      title: 'Book Shopping List',
+      href: 'shopping-list.html',
+      color: '#e8ac00',
+      height: 185
+    },
   ];
 
-  const EMPTY_SLOTS = 3; // faint placeholders to hint the shelf will fill in
+  const EMPTY_SLOTS = 2; // faint placeholders to hint the shelf will fill in
 
   const shelf = document.getElementById('shelf');
   shelf.innerHTML = books.map(b => `
