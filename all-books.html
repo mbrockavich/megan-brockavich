@@ -598,11 +598,14 @@ if(typeof RATING_LEGEND !== "undefined"){
 }
 
 const GENRE_EMOJI = {
-  "Contemporary Fiction":"📖","Contemporary Romance":"💛","Fantasy":"🐉",
-  "Science Fiction":"🚀","Thriller":"🔪","Mystery":"🔎","Horror":"🕯️","Nonfiction":"🧠",
-  "Memoir / Biography":"🪞","Literary Fiction":"🖋️","Historical Fiction":"🏛️","Graphic Novel":"🎨",
-  "Classic Literature":"🕰️","Mythology":"🏺","Young Adult":"🎒","Middle Grade":"🧸"
+  "Fantasy":"🐉","Science Fiction":"🚀","Suspense":"🔪","Romance":"💛",
+  "Literary/Contemporary Fiction":"📖","Classic Literature":"🕰️","Historical Fiction":"🏛️",
+  "Mythology":"🏺","Graphic Novel":"🎨","Nonfiction":"🧠","Memoir/Biography":"🪞",
+  "Young Adult":"🎒","Middle Grade":"🧸","Spicy":"🌶️"
 };
+/* Young Adult & Middle Grade are age categories, not genres — they filter
+   like a genre but show in their own pill group, apart from the list above. */
+const AGE_TAGS = ["Young Adult", "Middle Grade"];
 const SUBGENRE_EMOJI = {
   "Self-Development":"💪","Spirituality":"🔮","Essays":"🖋️","True Crime":"🔪","Poetry":"📜","Dogs":"🐾","Other":"📚"
 };
@@ -689,7 +692,12 @@ const MASTER_SORTED = [...ALL_BOOKS].sort((a, b) => {
 /* ---------------- hero + footer ---------------- */
 const genreCounts = {};
 ALL_BOOKS.forEach(b => { b.genres.forEach(g => { genreCounts[g] = (genreCounts[g]||0)+1; }); });
-const genreList = Object.entries(genreCounts).sort((a,b) => b[1]-a[1]);
+/* age tags (YA / Middle Grade) are pulled out of the genre list and shown
+   in their own pill group; "Series" and "Spicy" are separate filters too. */
+const genreList = Object.entries(genreCounts)
+  .filter(([g]) => !AGE_TAGS.includes(g))
+  .sort((a,b) => b[1]-a[1]);
+const spicyCount = ALL_BOOKS.filter(b => b.spicy).length;
 
 const datedBooks = ALL_BOOKS.filter(b => b.dateLabel !== "Undated");
 const oldest = datedBooks[datedBooks.length-1];
@@ -726,7 +734,7 @@ function renderStats(){
   }
 
   const scoped = ALL_BOOKS.filter(b => {
-    const genreMatch = activeGenre === "All" || b.genres.includes(activeGenre);
+    const genreMatch = matchesGenreFilter(b);
     const formatMatch = activeFormat === "All" || (hasOwnedLookup && findOwnedFormats(b.title).includes(activeFormat));
     return genreMatch && formatMatch;
   });
@@ -737,7 +745,7 @@ function renderStats(){
 
   const seriesInScope = SERIES.filter(s => s.books.some(sb => {
     const b = ALL_BOOKS_BY_TITLE.get(sb.title);
-    const genreMatch = activeGenre === "All" || (b && b.genres.includes(activeGenre));
+    const genreMatch = b && matchesGenreFilter(b);
     const formatMatch = activeFormat === "All" || (hasOwnedLookup && findOwnedFormats(sb.title).includes(activeFormat));
     return b && genreMatch && formatMatch;
   })).length;
@@ -747,7 +755,7 @@ function renderStats(){
   const sinceYear = oldestInScope ? oldestInScope.dateLabel.split(" ")[1] : "N/A";
 
   const stats = [
-    {v: scoped.length, l: activeGenre === "All" ? "Total Books" : `${activeGenre} Books`},
+    {v: scoped.length, l: activeGenre === "All" ? "Total Books" : activeGenre === "Spicy" ? "Spicy Reads" : `${activeGenre} Books`},
     {v: topAuthor ? topAuthor[0] : "N/A", l: "Most Read Author"},
     {v: seriesInScope, l: "Series"},
     {v: sinceYear, l: "Reading Since"}
@@ -765,6 +773,15 @@ function renderStats(){
 let activeGenre = "All";
 let activeFormat = "All";
 let searchTerm = "";
+
+/* The genre pill can also be one of the computed filters: "All" (no genre
+   constraint) or "Spicy" (only books flagged spicy: true). Age tags and
+   real genres both just check membership in b.genres. */
+function matchesGenreFilter(b){
+  if(activeGenre === "All") return true;
+  if(activeGenre === "Spicy") return !!b.spicy;
+  return b.genres.includes(activeGenre);
+}
 
 /* ---------------- genre pills ---------------- */
 const pillsContainer = document.getElementById("genrePills");
@@ -827,11 +844,30 @@ function renderPills(){
   seriesPill.addEventListener("click", () => selectFilter("Series"));
   pillsContainer.appendChild(seriesPill);
 
+  if(spicyCount > 0){
+    const spicyPill = document.createElement("button");
+    spicyPill.className = "pill" + (activeGenre === "Spicy" ? " active" : "");
+    spicyPill.innerHTML = `🌶️ Spicy <span class="count">${spicyCount}</span>`;
+    spicyPill.addEventListener("click", () => selectFilter("Spicy"));
+    pillsContainer.appendChild(spicyPill);
+  }
+
   genreList.forEach(([genre, count]) => {
     const pill = document.createElement("button");
     pill.className = "pill" + (activeGenre === genre ? " active" : "");
     pill.innerHTML = `${GENRE_EMOJI[genre] || "📚"} ${genre} <span class="count">${count}</span>`;
     pill.addEventListener("click", () => selectFilter(genre));
+    pillsContainer.appendChild(pill);
+  });
+
+  // age categories (YA / Middle Grade), kept visually after the genres
+  AGE_TAGS.forEach(tag => {
+    const count = genreCounts[tag] || 0;
+    if(!count) return;
+    const pill = document.createElement("button");
+    pill.className = "pill" + (activeGenre === tag ? " active" : "");
+    pill.innerHTML = `${GENRE_EMOJI[tag] || "📚"} ${tag} <span class="count">${count}</span>`;
+    pill.addEventListener("click", () => selectFilter(tag));
     pillsContainer.appendChild(pill);
   });
 }
@@ -976,7 +1012,7 @@ function renderShelf(){
   }
 
   const filtered = MASTER_SORTED.filter(b => {
-    const genreMatch = activeGenre === "All" || b.genres.includes(activeGenre);
+    const genreMatch = matchesGenreFilter(b);
     const formatMatch = activeFormat === "All" || (hasOwnedLookup && findOwnedFormats(b.title).includes(activeFormat));
     const searchMatch = !searchTerm ||
       b.title.toLowerCase().includes(searchTerm) ||
@@ -984,12 +1020,17 @@ function renderShelf(){
     return genreMatch && formatMatch && searchMatch;
   });
 
+  // The Spicy filter lists each flagged book on its own so the 🌶️ books
+  // are all visible — series stacks would hide non-spicy siblings and only
+  // show the top cover.
+  const collapseSeries = activeGenre !== "Spicy";
+
   // collapse every book that belongs to a series (2+ books read) into one
   // stacked card, in the order its first-appearing book was sorted
   const seenSeries = new Set();
   const items = [];
   filtered.forEach(b => {
-    const series = seriesByBookTitle.get(b.title);
+    const series = collapseSeries ? seriesByBookTitle.get(b.title) : null;
     if(!series || series.books.length < 2){ items.push({kind: "book", book: b}); return; }
     if(seenSeries.has(series.name)) return;
     seenSeries.add(series.name);
@@ -1017,7 +1058,7 @@ function renderShelf(){
   // get grouped into labeled sections instead of one flat grid, mirroring
   // the 2026 stats page's genre pop-up. Only kicks in for a specific genre,
   // not "All" (mixing subgenres across every genre wouldn't mean anything).
-  const showSubgroups = activeGenre !== "All" && filtered.some(b => b.subgenre);
+  const showSubgroups = activeGenre !== "All" && activeGenre !== "Spicy" && filtered.some(b => b.subgenre);
 
   if(showSubgroups){
     const bySubgenre = {};
@@ -1305,6 +1346,9 @@ function rankedSub(resolved){
 
 function renderFavoritesInner(){
   favoritesContainer.innerHTML = "";
+
+  // "Spicy" is a flag-based filter, not a genre — no Favorites shelf for it.
+  if(activeGenre === "Spicy") return;
 
   if(activeGenre === "Series"){
     // Favorite Series carousel: every 5-star series across the whole

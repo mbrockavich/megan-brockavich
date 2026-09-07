@@ -220,6 +220,12 @@
   .spine-row:hover{ transform: translateX(4px); }
   .spine-row:hover .spine-name{ text-decoration:underline; text-decoration-thickness:1.5px; }
   .spine-row:focus-visible{ outline:2px solid var(--stamp); outline-offset:3px; }
+  .spine-subhead{
+    font-family:'Space Mono',monospace; font-size:10px; text-transform:uppercase;
+    letter-spacing:0.14em; color:var(--ink-soft);
+    margin: 20px 0 12px; padding-top: 14px;
+    border-top: 1px dashed rgba(43,33,24,0.22);
+  }
 
   /* genre detail modal */
   .modal-overlay{
@@ -284,6 +290,15 @@
     width:100%; height:100%; object-fit:cover;
     border-radius: inherit;
     display:block;
+  }
+  /* spicy sticker, bottom-left corner of the cover */
+  .modal-book-spicy{
+    position:absolute; bottom:5px; left:5px; z-index:2;
+    width:22px; height:22px; border-radius:50%;
+    background:#fff5f2; border:1.5px solid rgba(255,255,255,0.7);
+    box-shadow:0 2px 4px rgba(0,0,0,0.35);
+    display:flex; align-items:center; justify-content:center;
+    font-size:13px; line-height:1; transform:rotate(8deg);
   }
   .modal-book-title{ font-size:11.5px; font-weight:600; line-height:1.3; margin-bottom:2px; }
   .modal-book-author{ font-size:10.5px; color:var(--ink-soft); }
@@ -503,22 +518,28 @@
 <script>
 /* GOAL, books, SERIES, and formatRating come from reading-data.js */
 
-/* Master list used only to figure out what's missing from the shelf. */
+/* Master list used only to figure out what's missing from the shelf.
+   Fiction genres first, then nonfiction. Young Adult / Middle Grade are
+   age categories (shown apart from the genres), not part of this list. */
 const MASTER_GENRES = [
-  "Contemporary Fiction","Contemporary Romance","Fantasy","Science Fiction",
-  "Thriller","Mystery","Horror","Nonfiction","Memoir / Biography","Literary Fiction",
-  "Historical Fiction","Graphic Novel","Classic Literature","Mythology","Young Adult"
+  "Fantasy","Science Fiction","Suspense","Romance","Literary/Contemporary Fiction",
+  "Classic Literature","Historical Fiction","Mythology","Graphic Novel",
+  "Nonfiction","Memoir/Biography"
 ];
+
+/* Age categories — filter like a genre but tracked separately from the
+   genre shelf above. */
+const AGE_TAGS = ["Young Adult", "Middle Grade"];
 
 /* Palette cycled across genre bars */
 const SPINE_COLORS = ["#e2789a","#b8c4e8","#a8d5ba","#f0c987","#c9a0c9","#e8a87c","#8fc9ce","#d9a4c0"];
 
 /* Emoji per genre, for a little levity on the shelf */
 const GENRE_EMOJI = {
-  "Contemporary Fiction":"📖","Contemporary Romance":"💛","Fantasy":"🐉",
-  "Science Fiction":"🚀","Thriller":"🔪","Mystery":"🔎","Horror":"🕯️","Nonfiction":"🧠",
-  "Memoir / Biography":"🪞","Literary Fiction":"🖋️","Historical Fiction":"🏛️","Graphic Novel":"🎨",
-  "Classic Literature":"🕰️","Mythology":"🏺","Young Adult":"🎒","Middle Grade":"🧸"
+  "Fantasy":"🐉","Science Fiction":"🚀","Suspense":"🔪","Romance":"💛",
+  "Literary/Contemporary Fiction":"📖","Classic Literature":"🕰️","Historical Fiction":"🏛️",
+  "Mythology":"🏺","Graphic Novel":"🎨","Nonfiction":"🧠","Memoir/Biography":"🪞",
+  "Young Adult":"🎒","Middle Grade":"🧸","Spicy":"🌶️"
 };
 
 /* ---------------- date helpers ---------------- */
@@ -561,7 +582,15 @@ function bookGenres(b){ return Array.isArray(b.genre) ? b.genre : [b.genre]; }
 
 const genreCounts = {};
 books.forEach(b => { bookGenres(b).forEach(g => { genreCounts[g] = (genreCounts[g] || 0) + 1; }); });
-const genreList = Object.entries(genreCounts).sort((a,b) => b[1]-a[1]);
+/* real genres on the shelf, age categories broken out into their own rows */
+const genreList = Object.entries(genreCounts)
+  .filter(([g]) => !AGE_TAGS.includes(g))
+  .sort((a,b) => b[1]-a[1]);
+const ageTagList = AGE_TAGS
+  .map(t => [t, genreCounts[t] || 0])
+  .filter(([, c]) => c > 0)
+  .sort((a,b) => b[1]-a[1]);
+const spicyBooks = books.filter(b => b.spicy);
 const missingGenres = MASTER_GENRES.filter(g => !genreCounts[g]);
 
 const totalPages = books.reduce((s,b) => s + b.pages, 0);
@@ -672,28 +701,55 @@ renderBarChart("pagesChart", pagesByMonth, "var(--slate-blue)", v => v.toLocaleS
 /* ---------------- genre shelf ---------------- */
 const shelfContainer = document.getElementById("genreShelf");
 const maxGenreCount = genreList.length ? genreList[0][1] : 1;
-genreList.forEach(([genre, count], i) => {
+
+function addSpineRow(label, count, spineColor, onOpen){
   const pct = Math.max((count / maxGenreCount) * 100, 12);
-  const spineColor = SPINE_COLORS[i % SPINE_COLORS.length];
   const row = document.createElement("div");
   row.className = "spine-row";
   row.setAttribute("tabindex", "0");
   row.setAttribute("role", "button");
-  row.setAttribute("aria-label", `View ${count} ${genre} books`);
+  row.setAttribute("aria-label", `View ${count} ${label} books`);
   row.innerHTML = `
-    <div class="spine-name">${GENRE_EMOJI[genre] || "📚"} ${genre}</div>
+    <div class="spine-name">${label}</div>
     <div class="spine-track">
       <div class="spine-fill" style="width:${pct}%; background:${spineColor};">
         <span>${count}</span>
       </div>
     </div>
   `;
-  row.addEventListener("click", () => openGenreModal(genre, spineColor));
+  row.addEventListener("click", onOpen);
   row.addEventListener("keydown", (e) => {
-    if(e.key === "Enter" || e.key === " "){ e.preventDefault(); openGenreModal(genre, spineColor); }
+    if(e.key === "Enter" || e.key === " "){ e.preventDefault(); onOpen(); }
   });
   shelfContainer.appendChild(row);
+}
+
+function addSubhead(text){
+  const h = document.createElement("div");
+  h.className = "spine-subhead";
+  h.textContent = text;
+  shelfContainer.appendChild(h);
+}
+
+genreList.forEach(([genre, count], i) => {
+  const spineColor = SPINE_COLORS[i % SPINE_COLORS.length];
+  addSpineRow(`${GENRE_EMOJI[genre] || "📚"} ${genre}`, count, spineColor,
+    () => openGenreModal(genre, spineColor));
 });
+
+if(ageTagList.length || spicyBooks.length){
+  addSubhead("Also tracked");
+}
+ageTagList.forEach(([tag, count], i) => {
+  const spineColor = SPINE_COLORS[(genreList.length + i) % SPINE_COLORS.length];
+  addSpineRow(`${GENRE_EMOJI[tag] || "📚"} ${tag}`, count, spineColor,
+    () => openGenreModal(tag, spineColor));
+});
+if(spicyBooks.length){
+  const spineColor = "#d1495b";
+  addSpineRow(`🌶️ Spicy Reads`, spicyBooks.length, spineColor,
+    () => openGenreModal("Spicy", spineColor));
+}
 
 /* ---------------- genre detail modal ---------------- */
 const modalOverlay = document.getElementById("genreModalOverlay");
@@ -710,7 +766,7 @@ function renderBookGrid(bookList, container, spineColor){
     item.setAttribute("tabindex", "0");
     item.setAttribute("role", "button");
     item.setAttribute("aria-label", `View details for ${b.title}`);
-    const coverHtml = `<div class="modal-book-cover" style="background:${spineColor};"><span>${b.title}</span>${b.cover ? `<img src="${b.cover}" alt="Cover of ${b.title}" loading="lazy" onerror="this.remove()">` : ""}</div>`;
+    const coverHtml = `<div class="modal-book-cover" style="background:${spineColor};"><span>${b.title}</span>${b.cover ? `<img src="${b.cover}" alt="Cover of ${b.title}" loading="lazy" onerror="this.remove()">` : ""}${b.spicy ? `<div class="modal-book-spicy" title="Spicy">🌶️</div>` : ""}</div>`;
     const niceDate = parseLocalDate(b.dateFinished).toLocaleDateString('en-US', {month:'short', day:'numeric'});
     item.innerHTML = `
       ${coverHtml}
@@ -755,12 +811,13 @@ bookNoteModalOverlay.addEventListener("click", (e) => { if(e.target === bookNote
 document.addEventListener("keydown", (e) => { if(e.key === "Escape" && bookNoteModalOverlay.classList.contains("open")) closeBookNoteModal(); });
 
 function openGenreModal(genre, spineColor){
+  const isSpicy = genre === "Spicy";
   const genreBooks = books
-    .filter(b => bookGenres(b).includes(genre))
+    .filter(b => isSpicy ? b.spicy : bookGenres(b).includes(genre))
     .sort((a,b) => a.author.localeCompare(b.author) || parseLocalDate(a.dateFinished) - parseLocalDate(b.dateFinished));
 
-  modalEyebrow.textContent = "On This Shelf";
-  modalTitle.textContent = `${GENRE_EMOJI[genre] || "📚"} ${genre}`;
+  modalEyebrow.textContent = isSpicy ? "Bring A Fan" : "On This Shelf";
+  modalTitle.textContent = isSpicy ? "🌶️ Spicy Reads" : `${GENRE_EMOJI[genre] || "📚"} ${genre}`;
   modalSub.textContent = `${genreBooks.length} book${genreBooks.length === 1 ? "" : "s"} finished in 2026`;
 
   modalBookGrid.innerHTML = "";
