@@ -615,7 +615,7 @@ const SERIES = [
   {
     name: "Dungeon Crawler Carl",
     author: "Matt Dinniman",
-    status: "ongoing",
+    status: "complete",
     books: [
       {title:"Dungeon Crawler Carl", number:"1"},
       {title:"Carl's Doomsday Scenario", number:"2"},
@@ -625,7 +625,8 @@ const SERIES = [
       {title:"The Eye of the Bedlam Bride", number:"6"},
       {title:"This Inevitable Ruin", number:"7"},
       {title:"A Parade of Horribles", number:"8"},
-      {title:"The Beautiful Place", number:"9", comingSoon:true}
+      {title:"The Beautiful Place", number:"9", comingSoon:true},
+      {title:"Dungeon Crawler Carl, Book 10", number:"10", comingSoon:true}
     ]
   },
   {
