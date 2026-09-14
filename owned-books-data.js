@@ -34,6 +34,7 @@ const OWNED_BOOKS = {
   kindle: [
     {title:"The Count of Monte Cristo", author:"Alexandre Dumas", cover:"count-of-monte-cristo/monte-cristo-cover.jpg"},
     {title:"Crown of Midnight", author:"Sarah J. Maas", cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1673566594i/76705490.jpg"},
+    {title:"Dear Monica Lewinsky: A Novel", author:"Julia Langbein", cover:"https://covers.openlibrary.org/b/isbn/9780385551502-L.jpg"},
   ],
   audible: [
     {title:"And Now, Back to You", author:"B.K. Borison", narrator:"", cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1748482477i/217513554.jpg"},
