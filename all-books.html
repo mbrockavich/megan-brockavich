@@ -116,7 +116,6 @@
   .search-input::placeholder{ color: rgba(253,241,245,0.5); }
   .search-input:focus{ border-color: var(--stamp); }
   .pills{ display:flex; flex-wrap:wrap; gap: 7px; }
-  .pills.pills-secondary{ margin-top: 7px; }
   .pill{
     font-family:'Space Mono', monospace; font-size: 10.5px; letter-spacing: 0.03em;
     padding: 6px 12px; border-radius: 20px; border: 1.5px solid rgba(255,255,255,0.18);
@@ -128,11 +127,6 @@
   .pill.active{ background: var(--stamp); color: var(--wood-darker); border-color: var(--stamp); font-weight:700; }
   .pill .count{ opacity:0.7; font-size:9.5px; }
 
-  /* format pills (Kindle / Audible / Physical / Kindle Unlimited) are all
-     fixed to the same width, sized to fit the longest label, so they line
-     up evenly instead of hugging each one's own text. */
-  .pills-secondary .pill{ justify-content:center; width: 148px; white-space:nowrap; }
-
   @media (max-width: 700px){
     .filter-bar{ padding: 12px 0 12px; }
     .search-input{ padding: 12px 16px; margin-bottom: 10px; }
@@ -142,7 +136,6 @@
     }
     .pills::-webkit-scrollbar{ display:none; }
     .pill{ flex: 0 0 auto; padding: 8px 13px; font-size: 11px; }
-    .pills-secondary .pill{ width: 158px; }
   }
 
   /* series-tab stacked cards: same master-card-series look, status pill instead of genre tag */
@@ -276,11 +269,6 @@
   .series-book-title{ font-size:11.5px; font-weight:600; line-height:1.3; color: var(--ink); }
   .series-book-rating{ font-size:15px; color: var(--gold); margin-top:3px; letter-spacing:0.03em; }
   .series-book-num{ font-family:'Space Mono',monospace; font-weight:400; font-size:10px; color: var(--ink-soft); }
-  .series-book-owned{ display:flex; justify-content:center; gap:4px; margin-top:5px; flex-wrap:wrap; }
-  .series-book-owned-pill{
-    font-family:'Space Mono',monospace; font-size:8.5px; font-weight:700; letter-spacing:0.03em;
-    background: var(--stamp); color:#fff; padding:2px 6px; border-radius:20px;
-  }
 
   /* stats strip */
   .stats-strip{
@@ -470,16 +458,6 @@
     padding:3px 11px; border-radius:20px; background: rgba(226,120,154,0.14); color: var(--ink);
   }
   .modal-meta2{ font-size:11.5px; color:var(--gold); letter-spacing:0.02em; margin-bottom:10px; }
-  .modal-owned2{ display:flex; flex-wrap:wrap; justify-content:center; gap:5px; margin-bottom:10px; }
-  .owned-pill{
-    display:inline-flex; align-items:center; gap:3px; font-family:'Space Mono',monospace;
-    font-size:9.5px; letter-spacing:0.04em; text-transform:uppercase; color:#fff;
-    padding:3px 8px; border-radius:20px;
-  }
-  .owned-pill.k{ background:#9fb98d; }
-  .owned-pill.a{ background:#cf9aa0; }
-  .owned-pill.p{ background:#d4af6a; }
-  .owned-pill.u{ background:#8fa8cf; }
   .modal-note2{ font-size:12.5px; font-style:italic; color:var(--ink-soft); line-height:1.5; border-left:2px solid var(--stamp); padding-left:10px; text-align:left; }
 
   footer.page-foot{
@@ -527,7 +505,6 @@
   <div class="filter-bar-inner">
     <input type="text" class="search-input" id="searchInput" placeholder="Search by title or author...">
     <div class="pills" id="genrePills"></div>
-    <div class="pills pills-secondary" id="formatPills"></div>
   </div>
 </div>
 
@@ -564,7 +541,6 @@
     <div class="modal-author2" id="modalAuthor2"></div>
     <div class="modal-genres2" id="modalGenres2"></div>
     <div class="modal-meta2" id="modalMeta2"></div>
-    <div class="modal-owned2" id="modalOwned2"></div>
     <div class="modal-note2" id="modalNote2"></div>
   </div>
 </div>
@@ -585,7 +561,6 @@
 </div>
 
 <script src="reading-data.js"></script>
-<script src="owned-books-data.js"></script>
 <script>
 /* books, pastReads, SERIES, findRead, formatRating come from reading-data.js */
 
@@ -713,7 +688,7 @@ document.getElementById("pageFoot").textContent =
 const statsStrip = document.getElementById("statsStrip");
 function renderStats(){
   if(activeGenre === "Series"){
-    const seriesScope = SERIES.filter(seriesMatchesFormat);
+    const seriesScope = SERIES;
     const completed = seriesScope.filter(s => seriesIsCaughtUp(s) && s.status === "complete").length;
     const caughtUp = seriesScope.filter(s => seriesIsCaughtUp(s) && s.status !== "complete").length;
     const inProgress = seriesScope.length - completed - caughtUp;
@@ -733,11 +708,7 @@ function renderStats(){
     return;
   }
 
-  const scoped = ALL_BOOKS.filter(b => {
-    const genreMatch = matchesGenreFilter(b);
-    const formatMatch = activeFormat === "All" || (hasOwnedLookup && findOwnedFormats(b.title).includes(activeFormat));
-    return genreMatch && formatMatch;
-  });
+  const scoped = ALL_BOOKS.filter(b => matchesGenreFilter(b));
 
   const authorCounts = {};
   scoped.forEach(b => { authorCounts[b.author] = (authorCounts[b.author]||0)+1; });
@@ -745,9 +716,7 @@ function renderStats(){
 
   const seriesInScope = SERIES.filter(s => s.books.some(sb => {
     const b = ALL_BOOKS_BY_TITLE.get(sb.title);
-    const genreMatch = b && matchesGenreFilter(b);
-    const formatMatch = activeFormat === "All" || (hasOwnedLookup && findOwnedFormats(sb.title).includes(activeFormat));
-    return b && genreMatch && formatMatch;
+    return b && matchesGenreFilter(b);
   })).length;
 
   const scopedDated = scoped.filter(b => b.dateLabel !== "Undated");
@@ -771,7 +740,6 @@ function renderStats(){
 
 /* ---------------- filter state ---------------- */
 let activeGenre = "All";
-let activeFormat = "All";
 let searchTerm = "";
 
 /* The genre pill can also be one of the computed filters: "All" (no genre
@@ -791,45 +759,6 @@ function selectFilter(value){
   renderPills(); renderShelf(); renderStats(); renderFavorites();
 }
 
-/* ---------------- owned-format pills (Kindle / Audible / Physical) ----------------
-   Additional filter on top of genre + search, sourced from OWNED_BOOKS via
-   findOwnedFormats() in owned-books-data.js. Replaces the old standalone
-   book-collection.html page. */
-const FORMAT_INFO = {
-  kindle: {emoji:"📱", label:"Kindle"},
-  audible: {emoji:"🎧", label:"Audible"},
-  physical: {emoji:"📚", label:"Physical"},
-  kindleUnlimited: {emoji:"🔄", label:"Kindle Unlimited"},
-};
-const formatPillsContainer = document.getElementById("formatPills");
-const hasOwnedLookup = typeof findOwnedFormats === "function";
-function ownedFormatCount(fmt){
-  if(!hasOwnedLookup) return 0;
-  return ALL_BOOKS.filter(b => findOwnedFormats(b.title).includes(fmt)).length;
-}
-function selectFormat(value){
-  activeFormat = value;
-  try{ localStorage.setItem("activeFormat", value); }catch(e){}
-  renderFormatPills(); renderShelf(); renderStats();
-}
-function renderFormatPills(){
-  if(!hasOwnedLookup){ formatPillsContainer.style.display = "none"; return; }
-  formatPillsContainer.innerHTML = "";
-  const allPill = document.createElement("button");
-  allPill.className = "pill" + (activeFormat === "All" ? " active" : "");
-  allPill.textContent = "All Formats";
-  allPill.addEventListener("click", () => selectFormat("All"));
-  formatPillsContainer.appendChild(allPill);
-
-  ["kindle","audible","physical","kindleUnlimited"].forEach(fmt => {
-    const info = FORMAT_INFO[fmt];
-    const pill = document.createElement("button");
-    pill.className = "pill" + (activeFormat === fmt ? " active" : "");
-    pill.innerHTML = `${info.emoji} ${info.label} <span class="count">${ownedFormatCount(fmt)}</span>`;
-    pill.addEventListener("click", () => selectFormat(fmt));
-    formatPillsContainer.appendChild(pill);
-  });
-}
 function renderPills(){
   pillsContainer.innerHTML = "";
   const allPill = document.createElement("button");
@@ -873,15 +802,10 @@ function renderPills(){
 }
 let savedGenre = null;
 try{ savedGenre = localStorage.getItem("activeGenre"); }catch(e){}
-let savedFormat = null;
-try{ savedFormat = localStorage.getItem("activeFormat"); }catch(e){}
 const hashSlug = location.hash.replace("#", "");
 if(hashSlug === "series") activeGenre = "Series";
 else if(savedGenre) activeGenre = savedGenre;
-if(FORMAT_INFO[hashSlug]) activeFormat = hashSlug;
-else if(savedFormat) activeFormat = savedFormat;
 renderPills();
-renderFormatPills();
 renderStats();
 
 document.getElementById("searchInput").addEventListener("input", (e) => {
@@ -905,11 +829,6 @@ function seriesLastReadTime(s){
     if(t > max) max = t;
   });
   return max;
-}
-
-function seriesMatchesFormat(s){
-  if(activeFormat === "All") return true;
-  return hasOwnedLookup && s.books.some(b => findOwnedFormats(b.title).includes(activeFormat));
 }
 
 function seriesIsCaughtUp(s){
@@ -945,7 +864,7 @@ const SERIES_STATUS_RANK = {progress: 0, caughtup: 1, complete: 2};
 
 function renderSeriesGrid(){
   const term = searchTerm;
-  const matching = SERIES.filter(s => seriesMatchesFormat(s) && (!term ||
+  const matching = SERIES.filter(s => (!term ||
     s.name.toLowerCase().includes(term) ||
     s.author.toLowerCase().includes(term))
   ).sort((a, b) => {
@@ -962,12 +881,7 @@ function renderSeriesGrid(){
   noResults.style.display = matching.length === 0 ? "block" : "none";
 
   matching.forEach(s => {
-    let readBooks = s.books.map(b => ALL_BOOKS_BY_TITLE.get(b.title)).filter(Boolean);
-    // Scoped to a format, only the books she actually owns in it should
-    // stack/count here — same rule as the main shelf's series cards.
-    if(activeFormat !== "All" && hasOwnedLookup){
-      readBooks = readBooks.filter(b => findOwnedFormats(b.title).includes(activeFormat));
-    }
+    const readBooks = s.books.map(b => ALL_BOOKS_BY_TITLE.get(b.title)).filter(Boolean);
     const releasedTotal = s.books.filter(b => !b.comingSoon).length;
     const status = seriesStatus(s);
     const top = readBooks[0];
@@ -1013,11 +927,10 @@ function renderShelf(){
 
   const filtered = MASTER_SORTED.filter(b => {
     const genreMatch = matchesGenreFilter(b);
-    const formatMatch = activeFormat === "All" || (hasOwnedLookup && findOwnedFormats(b.title).includes(activeFormat));
     const searchMatch = !searchTerm ||
       b.title.toLowerCase().includes(searchTerm) ||
       b.author.toLowerCase().includes(searchTerm);
-    return genreMatch && formatMatch && searchMatch;
+    return genreMatch && searchMatch;
   });
 
   // The Spicy filter lists each flagged book on its own so the 🌶️ books
@@ -1034,14 +947,7 @@ function renderShelf(){
     if(!series || series.books.length < 2){ items.push({kind: "book", book: b}); return; }
     if(seenSeries.has(series.name)) return;
     seenSeries.add(series.name);
-    // When a format filter is active, only stack the books she actually
-    // owns in that format — a series she's read in full but only owns
-    // Book 1 of physically shouldn't show the whole series on the
-    // Physical shelf.
-    let seriesBooks = series.books.map(sb => ALL_BOOKS_BY_TITLE.get(sb.title)).filter(Boolean);
-    if(activeFormat !== "All" && hasOwnedLookup){
-      seriesBooks = seriesBooks.filter(sb => findOwnedFormats(sb.title).includes(activeFormat));
-    }
+    const seriesBooks = series.books.map(sb => ALL_BOOKS_BY_TITLE.get(sb.title)).filter(Boolean);
     // fewer than 2 read yet: not enough covers to stack, but still flag it as a series
     if(seriesBooks.length < 2){
       items.push({kind: "book", book: b, seriesInfo: {name: series.name, author: series.author, total: series.books.length, read: seriesBooks.length}});
@@ -1416,16 +1322,8 @@ const modalTitle2 = document.getElementById("modalTitle2");
 const modalAuthor2 = document.getElementById("modalAuthor2");
 const modalGenres2 = document.getElementById("modalGenres2");
 const modalMeta2 = document.getElementById("modalMeta2");
-const modalOwned2 = document.getElementById("modalOwned2");
 const modalNote2 = document.getElementById("modalNote2");
 const modalClose = document.getElementById("modalClose");
-
-const OWNED_PILL_INFO = {
-  kindle: {cls: "k", label: "📱 Kindle"},
-  audible: {cls: "a", label: "🎧 Audible"},
-  physical: {cls: "p", label: "📚 Physical"},
-  kindleUnlimited: {cls: "u", label: "🔄 Kindle Unlimited"},
-};
 
 /* eyebrow: optional badge text above the title (e.g. "Favorite"). Pass
    nothing for a plain book detail popup. */
@@ -1439,9 +1337,6 @@ function openBookModal(b, eyebrow){
   modalGenres2.style.display = genres.length ? "flex" : "none";
   modalMeta2.textContent = [b.dateLabel, b.rating ? formatRating(b.rating) : null].filter(Boolean).join(" · ");
   modalMeta2.style.display = modalMeta2.textContent ? "block" : "none";
-  const ownedFormats = (typeof findOwnedFormats === "function") ? findOwnedFormats(b.title) : [];
-  modalOwned2.innerHTML = ownedFormats.map(fmt => `<span class="owned-pill ${OWNED_PILL_INFO[fmt].cls}">${OWNED_PILL_INFO[fmt].label}</span>`).join("");
-  modalOwned2.style.display = ownedFormats.length ? "flex" : "none";
   modalNote2.textContent = b.note || "";
   modalNote2.style.display = b.note ? "block" : "none";
   modalCover.innerHTML = `<span style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;padding:10px;font-family:'Fraunces',serif;font-size:12px;text-align:center;color:#fff;">${b.title}</span>${b.cover ? `<img src="${b.cover}" alt="Cover of ${b.title}" loading="lazy" onerror="this.remove()">` : ""}`;
@@ -1461,19 +1356,6 @@ const seriesModalSub = document.getElementById("seriesModalSub");
 const seriesModalGrid = document.getElementById("seriesModalGrid");
 const seriesModalClose = document.getElementById("seriesModalClose");
 
-/* Small "you own this in X" pill row, shared by every book in the series
-   modal grid — read or not, so an unread-but-owned book still flags it. */
-function ownedFormatPillsHTML(title){
-  if(!hasOwnedLookup) return "";
-  const owned = findOwnedFormats(title);
-  if(!owned.length) return "";
-  return `
-    <div class="series-book-owned">
-      ${owned.map(fmt => `<span class="series-book-owned-pill">${FORMAT_INFO[fmt] ? FORMAT_INFO[fmt].emoji + " " + FORMAT_INFO[fmt].label : fmt}</span>`).join("")}
-    </div>
-  `;
-}
-
 /* Shared by the series modal and the inline "Currently Reading" spotlight:
    renders every book in a series as read (cover + rating) or unread
    (dashed placeholder + coming-soon/not-read-yet label). */
@@ -1490,7 +1372,6 @@ function seriesBookGridHTML(allBooks, best){
           </div>
           <div class="series-book-title">${sb.title} <span class="series-book-num">[${num}]</span></div>
           <div class="series-book-status">${comingLabel}</div>
-          ${ownedFormatPillsHTML(sb.title)}
         </div>
       `;
     }
@@ -1503,7 +1384,6 @@ function seriesBookGridHTML(allBooks, best){
         </div>
         <div class="series-book-title">${b.title} <span class="series-book-num">[${num}]</span></div>
         ${b.rating ? `<div class="series-book-rating">${starRatingHTML(b.rating)}</div>` : ""}
-        ${ownedFormatPillsHTML(b.title)}
       </div>
     `;
   }).join("");
