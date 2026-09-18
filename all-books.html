@@ -145,13 +145,33 @@
 
   @media (max-width: 700px){
     .filter-bar{ padding: 11px 0 11px; }
-    .search-input{ padding: 11px 14px; margin-bottom: 9px; }
+    .search-input{ padding: 13px 14px; margin-bottom: 9px; font-size: 16px; }
     .pills{
       flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none;
       margin: 0 -16px; padding: 0 16px 2px; -webkit-overflow-scrolling: touch;
+      scroll-snap-type: x proximity;
     }
     .pills::-webkit-scrollbar{ display:none; }
-    .pill{ flex: 0 0 auto; padding: 7px 12px; font-size: 12px; }
+    .pill{ flex: 0 0 auto; padding: 9px 13px; font-size: 12.5px; scroll-snap-align: start; }
+  }
+
+  /* fade masks hint that a horizontally-scrolling row (filter pills,
+     favorites carousel) has more content off-screen, instead of an
+     abrupt cut-off edge. Toggled by JS based on actual scroll position. */
+  .pills, .fav-grid{ -webkit-mask-image: none; mask-image: none; }
+  @media (max-width: 700px){
+    .pills.fade-right, .fav-grid.fade-right{
+      -webkit-mask-image: linear-gradient(to right, black calc(100% - 28px), transparent 100%);
+      mask-image: linear-gradient(to right, black calc(100% - 28px), transparent 100%);
+    }
+    .pills.fade-left, .fav-grid.fade-left{
+      -webkit-mask-image: linear-gradient(to left, black calc(100% - 28px), transparent 100%);
+      mask-image: linear-gradient(to left, black calc(100% - 28px), transparent 100%);
+    }
+    .pills.fade-left.fade-right, .fav-grid.fade-left.fade-right{
+      -webkit-mask-image: linear-gradient(to right, transparent 0%, black 28px, black calc(100% - 28px), transparent 100%);
+      mask-image: linear-gradient(to right, transparent 0%, black 28px, black calc(100% - 28px), transparent 100%);
+    }
   }
 
   /* series-tab stacked cards: status chip instead of genre tag */
@@ -730,6 +750,25 @@ function matchesGenreFilter(b){
   return b.genres.includes(activeGenre);
 }
 
+/* ---------------- scroll-fade affordance for horizontally-scrolling rows
+   (filter pills, favorites carousel) — hints there's more to swipe to
+   instead of an abrupt cut-off edge. ---------------- */
+function updateScrollFade(el){
+  if(!el) return;
+  const scrollable = el.scrollWidth > el.clientWidth + 2;
+  el.classList.toggle("fade-right", scrollable && el.scrollLeft < el.scrollWidth - el.clientWidth - 2);
+  el.classList.toggle("fade-left", scrollable && el.scrollLeft > 2);
+}
+function refreshScrollFades(){
+  document.querySelectorAll(".pills, .fav-grid").forEach(updateScrollFade);
+}
+document.addEventListener("scroll", (e) => {
+  if(e.target && e.target.nodeType === 1 && (e.target.classList.contains("pills") || e.target.classList.contains("fav-grid"))){
+    updateScrollFade(e.target);
+  }
+}, true);
+window.addEventListener("resize", refreshScrollFades);
+
 /* ---------------- genre pills ---------------- */
 const pillsContainer = document.getElementById("genrePills");
 function selectFilter(value){
@@ -776,6 +815,7 @@ function renderFormatPills(){
     pill.addEventListener("click", () => selectFormat(fmt));
     formatPillsContainer.appendChild(pill);
   });
+  refreshScrollFades();
 }
 function renderPills(){
   pillsContainer.innerHTML = "";
@@ -817,6 +857,7 @@ function renderPills(){
     pill.addEventListener("click", () => selectFilter(tag));
     pillsContainer.appendChild(pill);
   });
+  refreshScrollFades();
 }
 let savedGenre = null;
 try{ savedGenre = localStorage.getItem("activeGenre"); }catch(e){}
@@ -1245,6 +1286,7 @@ const favoritesSection = document.getElementById("favoritesSection");
 function renderFavorites(){
   renderFavoritesInner();
   favoritesSection.style.display = favoritesContainer.children.length === 0 ? "none" : "";
+  refreshScrollFades();
 }
 
 function renderNotEnoughCard(genre, count){
