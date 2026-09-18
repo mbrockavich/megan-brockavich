@@ -100,6 +100,23 @@
   </div>
 
   <div id="result"></div>
+
+  <div class="card">
+    <span class="lbl">Step goal</span>
+    <div class="inrow">
+      <div class="field">
+        <input type="number" id="steps" min="0" value="0" />
+        <span class="cap">steps so far</span>
+      </div>
+      <div class="field">
+        <input type="number" id="stepgoal" min="0" value="10000" />
+        <span class="cap">goal</span>
+      </div>
+    </div>
+    <p class="note" style="margin-top:12px">Uses the same deadline set above.</p>
+  </div>
+
+  <div id="stepResult"></div>
 </div>
 
 <script>
@@ -109,7 +126,7 @@ var store={
   get:function(k,d){try{var v=localStorage.getItem(k);return v===null?d:v;}catch(e){return d;}},
   set:function(k,v){try{localStorage.setItem(k,v);}catch(e){}}
 };
-var ids=["ih","im","goal","target"];
+var ids=["ih","im","goal","target","steps","stepgoal"];
 ids.forEach(function(id){
   var el=document.getElementById(id);
   var saved=store.get("pacer_"+id,null);
@@ -216,6 +233,38 @@ function render(){
     +'<p class="note">Follow the pace and you\'ll reach '+fmtClock(target)+' at just under '+num("goal")+'h inactive. Banking movement early buys slack later.</p>';
   }
   out.innerHTML=html;
+
+  var curSteps=num("steps");
+  var goalSteps=num("stepgoal");
+  var stepsLeft=Math.ceil(goalSteps-curSteps);
+  var stepOut=document.getElementById("stepResult");
+  var stepHtml="";
+
+  if(closed){
+    stepHtml='<div class="panel" style="border:1px solid var(--muted)">'
+      +'<p class="big">It\'s already past '+fmtClock(target)+'.</p>'
+      +'<p class="small">You finished at '+curSteps.toLocaleString()+' / '+goalSteps.toLocaleString()+' steps.</p></div>';
+  } else if(stepsLeft<=0){
+    stepHtml='<div class="panel" style="border:1px solid var(--good)">'
+      +'<p class="big">Step goal already hit.</p>'
+      +'<p class="small">'+curSteps.toLocaleString()+' / '+goalSteps.toLocaleString()+' steps, with '+fmtHM(until)+' left until '+fmtClock(target)+'.</p></div>';
+  } else {
+    var stepsPerHour=Math.ceil(stepsLeft/(until/60));
+    var stepsPerMin=Math.ceil(stepsLeft/until);
+    stepHtml=''
+      +'<div class="hero"><span class="lbl">Steps needed per hour</span>'
+        +'<div class="heronum"><b>'+stepsPerHour.toLocaleString()+'</b><span>steps / hr</span></div></div>'
+      +'<div class="card">'
+        +'<div class="totrow"><span style="color:var(--muted)">Steps remaining</span>'
+          +'<span class="mono" style="color:var(--move)">'+stepsLeft.toLocaleString()+'</span></div>'
+        +'<div class="totrow"><span style="color:var(--muted)">Time until deadline</span>'
+          +'<span class="mono">'+fmtHM(until)+'</span></div>'
+        +'<div class="totrow"><span style="color:var(--muted)">Pace needed</span>'
+          +'<span class="mono">'+stepsPerMin.toLocaleString()+' / min</span></div>'
+      +'</div>'
+      +'<p class="note">Keep up '+stepsPerHour.toLocaleString()+' steps/hr and you\'ll hit '+goalSteps.toLocaleString()+' steps by '+fmtClock(target)+'.</p>';
+  }
+  stepOut.innerHTML=stepHtml;
 }
 
 // Android/Chrome installability: build a manifest at runtime
