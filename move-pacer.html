@@ -117,6 +117,23 @@
   </div>
 
   <div id="stepResult"></div>
+
+  <div class="card">
+    <span class="lbl">To-do goal</span>
+    <div class="inrow">
+      <div class="field">
+        <input type="number" id="todosdone" min="0" value="0" />
+        <span class="cap">done so far</span>
+      </div>
+      <div class="field">
+        <input type="number" id="todostotal" min="0" value="10" />
+        <span class="cap">total to-dos</span>
+      </div>
+    </div>
+    <p class="note" style="margin-top:12px">Uses the same deadline set above.</p>
+  </div>
+
+  <div id="todoResult"></div>
 </div>
 
 <script>
@@ -126,7 +143,7 @@ var store={
   get:function(k,d){try{var v=localStorage.getItem(k);return v===null?d:v;}catch(e){return d;}},
   set:function(k,v){try{localStorage.setItem(k,v);}catch(e){}}
 };
-var ids=["ih","im","goal","target","steps","stepgoal"];
+var ids=["ih","im","goal","target","steps","stepgoal","todosdone","todostotal"];
 ids.forEach(function(id){
   var el=document.getElementById(id);
   var saved=store.get("pacer_"+id,null);
@@ -265,6 +282,35 @@ function render(){
       +'<p class="note">Keep up '+stepsPerHour.toLocaleString()+' steps/hr and you\'ll hit '+goalSteps.toLocaleString()+' steps by '+fmtClock(target)+'.</p>';
   }
   stepOut.innerHTML=stepHtml;
+
+  var todosDone=num("todosdone");
+  var todosTotal=num("todostotal");
+  var todosLeft=Math.ceil(todosTotal-todosDone);
+  var todoOut=document.getElementById("todoResult");
+  var todoHtml="";
+
+  if(closed){
+    todoHtml='<div class="panel" style="border:1px solid var(--muted)">'
+      +'<p class="big">It\'s already past '+fmtClock(target)+'.</p>'
+      +'<p class="small">You finished '+todosDone.toLocaleString()+' / '+todosTotal.toLocaleString()+' to-dos.</p></div>';
+  } else if(todosLeft<=0){
+    todoHtml='<div class="panel" style="border:1px solid var(--good)">'
+      +'<p class="big">All to-dos done.</p>'
+      +'<p class="small">'+todosDone.toLocaleString()+' / '+todosTotal.toLocaleString()+' to-dos, with '+fmtHM(until)+' left until '+fmtClock(target)+'.</p></div>';
+  } else {
+    var todosPerHour=Math.ceil(todosLeft/(until/60));
+    todoHtml=''
+      +'<div class="hero"><span class="lbl">To-dos needed per hour</span>'
+        +'<div class="heronum"><b>'+todosPerHour.toLocaleString()+'</b><span>to-dos / hr</span></div></div>'
+      +'<div class="card">'
+        +'<div class="totrow"><span style="color:var(--muted)">To-dos remaining</span>'
+          +'<span class="mono" style="color:var(--move)">'+todosLeft.toLocaleString()+'</span></div>'
+        +'<div class="totrow"><span style="color:var(--muted)">Time until deadline</span>'
+          +'<span class="mono">'+fmtHM(until)+'</span></div>'
+      +'</div>'
+      +'<p class="note">Keep up '+todosPerHour.toLocaleString()+' to-dos/hr and you\'ll clear all '+todosTotal.toLocaleString()+' by '+fmtClock(target)+'.</p>';
+  }
+  todoOut.innerHTML=todoHtml;
 }
 
 // Android/Chrome installability: build a manifest at runtime
