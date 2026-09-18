@@ -92,6 +92,13 @@
       <div class="mini"><span class="lbl">Daily goal (hrs)</span><input type="number" id="goal" min="1" max="24" value="10" /></div>
       <div class="mini"><span class="lbl">Deadline (hour, 24h)</span><input type="number" id="target" min="0" max="23" value="22" /></div>
     </div>
+
+    <div class="settings">
+      <div class="mini"><span class="lbl">Steps so far</span><input type="number" id="steps" min="0" value="0" /></div>
+      <div class="mini"><span class="lbl">Step goal</span><input type="number" id="stepgoal" min="0" value="10000" /></div>
+      <div class="mini"><span class="lbl">To-dos left</span><input type="number" id="todosleft" min="0" value="0" /></div>
+    </div>
+    <p class="note" style="margin-top:12px">Steps and to-dos use the same deadline set above.</p>
   </div>
 
   <div class="card">
@@ -101,37 +108,7 @@
 
   <div id="result"></div>
 
-  <div class="card">
-    <span class="lbl">Step goal</span>
-    <div class="inrow">
-      <div class="field">
-        <input type="number" id="steps" min="0" value="0" />
-        <span class="cap">steps so far</span>
-      </div>
-      <div class="field">
-        <input type="number" id="stepgoal" min="0" value="10000" />
-        <span class="cap">goal</span>
-      </div>
-    </div>
-    <p class="note" style="margin-top:12px">Uses the same deadline set above.</p>
-  </div>
-
   <div id="stepResult"></div>
-
-  <div class="card">
-    <span class="lbl">To-do goal</span>
-    <div class="inrow">
-      <div class="field">
-        <input type="number" id="todosdone" min="0" value="0" />
-        <span class="cap">done so far</span>
-      </div>
-      <div class="field">
-        <input type="number" id="todostotal" min="0" value="10" />
-        <span class="cap">total to-dos</span>
-      </div>
-    </div>
-    <p class="note" style="margin-top:12px">Uses the same deadline set above.</p>
-  </div>
 
   <div id="todoResult"></div>
 </div>
@@ -143,7 +120,7 @@ var store={
   get:function(k,d){try{var v=localStorage.getItem(k);return v===null?d:v;}catch(e){return d;}},
   set:function(k,v){try{localStorage.setItem(k,v);}catch(e){}}
 };
-var ids=["ih","im","goal","target","steps","stepgoal","todosdone","todostotal"];
+var ids=["ih","im","goal","target","steps","stepgoal","todosleft"];
 ids.forEach(function(id){
   var el=document.getElementById(id);
   var saved=store.get("pacer_"+id,null);
@@ -283,20 +260,18 @@ function render(){
   }
   stepOut.innerHTML=stepHtml;
 
-  var todosDone=num("todosdone");
-  var todosTotal=num("todostotal");
-  var todosLeft=Math.ceil(todosTotal-todosDone);
+  var todosLeft=Math.ceil(num("todosleft"));
   var todoOut=document.getElementById("todoResult");
   var todoHtml="";
 
   if(closed){
     todoHtml='<div class="panel" style="border:1px solid var(--muted)">'
       +'<p class="big">It\'s already past '+fmtClock(target)+'.</p>'
-      +'<p class="small">You finished '+todosDone.toLocaleString()+' / '+todosTotal.toLocaleString()+' to-dos.</p></div>';
+      +'<p class="small">'+todosLeft.toLocaleString()+' to-dos were left.</p></div>';
   } else if(todosLeft<=0){
     todoHtml='<div class="panel" style="border:1px solid var(--good)">'
       +'<p class="big">All to-dos done.</p>'
-      +'<p class="small">'+todosDone.toLocaleString()+' / '+todosTotal.toLocaleString()+' to-dos, with '+fmtHM(until)+' left until '+fmtClock(target)+'.</p></div>';
+      +'<p class="small">Nothing left, with '+fmtHM(until)+' left until '+fmtClock(target)+'.</p></div>';
   } else {
     var todosPerHour=Math.ceil(todosLeft/(until/60));
     todoHtml=''
@@ -308,7 +283,7 @@ function render(){
         +'<div class="totrow"><span style="color:var(--muted)">Time until deadline</span>'
           +'<span class="mono">'+fmtHM(until)+'</span></div>'
       +'</div>'
-      +'<p class="note">Keep up '+todosPerHour.toLocaleString()+' to-dos/hr and you\'ll clear all '+todosTotal.toLocaleString()+' by '+fmtClock(target)+'.</p>';
+      +'<p class="note">Keep up '+todosPerHour.toLocaleString()+' to-dos/hr and you\'ll clear all '+todosLeft.toLocaleString()+' by '+fmtClock(target)+'.</p>';
   }
   todoOut.innerHTML=todoHtml;
 }
