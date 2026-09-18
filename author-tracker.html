@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Author Tracker · Megan's Library</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#f7f4ef">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>✍️</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg: #f7f4ef;
+    --surface: #ffffff;
+    --surface-alt: #f0eae0;
+    --border: #e4ddd2;
+    --border-strong: #d9d2c4;
+    --ink: #242018;
+    --ink-soft: #6b6455;
+    --ink-faint: #a39a89;
+    --accent: #b5502f;
+    --accent-soft: rgba(181,80,47,0.09);
+    --sage: #6f8f63;
+    --sage-soft: rgba(111,143,99,0.12);
+    --slate: #6b7aa1;
+  }
+
+  *{ box-sizing:border-box; }
+  html{ overflow-x:hidden; }
+
+  body{
+    margin:0;
+    background: var(--bg);
+    font-family:'Inter', sans-serif;
+    color: var(--ink);
+    padding: 0 0 calc(70px + env(safe-area-inset-bottom));
+    overflow-x: hidden;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  a{ color:inherit; }
+  .page{ max-width: 1100px; margin:0 auto; padding: 36px 20px 0; }
+  @media (max-width: 560px){
+    .page{ padding: 24px 16px 0; }
+    header{ margin-bottom: 24px; }
+  }
+
+  .topnav{ text-align:center; margin-bottom: 26px; font-size: 12px; letter-spacing: 0.04em; }
+  .topnav a{ color: var(--ink-soft); text-decoration:none; font-weight:500; }
+  .topnav a:hover{ color: var(--accent); }
+  .topnav .sep{ color: var(--border-strong); margin: 0 10px; }
+
+  header{ text-align:center; margin-bottom: 34px; }
+  header .eyebrow{ font-size: 13px; font-style: italic; color: var(--ink-faint); margin-bottom: 10px; }
+  header h1{
+    font-family:'Inter', sans-serif; font-weight:700; letter-spacing:-0.01em;
+    font-size: clamp(28px, 4.4vw, 42px); margin: 0 0 8px; color: var(--ink);
+  }
+  header p{ font-size: 14px; color: var(--ink-soft); margin:0; }
+
+  .card{
+    background: var(--surface); color: var(--ink); border-radius: 10px;
+    border: 1px solid var(--border);
+  }
+
+  .stats-strip{
+    display:flex; flex-wrap:wrap; gap: 22px; justify-content:center;
+    padding: 22px 26px; margin-bottom: 32px;
+  }
+  .stat{ text-align:center; min-width: 100px; }
+  .stat .v{ font-weight:700; font-size: 21px; color: var(--ink); }
+  .stat .l{ font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--ink-soft); margin-top: 3px; }
+  @media (max-width: 560px){
+    .stats-strip{ gap: 12px 18px; padding: 18px 14px; }
+    .stat{ min-width: 40%; }
+    .stat .v{ font-size: 18px; }
+  }
+
+  .filter-bar{
+    position: sticky; top:0; z-index: 40;
+    background: rgba(247,244,239,0.92);
+    backdrop-filter: blur(8px);
+    padding: 14px 0 14px;
+    margin: 0 -20px 30px;
+    border-bottom: 1px solid var(--border);
+  }
+  .filter-bar-inner{ max-width:1100px; margin:0 auto; padding:0 20px; }
+  .search-input{
+    width:100%; padding: 10px 16px; border: 1px solid var(--border-strong);
+    border-radius: 8px; font-family:'Inter', sans-serif; font-size: 15px;
+    background: var(--surface); color: var(--ink); outline:none; margin-bottom:10px;
+    -webkit-appearance:none; appearance:none;
+  }
+  .search-input::placeholder{ color: var(--ink-faint); }
+  .search-input:focus{ border-color: var(--accent); }
+  .pills{ display:flex; flex-wrap:wrap; gap: 7px; }
+  .pill{
+    font-family:'Inter', sans-serif; font-size: 12.5px; font-weight:500;
+    padding: 7px 13px; border-radius: 8px; border: 1px solid var(--border-strong);
+    background: var(--surface); color: var(--ink-soft); cursor:pointer;
+    display:flex; align-items:center; gap:5px; transition: border-color .12s ease, color .12s ease;
+    -webkit-tap-highlight-color: transparent; white-space:nowrap;
+  }
+  .pill:hover{ border-color: var(--accent); color: var(--ink); }
+  .pill.active{ background: var(--accent); color: #fff; border-color: var(--accent); font-weight:600; }
+  .pill .count{ opacity:0.65; font-size:11px; }
+  @media (max-width: 700px){
+    .filter-bar{ padding: 11px 0 11px; }
+    .search-input{ padding: 11px 14px; margin-bottom: 9px; }
+    .pills{
+      flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none;
+      margin: 0 -16px; padding: 0 16px 2px; -webkit-overflow-scrolling: touch;
+    }
+    .pills::-webkit-scrollbar{ display:none; }
+    .pill{ flex: 0 0 auto; padding: 7px 12px; font-size: 12px; }
+  }
+
+  .catalog-count{ font-size: 12px; color: var(--ink-soft); margin-bottom: 18px; }
+  .no-results{ color: var(--ink-soft); font-size: 13.5px; font-style: italic; padding: 20px 4px; }
+
+  /* ---- author card ---- */
+  .author-list{ display:flex; flex-direction:column; gap: 16px; margin-bottom: 40px; }
+  .author-card{ padding: 22px 24px 24px; }
+  @media (max-width: 560px){ .author-card{ padding: 18px 16px 20px; } }
+
+  .author-head{
+    display:flex; align-items:baseline; justify-content:space-between; gap: 14px;
+    flex-wrap: wrap; margin-bottom: 4px;
+  }
+  .author-name{ font-size: 19px; font-weight:700; color: var(--ink); }
+  .author-progress{ font-size: 12px; color: var(--ink-soft); white-space:nowrap; }
+  .author-status{
+    display:inline-block; margin-left:8px; font-size: 10px; font-weight:700;
+    text-transform: uppercase; letter-spacing:0.03em; padding: 2px 8px; border-radius: 5px;
+  }
+  .author-status.caughtup{ background: var(--sage-soft); color: var(--sage); }
+  .author-status.progress{ background: var(--accent-soft); color: var(--accent); }
+
+  .author-note{ font-size: 11.5px; font-style: italic; color: var(--ink-faint); margin: 6px 0 14px; line-height:1.5; }
+
+  .group-block{ margin-top: 16px; }
+  .group-block:first-of-type{ margin-top: 14px; }
+  .group-label{
+    display:flex; align-items:center; gap:8px; margin-bottom: 9px;
+  }
+  .group-name{ font-size: 12.5px; font-weight:700; color: var(--ink); }
+  .group-tag{
+    font-size: 9.5px; font-weight:700; text-transform:uppercase; letter-spacing:0.03em;
+    padding: 2px 7px; border-radius: 5px; color: var(--ink-soft); background: var(--surface-alt);
+  }
+  .group-count{ font-size: 11px; color: var(--ink-faint); margin-left: auto; }
+
+  .book-row{
+    display:grid; grid-template-columns: repeat(auto-fill, minmax(96px, 1fr)); gap: 16px 12px;
+  }
+  .book-chip{ text-align:center; cursor:default; }
+  .chip-cover{
+    width:100%; aspect-ratio:2/3; border-radius:6px; overflow:hidden; position:relative;
+    background: var(--surface-alt); border: 1px solid var(--border-strong); margin-bottom:6px;
+    display:flex; align-items:center; justify-content:center; padding:7px;
+    font-weight:600; font-size:10.5px; line-height:1.25; color: var(--ink-soft);
+  }
+  .chip-cover img{ position:absolute; inset:0; width:100%; height:100%; object-fit:cover; }
+  .book-chip.read .chip-cover{ border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent-soft); }
+  .book-chip.unread .chip-cover{ border-style: dashed; opacity: 0.72; }
+  .book-chip.coming .chip-cover{ border-style: dotted; background: transparent; opacity: 0.55; }
+  .chip-num{ font-size: 9px; color: var(--ink-faint); font-weight:600; letter-spacing:0.02em; }
+  .chip-title{ font-size: 11.5px; font-weight:600; line-height:1.3; color: var(--ink); }
+  .book-chip.unread .chip-title, .book-chip.coming .chip-title{ color: var(--ink-soft); font-weight:500; }
+  .chip-year{ font-size: 10px; color: var(--ink-faint); }
+  .chip-flag{
+    font-size: 9px; text-transform:uppercase; letter-spacing:0.03em; color: var(--accent);
+    font-weight:700; margin-top: 1px;
+  }
+
+  footer.page-foot{ text-align:center; font-size: 11.5px; color: var(--ink-faint); margin-top: 10px; padding: 0 20px; }
+</style>
+</head>
+<body>
+
+<div class="page">
+
+  <nav class="topnav">
+    <a href="library.html">← Megan's Library</a>
+    <span class="sep">·</span>
+    <a href="all-books.html">Every Book I've Read</a>
+    <span class="sep">·</span>
+    <a href="2026-reading-stats.html">2026 Stats</a>
+  </nav>
+
+  <header>
+    <div class="eyebrow">every author I keep coming back to, book by book</div>
+    <h1>Author Tracker</h1>
+    <p id="heroSub">Loading the shelves...</p>
+  </header>
+
+  <div class="card stats-strip" id="statsStrip"></div>
+
+</div>
+
+<div class="filter-bar">
+  <div class="filter-bar-inner">
+    <input type="text" class="search-input" id="searchInput" placeholder="Search by author name...">
+    <div class="pills" id="statusPills"></div>
+  </div>
+</div>
+
+<div class="page">
+  <div class="catalog-count" id="authorCount"></div>
+  <div class="author-list" id="authorList"></div>
+  <div class="no-results" id="noResults" style="display:none;">No authors match that search.</div>
+
+  <footer class="page-foot" id="pageFoot"></footer>
+</div>
+
+<script src="reading-data.js"></script>
+<script src="author-works-data.js"></script>
+<script>
+/* AUTHOR_WORKS comes from author-works-data.js. findRead/parseLocalDate come
+   from reading-data.js -- read status here is computed live off the same
+   books/pastReads arrays the rest of the site uses, never hand-set. */
+
+function bookReadInfo(title){
+  const m = findRead(title);
+  if(!m) return null;
+  return m;
+}
+
+function authorStats(author){
+  const data = AUTHOR_WORKS[author];
+  let total = 0, read = 0;
+  data.groups.forEach(g => g.books.forEach(b => {
+    if(b.comingSoon) return; // not released yet, don't count against her
+    total++;
+    if(bookReadInfo(b.title)) read++;
+  }));
+  return {total, read, caughtUp: total > 0 && read === total};
+}
+
+const AUTHORS = Object.keys(AUTHOR_WORKS).sort((a,b) => a.localeCompare(b));
+
+/* ---------------- hero + stats ---------------- */
+let totalBooks = 0, totalRead = 0, caughtUpCount = 0;
+AUTHORS.forEach(a => {
+  const s = authorStats(a);
+  totalBooks += s.total;
+  totalRead += s.read;
+  if(s.caughtUp) caughtUpCount++;
+});
+
+document.getElementById("heroSub").textContent =
+  `${AUTHORS.length} authors you've read more than once, ${totalRead} of their ${totalBooks} tracked books read so far.`;
+
+document.getElementById("pageFoot").textContent =
+  "✍️ Pulled from author-works-data.js, cross-checked live against reading-data.js. Only authors with 2+ books read are tracked here.";
+
+function renderStats(){
+  const statsStrip = document.getElementById("statsStrip");
+  const stats = [
+    {v: AUTHORS.length, l: "Authors Tracked"},
+    {v: totalRead, l: "Books Read"},
+    {v: totalBooks - totalRead, l: "Books To Go"},
+    {v: caughtUpCount, l: "Fully Caught Up"}
+  ];
+  statsStrip.innerHTML = stats.map(s => `<div class="stat"><div class="v">${s.v}</div><div class="l">${s.l}</div></div>`).join("");
+}
+renderStats();
+
+/* ---------------- filter state ---------------- */
+let activeStatus = "All";
+let searchTerm = "";
+
+function renderStatusPills(){
+  const container = document.getElementById("statusPills");
+  const notCaughtUp = AUTHORS.length - caughtUpCount;
+  const defs = [
+    {key: "All", label: "All", count: AUTHORS.length},
+    {key: "Progress", label: "📖 Has Unread", count: notCaughtUp},
+    {key: "CaughtUp", label: "✅ Fully Caught Up", count: caughtUpCount}
+  ];
+  container.innerHTML = "";
+  defs.forEach(d => {
+    const pill = document.createElement("button");
+    pill.className = "pill" + (activeStatus === d.key ? " active" : "");
+    pill.innerHTML = `${d.label} <span class="count">${d.count}</span>`;
+    pill.addEventListener("click", () => { activeStatus = d.key; renderStatusPills(); renderAuthors(); });
+    container.appendChild(pill);
+  });
+}
+renderStatusPills();
+
+document.getElementById("searchInput").addEventListener("input", (e) => {
+  searchTerm = e.target.value.trim().toLowerCase();
+  renderAuthors();
+});
+
+/* ---------------- render ---------------- */
+const authorList = document.getElementById("authorList");
+const authorCountEl = document.getElementById("authorCount");
+const noResults = document.getElementById("noResults");
+
+function chipHTML(b){
+  const info = bookReadInfo(b.title);
+  const isComing = !!b.comingSoon;
+  const cls = isComing ? "coming" : (info ? "read" : "unread");
+  const yearLabel = isComing
+    ? (typeof b.comingSoon === "string" ? b.comingSoon : "Coming Soon")
+    : (b.pubYear != null ? (b.pubYear < 0 ? `${Math.abs(b.pubYear)} BC` : b.pubYear) : "");
+  return `
+    <div class="book-chip ${cls}" title="${b.title.replace(/"/g,'&quot;')}">
+      <div class="chip-cover">
+        <span>${b.title}</span>
+        ${(cls === "read" && b.cover) ? `<img src="${b.cover}" alt="Cover of ${b.title.replace(/"/g,'&quot;')}" loading="lazy" onerror="this.remove()">` : ""}
+      </div>
+      ${b.number ? `<div class="chip-num">#${b.number}</div>` : ""}
+      <div class="chip-title">${b.title}</div>
+      ${yearLabel ? `<div class="chip-year">${yearLabel}</div>` : ""}
+      ${info && info.rating != null ? `<div class="chip-flag">★ ${info.rating}</div>` : ""}
+    </div>
+  `;
+}
+
+function groupHTML(g){
+  const released = g.books.filter(b => !b.comingSoon);
+  const readCount = released.filter(b => bookReadInfo(b.title)).length;
+  return `
+    <div class="group-block">
+      <div class="group-label">
+        <div class="group-name">${g.seriesName || "Standalone"}</div>
+        ${g.status ? `<div class="group-tag">${g.status}</div>` : ""}
+        <div class="group-count">${readCount}/${released.length}</div>
+      </div>
+      <div class="book-row">
+        ${g.books.map(chipHTML).join("")}
+      </div>
+    </div>
+  `;
+}
+
+function renderAuthors(){
+  const term = searchTerm;
+  const filtered = AUTHORS.filter(a => {
+    if(term && !a.toLowerCase().includes(term)) return false;
+    const s = authorStats(a);
+    if(activeStatus === "CaughtUp" && !s.caughtUp) return false;
+    if(activeStatus === "Progress" && s.caughtUp) return false;
+    return true;
+  });
+
+  authorCountEl.textContent = `Showing ${filtered.length} of ${AUTHORS.length} authors`;
+  noResults.style.display = filtered.length === 0 ? "block" : "none";
+
+  authorList.innerHTML = filtered.map(author => {
+    const data = AUTHOR_WORKS[author];
+    const s = authorStats(author);
+    return `
+      <div class="card author-card">
+        <div class="author-head">
+          <div class="author-name">${author}<span class="author-status ${s.caughtUp ? "caughtup" : "progress"}">${s.caughtUp ? "Caught Up" : `${s.total - s.read} to go`}</span></div>
+          <div class="author-progress">${s.read} / ${s.total} read</div>
+        </div>
+        ${data.note ? `<div class="author-note">${data.note}</div>` : ""}
+        ${data.groups.map(groupHTML).join("")}
+      </div>
+    `;
+  }).join("");
+}
+renderAuthors();
+</script>
+
+</body>
+</html>
