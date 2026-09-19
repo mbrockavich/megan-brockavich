@@ -156,7 +156,7 @@ const pastReads = [
   {title:"Heir of Fire", genre:["Fantasy","Young Adult"], readDate:"October 2023", rating:5, cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1673566654i/76706470.jpg", pubYear:2014},
   {title:"Queen of Shadows", genre:["Fantasy","Young Adult"], readDate:"November 2023", rating:5, cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1677267561i/123004944.jpg", pubYear:2015},
   {title:"Empire of Storms", genre:["Fantasy","Young Adult"], readDate:"December 2023", rating:5, cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1676979605i/76713323.jpg", pubYear:2016},
-  {title:"Tower of Dawn", genre:["Fantasy","Young Adult"], readDate:"January 2024", rating:4, cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1673567264i/76714487.jpg", pubYear:2017},
+  {title:"Tower of Dawn", genre:["Fantasy","Young Adult"], readDate:"January 2024", rating:5, cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1673567264i/76714487.jpg", pubYear:2017},
   {title:"Kingdom of Ash", genre:["Fantasy","Young Adult"], readDate:"January 2024", rating:5, cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1673567331i/76715522.jpg", pubYear:2018},
   {title:"A Court of Thorns and Roses", genre:"Fantasy", readDate:"July 2023", rating:5, cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1620324329i/50659467.jpg", pubYear:2013},
   {title:"A Court of Mist and Fury", genre:"Fantasy", readDate:"July 2023", rating:5, cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1620325671i/50659468.jpg", pubYear:2020},
