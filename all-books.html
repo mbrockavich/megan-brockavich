@@ -1443,7 +1443,9 @@ function seriesBookGridHTML(allBooks, best){
     const num = sb.number || (i + 1);
     const b = ALL_BOOKS_BY_TITLE.get(sb.title);
     if(!b){
-      const comingLabel = sb.comingSoon ? (typeof sb.comingSoon === "string" ? `Coming ${sb.comingSoon}` : "Coming Soon") : "Not read yet";
+      const comingLabel = sb.comingSoon
+        ? (typeof sb.comingSoon === "string" ? `Coming ${sb.comingSoon}` : "Coming Soon")
+        : (sb.pubDate ? `Released ${sb.pubDate}` : "Not read yet");
       return `
         <div class="series-book">
           <div class="series-book-cover unread">

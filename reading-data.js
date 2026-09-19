@@ -519,12 +519,12 @@ const SERIES = [
     author: "Gregory Maguire",
     status: "ongoing",
     books: [
-      {title:"Elphie: A Wicked Childhood", cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1722577882i/199743711.jpg"},
+      {title:"Elphie: A Wicked Childhood", cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1722577882i/199743711.jpg", pubDate:"2025"},
       {title:"Galinda: A Charmed Childhood", comingSoon:"September 2026"},
       {title:"Wicked: Everyone Deserves the Chance to Fly"},
-      {title:"Son of a Witch", cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1370992595i/13521.jpg"},
-      {title:"A Lion Among Men", cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1370992593i/3124249.jpg"},
-      {title:"Out of Oz", cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1370992585i/10594929.jpg"}
+      {title:"Son of a Witch", cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1370992595i/13521.jpg", pubDate:"2005"},
+      {title:"A Lion Among Men", cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1370992593i/3124249.jpg", pubDate:"October 2008"},
+      {title:"Out of Oz", cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1370992585i/10594929.jpg", pubDate:"November 2011"}
     ]
   },
   {
@@ -533,8 +533,8 @@ const SERIES = [
     status: "ongoing",
     books: [
       {title:"Assistant to the Villain"},
-      {title:"Apprentice to the Villain", cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1730881672i/203147386.jpg"},
-      {title:"Accomplice to the Villain", cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1765013612i/219209774.jpg"},
+      {title:"Apprentice to the Villain", cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1730881672i/203147386.jpg", pubDate:"August 2024"},
+      {title:"Accomplice to the Villain", cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1765013612i/219209774.jpg", pubDate:"August 2025"},
       {title:"Adversary to the Villain", comingSoon:"August 2026"}
     ]
   },
@@ -547,7 +547,7 @@ const SERIES = [
       {title:"Powerful", number:"1.5"},
       {title:"Reckless", number:"2"},
       {title:"Fearless", number:"3"},
-      {title:"Fearful", number:"3.5", cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1749656949i/220161171.jpg"}
+      {title:"Fearful", number:"3.5", cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1749656949i/220161171.jpg", pubDate:"2025"}
     ]
   },
   {
@@ -556,9 +556,9 @@ const SERIES = [
     status: "complete",
     books: [
       {title:"Scythe"},
-      {title:"Thunderhead", cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1505658534i/33555224.jpg"},
-      {title:"The Toll", cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1558117336i/43822024.jpg"},
-      {title:"Gleanings", cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1649100303i/60320602.jpg"}
+      {title:"Thunderhead", cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1505658534i/33555224.jpg", pubDate:"2018"},
+      {title:"The Toll", cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1558117336i/43822024.jpg", pubDate:"November 2019"},
+      {title:"Gleanings", cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1649100303i/60320602.jpg", pubDate:"November 2022"}
     ]
   },
   {
@@ -627,10 +627,10 @@ const SERIES = [
       {title:"Carl's Doomsday Scenario", number:"2"},
       {title:"The Dungeon Anarchist's Cookbook", number:"3"},
       {title:"The Gate of the Feral Gods", number:"4"},
-      {title:"The Butcher's Masquerade", number:"5"},
-      {title:"The Eye of the Bedlam Bride", number:"6"},
-      {title:"This Inevitable Ruin", number:"7"},
-      {title:"A Parade of Horribles", number:"8"},
+      {title:"The Butcher's Masquerade", number:"5", pubDate:"2022"},
+      {title:"The Eye of the Bedlam Bride", number:"6", pubDate:"2023"},
+      {title:"This Inevitable Ruin", number:"7", pubDate:"2024"},
+      {title:"A Parade of Horribles", number:"8", pubDate:"2026"},
       {title:"The Beautiful Place", number:"9", comingSoon:true},
       {title:"Dungeon Crawler Carl, Book 10", number:"10", comingSoon:true}
     ]
@@ -694,7 +694,7 @@ const SERIES = [
     author: "Rebecca Ross",
     status: "complete",
     books: [
-      {title:"Wild Reverence", cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1737937394i/222376906.jpg"},
+      {title:"Wild Reverence", cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1737937394i/222376906.jpg", pubDate:"2025"},
       {title:"Divine Rivals"},
       {title:"Ruthless Vows"}
     ]
@@ -704,7 +704,7 @@ const SERIES = [
     author: "Stephen King",
     status: "complete",
     books: [
-      {title:"Before the Play", cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1557520154i/45714016.jpg"},
+      {title:"Before the Play", cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1557520154i/45714016.jpg", pubDate:"1982"},
       {title:"The Shining"},
       {title:"Doctor Sleep"}
     ]
@@ -724,11 +724,11 @@ const SERIES = [
     status: "ongoing",
     books: [
       {title:"A Mystical Legacy", number:"0.5"},
-      {title:"Bogs, Brews, and Banshees", number:"1", cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1699539434i/201899519.jpg"},
-      {title:"Whispers, Whiskey, and Wishes", number:"2", cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1708359064i/208878163.jpg"},
-      {title:"Pranks, Poitin, and Pucas", number:"3", cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1724848086i/217912014.jpg"},
-      {title:"Roots, Rum, and Revenants", number:"4", cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1758805415i/242063842.jpg"},
-      {title:"Spectacles, Sangria, and Selkies", number:"5", cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1782483297i/254609775.jpg"},
+      {title:"Bogs, Brews, and Banshees", number:"1", cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1699539434i/201899519.jpg", pubDate:"March 2024"},
+      {title:"Whispers, Whiskey, and Wishes", number:"2", cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1708359064i/208878163.jpg", pubDate:"October 2024"},
+      {title:"Pranks, Poitin, and Pucas", number:"3", cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1724848086i/217912014.jpg", pubDate:"2025"},
+      {title:"Roots, Rum, and Revenants", number:"4", cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1758805415i/242063842.jpg", pubDate:"2025"},
+      {title:"Spectacles, Sangria, and Selkies", number:"5", cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1782483297i/254609775.jpg", pubDate:"June 2026"},
       {title:"Greed, Guinness, and Grogochs", number:"6", comingSoon:"April 2027"},
       {title:"Murder, Mead, and Mayhem", number:"7", comingSoon:true}
     ]
@@ -754,7 +754,7 @@ const SERIES = [
       {title:"Slaying the Vampire Conqueror", number:"2.5"},
       {title:"The Songbird & the Heart of Stone", number:"3"},
       {title:"The Fallen & the Kiss of Dusk", number:"4"},
-      {title:"The Lion & the Deathless Dark", number:"5"},
+      {title:"The Lion & the Deathless Dark", number:"5", pubDate:"2026"},
       {title:"Crowns of Nyaxia Book 6", number:"6", comingSoon:"2027"}
     ]
   },
@@ -766,12 +766,12 @@ const SERIES = [
       {title:"The Last Wish", number:"1"},
       {title:"Sword of Destiny", number:"2"},
       {title:"Blood of Elves", number:"3"},
-      {title:"Time of Contempt", number:"4"},
-      {title:"Baptism of Fire", number:"5"},
-      {title:"The Tower of the Swallow", number:"6"},
-      {title:"The Lady of the Lake", number:"7"},
-      {title:"Season of Storms", number:"8"},
-      {title:"Crossroads of Ravens", number:"9"}
+      {title:"Time of Contempt", number:"4", pubDate:"2013"},
+      {title:"Baptism of Fire", number:"5", pubDate:"2014"},
+      {title:"The Tower of the Swallow", number:"6", pubDate:"2016"},
+      {title:"The Lady of the Lake", number:"7", pubDate:"2017"},
+      {title:"Season of Storms", number:"8", pubDate:"2018"},
+      {title:"Crossroads of Ravens", number:"9", pubDate:"2025"}
     ]
   },
   {
@@ -796,9 +796,9 @@ const SERIES = [
       {title:"City of Bones"},
       {title:"City of Ashes"},
       {title:"City of Glass"},
-      {title:"City of Fallen Angels"},
-      {title:"City of Lost Souls"},
-      {title:"City of Heavenly Fire"}
+      {title:"City of Fallen Angels", pubDate:"2011"},
+      {title:"City of Lost Souls", pubDate:"2012"},
+      {title:"City of Heavenly Fire", pubDate:"2014"}
     ]
   },
   {
@@ -882,15 +882,15 @@ const SERIES = [
       {title:"Bloody Jack: Being an Account of the Curious Adventures of Mary \"Jacky\" Faber, Ship's Boy"},
       {title:"Curse of the Blue Tattoo: Being an Account of the Misadventures of Jacky Faber, Midshipman and Fine Lady"},
       {title:"Under the Jolly Roger: Being an Account of the Further Nautical Adventures of Jacky Faber"},
-      {title:"In the Belly of the Bloodhound: Being an Account of a Particularly Peculiar Adventure in the Life of Jacky Faber"},
-      {title:"Mississippi Jack: Being an Account of the Further Waterborne Adventures of Jacky Faber"},
-      {title:"My Bonny Light Horseman: Being an Account of the Further Adventures of Jacky Faber, in Love and War"},
-      {title:"Rapture of the Deep: Being an Account of the Further Adventures of Jacky Faber, Soldier, Sailor, Mermaid, Spy"},
-      {title:"The Wake of the Lorelei Lee: Being an Account of the Further Adventures of Jacky Faber, on Her Way to Botany Bay"},
-      {title:"The Mark of the Golden Dragon: Being an Account of the Further Adventures of Jacky Faber, Jewel of the East, Vexation of the West, and Pearl of the South China Sea"},
-      {title:"Viva Jacquelina!: Being an Account of the Further Adventures of Jacky Faber, Over the Hills and Far Away"},
-      {title:"Boston Jacky: Being an Account of the Further Adventures of Jacky Faber, Taking Care of Business"},
-      {title:"Wild Rover No More: Being the Last Recorded Account of the Life and Times of Jacky Faber"}
+      {title:"In the Belly of the Bloodhound: Being an Account of a Particularly Peculiar Adventure in the Life of Jacky Faber", pubDate:"2006"},
+      {title:"Mississippi Jack: Being an Account of the Further Waterborne Adventures of Jacky Faber", pubDate:"2007"},
+      {title:"My Bonny Light Horseman: Being an Account of the Further Adventures of Jacky Faber, in Love and War", pubDate:"2008"},
+      {title:"Rapture of the Deep: Being an Account of the Further Adventures of Jacky Faber, Soldier, Sailor, Mermaid, Spy", pubDate:"2009"},
+      {title:"The Wake of the Lorelei Lee: Being an Account of the Further Adventures of Jacky Faber, on Her Way to Botany Bay", pubDate:"2010"},
+      {title:"The Mark of the Golden Dragon: Being an Account of the Further Adventures of Jacky Faber, Jewel of the East, Vexation of the West, and Pearl of the South China Sea", pubDate:"2011"},
+      {title:"Viva Jacquelina!: Being an Account of the Further Adventures of Jacky Faber, Over the Hills and Far Away", pubDate:"2012"},
+      {title:"Boston Jacky: Being an Account of the Further Adventures of Jacky Faber, Taking Care of Business", pubDate:"2013"},
+      {title:"Wild Rover No More: Being the Last Recorded Account of the Life and Times of Jacky Faber", pubDate:"2014"}
     ]
   },
   {
@@ -921,21 +921,21 @@ const SERIES = [
     status: "complete",
     books: [
       {title:"The Duke and I"},
-      {title:"The Duke and I: The 2nd Epilogue"},
-      {title:"The Viscount Who Loved Me"},
-      {title:"The Viscount Who Loved Me: The 2nd Epilogue"},
-      {title:"An Offer From a Gentleman"},
-      {title:"An Offer From a Gentleman: The 2nd Epilogue"},
-      {title:"Romancing Mister Bridgerton"},
-      {title:"Romancing Mister Bridgerton: The 2nd Epilogue"},
-      {title:"To Sir Phillip, With Love"},
-      {title:"To Sir Phillip, With Love: The 2nd Epilogue"},
-      {title:"When He Was Wicked"},
-      {title:"When He Was Wicked: The 2nd Epilogue"},
-      {title:"It's In His Kiss"},
-      {title:"It's In His Kiss: The 2nd Epilogue"},
-      {title:"On the Way to the Wedding"},
-      {title:"On the Way to the Wedding: The 2nd Epilogue"}
+      {title:"The Duke and I: The 2nd Epilogue", pubDate:"2013"},
+      {title:"The Viscount Who Loved Me", pubDate:"December 2000"},
+      {title:"The Viscount Who Loved Me: The 2nd Epilogue", pubDate:"2013"},
+      {title:"An Offer From a Gentleman", pubDate:"July 2001"},
+      {title:"An Offer From a Gentleman: The 2nd Epilogue", pubDate:"2013"},
+      {title:"Romancing Mister Bridgerton", pubDate:"July 2002"},
+      {title:"Romancing Mister Bridgerton: The 2nd Epilogue", pubDate:"2013"},
+      {title:"To Sir Phillip, With Love", pubDate:"2003"},
+      {title:"To Sir Phillip, With Love: The 2nd Epilogue", pubDate:"2013"},
+      {title:"When He Was Wicked", pubDate:"2004"},
+      {title:"When He Was Wicked: The 2nd Epilogue", pubDate:"2013"},
+      {title:"It's In His Kiss", pubDate:"2005"},
+      {title:"It's In His Kiss: The 2nd Epilogue", pubDate:"2013"},
+      {title:"On the Way to the Wedding", pubDate:"June 2006"},
+      {title:"On the Way to the Wedding: The 2nd Epilogue", pubDate:"2013"}
     ]
   },
   {
@@ -963,9 +963,9 @@ const SERIES = [
     books: [
       {title:"A Touch of Darkness"},
       {title:"A Touch of Ruin"},
-      {title:"A Touch of Malice"},
-      {title:"A Touch of Chaos"},
-      {title:"A Christmas of Chaos", number:"Bonus"}
+      {title:"A Touch of Malice", pubDate:"2021"},
+      {title:"A Touch of Chaos", pubDate:"2024"},
+      {title:"A Christmas of Chaos", number:"Bonus", pubDate:"2025"}
     ]
   },
   {
@@ -987,7 +987,7 @@ const SERIES = [
       {title:"Caraval"},
       {title:"Legendary"},
       {title:"Finale"},
-      {title:"Spectacular", number:"Bonus"}
+      {title:"Spectacular", number:"Bonus", pubDate:"October 2024"}
     ]
   },
   {
@@ -1051,11 +1051,11 @@ const SERIES = [
     status: "complete",
     books: [
       {title:"Dune"},
-      {title:"Dune Messiah"},
-      {title:"Children of Dune"},
-      {title:"God Emperor of Dune"},
-      {title:"Heretics of Dune"},
-      {title:"Chapterhouse: Dune"}
+      {title:"Dune Messiah", pubDate:"1969"},
+      {title:"Children of Dune", pubDate:"1976"},
+      {title:"God Emperor of Dune", pubDate:"1981"},
+      {title:"Heretics of Dune", pubDate:"1984"},
+      {title:"Chapterhouse: Dune", pubDate:"1985"}
     ]
   },
   {
@@ -1076,10 +1076,10 @@ const SERIES = [
     status: "ongoing",
     books: [
       {title:"Eragon"},
-      {title:"Eldest"},
-      {title:"Brisingr"},
-      {title:"Inheritance"},
-      {title:"Murtagh"},
+      {title:"Eldest", pubDate:"August 2005"},
+      {title:"Brisingr", pubDate:"September 2008"},
+      {title:"Inheritance", pubDate:"November 2011"},
+      {title:"Murtagh", pubDate:"November 2023"},
       {title:"The Book of Remembrance", number:"Bonus", comingSoon:"September 2026"},
       {title:"The Inheritance Cycle Book 6", comingSoon:true}
     ]
@@ -1089,14 +1089,14 @@ const SERIES = [
     author: "Philip Pullman",
     status: "complete",
     books: [
-      {title:"Once Upon a Time in the North", number:"0.5"},
-      {title:"The Collectors", number:"0.6"},
+      {title:"Once Upon a Time in the North", number:"0.5", pubDate:"April 2008"},
+      {title:"The Collectors", number:"0.6", pubDate:"September 2022"},
       {title:"The Golden Compass", number:"1"},
-      {title:"The Subtle Knife", number:"2"},
-      {title:"The Amber Spyglass", number:"3"},
-      {title:"Lyra's Oxford", number:"3.5"},
-      {title:"Serpentine", number:"3.6"},
-      {title:"The Imagination Chamber", number:"3.7"}
+      {title:"The Subtle Knife", number:"2", pubDate:"July 1997"},
+      {title:"The Amber Spyglass", number:"3", pubDate:"October 2000"},
+      {title:"Lyra's Oxford", number:"3.5", pubDate:"October 2003"},
+      {title:"Serpentine", number:"3.6", pubDate:"October 2020"},
+      {title:"The Imagination Chamber", number:"3.7", pubDate:"April 2022"}
     ]
   },
   {
@@ -1105,9 +1105,9 @@ const SERIES = [
     status: "complete",
     books: [
       {title:"The Giver"},
-      {title:"Gathering Blue"},
-      {title:"Messenger"},
-      {title:"Son"}
+      {title:"Gathering Blue", pubDate:"September 2000"},
+      {title:"Messenger", pubDate:"April 2004"},
+      {title:"Son", pubDate:"October 2012"}
     ]
   },
   {
@@ -1116,13 +1116,13 @@ const SERIES = [
     status: "complete",
     books: [
       {title:"Anne of Green Gables"},
-      {title:"Anne of Avonlea"},
-      {title:"Anne of the Island"},
-      {title:"Anne of Windy Poplars"},
-      {title:"Anne's House of Dreams"},
-      {title:"Anne of Ingleside"},
-      {title:"Rainbow Valley"},
-      {title:"Rilla of Ingleside"}
+      {title:"Anne of Avonlea", pubDate:"1909"},
+      {title:"Anne of the Island", pubDate:"1915"},
+      {title:"Anne of Windy Poplars", pubDate:"1946"},
+      {title:"Anne's House of Dreams", pubDate:"1917"},
+      {title:"Anne of Ingleside", pubDate:"1938"},
+      {title:"Rainbow Valley", pubDate:"1919"},
+      {title:"Rilla of Ingleside", pubDate:"1921"}
     ]
   },
   {
@@ -1131,17 +1131,17 @@ const SERIES = [
     status: "complete",
     books: [
       {title:"The Princess Diaries"},
-      {title:"Princess in the Spotlight"},
-      {title:"Princess in Love"},
-      {title:"Princess in Waiting"},
-      {title:"Princess in Pink"},
-      {title:"Princess in Training"},
-      {title:"Party Princess"},
-      {title:"Princess on the Brink"},
-      {title:"Princess Mia"},
-      {title:"Forever Princess"},
-      {title:"Royal Wedding"},
-      {title:"The Quarantine Princess Diaries"}
+      {title:"Princess in the Spotlight", pubDate:"2001"},
+      {title:"Princess in Love", pubDate:"2002"},
+      {title:"Princess in Waiting", pubDate:"2003"},
+      {title:"Princess in Pink", pubDate:"2004"},
+      {title:"Princess in Training", pubDate:"2005"},
+      {title:"Party Princess", pubDate:"2006"},
+      {title:"Princess on the Brink", pubDate:"2006"},
+      {title:"Princess Mia", pubDate:"2007"},
+      {title:"Forever Princess", pubDate:"2009"},
+      {title:"Royal Wedding", pubDate:"2015"},
+      {title:"The Quarantine Princess Diaries", pubDate:"March 2023"}
     ]
   },
   {
@@ -1149,11 +1149,11 @@ const SERIES = [
     author: "Heather Redmond",
     status: "ongoing",
     books: [
-      {title:"A Tale of Two Murders"},
-      {title:"Grave Expectations"},
+      {title:"A Tale of Two Murders", pubDate:"August 2018"},
+      {title:"Grave Expectations", pubDate:"2019"},
       {title:"A Christmas Carol Murder"},
-      {title:"The Pickwick Murders"},
-      {title:"A Twist of Murder"}
+      {title:"The Pickwick Murders", pubDate:"October 2021"},
+      {title:"A Twist of Murder", pubDate:"November 2022"}
     ]
   },
   {
