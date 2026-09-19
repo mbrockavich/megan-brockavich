@@ -412,6 +412,7 @@
     letter-spacing:0.08em; color: var(--accent); margin-bottom:6px; font-weight:700;
   }
   .modal-title2{ font-weight:700; font-size:19px; margin:0 0 3px; line-height:1.2; }
+  .modal-pubdate2{ font-size:11.5px; color:var(--ink-faint); margin-bottom:6px; }
   .modal-author2{ font-size:12.5px; color:var(--ink-soft); margin-bottom:8px; }
   .modal-genres2{ display:flex; flex-wrap:wrap; justify-content:center; gap:5px; margin-bottom:8px; }
   .genre-pill2{
@@ -515,6 +516,7 @@
     <div class="modal-cover" id="modalCover"></div>
     <div class="modal-rank" id="modalRank"></div>
     <h3 class="modal-title2" id="modalTitle2"></h3>
+    <div class="modal-pubdate2" id="modalPubDate2"></div>
     <div class="modal-author2" id="modalAuthor2"></div>
     <div class="modal-genres2" id="modalGenres2"></div>
     <div class="modal-meta2" id="modalMeta2"></div>
@@ -1365,6 +1367,7 @@ const modalOverlay = document.getElementById("bookModalOverlay");
 const modalCover = document.getElementById("modalCover");
 const modalRank = document.getElementById("modalRank");
 const modalTitle2 = document.getElementById("modalTitle2");
+const modalPubDate2 = document.getElementById("modalPubDate2");
 const modalAuthor2 = document.getElementById("modalAuthor2");
 const modalGenres2 = document.getElementById("modalGenres2");
 const modalMeta2 = document.getElementById("modalMeta2");
@@ -1385,13 +1388,14 @@ function openBookModal(b, eyebrow){
   modalRank.textContent = eyebrow || "";
   modalRank.style.display = eyebrow ? "block" : "none";
   modalTitle2.textContent = b.title;
+  const pubLabel = b.pubDate || b.pubYear || null;
+  modalPubDate2.textContent = pubLabel ? `Published ${pubLabel}` : "";
+  modalPubDate2.style.display = pubLabel ? "block" : "none";
   modalAuthor2.textContent = b.author;
   const genres = (b.genres || []).filter(Boolean);
   modalGenres2.innerHTML = genres.map(g => `<span class="genre-pill2">${g}</span>`).join("");
   modalGenres2.style.display = genres.length ? "flex" : "none";
-  const pubLabel = b.pubDate || b.pubYear || null;
   modalMeta2.textContent = [
-    pubLabel ? `Published ${pubLabel}` : null,
     b.dateLabel !== "Undated" ? `Read ${b.dateLabel}` : null,
     b.rating ? formatRating(b.rating) : null
   ].filter(Boolean).join(" · ");
