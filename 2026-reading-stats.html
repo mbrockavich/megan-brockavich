@@ -569,10 +569,15 @@ const endOfYear = new Date(YEAR, 11, 31);
 const daysLeftInYear = Math.round((endOfYear - TODAY) / 86400000);
 const daysPerBookNeeded = remaining > 0 ? (daysLeftInYear / remaining) : 0;
 
-// Fractional months left, based on actual days remaining (not whole
-// calendar months) so this stays consistent with daysPerBookNeeded above —
-// otherwise the two stats disagree depending on where in the month "today" falls.
-const monthsLeft = Math.max(daysLeftInYear / (365 / 12), 1 / 30);
+// "Books per month needed" = books left / whole calendar months left.
+// Whole months left = full months still ahead, NOT counting the current
+// (already in-progress) month — e.g. on any day in September, that's
+// Oct + Nov + Dec = 3. Floored at 1 so December never divides by zero.
+// This is deliberately NOT the same number as daysLeftInYear used in
+// daysPerBookNeeded above (that one is fractional/day-based on purpose,
+// for "finish one every N days"). Do not "fix" this into agreement —
+// they're answering two different questions on purpose.
+const monthsLeft = Math.max(11 - currentMonth, 1);
 const paceNeededPerMonth = remaining > 0 ? (remaining / monthsLeft) : 0;
 
 const paceNeededPerMonthStretch = remainingStretch > 0 ? (remainingStretch / monthsLeft) : 0;
