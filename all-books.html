@@ -601,6 +601,7 @@ function normalizeAll(){
       sortTime: d ? d.getTime() : -8640000000000000,
       pages: null,
       pubYear: b.pubYear || null,
+      pubDate: b.pubDate || null,
       source: "past"
     });
   });
@@ -620,6 +621,7 @@ function normalizeAll(){
       sortTime: d.getTime(),
       pages: b.pages,
       pubYear: b.pubYear || null,
+      pubDate: b.pubDate || null,
       source: "2026"
     });
   });
@@ -1387,7 +1389,12 @@ function openBookModal(b, eyebrow){
   const genres = (b.genres || []).filter(Boolean);
   modalGenres2.innerHTML = genres.map(g => `<span class="genre-pill2">${g}</span>`).join("");
   modalGenres2.style.display = genres.length ? "flex" : "none";
-  modalMeta2.textContent = [b.dateLabel, b.rating ? formatRating(b.rating) : null].filter(Boolean).join(" · ");
+  const pubLabel = b.pubDate || b.pubYear || null;
+  modalMeta2.textContent = [
+    pubLabel ? `Published ${pubLabel}` : null,
+    b.dateLabel !== "Undated" ? `Read ${b.dateLabel}` : null,
+    b.rating ? formatRating(b.rating) : null
+  ].filter(Boolean).join(" · ");
   modalMeta2.style.display = modalMeta2.textContent ? "block" : "none";
   const ownedFormats = (typeof findOwnedFormats === "function") ? findOwnedFormats(b.title) : [];
   modalOwned2.innerHTML = ownedFormats.map(fmt => `<span class="owned-pill ${OWNED_PILL_INFO[fmt].cls}">${OWNED_PILL_INFO[fmt].label}</span>`).join("");
