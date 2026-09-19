@@ -130,49 +130,35 @@
   }
   .search-input::placeholder{ color: var(--ink-faint); }
   .search-input:focus{ border-color: var(--accent); }
-  .pills{ display:flex; flex-wrap:wrap; gap: 7px; }
-  .pills.pills-secondary{ margin-top: 7px; }
-  .pill{
-    font-family:'Inter', sans-serif; font-size: 12.5px; font-weight:500;
-    padding: 7px 13px; border-radius: 8px; border: 1px solid var(--border-strong);
-    background: var(--surface); color: var(--ink-soft); cursor:pointer;
-    display:flex; align-items:center; gap:5px; transition: border-color .12s ease, color .12s ease;
-    -webkit-tap-highlight-color: transparent; white-space:nowrap;
+  .filter-selects{ display:flex; gap: 8px; flex-wrap:wrap; }
+  .filter-select{
+    flex: 1 1 180px; padding: 10px 14px; border: 1px solid var(--border-strong);
+    border-radius: 8px; font-family:'Inter', sans-serif; font-size: 14px; font-weight:500;
+    background: var(--surface); color: var(--ink); cursor:pointer;
   }
-  .pill:hover{ border-color: var(--accent); color: var(--ink); }
-  .pill.active{ background: var(--accent); color: #fff; border-color: var(--accent); font-weight:600; }
-  .pill .count{ opacity:0.65; font-size:11px; }
+  .filter-select:focus{ border-color: var(--accent); outline:none; }
 
   @media (max-width: 700px){
     .filter-bar{ padding: 11px 0 11px; }
     .search-input{ padding: 13px 14px; margin-bottom: 9px; font-size: 16px; }
-    .pills{
-      flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; gap: 6px;
-      margin: 0 -16px; padding: 0 16px 2px; -webkit-overflow-scrolling: touch;
-      scroll-snap-type: x proximity;
-    }
-    .pills::-webkit-scrollbar{ display:none; }
-    .pill{ flex: 0 0 auto; padding: 6px 10px; font-size: 11.5px; gap:4px; scroll-snap-align: start; }
-    .pill .count{ font-size: 10px; }
-  }
-  @media (max-width: 400px){
-    .pill{ padding: 5px 9px; font-size: 11px; }
+    .filter-selects{ flex-direction:column; }
+    .filter-select{ width:100%; font-size: 16px; padding: 12px 14px; }
   }
 
-  /* fade masks hint that a horizontally-scrolling row (filter pills,
-     favorites carousel) has more content off-screen, instead of an
-     abrupt cut-off edge. Toggled by JS based on actual scroll position. */
-  .pills, .fav-grid{ -webkit-mask-image: none; mask-image: none; }
+  /* fade mask hints that the favorites carousel has more content
+     off-screen, instead of an abrupt cut-off edge. Toggled by JS based
+     on actual scroll position. */
+  .fav-grid{ -webkit-mask-image: none; mask-image: none; }
   @media (max-width: 700px){
-    .pills.fade-right, .fav-grid.fade-right{
+    .fav-grid.fade-right{
       -webkit-mask-image: linear-gradient(to right, black calc(100% - 28px), transparent 100%);
       mask-image: linear-gradient(to right, black calc(100% - 28px), transparent 100%);
     }
-    .pills.fade-left, .fav-grid.fade-left{
+    .fav-grid.fade-left{
       -webkit-mask-image: linear-gradient(to left, black calc(100% - 28px), transparent 100%);
       mask-image: linear-gradient(to left, black calc(100% - 28px), transparent 100%);
     }
-    .pills.fade-left.fade-right, .fav-grid.fade-left.fade-right{
+    .fav-grid.fade-left.fade-right{
       -webkit-mask-image: linear-gradient(to right, transparent 0%, black 28px, black calc(100% - 28px), transparent 100%);
       mask-image: linear-gradient(to right, transparent 0%, black 28px, black calc(100% - 28px), transparent 100%);
     }
@@ -492,8 +478,10 @@
 <div class="filter-bar">
   <div class="filter-bar-inner">
     <input type="text" class="search-input" id="searchInput" placeholder="Search by title or author...">
-    <div class="pills" id="genrePills"></div>
-    <div class="pills pills-secondary" id="formatPills"></div>
+    <div class="filter-selects">
+      <select class="filter-select" id="genreSelect" aria-label="Filter by genre"></select>
+      <select class="filter-select" id="formatSelect" aria-label="Filter by format"></select>
+    </div>
   </div>
 </div>
 
@@ -764,24 +752,25 @@ function updateScrollFade(el){
   el.classList.toggle("fade-left", scrollable && el.scrollLeft > 2);
 }
 function refreshScrollFades(){
-  document.querySelectorAll(".pills, .fav-grid").forEach(updateScrollFade);
+  document.querySelectorAll(".fav-grid").forEach(updateScrollFade);
 }
 document.addEventListener("scroll", (e) => {
-  if(e.target && e.target.nodeType === 1 && (e.target.classList.contains("pills") || e.target.classList.contains("fav-grid"))){
+  if(e.target && e.target.nodeType === 1 && e.target.classList.contains("fav-grid")){
     updateScrollFade(e.target);
   }
 }, true);
 window.addEventListener("resize", refreshScrollFades);
 
-/* ---------------- genre pills ---------------- */
-const pillsContainer = document.getElementById("genrePills");
+/* ---------------- genre filter (dropdown) ---------------- */
+const genreSelect = document.getElementById("genreSelect");
+genreSelect.addEventListener("change", (e) => selectFilter(e.target.value));
 function selectFilter(value){
   activeGenre = value;
   try{ localStorage.setItem("activeGenre", value); }catch(e){}
   renderPills(); renderShelf(); renderStats(); renderFavorites();
 }
 
-/* ---------------- owned-format pills (Kindle / Audible / Physical) ----------------
+/* ---------------- owned-format filter (dropdown: Kindle / Audible / Physical) ----------------
    Additional filter on top of genre + search, sourced from OWNED_BOOKS via
    findOwnedFormats() in owned-books-data.js. Replaces the old standalone
    book-collection.html page. */
@@ -791,7 +780,8 @@ const FORMAT_INFO = {
   physical: {emoji:"📚", label:"Physical"},
   kindleUnlimited: {emoji:"🔄", label:"Kindle Unlimited"},
 };
-const formatPillsContainer = document.getElementById("formatPills");
+const formatSelect = document.getElementById("formatSelect");
+formatSelect.addEventListener("change", (e) => selectFormat(e.target.value));
 const hasOwnedLookup = typeof findOwnedFormats === "function";
 function ownedFormatCount(fmt){
   if(!hasOwnedLookup) return 0;
@@ -802,66 +792,38 @@ function selectFormat(value){
   try{ localStorage.setItem("activeFormat", value); }catch(e){}
   renderFormatPills(); renderShelf(); renderStats();
 }
+function addOption(select, value, label, active){
+  const opt = document.createElement("option");
+  opt.value = value;
+  opt.textContent = label;
+  if(active) opt.selected = true;
+  select.appendChild(opt);
+}
 function renderFormatPills(){
-  if(!hasOwnedLookup){ formatPillsContainer.style.display = "none"; return; }
-  formatPillsContainer.innerHTML = "";
-  const allPill = document.createElement("button");
-  allPill.className = "pill" + (activeFormat === "All" ? " active" : "");
-  allPill.textContent = "All Formats";
-  allPill.addEventListener("click", () => selectFormat("All"));
-  formatPillsContainer.appendChild(allPill);
-
+  if(!hasOwnedLookup){ formatSelect.style.display = "none"; return; }
+  formatSelect.innerHTML = "";
+  addOption(formatSelect, "All", "All Formats", activeFormat === "All");
   ["kindle","audible","physical","kindleUnlimited"].forEach(fmt => {
     const info = FORMAT_INFO[fmt];
-    const pill = document.createElement("button");
-    pill.className = "pill" + (activeFormat === fmt ? " active" : "");
-    pill.innerHTML = `${info.emoji} ${info.label} <span class="count">${ownedFormatCount(fmt)}</span>`;
-    pill.addEventListener("click", () => selectFormat(fmt));
-    formatPillsContainer.appendChild(pill);
+    addOption(formatSelect, fmt, `${info.emoji} ${info.label} (${ownedFormatCount(fmt)})`, activeFormat === fmt);
   });
-  refreshScrollFades();
 }
 function renderPills(){
-  pillsContainer.innerHTML = "";
-  const allPill = document.createElement("button");
-  allPill.className = "pill" + (activeGenre === "All" ? " active" : "");
-  allPill.innerHTML = `All <span class="count">${ALL_BOOKS.length}</span>`;
-  allPill.addEventListener("click", () => selectFilter("All"));
-  pillsContainer.appendChild(allPill);
-
-  const seriesPill = document.createElement("button");
-  seriesPill.className = "pill" + (activeGenre === "Series" ? " active" : "");
-  seriesPill.innerHTML = `📚 Series <span class="count">${SERIES.length}</span>`;
-  seriesPill.addEventListener("click", () => selectFilter("Series"));
-  pillsContainer.appendChild(seriesPill);
-
+  genreSelect.innerHTML = "";
+  addOption(genreSelect, "All", `All (${ALL_BOOKS.length})`, activeGenre === "All");
+  addOption(genreSelect, "Series", `📚 Series (${SERIES.length})`, activeGenre === "Series");
   if(spicyCount > 0){
-    const spicyPill = document.createElement("button");
-    spicyPill.className = "pill" + (activeGenre === "Spicy" ? " active" : "");
-    spicyPill.innerHTML = `🌶️ Spicy <span class="count">${spicyCount}</span>`;
-    spicyPill.addEventListener("click", () => selectFilter("Spicy"));
-    pillsContainer.appendChild(spicyPill);
+    addOption(genreSelect, "Spicy", `🌶️ Spicy (${spicyCount})`, activeGenre === "Spicy");
   }
-
   genreList.forEach(([genre, count]) => {
-    const pill = document.createElement("button");
-    pill.className = "pill" + (activeGenre === genre ? " active" : "");
-    pill.innerHTML = `${GENRE_EMOJI[genre] || "📚"} ${genre} <span class="count">${count}</span>`;
-    pill.addEventListener("click", () => selectFilter(genre));
-    pillsContainer.appendChild(pill);
+    addOption(genreSelect, genre, `${GENRE_EMOJI[genre] || "📚"} ${genre} (${count})`, activeGenre === genre);
   });
-
   // age categories (YA / Middle Grade), kept visually after the genres
   AGE_TAGS.forEach(tag => {
     const count = genreCounts[tag] || 0;
     if(!count) return;
-    const pill = document.createElement("button");
-    pill.className = "pill" + (activeGenre === tag ? " active" : "");
-    pill.innerHTML = `${GENRE_EMOJI[tag] || "📚"} ${tag} <span class="count">${count}</span>`;
-    pill.addEventListener("click", () => selectFilter(tag));
-    pillsContainer.appendChild(pill);
+    addOption(genreSelect, tag, `${GENRE_EMOJI[tag] || "📚"} ${tag} (${count})`, activeGenre === tag);
   });
-  refreshScrollFades();
 }
 let savedGenre = null;
 try{ savedGenre = localStorage.getItem("activeGenre"); }catch(e){}
