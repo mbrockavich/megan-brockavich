@@ -1049,7 +1049,6 @@ const AUTHOR_WORKS = {
   "Stephen King": {
     groups: [
     { seriesName: "The Shining", status: "complete", books: [
-      {title:"Before the Play", pubYear:1982, number:null, read:false, comingSoon:false, cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1557520154i/45714016.jpg"},
       {title:"The Shining", pubYear:1977, number:"1", read:true, comingSoon:false, cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1353277730i/11588.jpg"},
       {title:"Doctor Sleep", pubYear:2013, number:"2", read:true, comingSoon:false, cover:"https://covers.openlibrary.org/b/id/14652972-L.jpg"}
     ] },

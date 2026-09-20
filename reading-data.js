@@ -704,7 +704,6 @@ const SERIES = [
     author: "Stephen King",
     status: "complete",
     books: [
-      {title:"Before the Play", cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1557520154i/45714016.jpg", pubDate:"1982"},
       {title:"The Shining"},
       {title:"Doctor Sleep"}
     ]
