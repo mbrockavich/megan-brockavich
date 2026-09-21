@@ -241,7 +241,10 @@ function authorStats(author){
   return {total, read, caughtUp: total > 0 && read === total};
 }
 
-const AUTHORS = Object.keys(AUTHOR_WORKS).sort((a,b) => a.localeCompare(b));
+const AUTHORS = Object.keys(AUTHOR_WORKS).sort((a,b) => {
+  const diff = authorStats(b).read - authorStats(a).read;
+  return diff !== 0 ? diff : a.localeCompare(b);
+});
 
 /* ---------------- hero + stats ---------------- */
 let totalBooks = 0, totalRead = 0, caughtUpCount = 0;
