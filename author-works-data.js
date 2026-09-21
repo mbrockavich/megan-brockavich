@@ -775,7 +775,7 @@ const AUTHOR_WORKS = {
       {title:"Carl's Doomsday Scenario", pubYear:2021, number:"2", read:true, comingSoon:false, cover:"https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1719949673i/212393364._SY180_.jpg"},
       {title:"The Dungeon Anarchist's Cookbook", pubYear:2021, number:"3", read:true, comingSoon:false, cover:"dungeon-crawler-carl/dungeon-anarchists-cookbook-cover.jpg"},
       {title:"The Gate of the Feral Gods", pubYear:2021, number:"4", read:true, comingSoon:false, cover:"https://covers.openlibrary.org/b/isbn/9780593955970-L.jpg"},
-      {title:"The Butcher's Masquerade", pubYear:2022, number:"5", read:false, comingSoon:false, cover:"https://covers.openlibrary.org/b/id/15231958-L.jpg"},
+      {title:"The Butcher's Masquerade", pubYear:2022, number:"5", read:true, comingSoon:false, cover:"https://covers.openlibrary.org/b/id/15231958-L.jpg"},
       {title:"The Eye of the Bedlam Bride", pubYear:2023, number:"6", read:false, comingSoon:false, cover:"https://covers.openlibrary.org/b/id/15231488-L.jpg"},
       {title:"This Inevitable Ruin", pubYear:2024, number:"7", read:false, comingSoon:false, cover:"https://covers.openlibrary.org/b/id/15142977-L.jpg"},
       {title:"A Parade of Horribles", pubYear:2026, number:"8", read:false, comingSoon:false, cover:"https://covers.openlibrary.org/b/id/15221497-L.jpg"},
