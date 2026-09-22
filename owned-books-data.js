@@ -43,6 +43,7 @@ const OWNED_BOOKS = {
     {title:"The Assassin's Blade", author:"Sarah J. Maas", narrator:"", cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1680869667i/126062562.jpg"},
     {title:"Throne of Glass", author:"Sarah J. Maas", narrator:"", cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1673566495i/76703559.jpg"},
     {title:"Crown of Midnight", author:"Sarah J. Maas", narrator:"", cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1673566594i/76705490.jpg"},
+    {title:"The Butcher's Masquerade", author:"Matt Dinniman", narrator:"", cover:"https://covers.openlibrary.org/b/id/15231958-L.jpg"},
   ],
   physical: [
     {title:"Control Unleashed: Creating a Focused and Confident Dog", spineTitle:"Control Unleashed", author:"Leslie McDevitt", cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1349894884i/2101812.jpg"},
