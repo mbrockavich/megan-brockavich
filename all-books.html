@@ -926,7 +926,7 @@ function renderSeriesGrid(){
     if(activeFormat !== "All" && hasOwnedLookup){
       readBooks = readBooks.filter(b => findOwnedFormats(b.title).includes(activeFormat));
     }
-    const releasedTotal = s.books.filter(b => !b.comingSoon).length;
+    const seriesTotal = s.books.length;
     const status = seriesStatus(s);
     const top = readBooks[0];
     const behindLayers = Math.min(readBooks.length - 1, 2);
@@ -941,7 +941,7 @@ function renderSeriesGrid(){
     card.className = "master-card master-card-series";
     card.setAttribute("tabindex", "0");
     card.setAttribute("role", "button");
-    card.setAttribute("aria-label", `Open ${s.name} series, ${readBooks.length} of ${releasedTotal} read, ${status.text}${avgRating != null ? `, ${formatRating(avgRating)}` : ""}`);
+    card.setAttribute("aria-label", `Open ${s.name} series, ${readBooks.length} of ${seriesTotal} read, ${status.text}${avgRating != null ? `, ${formatRating(avgRating)}` : ""}`);
     card.innerHTML = `
       <div class="master-stack-wrap">
         ${behindHTML}
@@ -950,7 +950,7 @@ function renderSeriesGrid(){
           <span>${s.name}</span>
           ${top && top.cover ? `<img src="${top.cover}" alt="Cover of ${top.title}" loading="lazy" onerror="this.remove()">` : ""}
         </div>
-        <div class="master-count-badge">${readBooks.length}/${releasedTotal}</div>
+        <div class="master-count-badge">${readBooks.length}/${seriesTotal}</div>
       </div>
       <div class="master-title">${s.name}</div>
       <div class="master-author">${s.author}</div>
