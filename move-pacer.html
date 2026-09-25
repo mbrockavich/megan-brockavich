@@ -35,17 +35,25 @@
   .lbl{font-size:.72rem;text-transform:uppercase;letter-spacing:.09em;color:var(--muted)}
   .inrow{display:flex;gap:12px;align-items:flex-end;margin-top:10px}
   .field{flex:1}
-  input[type=number]{
+  input.num{
     width:100%;background:var(--surface2);color:var(--text);border:1px solid var(--line);
     border-radius:12px;padding:12px;font-size:1.7rem;font-family:ui-monospace,Menlo,monospace;
     text-align:center;outline:none;appearance:textfield;-moz-appearance:textfield;
   }
-  input[type=number]::-webkit-outer-spin-button,input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
+  .stepper{display:flex;align-items:stretch;gap:4px}
+  .stepper input{flex:1;min-width:0;padding-left:4px;padding-right:4px}
+  .stepper button{
+    flex:0 0 auto;width:38px;background:var(--surface2);color:var(--text);border:1px solid var(--line);
+    border-radius:12px;font-size:1.4rem;line-height:1;cursor:pointer;touch-action:manipulation;
+    -webkit-user-select:none;user-select:none;
+  }
+  .stepper button:active{background:var(--line);border-color:var(--move)}
   input:focus{border-color:var(--move)}
   .cap{display:block;text-align:center;font-size:.72rem;color:var(--muted);margin-top:6px}
-  .settings{display:flex;flex-wrap:wrap;gap:12px 24px;margin-top:18px;padding-top:16px;border-top:1px solid var(--line)}
+  .settings{display:flex;flex-wrap:wrap;gap:12px 16px;margin-top:18px;padding-top:16px;border-top:1px solid var(--line)}
   .mini .lbl{margin-bottom:6px;display:block;text-transform:none;letter-spacing:0;font-size:.75rem}
-  .mini input{width:84px;font-size:1rem;padding:8px;text-align:left}
+  .mini input{width:64px;font-size:1rem;padding:8px 4px;text-align:center}
+  .mini .stepper button{width:34px;font-size:1.1rem;border-radius:10px}
   .hero{background:var(--surface);border:1px solid var(--move);border-radius:18px;padding:26px 20px;text-align:center;margin-bottom:14px}
   .hero .lbl{letter-spacing:.14em}
   .heronum{display:flex;align-items:baseline;justify-content:center;gap:8px;margin-top:8px}
@@ -76,23 +84,23 @@
     <span class="lbl">Inactive time so far today</span>
     <div class="inrow">
       <div class="field">
-        <input type="number" id="ih" min="0" max="24" value="6" />
+        <input class="num" type="text" inputmode="numeric" pattern="[0-9]*" autocomplete="off" data-step="1" id="ih" min="0" max="24" value="6" />
         <span class="cap">hours</span>
       </div>
       <div class="field">
-        <input type="number" id="im" min="0" max="59" value="0" />
+        <input class="num" type="text" inputmode="numeric" pattern="[0-9]*" autocomplete="off" data-step="5" id="im" min="0" max="59" value="0" />
         <span class="cap">minutes</span>
       </div>
     </div>
     <div class="settings">
-      <div class="mini"><span class="lbl">Daily goal (hrs)</span><input type="number" id="goal" min="1" max="24" value="10" /></div>
-      <div class="mini"><span class="lbl">Deadline (hour, 24h)</span><input type="number" id="target" min="0" max="23" value="22" /></div>
+      <div class="mini"><span class="lbl">Daily goal (hrs)</span><input class="num" type="text" inputmode="numeric" pattern="[0-9]*" autocomplete="off" data-step="1" id="goal" min="1" max="24" value="10" /></div>
+      <div class="mini"><span class="lbl">Deadline (hour, 24h)</span><input class="num" type="text" inputmode="numeric" pattern="[0-9]*" autocomplete="off" data-step="1" id="target" min="0" max="23" value="22" /></div>
     </div>
 
     <div class="settings">
-      <div class="mini"><span class="lbl">Steps so far</span><input type="number" id="steps" min="0" value="0" /></div>
-      <div class="mini"><span class="lbl">Step goal</span><input type="number" id="stepgoal" min="0" value="10000" /></div>
-      <div class="mini"><span class="lbl">To-dos left</span><input type="number" id="todosleft" min="0" value="0" /></div>
+      <div class="mini"><span class="lbl">Steps so far</span><input class="num" type="text" inputmode="numeric" pattern="[0-9]*" autocomplete="off" data-step="500" id="steps" min="0" value="0" /></div>
+      <div class="mini"><span class="lbl">Step goal</span><input class="num" type="text" inputmode="numeric" pattern="[0-9]*" autocomplete="off" data-step="500" id="stepgoal" min="0" value="10000" /></div>
+      <div class="mini"><span class="lbl">To-dos left</span><input class="num" type="text" inputmode="numeric" pattern="[0-9]*" autocomplete="off" data-step="1" id="todosleft" min="0" value="0" /></div>
     </div>
     <p class="note" style="margin-top:12px">Steps and to-dos use the same deadline set above.</p>
   </div>
@@ -101,11 +109,11 @@
     <span class="lbl">Meetings &amp; events still ahead today</span>
     <div class="inrow">
       <div class="field">
-        <input type="number" id="mh" min="0" max="24" value="0" />
+        <input class="num" type="text" inputmode="numeric" pattern="[0-9]*" autocomplete="off" data-step="1" id="mh" min="0" max="24" value="0" />
         <span class="cap">hours</span>
       </div>
       <div class="field">
-        <input type="number" id="mm" min="0" max="59" value="0" />
+        <input class="num" type="text" inputmode="numeric" pattern="[0-9]*" autocomplete="off" data-step="15" id="mm" min="0" max="59" value="0" />
         <span class="cap">minutes</span>
       </div>
     </div>
@@ -132,7 +140,33 @@ ids.forEach(function(id){
   var saved=store.get("pacer_"+id,null);
   if(saved!==null) el.value=saved;
   el.addEventListener("input",function(){store.set("pacer_"+id,el.value);render();});
+  // tapping a box selects its number, so typing replaces it (no backspacing)
+  el.addEventListener("focus",function(){setTimeout(function(){try{el.setSelectionRange(0,el.value.length);}catch(e){el.select();}},0);});
+  addStepper(el);
 });
+
+// wrap an input in -/+ buttons that nudge it by its data-step, within min/max
+function addStepper(el){
+  var step=parseFloat(el.getAttribute("data-step"))||1;
+  var min=el.hasAttribute("min")?parseFloat(el.getAttribute("min")):-Infinity;
+  var max=el.hasAttribute("max")?parseFloat(el.getAttribute("max")):Infinity;
+  var box=document.createElement("div"); box.className="stepper";
+  el.parentNode.insertBefore(box,el);
+  function btn(txt,dir,label){
+    var b=document.createElement("button");
+    b.type="button"; b.textContent=txt; b.setAttribute("aria-label",label);
+    b.addEventListener("click",function(){
+      var v=parseFloat(el.value); if(isNaN(v)) v=0;
+      v=dir>0?Math.floor(v/step)*step+step:Math.ceil(v/step)*step-step;
+      el.value=Math.min(max,Math.max(min,v));
+      el.dispatchEvent(new Event("input"));
+    });
+    return b;
+  }
+  box.appendChild(btn("\u2212",-1,"Decrease"));
+  box.appendChild(el);
+  box.appendChild(btn("+",1,"Increase"));
+}
 
 function fmtHM(t){
   var sign=t<0?"-":""; t=Math.abs(Math.round(t));
