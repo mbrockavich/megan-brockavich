@@ -62,10 +62,6 @@
   .note{font-size:.78rem;color:var(--muted);margin-top:16px;line-height:1.5}
   .panel{background:var(--surface);border-radius:18px;padding:20px}
   .panel p{margin:0} .panel .big{font-size:1.02rem} .panel .small{font-size:.88rem;color:var(--muted);margin-top:6px;line-height:1.5}
-  .mrow{display:flex;justify-content:space-between;align-items:baseline;padding:9px 0;border-bottom:1px solid var(--line);font-size:.92rem}
-  .mrow:last-child{border-bottom:none}
-  .mtime{color:var(--muted)}
-  .mval{color:var(--move)}
 </style>
 </head>
 <body>
@@ -102,8 +98,18 @@
   </div>
 
   <div class="card">
-    <span class="lbl">Pace targets (from daily goal &amp; deadline)</span>
-    <div id="milestones" style="margin-top:10px"></div>
+    <span class="lbl">Meetings &amp; events still ahead today</span>
+    <div class="inrow">
+      <div class="field">
+        <input type="number" id="mh" min="0" max="24" value="0" />
+        <span class="cap">hours</span>
+      </div>
+      <div class="field">
+        <input type="number" id="mm" min="0" max="59" value="0" />
+        <span class="cap">minutes</span>
+      </div>
+    </div>
+    <p class="note" style="margin-top:12px">This time is taken out of your available hours, so the per-hour targets below only count the free time you actually have. Lower it as meetings finish.</p>
   </div>
 
   <div id="result"></div>
@@ -120,7 +126,7 @@ var store={
   get:function(k,d){try{var v=localStorage.getItem(k);return v===null?d:v;}catch(e){return d;}},
   set:function(k,v){try{localStorage.setItem(k,v);}catch(e){}}
 };
-var ids=["ih","im","goal","target","steps","stepgoal","todosleft"];
+var ids=["ih","im","goal","target","steps","stepgoal","todosleft","mh","mm"];
 ids.forEach(function(id){
   var el=document.getElementById(id);
   var saved=store.get("pacer_"+id,null);
@@ -142,27 +148,6 @@ function fmtClock(dt){
 }
 function num(id){var v=parseFloat(document.getElementById(id).value);return isNaN(v)?0:v;}
 
-// Fixed checkpoint times. Budgets are pure pace targets from wake time to the
-// deadline hour, spread proportionally across the daily goal - they never
-// factor in inactive time entered so far.
-var WAKE_HOUR=6;
-var MILESTONES=[{h:9,label:"9 AM"},{h:12,label:"12 PM"},{h:17,label:"5 PM"},{h:19,label:"7 PM"}];
-
-function renderMilestones(goalMin,deadlineHour){
-  var el=document.getElementById("milestones");
-  var span=deadlineHour-WAKE_HOUR;
-  if(span<=0){
-    el.innerHTML='<p class="small" style="color:var(--muted);margin:0">Deadline must be after 6 AM to see pace targets.</p>';
-    return;
-  }
-  el.innerHTML=MILESTONES.map(function(m){
-    var elapsed=Math.min(Math.max(m.h-WAKE_HOUR,0),span);
-    var budget=goalMin*elapsed/span;
-    return '<div class="mrow"><span class="mtime">By '+m.label+'</span>'
-      +'<span class="mval mono">under '+fmtHM(budget)+'</span></div>';
-  }).join("");
-}
-
 function render(){
   var now=new Date();
   document.getElementById("clock").textContent=fmtClock(now);
@@ -172,11 +157,13 @@ function render(){
   var targetHour=Math.min(23,Math.max(0,Math.round(num("target"))));
   var target=new Date(now); target.setHours(targetHour,0,0,0);
   var until=Math.floor((target-now)/60000);
+  var meetings=Math.max(num("mh")*60+num("mm"),0);
+  // time you can actually act in: minutes to the deadline minus meetings/events
+  var free=Math.max(until-Math.min(meetings,Math.max(until,0)),0);
+  var meetNote=meetings>0&&until>0?' after '+fmtHM(Math.min(meetings,until))+' of meetings':'';
 
   document.getElementById("sub").textContent=
     "Stay under "+num("goal")+"h of inactive time by "+fmtClock(target)+".";
-
-  renderMilestones(goalMin,targetHour);
 
   var closed=until<=0;
   var over=inactive>=goalMin;
@@ -185,9 +172,10 @@ function render(){
   var need=Math.ceil(Math.max(needRaw,0));
   var onTrack=!over&&needRaw<=0;
   var buffer=goalMin-projected;
-  var pace=until>0?Math.ceil(need*60/until):0;
-  var rest=Math.max(until-need,0);
-  var movePct=until>0?(need/until)*100:0;
+  var pace=free>0?Math.ceil(need*60/free):0;
+  var rest=Math.max(free-need,0);
+  var movePct=free>0?Math.min(need/free,1)*100:100;
+  var tooTight=need>free;
 
   var out=document.getElementById("result");
   var html="";
@@ -204,6 +192,11 @@ function render(){
       +'<p class="big">You\'re already at '+fmtHM(inactive)+' inactive.</p>'
       +'<p class="small">That\'s '+fmtHM(inactive-goalMin)+' past the '+num("goal")+'h goal, and past inactive time can\'t be undone. '
       +'Today\'s goal is out of reach, but moving now keeps the overage from growing. Tomorrow resets.</p></div>';
+  } else if(tooTight){
+    html='<div class="panel" style="border:1px solid var(--over)">'
+      +'<p class="big">Not enough free time left to make it under.</p>'
+      +'<p class="small">You\'d need '+fmtHM(need)+' of movement, but only have '+fmtHM(free)+' free'+meetNote+' before '+fmtClock(target)+'. '
+      +'Move whenever you can to keep the overage small.</p></div>';
   } else if(onTrack){
     html='<div class="panel" style="border:1px solid var(--good)">'
       +'<p class="big">You\'re on track. No forced movement needed.</p>'
@@ -220,11 +213,11 @@ function render(){
         +'<span style="color:var(--rest)">Rest OK '+fmtHM(rest)+' &#9679;</span></div>'
     +'</div>'
     +'<div class="grid">'
-      +'<div class="stat"><span class="lbl">Until deadline</span><b>'+fmtHM(until)+'</b></div>'
+      +'<div class="stat"><span class="lbl">Free time left</span><b>'+fmtHM(free)+'</b></div>'
       +'<div class="stat"><span class="lbl">If you don\'t move</span><b style="color:var(--over)">'+fmtHM(projected)+'</b></div>'
       +'<div class="stat"><span class="lbl">Room left to rest</span><b>'+fmtHM(goalMin-inactive)+'</b></div>'
     +'</div>'
-    +'<p class="note">Follow the pace and you\'ll reach '+fmtClock(target)+' at just under '+num("goal")+'h inactive. Banking movement early buys slack later.</p>';
+    +'<p class="note">That\'s per free hour'+meetNote+' ('+fmtHM(until)+' until deadline). Follow the pace and you\'ll reach '+fmtClock(target)+' at just under '+num("goal")+'h inactive. Banking movement early buys slack later.</p>';
   }
   out.innerHTML=html;
 
@@ -242,17 +235,21 @@ function render(){
     stepHtml='<div class="panel" style="border:1px solid var(--good)">'
       +'<p class="big">Step goal already hit.</p>'
       +'<p class="small">'+curSteps.toLocaleString()+' / '+goalSteps.toLocaleString()+' steps, with '+fmtHM(until)+' left until '+fmtClock(target)+'.</p></div>';
+  } else if(free<=0){
+    stepHtml='<div class="panel" style="border:1px solid var(--over)">'
+      +'<p class="big">No free time left before '+fmtClock(target)+'.</p>'
+      +'<p class="small">'+stepsLeft.toLocaleString()+' steps to go'+meetNote+'.</p></div>';
   } else {
-    var stepsPerHour=Math.ceil(stepsLeft/(until/60));
-    var stepsPerMin=Math.ceil(stepsLeft/until);
+    var stepsPerHour=Math.ceil(stepsLeft/(free/60));
+    var stepsPerMin=Math.ceil(stepsLeft/free);
     stepHtml=''
       +'<div class="hero"><span class="lbl">Steps needed per hour</span>'
         +'<div class="heronum"><b>'+stepsPerHour.toLocaleString()+'</b><span>steps / hr</span></div></div>'
       +'<div class="card">'
         +'<div class="totrow"><span style="color:var(--muted)">Steps remaining</span>'
           +'<span class="mono" style="color:var(--move)">'+stepsLeft.toLocaleString()+'</span></div>'
-        +'<div class="totrow"><span style="color:var(--muted)">Time until deadline</span>'
-          +'<span class="mono">'+fmtHM(until)+'</span></div>'
+        +'<div class="totrow"><span style="color:var(--muted)">Free time left</span>'
+          +'<span class="mono">'+fmtHM(free)+'</span></div>'
         +'<div class="totrow"><span style="color:var(--muted)">Pace needed</span>'
           +'<span class="mono">'+stepsPerMin.toLocaleString()+' / min</span></div>'
       +'</div>'
@@ -272,16 +269,20 @@ function render(){
     todoHtml='<div class="panel" style="border:1px solid var(--good)">'
       +'<p class="big">All to-dos done.</p>'
       +'<p class="small">Nothing left, with '+fmtHM(until)+' left until '+fmtClock(target)+'.</p></div>';
+  } else if(free<=0){
+    todoHtml='<div class="panel" style="border:1px solid var(--over)">'
+      +'<p class="big">No free time left before '+fmtClock(target)+'.</p>'
+      +'<p class="small">'+todosLeft.toLocaleString()+' to-dos left'+meetNote+'.</p></div>';
   } else {
-    var todosPerHour=Math.ceil(todosLeft/(until/60));
+    var todosPerHour=Math.ceil(todosLeft/(free/60));
     todoHtml=''
       +'<div class="hero"><span class="lbl">To-dos needed per hour</span>'
         +'<div class="heronum"><b>'+todosPerHour.toLocaleString()+'</b><span>to-dos / hr</span></div></div>'
       +'<div class="card">'
         +'<div class="totrow"><span style="color:var(--muted)">To-dos remaining</span>'
           +'<span class="mono" style="color:var(--move)">'+todosLeft.toLocaleString()+'</span></div>'
-        +'<div class="totrow"><span style="color:var(--muted)">Time until deadline</span>'
-          +'<span class="mono">'+fmtHM(until)+'</span></div>'
+        +'<div class="totrow"><span style="color:var(--muted)">Free time left</span>'
+          +'<span class="mono">'+fmtHM(free)+'</span></div>'
       +'</div>'
       +'<p class="note">Keep up '+todosPerHour.toLocaleString()+' to-dos/hr and you\'ll clear all '+todosLeft.toLocaleString()+' by '+fmtClock(target)+'.</p>';
   }
