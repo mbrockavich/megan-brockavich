@@ -70,6 +70,13 @@
   .note{font-size:.78rem;color:var(--muted);margin-top:16px;line-height:1.5}
   .panel{background:var(--surface);border-radius:18px;padding:20px}
   .panel p{margin:0} .panel .big{font-size:1.02rem} .panel .small{font-size:.88rem;color:var(--muted);margin-top:6px;line-height:1.5}
+  .chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+  .chip{
+    background:var(--surface2);color:var(--muted);border:1px solid var(--line);border-radius:99px;
+    padding:9px 14px;font-size:.9rem;cursor:pointer;touch-action:manipulation;font-family:inherit;
+  }
+  .chip[aria-pressed="true"]{background:var(--move);border-color:var(--move);color:#101227;font-weight:600}
+  .off{display:none!important}
 </style>
 </head>
 <body>
@@ -81,6 +88,18 @@
   <p class="sub" id="sub"></p>
 
   <div class="card">
+    <span class="lbl">Tracking today</span>
+    <div class="chips">
+      <button type="button" class="chip" data-goal="move">Inactive time</button>
+      <button type="button" class="chip" data-goal="steps">Steps</button>
+      <button type="button" class="chip" data-goal="todos">To-dos</button>
+    </div>
+    <div class="settings">
+      <div class="mini"><span class="lbl">Deadline (hour, 24h)</span><input class="num" type="text" inputmode="numeric" pattern="[0-9]*" autocomplete="off" data-step="1" id="target" min="0" max="23" value="22" /></div>
+    </div>
+  </div>
+
+  <div class="card" data-goal="move">
     <span class="lbl">Inactive time so far today</span>
     <div class="inrow">
       <div class="field">
@@ -94,15 +113,22 @@
     </div>
     <div class="settings">
       <div class="mini"><span class="lbl">Daily goal (hrs)</span><input class="num" type="text" inputmode="numeric" pattern="[0-9]*" autocomplete="off" data-step="1" id="goal" min="1" max="24" value="10" /></div>
-      <div class="mini"><span class="lbl">Deadline (hour, 24h)</span><input class="num" type="text" inputmode="numeric" pattern="[0-9]*" autocomplete="off" data-step="1" id="target" min="0" max="23" value="22" /></div>
     </div>
+  </div>
 
-    <div class="settings">
+  <div class="card" data-goal="steps">
+    <span class="lbl">Steps</span>
+    <div class="settings" style="margin-top:10px;padding-top:0;border-top:none">
       <div class="mini"><span class="lbl">Steps so far</span><input class="num" type="text" inputmode="numeric" pattern="[0-9]*" autocomplete="off" data-step="500" id="steps" min="0" value="0" /></div>
       <div class="mini"><span class="lbl">Step goal</span><input class="num" type="text" inputmode="numeric" pattern="[0-9]*" autocomplete="off" data-step="500" id="stepgoal" min="0" value="10000" /></div>
+    </div>
+  </div>
+
+  <div class="card" data-goal="todos">
+    <span class="lbl">To-dos</span>
+    <div class="settings" style="margin-top:10px;padding-top:0;border-top:none">
       <div class="mini"><span class="lbl">To-dos left</span><input class="num" type="text" inputmode="numeric" pattern="[0-9]*" autocomplete="off" data-step="1" id="todosleft" min="0" value="0" /></div>
     </div>
-    <p class="note" style="margin-top:12px">Steps and to-dos use the same deadline set above.</p>
   </div>
 
   <div class="card">
@@ -120,11 +146,13 @@
     <p class="note" style="margin-top:12px">This time is taken out of your available hours, so the per-hour targets below only count the free time you actually have. Lower it as meetings finish.</p>
   </div>
 
-  <div id="result"></div>
+  <div id="result" data-goal="move"></div>
 
-  <div id="stepResult"></div>
+  <div id="stepResult" data-goal="steps"></div>
 
-  <div id="todoResult"></div>
+  <div id="todoResult" data-goal="todos"></div>
+
+  <p class="note" id="nothing" style="text-align:center">Pick at least one goal above to track today.</p>
 </div>
 
 <script>
@@ -144,6 +172,29 @@ ids.forEach(function(id){
   el.addEventListener("focus",function(){setTimeout(function(){try{el.setSelectionRange(0,el.value.length);}catch(e){el.select();}},0);});
   addStepper(el);
 });
+
+// which goals are tracked today; each chip shows/hides its inputs and results
+var GOALS=["move","steps","todos"];
+function isOn(g){return store.get("pacer_track_"+g,"1")==="1";}
+function applyGoals(){
+  var any=false;
+  GOALS.forEach(function(g){
+    var on=isOn(g); any=any||on;
+    document.querySelectorAll('[data-goal="'+g+'"]').forEach(function(el){
+      if(el.classList.contains("chip")) el.setAttribute("aria-pressed",on?"true":"false");
+      else el.classList.toggle("off",!on);
+    });
+  });
+  document.getElementById("nothing").classList.toggle("off",any);
+}
+document.querySelectorAll(".chip").forEach(function(chip){
+  chip.addEventListener("click",function(){
+    var g=chip.getAttribute("data-goal");
+    store.set("pacer_track_"+g,isOn(g)?"0":"1");
+    applyGoals(); render();
+  });
+});
+applyGoals();
 
 // wrap an input in -/+ buttons that nudge it by its data-step, within min/max
 function addStepper(el){
@@ -196,8 +247,9 @@ function render(){
   var free=Math.max(until-Math.min(meetings,Math.max(until,0)),0);
   var meetNote=meetings>0&&until>0?' after '+fmtHM(Math.min(meetings,until))+' of meetings':'';
 
-  document.getElementById("sub").textContent=
-    "Stay under "+num("goal")+"h of inactive time by "+fmtClock(target)+".";
+  document.getElementById("sub").textContent=isOn("move")
+    ?"Stay under "+num("goal")+"h of inactive time by "+fmtClock(target)+"."
+    :"Goals due by "+fmtClock(target)+".";
 
   var closed=until<=0;
   var over=inactive>=goalMin;
@@ -276,12 +328,19 @@ function render(){
   } else {
     var stepsPerHour=Math.ceil(stepsLeft/(free/60));
     var stepsPerMin=Math.ceil(stepsLeft/free);
+    // where you should be at the top of the next hour (or the deadline, if sooner)
+    var check=new Date(now); check.setHours(now.getHours()+1,0,0,0);
+    if(check>target) check=target;
+    var toCheck=Math.max((check-now)/60000,0);
+    var beAt=Math.min(goalSteps,curSteps+Math.ceil(stepsLeft*Math.min(toCheck,free)/free));
     stepHtml=''
       +'<div class="hero"><span class="lbl">Steps needed per hour</span>'
         +'<div class="heronum"><b>'+stepsPerHour.toLocaleString()+'</b><span>steps / hr</span></div></div>'
       +'<div class="card">'
         +'<div class="totrow"><span style="color:var(--muted)">Steps remaining</span>'
           +'<span class="mono" style="color:var(--move)">'+stepsLeft.toLocaleString()+'</span></div>'
+        +'<div class="totrow"><span style="color:var(--muted)">Be at by '+fmtClock(check)+'</span>'
+          +'<span class="mono" style="color:var(--move)">'+beAt.toLocaleString()+' steps</span></div>'
         +'<div class="totrow"><span style="color:var(--muted)">Free time left</span>'
           +'<span class="mono">'+fmtHM(free)+'</span></div>'
         +'<div class="totrow"><span style="color:var(--muted)">Pace needed</span>'
