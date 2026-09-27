@@ -82,6 +82,7 @@ const OWNED_BOOKS = {
     {title:"The Assassin's Blade", author:"Sarah J. Maas", cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1680869667i/126062562.jpg"},
     {title:"Dungeon Crawler Carl", author:"Matt Dinniman", cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1715780755i/211721806.jpg"},
     {title:"Carl's Doomsday Scenario", author:"Matt Dinniman", cover:"https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1719949673i/212393364._SY180_.jpg"},
+    {title:"Lore Olympus: Volume One", author:"Rachel Smythe", cover:"https://covers.openlibrary.org/b/isbn/9780593160299-L.jpg"},
   ],
   kindleUnlimited: [
     {title:"Dungeon Crawler Carl", author:"Matt Dinniman", cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1715780755i/211721806.jpg"},
