@@ -422,11 +422,11 @@ function starRatingHTML(rating) {
    top of all-books.html and 2026-reading-stats.html. Each page builds its
    own themed row markup from this list. */
 const RATING_LEGEND = [
-  {n: 5, text: "I'd totally reread this book"},
-  {n: 4, text: "I loved it, but I'll only read it once"},
-  {n: 3, text: "I enjoyed it"},
-  {n: 2, text: "I didn't like it, or it wasn't for me"},
-  {n: 1, text: "I hated it. It made me mad"},
+  {n: 5, text: "I would recommend if you like this genre"},
+  {n: 4, text: "I really liked it but I wouldn't necessarily recommend"},
+  {n: 3, text: "It was fine"},
+  {n: 2, text: "I didn't like it"},
+  {n: 1, text: "I actively disliked it"},
 ];
 
 /* Multi-book series touched by the 2026 shelf, in reading order.
