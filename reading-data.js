@@ -107,6 +107,7 @@ const books = [
   {title:"Heir of Fire", cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1673566654i/76706470.jpg", author:"Sarah J. Maas", genre:["Fantasy","Young Adult"], pages:565, dateFinished:"2026-09-19", rating:5, pubYear:2014, pubDate:"September 2014", note:"Reread — my favorite in the series. Celaena's arc is brutal in the best way, and her bond with Rowan hit even harder knowing where it goes. But Manon and Abraxos stole the show for me — I think I love that storyline more than the main one, and watching Manon and the Thirteen wrecked me both times. This is where the series really becomes epic."},
   {title:"The Butcher's Masquerade", cover:"https://covers.openlibrary.org/b/id/15231958-L.jpg", author:"Matt Dinniman", genre:"Science Fiction", pages:768, dateFinished:"2026-09-21", rating:4, pubYear:2022, pubDate:"February 2022", note:"Samantha cracks me up 🤣"},
   {title:"The Eye of the Bedlam Bride", cover:"https://covers.openlibrary.org/b/id/15231488-L.jpg", author:"Matt Dinniman", genre:"Science Fiction", pages:720, dateFinished:"2026-09-27", rating:4, pubYear:2023, pubDate:"August 2023"},
+  {title:"Lore Olympus: Volume One", cover:"https://covers.openlibrary.org/b/isbn/9780593160299-L.jpg", author:"Rachel Smythe", genre:["Graphic Novel","Mythology"], pages:384, dateFinished:"2026-09-27", rating:5, pubYear:2021, pubDate:"November 2021"},
 ];
 
 /* Everything finished before 2026 that still shows up as "read" on a
@@ -453,6 +454,25 @@ const SERIES = [
       {title:"Dungeon Crawler Carl, Vol. 1 (Graphic Novel)"},
       {title:"Dungeon Crawler Carl, Vol. 2 (Graphic Novel)", comingSoon:"October 2026"},
       {title:"Dungeon Crawler Carl, Vol. 3 (Graphic Novel)", comingSoon:"March 2027"}
+    ]
+  },
+  {
+    name: "Lore Olympus",
+    author: "Rachel Smythe",
+    activelyReading: true,
+    status: "ongoing",
+    books: [
+      {title:"Lore Olympus: Volume One"},
+      {title:"Lore Olympus: Volume Two", pubDate:"July 2022"},
+      {title:"Lore Olympus: Volume Three", pubDate:"October 2022"},
+      {title:"Lore Olympus: Volume Four", pubDate:"June 2023"},
+      {title:"Lore Olympus: Volume Five", pubDate:"October 2023"},
+      {title:"Lore Olympus: Volume Six", pubDate:"May 2024"},
+      {title:"Lore Olympus: Volume Seven", pubDate:"September 2024"},
+      {title:"Lore Olympus: Volume Eight", pubDate:"May 2025"},
+      {title:"Lore Olympus: Volume Nine", pubDate:"October 2025"},
+      {title:"Lore Olympus: Volume Ten", pubDate:"June 2026"},
+      {title:"Lore Olympus: Volume Eleven", comingSoon:"October 2026"}
     ]
   },
   {
