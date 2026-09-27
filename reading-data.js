@@ -106,7 +106,7 @@ const books = [
   {title:"Dear Monica Lewinsky: A Novel", cover:"https://covers.openlibrary.org/b/isbn/9780385551502-L.jpg", author:"Julia Langbein", genre:"Literary/Contemporary Fiction", pages:303, dateFinished:"2026-09-14", rating:2, pubYear:2026, note:"Didn't really like it and it kinda ended weird."},
   {title:"Heir of Fire", cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1673566654i/76706470.jpg", author:"Sarah J. Maas", genre:["Fantasy","Young Adult"], pages:565, dateFinished:"2026-09-19", rating:5, pubYear:2014, pubDate:"September 2014", note:"Reread — my favorite in the series. Celaena's arc is brutal in the best way, and her bond with Rowan hit even harder knowing where it goes. But Manon and Abraxos stole the show for me — I think I love that storyline more than the main one, and watching Manon and the Thirteen wrecked me both times. This is where the series really becomes epic."},
   {title:"The Butcher's Masquerade", cover:"https://covers.openlibrary.org/b/id/15231958-L.jpg", author:"Matt Dinniman", genre:"Science Fiction", pages:768, dateFinished:"2026-09-21", rating:4, pubYear:2022, pubDate:"February 2022", note:"Samantha cracks me up 🤣"},
-  {title:"The Eye of the Bedlam Bride", cover:"https://covers.openlibrary.org/b/id/15231488-L.jpg", author:"Matt Dinniman", genre:"Science Fiction", pages:720, dateFinished:"2026-09-27", pubYear:2023, pubDate:"August 2023"},
+  {title:"The Eye of the Bedlam Bride", cover:"https://covers.openlibrary.org/b/id/15231488-L.jpg", author:"Matt Dinniman", genre:"Science Fiction", pages:720, dateFinished:"2026-09-27", rating:4, pubYear:2023, pubDate:"August 2023"},
 ];
 
 /* Everything finished before 2026 that still shows up as "read" on a
