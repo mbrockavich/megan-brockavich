@@ -44,6 +44,7 @@ const OWNED_BOOKS = {
     {title:"Throne of Glass", author:"Sarah J. Maas", narrator:"", cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1673566495i/76703559.jpg"},
     {title:"Crown of Midnight", author:"Sarah J. Maas", narrator:"", cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1673566594i/76705490.jpg"},
     {title:"The Butcher's Masquerade", author:"Matt Dinniman", narrator:"", cover:"https://covers.openlibrary.org/b/id/15231958-L.jpg"},
+    {title:"The Eye of the Bedlam Bride", author:"Matt Dinniman", narrator:"", cover:"https://covers.openlibrary.org/b/id/15231488-L.jpg"},
   ],
   physical: [
     {title:"Control Unleashed: Creating a Focused and Confident Dog", spineTitle:"Control Unleashed", author:"Leslie McDevitt", cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1349894884i/2101812.jpg"},
@@ -79,6 +80,8 @@ const OWNED_BOOKS = {
     {title:"The Testaments", author:"Margaret Atwood", cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1549292344i/42975172._SX300_.jpg"},
     {title:"Dungeon Crawler Carl, Vol. 1 (Graphic Novel)", author:"Matt Dinniman", cover:"https://covers.openlibrary.org/b/isbn/9781638493655-L.jpg"},
     {title:"The Assassin's Blade", author:"Sarah J. Maas", cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1680869667i/126062562.jpg"},
+    {title:"Dungeon Crawler Carl", author:"Matt Dinniman", cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1715780755i/211721806.jpg"},
+    {title:"Carl's Doomsday Scenario", author:"Matt Dinniman", cover:"https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1719949673i/212393364._SY180_.jpg"},
   ],
   kindleUnlimited: [
     {title:"Dungeon Crawler Carl", author:"Matt Dinniman", cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1715780755i/211721806.jpg"},
@@ -86,7 +89,7 @@ const OWNED_BOOKS = {
     {title:"The Dungeon Anarchist's Cookbook", author:"Matt Dinniman", cover:"dungeon-crawler-carl/dungeon-anarchists-cookbook-cover.jpg"},
     {title:"The Gate of the Feral Gods", author:"Matt Dinniman"},
     {title:"The Butcher's Masquerade", author:"Matt Dinniman"},
-    {title:"The Eye of the Bedlam Bride", author:"Matt Dinniman"},
+    {title:"The Eye of the Bedlam Bride", author:"Matt Dinniman", cover:"https://covers.openlibrary.org/b/id/15231488-L.jpg"},
     {title:"This Inevitable Ruin", author:"Matt Dinniman"},
     {title:"A Parade of Horribles", author:"Matt Dinniman"},
   ],
