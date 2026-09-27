@@ -600,6 +600,9 @@ const missingGenres = MASTER_GENRES.filter(g => !genreCounts[g]);
 
 const totalPages = books.reduce((s,b) => s + b.pages, 0);
 const avgPages = Math.round(totalPages / totalRead);
+/* days elapsed this year, counting today as day 1 of Jan 1 */
+const daysElapsed = Math.floor((new Date(TODAY.getFullYear(), TODAY.getMonth(), TODAY.getDate()) - new Date(TODAY.getFullYear(), 0, 1)) / 86400000) + 1;
+const pagesPerDay = totalPages / daysElapsed;
 const longest = books.reduce((a,b) => b.pages > a.pages ? b : a, books[0]);
 const shortest = books.reduce((a,b) => b.pages < a.pages ? b : a, books[0]);
 
@@ -903,6 +906,7 @@ if(missingGenres.length === 0){
 const funStats = [
   {label:"📄 Total Pages", big: totalPages.toLocaleString(), desc:"That is a lot of eye movement."},
   {label:"📏 Average Book", big: avgPages + " pages", desc:"Your typical read this year, give or take a chapter."},
+  {label:"📖 Pages Per Day", big: pagesPerDay.toFixed(1) + " pages", desc:`Your daily average across all ${daysElapsed} days of 2026 so far.`},
   {label:"🐘 Longest Read", big: longest.pages + " pg", desc:`"${longest.title}" by ${longest.author}, your biggest commitment of 2026.`, cover: longest.cover},
   {label:"🐁 Shortest Read", big: shortest.pages + " pg", desc:`"${shortest.title}" by ${shortest.author}, a nice palate cleanser.`, cover: shortest.cover},
   {label:"⭐ Most Read Author", big: topAuthor ? topAuthor[0] : "N/A", desc: topAuthor ? `${topAuthor[1]} books so far, basically a subscription at this point.` : ""},
