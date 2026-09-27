@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Brunch Book Club · Megan's Library</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#f7f4ef">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🥂</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg: #f7f4ef;
+    --surface: #ffffff;
+    --surface-alt: #f0eae0;
+    --border: #e4ddd2;
+    --border-strong: #d9d2c4;
+    --ink: #242018;
+    --ink-soft: #6b6455;
+    --ink-faint: #a39a89;
+    --accent: #b5502f;
+    --accent-soft: rgba(181,80,47,0.09);
+    --sage: #6f8f63;
+    --sage-soft: rgba(111,143,99,0.12);
+    --star: #c8963f;
+  }
+
+  *{ box-sizing:border-box; }
+  html{ overflow-x:hidden; }
+
+  body{
+    margin:0;
+    background: var(--bg);
+    font-family:'Inter', sans-serif;
+    color: var(--ink);
+    padding: 0 0 calc(70px + env(safe-area-inset-bottom));
+    overflow-x: hidden;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  a{ color:inherit; }
+  .page{ max-width: 1100px; margin:0 auto; padding: 36px 20px 0; }
+  @media (max-width: 560px){
+    .page{ padding: 24px 16px 0; }
+    header{ margin-bottom: 24px; }
+  }
+
+  .topnav{ text-align:center; margin-bottom: 26px; font-size: 12px; letter-spacing: 0.04em; }
+  .topnav a{ color: var(--ink-soft); text-decoration:none; font-weight:500; }
+  .topnav a:hover{ color: var(--accent); }
+  .topnav .sep{ color: var(--border-strong); margin: 0 10px; }
+
+  header{ text-align:center; margin-bottom: 34px; }
+  header .eyebrow{ font-size: 13px; font-style: italic; color: var(--ink-faint); margin-bottom: 10px; }
+  header h1{
+    font-family:'Inter', sans-serif; font-weight:700; letter-spacing:-0.01em;
+    font-size: clamp(28px, 4.4vw, 42px); margin: 0 0 8px; color: var(--ink);
+  }
+  header p{ font-size: 14px; color: var(--ink-soft); margin:0; }
+
+  .card{
+    background: var(--surface); color: var(--ink); border-radius: 10px;
+    border: 1px solid var(--border);
+  }
+
+  .stats-strip{
+    display:flex; flex-wrap:wrap; gap: 22px; justify-content:center;
+    padding: 22px 26px; margin-bottom: 32px;
+  }
+  .stat{ text-align:center; min-width: 100px; }
+  .stat .v{ font-weight:700; font-size: 21px; color: var(--ink); }
+  .stat .l{ font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--ink-soft); margin-top: 3px; }
+  @media (max-width: 560px){
+    .stats-strip{ gap: 12px 18px; padding: 18px 14px; }
+    .stat{ min-width: 40%; }
+    .stat .v{ font-size: 18px; }
+  }
+
+  .filter-bar{
+    position: sticky; top:0; z-index: 40;
+    background: rgba(247,244,239,0.92);
+    backdrop-filter: blur(8px);
+    padding: 14px 0 14px;
+    margin: 0 -20px 30px;
+    border-bottom: 1px solid var(--border);
+  }
+  .filter-bar-inner{ max-width:1100px; margin:0 auto; padding:0 20px; }
+  .search-input{
+    width:100%; padding: 10px 16px; border: 1px solid var(--border-strong);
+    border-radius: 8px; font-family:'Inter', sans-serif; font-size: 15px;
+    background: var(--surface); color: var(--ink); outline:none; margin-bottom:10px;
+    -webkit-appearance:none; appearance:none;
+  }
+  .search-input::placeholder{ color: var(--ink-faint); }
+  .search-input:focus{ border-color: var(--accent); }
+  .pills{ display:flex; flex-wrap:wrap; gap: 7px; }
+  .pill{
+    font-family:'Inter', sans-serif; font-size: 12.5px; font-weight:500;
+    padding: 7px 13px; border-radius: 8px; border: 1px solid var(--border-strong);
+    background: var(--surface); color: var(--ink-soft); cursor:pointer;
+    display:flex; align-items:center; gap:5px; transition: border-color .12s ease, color .12s ease;
+    -webkit-tap-highlight-color: transparent; white-space:nowrap;
+  }
+  .pill:hover{ border-color: var(--accent); color: var(--ink); }
+  .pill.active{ background: var(--accent); color: #fff; border-color: var(--accent); font-weight:600; }
+  .pill .count{ opacity:0.65; font-size:11px; }
+  @media (max-width: 700px){
+    .filter-bar{ padding: 11px 0 11px; }
+    .search-input{ padding: 11px 14px; margin-bottom: 9px; }
+    .pills{
+      flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none;
+      margin: 0 -16px; padding: 0 16px 2px; -webkit-overflow-scrolling: touch;
+    }
+    .pills::-webkit-scrollbar{ display:none; }
+    .pill{ flex: 0 0 auto; padding: 7px 12px; font-size: 12px; }
+  }
+
+  .catalog-count{ font-size: 12px; color: var(--ink-soft); margin-bottom: 18px; }
+  .no-results{ color: var(--ink-soft); font-size: 13.5px; font-style: italic; padding: 20px 4px; }
+
+  /* ---- month cards ---- */
+  .month-grid{
+    display:grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 24px; margin-bottom: 40px;
+  }
+  .month-card{ overflow:hidden; display:flex; flex-direction:column; }
+  .month-card-head{
+    display:flex; align-items:center; gap:8px;
+    padding: 14px 18px; color:#fff; font-weight:700; font-size:15px;
+    letter-spacing:0.01em;
+  }
+  .month-card-head .emoji{ font-size:19px; line-height:1; }
+  .month-card-body{ display:flex; flex-direction:column; padding: 18px; flex:1; }
+  .mc-cover{
+    width:100%; aspect-ratio:2/3; border-radius:8px; overflow:hidden;
+    position:relative; background: var(--surface-alt); border: 1px solid var(--border-strong);
+    display:flex; align-items:center; justify-content:center; padding:14px;
+    font-weight:600; font-size:13px; line-height:1.3; color: var(--ink-soft); text-align:center;
+    margin-bottom: 16px;
+  }
+  .mc-cover img{ position:absolute; inset:0; width:100%; height:100%; object-fit:cover; }
+  .mc-info{ flex:1; min-width:0; display:flex; flex-direction:column; }
+  .mc-title{ font-size:17px; font-weight:700; color:var(--ink); line-height:1.3; }
+  .mc-author{ font-size:13px; color:var(--ink-soft); margin-top:4px; }
+  .mc-rating{ font-size:15px; color:var(--star,var(--accent)); margin-top:9px; }
+  /* number + single star rating widget, from starRatingHTML() in reading-data.js */
+  .star-rating{ display:inline-flex; align-items:center; vertical-align:middle; white-space:nowrap; }
+  .star-rating-num{ font-weight:700; }
+  .mc-pick{ font-size:12px; color: var(--ink-soft); margin-top:9px; }
+  .mc-location{
+    font-size:13px; color: var(--ink-soft); margin-top:auto; padding-top:16px;
+    display:flex; align-items:flex-start; gap:6px; line-height:1.4;
+  }
+  .mc-location b{ color:var(--ink); font-weight:600; }
+  .mc-note-hint{ font-size:11.5px; font-style:italic; color:var(--ink-faint); margin-top:9px; }
+  .month-card.missed{ background: var(--surface-alt); }
+  .month-card.missed .month-card-head{ opacity:0.55; }
+  .month-card.missed .month-card-body{
+    align-items:center; justify-content:center; text-align:center; min-height:180px; padding: 24px 18px;
+  }
+  .mc-missed-note{ font-size:13px; color: var(--ink-faint); font-style:italic; }
+
+  .month-card:not(.missed){ cursor:pointer; transition: transform 0.15s ease, box-shadow 0.15s ease; }
+  .month-card:not(.missed):hover, .month-card:not(.missed):focus-visible{
+    transform: translateY(-3px); box-shadow: 0 8px 20px rgba(36,32,24,0.12);
+  }
+  .month-card:focus-visible{ outline:2px solid var(--accent); outline-offset:2px; }
+
+  /* meetup detail modal, opened by tapping a card — same language as the
+     book-detail popups on all-books.html: cover, title, then a quoted
+     note only shown here, not inline on the card. */
+  .modal-overlay{
+    display:none; position:fixed; inset:0; z-index:500;
+    background: rgba(36,32,24,0.45); align-items:flex-start; justify-content:center;
+    padding: 60px 20px; overflow-y:auto;
+  }
+  .modal-overlay.open{ display:flex; }
+  .modal-panel{
+    background: var(--surface); color: var(--ink); border-radius: 12px;
+    max-width: 360px; width: 100%; padding: 28px 28px 30px; position: relative;
+    box-shadow: 0 20px 50px rgba(36,32,24,0.25);
+    display:flex; flex-direction:column; align-items:center; text-align:center;
+  }
+  .modal-close{
+    position:absolute; top:14px; right:14px; background: var(--surface-alt);
+    border:0; border-radius:50%; width:32px; height:32px; font-size:15px; line-height:1;
+    cursor:pointer; color:var(--ink); display:flex; align-items:center; justify-content:center;
+  }
+  .modal-close:hover{ background: var(--border); }
+  .modal-cover{
+    width: 100%; max-width: 200px; aspect-ratio: 2 / 3; margin: 0 auto 16px;
+    border-radius: 8px; overflow:hidden; border: 1px solid var(--border);
+    position:relative; background: var(--surface-alt);
+  }
+  .modal-cover img{ position:absolute; inset:0; width:100%; height:100%; object-fit:cover; }
+  .modal-rank{
+    font-size:11px; text-transform:uppercase;
+    letter-spacing:0.08em; color: var(--accent); margin-bottom:6px; font-weight:700;
+  }
+  .modal-title2{ font-weight:700; font-size:19px; margin:0 0 3px; line-height:1.2; }
+  .modal-author2{ font-size:12.5px; color:var(--ink-soft); margin-bottom:8px; }
+  .modal-meta2{ font-size:13px; color:var(--star,var(--accent)); margin-bottom:10px; }
+  .modal-pick2{ font-size:12px; color:var(--ink-soft); margin-bottom:10px; }
+  .modal-location2{
+    font-size:13px; color: var(--ink-soft); margin-bottom:14px;
+    display:flex; align-items:flex-start; gap:6px; text-align:left; line-height:1.4;
+  }
+  .modal-location2 b{ color:var(--ink); font-weight:600; }
+  .modal-note2{ font-size:12.5px; font-style:italic; color:var(--ink-soft); line-height:1.5; border-left:2px solid var(--accent); padding-left:10px; text-align:left; }
+
+  @media (max-width: 560px){
+    .modal-overlay{ padding: 16px 12px calc(16px + env(safe-area-inset-bottom)); align-items:flex-start; }
+    .modal-panel{ padding: 24px 18px 26px; border-radius:10px; }
+    .modal-close{ top:10px; right:10px; width:38px; height:38px; font-size:14px; }
+  }
+
+  footer.page-foot{ text-align:center; font-size: 11.5px; color: var(--ink-faint); margin-top: 10px; padding: 0 20px; }
+</style>
+</head>
+<body>
+
+<div class="page">
+
+  <nav class="topnav">
+    <a href="library.html">← Megan's Library</a>
+    <span class="sep">·</span>
+    <a href="all-books.html">Every Book I've Read</a>
+    <span class="sep">·</span>
+    <a href="2026-reading-stats.html">2026 Stats</a>
+    <span class="sep">·</span>
+    <a href="author-tracker.html">Author Tracker</a>
+    <span class="sep">·</span>
+    <a href="series-tracker.html">Series Tracker</a>
+  </nav>
+
+  <header>
+    <div class="eyebrow">the book, the brunch spot, and the vibe — one month at a time</div>
+    <h1>Brunch Book Club</h1>
+    <p id="heroSub">Loading the shelves...</p>
+  </header>
+
+  <div class="card stats-strip" id="statsStrip"></div>
+
+</div>
+
+<div class="filter-bar">
+  <div class="filter-bar-inner">
+    <input type="text" class="search-input" id="searchInput" placeholder="Search by book, author, or brunch spot...">
+    <div class="pills" id="yearPills"></div>
+  </div>
+</div>
+
+<div class="page">
+  <div class="catalog-count" id="clubCount"></div>
+  <div class="month-grid" id="monthGrid"></div>
+  <div class="no-results" id="noResults" style="display:none;">No meetups match that search.</div>
+
+  <footer class="page-foot" id="pageFoot"></footer>
+</div>
+
+<!-- MEETUP DETAIL MODAL -->
+<div class="modal-overlay" id="mcModalOverlay">
+  <div class="modal-panel" role="dialog" aria-modal="true" aria-labelledby="mcModalTitle">
+    <button class="modal-close" id="mcModalClose" aria-label="Close">✕</button>
+    <div class="modal-cover" id="mcModalCover"></div>
+    <div class="modal-rank" id="mcModalRank"></div>
+    <h3 class="modal-title2" id="mcModalTitle"></h3>
+    <div class="modal-author2" id="mcModalAuthor"></div>
+    <div class="modal-meta2" id="mcModalRating"></div>
+    <div class="modal-pick2" id="mcModalPick"></div>
+    <div class="modal-location2" id="mcModalLocation"></div>
+    <div class="modal-note2" id="mcModalNote"></div>
+  </div>
+</div>
+
+<script src="reading-data.js"></script>
+<script src="book-club-data.js"></script>
+<script>
+/* BOOK_CLUB comes from book-club-data.js. findRead/formatRating come from
+   reading-data.js -- a book's real cover and star rating are pulled live
+   from there when the title matches something you've logged as read. */
+
+const MONTH_THEME = {
+  1:  {name: "January",   emoji: "❄️", color: "#5b7ea8"},
+  2:  {name: "February",  emoji: "💕", color: "#c1587e"},
+  3:  {name: "March",     emoji: "🍀", color: "#5c8a4d"},
+  4:  {name: "April",     emoji: "🌸", color: "#c97fa3"},
+  5:  {name: "May",       emoji: "🌷", color: "#79995c"},
+  6:  {name: "June",      emoji: "☀️", color: "#d29a30"},
+  7:  {name: "July",      emoji: "🎆", color: "#b5502f"},
+  8:  {name: "August",    emoji: "🌻", color: "#cf8f2c"},
+  9:  {name: "September", emoji: "🍂", color: "#a8672d"},
+  10: {name: "October",   emoji: "🎃", color: "#c1652e"},
+  11: {name: "November",  emoji: "🦃", color: "#8a5730"},
+  12: {name: "December",  emoji: "🎄", color: "#7a3b40"},
+};
+
+function clubEntryInfo(entry){
+  const info = findRead(entry.title);
+  return {
+    cover: info ? info.cover : entry.cover,
+    author: info ? info.author : entry.author,
+    rating: info ? info.rating : null,
+  };
+}
+
+const sortedClub = [...BOOK_CLUB].sort((a, b) => (a.year - b.year) || (a.month - b.month));
+
+/* Every month between your first and last logged meetup, so a gap (like
+   skipping a month) shows up as an empty card instead of silently
+   disappearing. */
+function monthsInRange(minY, minM, maxY, maxM){
+  const out = [];
+  let y = minY, m = minM;
+  while(y < maxY || (y === maxY && m <= maxM)){
+    out.push({year: y, month: m});
+    m++;
+    if(m > 12){ m = 1; y++; }
+  }
+  return out;
+}
+const loggedMonthKeys = new Set(BOOK_CLUB.map(e => `${e.year}-${e.month}`));
+const missedMonths = sortedClub.length
+  ? monthsInRange(sortedClub[0].year, sortedClub[0].month, sortedClub[sortedClub.length - 1].year, sortedClub[sortedClub.length - 1].month)
+    .filter(mo => !loggedMonthKeys.has(`${mo.year}-${mo.month}`))
+  : [];
+
+/* ---------------- hero + stats ---------------- */
+const locationCounts = {};
+BOOK_CLUB.forEach(e => { locationCounts[e.location] = (locationCounts[e.location] || 0) + 1; });
+const topLocation = Object.entries(locationCounts).sort((a, b) => b[1] - a[1])[0];
+const ratedEntries = BOOK_CLUB.map(clubEntryInfo).filter(i => i.rating != null);
+const avgRating = ratedEntries.length ? ratedEntries.reduce((sum, i) => sum + i.rating, 0) / ratedEntries.length : null;
+
+document.getElementById("heroSub").textContent =
+  `${BOOK_CLUB.length} meetup${BOOK_CLUB.length === 1 ? "" : "s"} and counting, one book a month.`;
+
+document.getElementById("pageFoot").textContent =
+  "🥂 Pulled from book-club-data.js, cross-checked live against reading-data.js for covers and ratings.";
+
+function renderStats(){
+  const statsStrip = document.getElementById("statsStrip");
+  const stats = [
+    {v: BOOK_CLUB.length, l: "Meetups"},
+    {v: new Set(BOOK_CLUB.map(e => e.title)).size, l: "Books Discussed"},
+    {v: avgRating != null ? roundedRatingDisplay(avgRating) : "—", l: "Average Rating"},
+    {v: topLocation ? topLocation[0] : "—", l: "Most Visited Spot"}
+  ];
+  statsStrip.innerHTML = stats.map(s => `<div class="stat"><div class="v">${s.v}</div><div class="l">${s.l}</div></div>`).join("");
+}
+renderStats();
+
+/* ---------------- filter state ---------------- */
+let activeYear = "All";
+let searchTerm = "";
+
+function renderYearPills(){
+  const container = document.getElementById("yearPills");
+  const years = [...new Set(BOOK_CLUB.map(e => e.year))].sort((a, b) => b - a);
+  const defs = [
+    {key: "All", label: "All", count: BOOK_CLUB.length},
+    ...years.map(y => ({key: String(y), label: String(y), count: BOOK_CLUB.filter(e => e.year === y).length}))
+  ];
+  container.innerHTML = "";
+  defs.forEach(d => {
+    const pill = document.createElement("button");
+    pill.className = "pill" + (activeYear === d.key ? " active" : "");
+    pill.innerHTML = `${d.label} <span class="count">${d.count}</span>`;
+    pill.addEventListener("click", () => { activeYear = d.key; renderYearPills(); renderClub(); });
+    container.appendChild(pill);
+  });
+}
+renderYearPills();
+
+document.getElementById("searchInput").addEventListener("input", (e) => {
+  searchTerm = e.target.value.trim().toLowerCase();
+  renderClub();
+});
+
+/* ---------------- render ---------------- */
+const monthGrid = document.getElementById("monthGrid");
+const clubCountEl = document.getElementById("clubCount");
+const noResults = document.getElementById("noResults");
+
+function monthCardHTML(entry){
+  const theme = MONTH_THEME[entry.month];
+  const info = clubEntryInfo(entry);
+  return `
+    <div class="card month-card" tabindex="0" role="button" data-title="${entry.title.replace(/"/g,'&quot;')}" aria-label="View details for ${entry.title.replace(/"/g,'&quot;')}">
+      <div class="month-card-head" style="background:${theme.color};">
+        <span class="emoji">${theme.emoji}</span> ${theme.name} ${entry.year}
+      </div>
+      <div class="month-card-body">
+        <div class="mc-cover">
+          <span>${entry.title}</span>
+          ${info.cover ? `<img src="${info.cover}" alt="Cover of ${entry.title.replace(/"/g,'&quot;')}" loading="lazy" onerror="this.remove()">` : ""}
+        </div>
+        <div class="mc-info">
+          <div class="mc-title">${entry.title}</div>
+          ${info.author ? `<div class="mc-author">${info.author}</div>` : ""}
+          ${info.rating != null ? `<div class="mc-rating">${starRatingHTML(info.rating)}</div>` : ""}
+          ${entry.pick ? `<div class="mc-pick">🎯 ${entry.pick}</div>` : ""}
+          <div class="mc-location">📍 <span>Brunch at <b>${entry.location}</b></span></div>
+          ${entry.note ? `<div class="mc-note-hint">📝 Tap for notes</div>` : ""}
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function missedCardHTML({year, month}){
+  const theme = MONTH_THEME[month];
+  return `
+    <div class="card month-card missed">
+      <div class="month-card-head" style="background:${theme.color};">
+        <span class="emoji">${theme.emoji}</span> ${theme.name} ${year}
+      </div>
+      <div class="month-card-body">
+        <div class="mc-missed-note">No meetup logged</div>
+      </div>
+    </div>
+  `;
+}
+
+function renderClub(){
+  const term = searchTerm;
+  const filtered = sortedClub.filter(e => {
+    if(activeYear !== "All" && String(e.year) !== activeYear) return false;
+    if(term){
+      const info = clubEntryInfo(e);
+      const hay = `${e.title} ${info.author || ""} ${e.location}`.toLowerCase();
+      if(!hay.includes(term)) return false;
+    }
+    return true;
+  });
+
+  clubCountEl.textContent = `Showing ${filtered.length} of ${BOOK_CLUB.length} meetups`;
+  noResults.style.display = filtered.length === 0 ? "block" : "none";
+
+  // Skipped months only make sense as a visual gap when you're not actively
+  // searching or narrowed to a status — they never match a search term, so
+  // showing them then would just be noise.
+  const gaps = term ? [] : missedMonths.filter(mo => activeYear === "All" || String(mo.year) === activeYear);
+  const items = [
+    ...filtered.map(e => ({...e, missed: false})),
+    ...gaps.map(mo => ({...mo, missed: true})),
+  ].sort((a, b) => (a.year - b.year) || (a.month - b.month));
+
+  monthGrid.innerHTML = items.map(it => it.missed ? missedCardHTML(it) : monthCardHTML(it)).join("");
+}
+renderClub();
+
+/* ---------------- meetup detail modal ---------------- */
+const mcModalOverlay = document.getElementById("mcModalOverlay");
+const mcModalCover = document.getElementById("mcModalCover");
+const mcModalRank = document.getElementById("mcModalRank");
+const mcModalTitle = document.getElementById("mcModalTitle");
+const mcModalAuthor = document.getElementById("mcModalAuthor");
+const mcModalRating = document.getElementById("mcModalRating");
+const mcModalPick = document.getElementById("mcModalPick");
+const mcModalLocation = document.getElementById("mcModalLocation");
+const mcModalNote = document.getElementById("mcModalNote");
+const mcModalClose = document.getElementById("mcModalClose");
+
+function openMcModal(entry){
+  const theme = MONTH_THEME[entry.month];
+  const info = clubEntryInfo(entry);
+  mcModalCover.innerHTML = `
+    <span>${entry.title}</span>
+    ${info.cover ? `<img src="${info.cover}" alt="Cover of ${entry.title.replace(/"/g,'&quot;')}" loading="lazy" onerror="this.remove()">` : ""}
+  `;
+  mcModalRank.textContent = `${theme.emoji} ${theme.name} ${entry.year}`;
+  mcModalTitle.textContent = entry.title;
+  mcModalAuthor.textContent = info.author || "";
+  mcModalRating.innerHTML = info.rating != null ? starRatingHTML(info.rating) : "";
+  mcModalPick.textContent = entry.pick ? `🎯 ${entry.pick}` : "";
+  mcModalLocation.innerHTML = `📍 <span>Brunch at <b>${entry.location}</b></span>`;
+  mcModalNote.textContent = entry.note || "";
+  mcModalNote.style.display = entry.note ? "" : "none";
+  mcModalOverlay.classList.add("open");
+  mcModalClose.focus();
+}
+function closeMcModal(){ mcModalOverlay.classList.remove("open"); }
+mcModalClose.addEventListener("click", closeMcModal);
+mcModalOverlay.addEventListener("click", (e) => { if(e.target === mcModalOverlay) closeMcModal(); });
+document.addEventListener("keydown", (e) => { if(e.key === "Escape" && mcModalOverlay.classList.contains("open")) closeMcModal(); });
+
+monthGrid.addEventListener("click", (e) => {
+  const card = e.target.closest(".month-card[data-title]");
+  if(!card) return;
+  const entry = BOOK_CLUB.find(b => b.title === card.dataset.title);
+  if(entry) openMcModal(entry);
+});
+monthGrid.addEventListener("keydown", (e) => {
+  if(e.key !== "Enter" && e.key !== " ") return;
+  const card = e.target.closest(".month-card[data-title]");
+  if(!card) return;
+  e.preventDefault();
+  const entry = BOOK_CLUB.find(b => b.title === card.dataset.title);
+  if(entry) openMcModal(entry);
+});
+</script>
+
+</body>
+</html>

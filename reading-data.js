@@ -388,40 +388,33 @@ function findRead(title) {
   return books.find(b => b.title === title) || pastReads.find(b => b.title === title) || null;
 }
 
-/* Renders a `rating` (1-5, halves allowed) as a full 5-star glyph string,
-   e.g. 4.5 -> "★★★★½☆", 3 -> "★★★☆☆" — the empty stars make it obvious at
-   a glance whether something is a 4 or a 5, instead of just counting a
-   run of filled stars. Returns "" for a missing rating so callers can
-   skip the line entirely. */
+/* Renders a `rating` (1-5, any precision — a series average might be
+   4.3333...) as plain text like "4.5 ★" or "4 ★", rounded to one decimal
+   place and with a trailing ".0" dropped. Used for aria-labels and other
+   plain-text spots; see starRatingHTML below for the visual widget.
+   Returns "" for a missing rating so callers can skip the line entirely. */
 function formatRating(rating) {
   if (rating == null) return "";
-  const full = Math.floor(rating);
-  const half = rating - full >= 0.5;
-  const empty = 5 - full - (half ? 1 : 0);
-  return "★".repeat(full) + (half ? "½" : "") + "☆".repeat(Math.max(empty, 0));
+  return `${roundedRatingDisplay(rating)} ★`;
 }
 
-/* A chubby, rounded-point cartoon star (not the sharp unicode ★), used by
-   starRatingHTML below. Coordinates are on a 0-100 viewBox. */
-const STAR_PATH_D = "M 45.22 13.06 Q 50 4 54.78 13.06 L 59.28 21.59 Q 64.06 30.65 74.15 32.39 L 83.65 34.04 Q 93.75 35.79 86.61 43.13 L 79.89 50.05 Q 72.75 57.39 74.21 67.53 L 75.58 77.07 Q 77.04 87.21 67.85 82.69 L 59.19 78.44 Q 50 73.92 40.81 78.44 L 32.15 82.69 Q 22.96 87.21 24.42 77.07 L 25.79 67.53 Q 27.25 57.39 20.11 50.05 L 13.39 43.13 Q 6.25 35.79 16.35 34.04 L 25.85 32.39 Q 35.94 30.65 40.72 21.59 Z";
-function starIconSVG(cls) {
-  return `<svg class="star-icon ${cls}" viewBox="0 0 100 100" aria-hidden="true"><path d="${STAR_PATH_D}"/></svg>`;
+function roundedRatingDisplay(rating) {
+  const rounded = Math.round(rating * 10) / 10;
+  return Number.isInteger(rounded) ? String(rounded) : rounded.toFixed(1);
 }
 
-/* Renders a `rating` as a true 5-star widget: a dim, rounded-cartoon-star
-   outline track behind a solid-color filled star layer clipped to
-   (rating/5)*100% width, so a 3.5 shows as an actually-half-filled 4th
-   star rather than a "½" glyph. Both layers use currentColor, so the
-   widget always matches whatever color/font-size the caller's wrapping
-   element sets (see .star-rating in the page CSS) — nothing to configure
-   here. Returns "" for a missing rating so callers can skip the line
-   entirely. */
+/* Renders a `rating` as "4.5 ★" — the number first (rounded to one decimal,
+   trailing ".0" dropped) so a series average like 4.3333... is actually
+   legible, followed by a plain unicode star. Uses currentColor via normal
+   text color, so it always matches whatever color/font-size the caller's
+   wrapping element sets — nothing to configure here, and no per-page CSS
+   needed (a custom SVG star icon used to live here, but it meant every new
+   page had to remember to size it or the star rendered huge/broken).
+   Returns "" for a missing rating so callers can skip the line entirely. */
 function starRatingHTML(rating) {
   if (rating == null) return "";
-  const pct = Math.max(0, Math.min(100, (rating / 5) * 100));
-  const bg = starIconSVG("star-icon-outline").repeat(5);
-  const fg = starIconSVG("star-icon-filled").repeat(5);
-  return `<span class="star-rating" role="img" aria-label="${rating} out of 5 stars"><span class="star-rating-bg">${bg}</span><span class="star-rating-fg" style="width:${pct}%">${fg}</span></span>`;
+  const display = roundedRatingDisplay(rating);
+  return `<span class="star-rating" role="img" aria-label="${display} out of 5 stars"><span class="star-rating-num">${display}</span> ★</span>`;
 }
 
 /* What each star count means. Shown as a "Rating Key" breakdown near the
@@ -438,10 +431,19 @@ const RATING_LEGEND = [
 /* Multi-book series touched by the 2026 shelf, in reading order.
    Read/unread is computed via findRead() above, not stored per book.
    Entries here are just {title}, plus optional `cover` (a preview image
-   for an unread book) or `comingSoon:true` (not released yet).
+   for an unread book), `comingSoon:true` or `comingSoon:"Month YYYY"` (not
+   released yet), or `pubDate:"Month YYYY"` (already released, you just
+   haven't read it — shown on the series pop-up and series-tracker.html so
+   you can see how old a book you're behind on actually is). Only add
+   `pubDate` when you actually know it; it's fine to leave off.
    `status` reflects whether the AUTHOR is done writing the series, not
    whether you're caught up on it: "complete" = no more books planned,
-   "ongoing" = more entries are announced or expected. */
+   "ongoing" = more entries are announced or expected.
+   `activelyReading: true` is a manual flag (never computed) for a series
+   you've decided you're committed to finishing, regardless of how far
+   behind you are on it. Shown as its own "Actively Working On" filter and
+   a small badge on series-tracker.html. Add or remove it by hand whenever
+   your reading priorities change — nothing else in the site sets it. */
 const SERIES = [
   {
     name: "Dungeon Crawler Carl (Graphic Novel)",
@@ -483,6 +485,7 @@ const SERIES = [
   },
   {
     name: "A Court of Thorns and Roses",
+    activelyReading: true,
     author: "Sarah J. Maas",
     status: "ongoing",
     books: [
@@ -518,6 +521,7 @@ const SERIES = [
   },
   {
     name: "The Wicked Years",
+    activelyReading: true,
     author: "Gregory Maguire",
     status: "ongoing",
     books: [
@@ -531,6 +535,7 @@ const SERIES = [
   },
   {
     name: "Assistant to the Villain",
+    activelyReading: true,
     author: "Hannah Nicole Maehrer",
     status: "ongoing",
     books: [
@@ -542,6 +547,7 @@ const SERIES = [
   },
   {
     name: "The Powerless Trilogy",
+    activelyReading: true,
     author: "Lauren Roberts",
     status: "ongoing",
     books: [
@@ -554,6 +560,7 @@ const SERIES = [
   },
   {
     name: "Arc of a Scythe",
+    activelyReading: true,
     author: "Neal Shusterman",
     status: "complete",
     books: [
@@ -622,6 +629,7 @@ const SERIES = [
   },
   {
     name: "Dungeon Crawler Carl",
+    activelyReading: true,
     author: "Matt Dinniman",
     status: "complete",
     books: [
@@ -693,6 +701,7 @@ const SERIES = [
   },
   {
     name: "Letters of Enchantment",
+    activelyReading: true,
     author: "Rebecca Ross",
     status: "complete",
     books: [
@@ -746,6 +755,7 @@ const SERIES = [
   },
   {
     name: "Crowns of Nyaxia",
+    activelyReading: true,
     author: "Carissa Broadbent",
     status: "ongoing",
     books: [

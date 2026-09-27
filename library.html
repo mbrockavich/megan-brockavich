@@ -246,12 +246,6 @@
   // Add more entries here as the shelf grows.
   const books = [
     {
-      title: 'The Count of Monte Cristo',
-      href: 'count-of-monte-cristo/monte-cristo-checklist.html',
-      color: '#8b6f47',
-      height: 200
-    },
-    {
       title: '2026 Reading Record',
       href: '2026-reading-stats.html',
       color: '#6b3a52',
@@ -269,9 +263,21 @@
       color: '#4f6b8f',
       height: 188
     },
+    {
+      title: 'Series Tracker',
+      href: 'series-tracker.html',
+      color: '#6f8f63',
+      height: 176
+    },
+    {
+      title: 'Brunch Book Club',
+      href: 'book-club.html',
+      color: '#c98a3f',
+      height: 164
+    },
   ];
 
-  const EMPTY_SLOTS = 2; // faint placeholders to hint the shelf will fill in
+  const EMPTY_SLOTS = 1; // faint placeholders to hint the shelf will fill in
 
   const shelf = document.getElementById('shelf');
   shelf.innerHTML = books.map(b => `

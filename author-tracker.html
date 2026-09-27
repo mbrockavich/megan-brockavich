@@ -108,6 +108,17 @@
   .pill:hover{ border-color: var(--accent); color: var(--ink); }
   .pill.active{ background: var(--accent); color: #fff; border-color: var(--accent); font-weight:600; }
   .pill .count{ opacity:0.65; font-size:11px; }
+
+  .sort-row{ display:flex; align-items:center; gap:8px; margin-top: 10px; }
+  .sort-row label{ font-size: 12px; color: var(--ink-soft); font-weight:500; }
+  .sort-select{
+    font-family:'Inter', sans-serif; font-size: 12.5px; font-weight:500;
+    padding: 6px 10px; border-radius: 8px; border: 1px solid var(--border-strong);
+    background: var(--surface); color: var(--ink); cursor:pointer; outline:none;
+    -webkit-appearance:none; appearance:none;
+  }
+  .sort-select:focus{ border-color: var(--accent); }
+
   @media (max-width: 700px){
     .filter-bar{ padding: 11px 0 11px; }
     .search-input{ padding: 11px 14px; margin-bottom: 9px; }
@@ -117,6 +128,7 @@
     }
     .pills::-webkit-scrollbar{ display:none; }
     .pill{ flex: 0 0 auto; padding: 7px 12px; font-size: 12px; }
+    .sort-row{ margin-top: 9px; }
   }
 
   .catalog-count{ font-size: 12px; color: var(--ink-soft); margin-bottom: 18px; }
@@ -190,6 +202,10 @@
     <a href="all-books.html">Every Book I've Read</a>
     <span class="sep">·</span>
     <a href="2026-reading-stats.html">2026 Stats</a>
+    <span class="sep">·</span>
+    <a href="series-tracker.html">Series Tracker</a>
+    <span class="sep">·</span>
+    <a href="book-club.html">Book Club</a>
   </nav>
 
   <header>
@@ -206,6 +222,14 @@
   <div class="filter-bar-inner">
     <input type="text" class="search-input" id="searchInput" placeholder="Search by author name...">
     <div class="pills" id="statusPills"></div>
+    <div class="sort-row">
+      <label for="sortSelect">Sort by</label>
+      <select class="sort-select" id="sortSelect">
+        <option value="mostRead">Most Books Read</option>
+        <option value="name">Name (A–Z)</option>
+        <option value="mostToGo">Most Books To Go</option>
+      </select>
+    </div>
   </div>
 </div>
 
@@ -276,6 +300,12 @@ renderStats();
 /* ---------------- filter state ---------------- */
 let activeStatus = "All";
 let searchTerm = "";
+let sortKey = "mostRead";
+const AUTHOR_SORTERS = {
+  name: (a, b) => a.localeCompare(b),
+  mostRead: (a, b) => authorStats(b).read - authorStats(a).read || a.localeCompare(b),
+  mostToGo: (a, b) => (authorStats(b).total - authorStats(b).read) - (authorStats(a).total - authorStats(a).read) || a.localeCompare(b),
+};
 
 function renderStatusPills(){
   const container = document.getElementById("statusPills");
@@ -301,6 +331,11 @@ document.getElementById("searchInput").addEventListener("input", (e) => {
   renderAuthors();
 });
 
+document.getElementById("sortSelect").addEventListener("change", (e) => {
+  sortKey = e.target.value;
+  renderAuthors();
+});
+
 /* ---------------- render ---------------- */
 const authorList = document.getElementById("authorList");
 const authorCountEl = document.getElementById("authorCount");
@@ -322,7 +357,7 @@ function chipHTML(b){
       ${b.number ? `<div class="chip-num">#${b.number}</div>` : ""}
       <div class="chip-title">${b.title}</div>
       ${yearLabel ? `<div class="chip-year">${yearLabel}</div>` : ""}
-      ${info && info.rating != null ? `<div class="chip-flag">★ ${info.rating}</div>` : ""}
+      ${info && info.rating != null ? `<div class="chip-flag">${formatRating(info.rating)}</div>` : ""}
     </div>
   `;
 }
@@ -352,7 +387,7 @@ function renderAuthors(){
     if(activeStatus === "CaughtUp" && !s.caughtUp) return false;
     if(activeStatus === "Progress" && s.caughtUp) return false;
     return true;
-  });
+  }).sort(AUTHOR_SORTERS[sortKey]);
 
   authorCountEl.textContent = `Showing ${filtered.length} of ${AUTHORS.length} authors`;
   noResults.style.display = filtered.length === 0 ? "block" : "none";

@@ -2,16 +2,454 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Series Tracker</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta http-equiv="refresh" content="0; url=all-books.html#series">
-<script>location.replace("all-books.html#series");</script>
+<title>Series Tracker · Megan's Library</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#f7f4ef">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📖</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
-  body{ background:#4a2740; color:#fdf1f5; font-family:sans-serif; text-align:center; padding:80px 20px; }
-  a{ color:#e2789a; }
+  :root{
+    --bg: #f7f4ef;
+    --surface: #ffffff;
+    --surface-alt: #f0eae0;
+    --border: #e4ddd2;
+    --border-strong: #d9d2c4;
+    --ink: #242018;
+    --ink-soft: #6b6455;
+    --ink-faint: #a39a89;
+    --accent: #b5502f;
+    --accent-soft: rgba(181,80,47,0.09);
+    --sage: #6f8f63;
+    --sage-soft: rgba(111,143,99,0.12);
+    --slate: #6b7aa1;
+  }
+
+  *{ box-sizing:border-box; }
+  html{ overflow-x:hidden; }
+
+  body{
+    margin:0;
+    background: var(--bg);
+    font-family:'Inter', sans-serif;
+    color: var(--ink);
+    padding: 0 0 calc(70px + env(safe-area-inset-bottom));
+    overflow-x: hidden;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  a{ color:inherit; }
+  .page{ max-width: 1100px; margin:0 auto; padding: 36px 20px 0; }
+  @media (max-width: 560px){
+    .page{ padding: 24px 16px 0; }
+    header{ margin-bottom: 24px; }
+  }
+
+  .topnav{ text-align:center; margin-bottom: 26px; font-size: 12px; letter-spacing: 0.04em; }
+  .topnav a{ color: var(--ink-soft); text-decoration:none; font-weight:500; }
+  .topnav a:hover{ color: var(--accent); }
+  .topnav .sep{ color: var(--border-strong); margin: 0 10px; }
+
+  header{ text-align:center; margin-bottom: 34px; }
+  header .eyebrow{ font-size: 13px; font-style: italic; color: var(--ink-faint); margin-bottom: 10px; }
+  header h1{
+    font-family:'Inter', sans-serif; font-weight:700; letter-spacing:-0.01em;
+    font-size: clamp(28px, 4.4vw, 42px); margin: 0 0 8px; color: var(--ink);
+  }
+  header p{ font-size: 14px; color: var(--ink-soft); margin:0; }
+
+  .card{
+    background: var(--surface); color: var(--ink); border-radius: 10px;
+    border: 1px solid var(--border);
+  }
+
+  .stats-strip{
+    display:flex; flex-wrap:wrap; gap: 22px; justify-content:center;
+    padding: 22px 26px; margin-bottom: 32px;
+  }
+  .stat{ text-align:center; min-width: 100px; }
+  .stat .v{ font-weight:700; font-size: 21px; color: var(--ink); }
+  .stat .l{ font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--ink-soft); margin-top: 3px; }
+  @media (max-width: 560px){
+    .stats-strip{ gap: 12px 18px; padding: 18px 14px; }
+    .stat{ min-width: 40%; }
+    .stat .v{ font-size: 18px; }
+  }
+
+  .filter-bar{
+    position: sticky; top:0; z-index: 40;
+    background: rgba(247,244,239,0.92);
+    backdrop-filter: blur(8px);
+    padding: 14px 0 14px;
+    margin: 0 -20px 30px;
+    border-bottom: 1px solid var(--border);
+  }
+  .filter-bar-inner{ max-width:1100px; margin:0 auto; padding:0 20px; }
+  .search-input{
+    width:100%; padding: 10px 16px; border: 1px solid var(--border-strong);
+    border-radius: 8px; font-family:'Inter', sans-serif; font-size: 15px;
+    background: var(--surface); color: var(--ink); outline:none; margin-bottom:10px;
+    -webkit-appearance:none; appearance:none;
+  }
+  .search-input::placeholder{ color: var(--ink-faint); }
+  .search-input:focus{ border-color: var(--accent); }
+  .pills{ display:flex; flex-wrap:wrap; gap: 7px; }
+  .pill{
+    font-family:'Inter', sans-serif; font-size: 12.5px; font-weight:500;
+    padding: 7px 13px; border-radius: 8px; border: 1px solid var(--border-strong);
+    background: var(--surface); color: var(--ink-soft); cursor:pointer;
+    display:flex; align-items:center; gap:5px; transition: border-color .12s ease, color .12s ease;
+    -webkit-tap-highlight-color: transparent; white-space:nowrap;
+  }
+  .pill:hover{ border-color: var(--accent); color: var(--ink); }
+  .pill.active{ background: var(--accent); color: #fff; border-color: var(--accent); font-weight:600; }
+  .pill .count{ opacity:0.65; font-size:11px; }
+
+  .sort-row{ display:flex; align-items:center; gap:8px; margin-top: 10px; }
+  .sort-row label{ font-size: 12px; color: var(--ink-soft); font-weight:500; }
+  .sort-select{
+    font-family:'Inter', sans-serif; font-size: 12.5px; font-weight:500;
+    padding: 6px 10px; border-radius: 8px; border: 1px solid var(--border-strong);
+    background: var(--surface); color: var(--ink); cursor:pointer; outline:none;
+    -webkit-appearance:none; appearance:none;
+  }
+  .sort-select:focus{ border-color: var(--accent); }
+
+  @media (max-width: 700px){
+    .filter-bar{ padding: 11px 0 11px; }
+    .search-input{ padding: 11px 14px; margin-bottom: 9px; }
+    .pills{
+      flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none;
+      margin: 0 -16px; padding: 0 16px 2px; -webkit-overflow-scrolling: touch;
+    }
+    .pills::-webkit-scrollbar{ display:none; }
+    .pill{ flex: 0 0 auto; padding: 7px 12px; font-size: 12px; }
+    .sort-row{ margin-top: 9px; }
+  }
+
+  .catalog-count{ font-size: 12px; color: var(--ink-soft); margin-bottom: 18px; }
+  .no-results{ color: var(--ink-soft); font-size: 13.5px; font-style: italic; padding: 20px 4px; }
+
+  /* ---- series card ---- */
+  .series-list{ display:flex; flex-direction:column; gap: 16px; margin-bottom: 40px; }
+  .series-card{ padding: 22px 24px 24px; }
+  @media (max-width: 560px){ .series-card{ padding: 18px 16px 20px; } }
+
+  .series-head{
+    display:flex; align-items:baseline; justify-content:space-between; gap: 14px;
+    flex-wrap: wrap; margin-bottom: 3px;
+  }
+  .series-name{ font-size: 19px; font-weight:700; color: var(--ink); }
+  .series-progress{ font-size: 12px; color: var(--ink-soft); white-space:nowrap; }
+  .series-status{
+    display:inline-block; margin-left:8px; font-size: 10px; font-weight:700;
+    text-transform: uppercase; letter-spacing:0.03em; padding: 2px 8px; border-radius: 5px;
+  }
+  .series-status.progress{ background: var(--accent-soft); color: var(--accent); }
+  .series-status.caughtup{ background: var(--sage-soft); color: var(--sage); }
+  .series-status.complete{ background: var(--surface-alt); color: var(--ink-soft); }
+  .series-active-badge{
+    display:inline-block; margin-left:8px; font-size: 10px; font-weight:700;
+    letter-spacing:0.02em; padding: 2px 8px; border-radius: 5px;
+    background: rgba(107,122,161,0.12); color: var(--slate);
+  }
+
+  .series-author{ font-size: 12.5px; color: var(--ink-soft); margin-bottom: 16px; }
+
+  .book-row{
+    display:grid; grid-template-columns: repeat(auto-fill, minmax(96px, 1fr)); gap: 16px 12px;
+  }
+  .book-chip{ text-align:center; cursor:default; }
+  .chip-cover{
+    width:100%; aspect-ratio:2/3; border-radius:6px; overflow:hidden; position:relative;
+    background: var(--surface-alt); border: 1px solid var(--border-strong); margin-bottom:6px;
+    display:flex; align-items:center; justify-content:center; padding:7px;
+    font-weight:600; font-size:10.5px; line-height:1.25; color: var(--ink-soft);
+  }
+  .chip-cover img{ position:absolute; inset:0; width:100%; height:100%; object-fit:cover; }
+  .book-chip.read .chip-cover{ border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent-soft); }
+  .book-chip.unread .chip-cover{ border-style: dashed; opacity: 0.72; }
+  .book-chip.coming .chip-cover{ border-style: dotted; background: transparent; opacity: 0.55; }
+  .chip-num{ font-size: 9px; color: var(--ink-faint); font-weight:600; letter-spacing:0.02em; }
+  .chip-title{ font-size: 11.5px; font-weight:600; line-height:1.3; color: var(--ink); }
+  .book-chip.unread .chip-title, .book-chip.coming .chip-title{ color: var(--ink-soft); font-weight:500; }
+  .chip-year{ font-size: 10px; color: var(--ink-faint); }
+  .chip-flag{
+    font-size: 9.5px; text-transform:uppercase; letter-spacing:0.03em; color: var(--star, var(--accent));
+    font-weight:700; margin-top: 1px;
+  }
+
+  footer.page-foot{ text-align:center; font-size: 11.5px; color: var(--ink-faint); margin-top: 10px; padding: 0 20px; }
 </style>
 </head>
 <body>
-  <p>The Series Tracker has moved into <a href="all-books.html#series">Every Book I've Read</a>.</p>
+
+<div class="page">
+
+  <nav class="topnav">
+    <a href="library.html">← Megan's Library</a>
+    <span class="sep">·</span>
+    <a href="all-books.html">Every Book I've Read</a>
+    <span class="sep">·</span>
+    <a href="2026-reading-stats.html">2026 Stats</a>
+    <span class="sep">·</span>
+    <a href="author-tracker.html">Author Tracker</a>
+    <span class="sep">·</span>
+    <a href="book-club.html">Book Club</a>
+  </nav>
+
+  <header>
+    <div class="eyebrow">every series I'm reading, book by book</div>
+    <h1>Series Tracker</h1>
+    <p id="heroSub">Loading the shelves...</p>
+  </header>
+
+  <div class="card stats-strip" id="statsStrip"></div>
+
+</div>
+
+<div class="filter-bar">
+  <div class="filter-bar-inner">
+    <input type="text" class="search-input" id="searchInput" placeholder="Search by series or author...">
+    <div class="pills" id="statusPills"></div>
+    <div class="sort-row">
+      <label for="sortSelect">Sort by</label>
+      <select class="sort-select" id="sortSelect">
+        <option value="default">Status (Default)</option>
+        <option value="name">Series Name (A–Z)</option>
+        <option value="author">Author (A–Z)</option>
+        <option value="rating">Highest Rated</option>
+        <option value="mostRead">Most Books Read</option>
+      </select>
+    </div>
+  </div>
+</div>
+
+<div class="page">
+  <div class="catalog-count" id="seriesCount"></div>
+  <div class="series-list" id="seriesList"></div>
+  <div class="no-results" id="noResults" style="display:none;">No series match that search.</div>
+
+  <footer class="page-foot" id="pageFoot"></footer>
+</div>
+
+<script src="reading-data.js"></script>
+<script>
+/* SERIES, findRead, formatRating, parseLocalDate come from reading-data.js --
+   read status here is computed live off the same books/pastReads arrays the
+   rest of the site uses, never hand-set. */
+
+/* ---------------- "Month YYYY" strings from pastReads' comingSoon dates ---------------- */
+function parsePastDate(str){
+  if(!str) return null;
+  const m = str.match(/^(\w+)\s+(\d{4})$/);
+  if(!m) return null;
+  const d = new Date(`${m[1]} 1, ${m[2]}`);
+  return isNaN(d.getTime()) ? null : d;
+}
+
+function seriesReleased(s){ return s.books.filter(b => !b.comingSoon); }
+
+function seriesReadCount(s){ return seriesReleased(s).filter(b => findRead(b.title)).length; }
+
+function seriesIsCaughtUp(s){
+  const released = seriesReleased(s);
+  return released.length > 0 && released.every(b => findRead(b.title));
+}
+
+function seriesStatus(s){
+  const caughtUp = seriesIsCaughtUp(s);
+  if(caughtUp && s.status === "complete") return {text: "Series Complete", cls: "complete"};
+  if(caughtUp) return {text: "Caught Up", cls: "caughtup"};
+  return {text: "In Progress", cls: "progress"};
+}
+
+function seriesBooksRemaining(s){
+  const released = seriesReleased(s);
+  return released.length - seriesReadCount(s);
+}
+
+function seriesNextReleaseTime(s){
+  const upcoming = s.books.find(b => b.comingSoon);
+  if(!upcoming) return Infinity;
+  const d = typeof upcoming.comingSoon === "string" ? parsePastDate(upcoming.comingSoon) : null;
+  return d ? d.getTime() : Infinity;
+}
+
+function seriesLastReadTime(s){
+  let max = -Infinity;
+  s.books.forEach(b => {
+    const m = findRead(b.title);
+    if(!m) return;
+    const t = m.dateFinished ? parseLocalDate(m.dateFinished).getTime()
+      : m.readDate ? new Date(m.readDate).getTime()
+      : 0;
+    if(t > max) max = t;
+  });
+  return max;
+}
+
+const SERIES_STATUS_RANK = {progress: 0, caughtup: 1, complete: 2};
+
+/* Average rating across every rated book in the series (not just the
+   released-and-unread split above) — used only for the "Highest Rated"
+   sort option. */
+function seriesAvgRating(s){
+  const rated = s.books.map(b => findRead(b.title)).filter(b => b && b.rating != null);
+  return rated.length ? rated.reduce((sum, b) => sum + b.rating, 0) / rated.length : -1;
+}
+
+/* ---------------- hero + stats ---------------- */
+let totalReleased = 0, totalRead = 0;
+let progressCount = 0, caughtUpCount = 0, completeCount = 0, activelyReadingCount = 0;
+SERIES.forEach(s => {
+  totalReleased += seriesReleased(s).length;
+  totalRead += seriesReadCount(s);
+  const cls = seriesStatus(s).cls;
+  if(cls === "progress") progressCount++;
+  else if(cls === "caughtup") caughtUpCount++;
+  else completeCount++;
+  if(s.activelyReading) activelyReadingCount++;
+});
+
+document.getElementById("heroSub").textContent =
+  `${SERIES.length} series tracked, ${totalRead} of their ${totalReleased} released books read so far.`;
+
+document.getElementById("pageFoot").textContent =
+  "📖 Pulled from reading-data.js. Status is computed live: In Progress means released books left unread, Caught Up means nothing released is left, Series Complete means the author's done and you're caught up.";
+
+function renderStats(){
+  const statsStrip = document.getElementById("statsStrip");
+  const stats = [
+    {v: SERIES.length, l: "Series Tracked"},
+    {v: totalRead, l: "Books Read"},
+    {v: totalReleased - totalRead, l: "Books To Go"},
+    {v: caughtUpCount + completeCount, l: "Caught Up"},
+    {v: activelyReadingCount, l: "Actively Working On"}
+  ];
+  statsStrip.innerHTML = stats.map(s => `<div class="stat"><div class="v">${s.v}</div><div class="l">${s.l}</div></div>`).join("");
+}
+renderStats();
+
+/* ---------------- filter state ---------------- */
+let activeStatus = "All";
+let searchTerm = "";
+let sortKey = "default";
+const SERIES_SORTERS = {
+  // null falls through to renderSeries()'s existing status-tiered sort
+  default: null,
+  name: (a, b) => a.name.localeCompare(b.name),
+  author: (a, b) => a.author.localeCompare(b.author) || a.name.localeCompare(b.name),
+  rating: (a, b) => seriesAvgRating(b) - seriesAvgRating(a) || a.name.localeCompare(b.name),
+  mostRead: (a, b) => seriesReadCount(b) - seriesReadCount(a) || a.name.localeCompare(b.name),
+};
+
+function renderStatusPills(){
+  const container = document.getElementById("statusPills");
+  const defs = [
+    {key: "All", label: "All", count: SERIES.length},
+    {key: "active", label: "🎯 Actively Working On", count: activelyReadingCount},
+    {key: "progress", label: "📖 In Progress", count: progressCount},
+    {key: "caughtup", label: "✅ Caught Up", count: caughtUpCount},
+    {key: "complete", label: "🏁 Series Complete", count: completeCount}
+  ];
+  container.innerHTML = "";
+  defs.forEach(d => {
+    const pill = document.createElement("button");
+    pill.className = "pill" + (activeStatus === d.key ? " active" : "");
+    pill.innerHTML = `${d.label} <span class="count">${d.count}</span>`;
+    pill.addEventListener("click", () => { activeStatus = d.key; renderStatusPills(); renderSeries(); });
+    container.appendChild(pill);
+  });
+}
+renderStatusPills();
+
+document.getElementById("searchInput").addEventListener("input", (e) => {
+  searchTerm = e.target.value.trim().toLowerCase();
+  renderSeries();
+});
+
+document.getElementById("sortSelect").addEventListener("change", (e) => {
+  sortKey = e.target.value;
+  renderSeries();
+});
+
+/* ---------------- render ---------------- */
+const seriesListEl = document.getElementById("seriesList");
+const seriesCountEl = document.getElementById("seriesCount");
+const noResults = document.getElementById("noResults");
+
+function chipHTML(b){
+  const info = findRead(b.title);
+  const isComing = !!b.comingSoon;
+  const cls = isComing ? "coming" : (info ? "read" : "unread");
+  // Only a book you've actually read gets a cover shown — an unread or
+  // not-yet-released book always renders as the plain placeholder box,
+  // never a faded preview cover, so "still to come" reads consistently
+  // across every series regardless of whether that title happens to have
+  // a preview `cover` set in reading-data.js.
+  const cover = info ? info.cover : null;
+  const yearLabel = isComing
+    ? (typeof b.comingSoon === "string" ? b.comingSoon : "Coming Soon")
+    : info && info.pubYear != null ? (info.pubYear < 0 ? `${Math.abs(info.pubYear)} BC` : info.pubYear)
+    : b.pubDate || "";
+  return `
+    <div class="book-chip ${cls}" title="${b.title.replace(/"/g,'&quot;')}">
+      <div class="chip-cover">
+        <span>${b.title}</span>
+        ${cover ? `<img src="${cover}" alt="Cover of ${b.title.replace(/"/g,'&quot;')}" loading="lazy" onerror="this.remove()">` : ""}
+      </div>
+      ${b.number ? `<div class="chip-num">#${b.number}</div>` : ""}
+      <div class="chip-title">${b.title}</div>
+      ${yearLabel ? `<div class="chip-year">${yearLabel}</div>` : ""}
+      ${info && info.rating != null ? `<div class="chip-flag">${formatRating(info.rating)}</div>` : ""}
+    </div>
+  `;
+}
+
+function renderSeries(){
+  const term = searchTerm;
+  const filtered = SERIES.filter(s => {
+    if(term && !s.name.toLowerCase().includes(term) && !s.author.toLowerCase().includes(term)) return false;
+    if(activeStatus === "active"){ if(!s.activelyReading) return false; }
+    else if(activeStatus !== "All" && seriesStatus(s).cls !== activeStatus) return false;
+    return true;
+  }).sort(SERIES_SORTERS[sortKey] || ((a, b) => {
+    const clsA = seriesStatus(a).cls, clsB = seriesStatus(b).cls;
+    const rankDiff = SERIES_STATUS_RANK[clsA] - SERIES_STATUS_RANK[clsB];
+    if(rankDiff !== 0) return rankDiff;
+    if(clsA === "progress") return seriesBooksRemaining(a) - seriesBooksRemaining(b);
+    if(clsA === "caughtup") return seriesNextReleaseTime(a) - seriesNextReleaseTime(b);
+    return seriesLastReadTime(b) - seriesLastReadTime(a);
+  }));
+
+  seriesCountEl.textContent = `Showing ${filtered.length} of ${SERIES.length} series`;
+  noResults.style.display = filtered.length === 0 ? "block" : "none";
+
+  seriesListEl.innerHTML = filtered.map(s => {
+    const status = seriesStatus(s);
+    const released = seriesReleased(s);
+    const read = seriesReadCount(s);
+    return `
+      <div class="card series-card">
+        <div class="series-head">
+          <div class="series-name">${s.name}<span class="series-status ${status.cls}">${status.text}</span>${s.activelyReading ? `<span class="series-active-badge">🎯 Actively Working On</span>` : ""}</div>
+          <div class="series-progress">${read} / ${released.length} read</div>
+        </div>
+        <div class="series-author">${s.author}</div>
+        <div class="book-row">
+          ${s.books.map(chipHTML).join("")}
+        </div>
+      </div>
+    `;
+  }).join("");
+}
+renderSeries();
+</script>
+
 </body>
 </html>
