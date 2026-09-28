@@ -157,15 +157,9 @@
   }
   .mc-location b{ color:var(--ink); font-weight:600; }
   .mc-note-hint{ font-size:11.5px; font-style:italic; color:var(--ink-faint); margin-top:9px; }
-  .month-card.missed{ background: var(--surface-alt); }
-  .month-card.missed .month-card-head{ opacity:0.55; }
-  .month-card.missed .month-card-body{
-    align-items:center; justify-content:center; text-align:center; min-height:180px; padding: 24px 18px;
-  }
-  .mc-missed-note{ font-size:13px; color: var(--ink-faint); font-style:italic; }
 
-  .month-card:not(.missed){ cursor:pointer; transition: transform 0.15s ease, box-shadow 0.15s ease; }
-  .month-card:not(.missed):hover, .month-card:not(.missed):focus-visible{
+  .month-card{ cursor:pointer; transition: transform 0.15s ease, box-shadow 0.15s ease; }
+  .month-card:hover, .month-card:focus-visible{
     transform: translateY(-3px); box-shadow: 0 8px 20px rgba(36,32,24,0.12);
   }
   .month-card:focus-visible{ outline:2px solid var(--accent); outline-offset:2px; }
@@ -310,25 +304,6 @@ function clubEntryInfo(entry){
 
 const sortedClub = [...BOOK_CLUB].sort((a, b) => (a.year - b.year) || (a.month - b.month));
 
-/* Every month between your first and last logged meetup, so a gap (like
-   skipping a month) shows up as an empty card instead of silently
-   disappearing. */
-function monthsInRange(minY, minM, maxY, maxM){
-  const out = [];
-  let y = minY, m = minM;
-  while(y < maxY || (y === maxY && m <= maxM)){
-    out.push({year: y, month: m});
-    m++;
-    if(m > 12){ m = 1; y++; }
-  }
-  return out;
-}
-const loggedMonthKeys = new Set(BOOK_CLUB.map(e => `${e.year}-${e.month}`));
-const missedMonths = sortedClub.length
-  ? monthsInRange(sortedClub[0].year, sortedClub[0].month, sortedClub[sortedClub.length - 1].year, sortedClub[sortedClub.length - 1].month)
-    .filter(mo => !loggedMonthKeys.has(`${mo.year}-${mo.month}`))
-  : [];
-
 /* ---------------- hero + stats ---------------- */
 const locationCounts = {};
 BOOK_CLUB.forEach(e => { locationCounts[e.location] = (locationCounts[e.location] || 0) + 1; });
@@ -404,23 +379,9 @@ function monthCardHTML(entry){
           ${info.author ? `<div class="mc-author">${info.author}</div>` : ""}
           ${info.rating != null ? `<div class="mc-rating">${starRatingHTML(info.rating)}</div>` : ""}
           ${entry.pick ? `<div class="mc-pick">🎯 ${entry.pick}</div>` : ""}
-          <div class="mc-location">📍 <span>Brunch at <b>${entry.location}</b></span></div>
+          <div class="mc-location">📍 <span><b>${entry.location}</b></span></div>
           ${entry.note ? `<div class="mc-note-hint">📝 Tap for notes</div>` : ""}
         </div>
-      </div>
-    </div>
-  `;
-}
-
-function missedCardHTML({year, month}){
-  const theme = MONTH_THEME[month];
-  return `
-    <div class="card month-card missed">
-      <div class="month-card-head" style="background:${theme.color};">
-        <span class="emoji">${theme.emoji}</span> ${theme.name} ${year}
-      </div>
-      <div class="month-card-body">
-        <div class="mc-missed-note">No meetup logged</div>
       </div>
     </div>
   `;
@@ -441,16 +402,7 @@ function renderClub(){
   clubCountEl.textContent = `Showing ${filtered.length} of ${BOOK_CLUB.length} meetups`;
   noResults.style.display = filtered.length === 0 ? "block" : "none";
 
-  // Skipped months only make sense as a visual gap when you're not actively
-  // searching or narrowed to a status — they never match a search term, so
-  // showing them then would just be noise.
-  const gaps = term ? [] : missedMonths.filter(mo => activeYear === "All" || String(mo.year) === activeYear);
-  const items = [
-    ...filtered.map(e => ({...e, missed: false})),
-    ...gaps.map(mo => ({...mo, missed: true})),
-  ].sort((a, b) => (a.year - b.year) || (a.month - b.month));
-
-  monthGrid.innerHTML = items.map(it => it.missed ? missedCardHTML(it) : monthCardHTML(it)).join("");
+  monthGrid.innerHTML = filtered.map(monthCardHTML).join("");
 }
 renderClub();
 
@@ -478,7 +430,7 @@ function openMcModal(entry){
   mcModalAuthor.textContent = info.author || "";
   mcModalRating.innerHTML = info.rating != null ? starRatingHTML(info.rating) : "";
   mcModalPick.textContent = entry.pick ? `🎯 ${entry.pick}` : "";
-  mcModalLocation.innerHTML = `📍 <span>Brunch at <b>${entry.location}</b></span>`;
+  mcModalLocation.innerHTML = `📍 <span><b>${entry.location}</b></span>`;
   mcModalNote.textContent = entry.note || "";
   mcModalNote.style.display = entry.note ? "" : "none";
   mcModalOverlay.classList.add("open");
