@@ -156,7 +156,6 @@
     display:flex; align-items:flex-start; gap:6px; line-height:1.4;
   }
   .mc-location b{ color:var(--ink); font-weight:600; }
-  .mc-note-hint{ font-size:11.5px; font-style:italic; color:var(--ink-faint); margin-top:9px; }
 
   .month-card{ cursor:pointer; transition: transform 0.15s ease, box-shadow 0.15s ease; }
   .month-card:hover, .month-card:focus-visible{
@@ -380,7 +379,6 @@ function monthCardHTML(entry){
           ${info.rating != null ? `<div class="mc-rating">${starRatingHTML(info.rating)}</div>` : ""}
           ${entry.pick ? `<div class="mc-pick">🎯 ${entry.pick}</div>` : ""}
           <div class="mc-location">📍 <span><b>${entry.location}</b></span></div>
-          ${entry.note ? `<div class="mc-note-hint">📝 Tap for notes</div>` : ""}
         </div>
       </div>
     </div>
