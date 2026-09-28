@@ -42,9 +42,8 @@ skip):
 - **A note/review** — even a sentence or two. Keep her voice, don't polish it
   into marketing copy.
 - **Spicy tag** — ask, don't assume, even for romance/romantasy.
-- **Ownership format** — does she own this one (physical / Kindle / Audible /
-  Kindle Unlimited)? If yes, it needs an entry in `owned-books-data.js` too
-  (see step 4).
+- **Ownership format** — does she own this one (physical / Kindle / Audible)?
+  If yes, it needs an entry in `owned-books-data.js` too (see step 4).
 - **Series info** — is this part of a series? See step 3.
 
 If she already volunteered an answer in her message (like she did for Lore
@@ -73,11 +72,10 @@ Check `SERIES` in `reading-data.js` for an existing entry matching this book.
 ## 4. Ownership
 
 If she owns a copy, add an entry to the matching array in
-`owned-books-data.js` (`kindle` / `audible` / `physical` / `kindleUnlimited` —
-a book can be in more than one). Reuse the same cover URL you used in
-`reading-data.js` so the two stay visually consistent. Read that file's own
-top comment too — it explains the `color`/`spineTitle` physical-only fields
-and how `kindleUnlimited` differs from `kindle`.
+`owned-books-data.js` (`kindle` / `audible` / `physical` — a book can be in
+more than one). Reuse the same cover URL you used in `reading-data.js` so the
+two stay visually consistent. Read that file's own top comment too — it
+explains the `color`/`spineTitle` physical-only fields.
 
 ## 5. Validate before committing
 
