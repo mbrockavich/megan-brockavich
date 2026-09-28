@@ -31,6 +31,6 @@ const BOOK_CLUB = [
   {year: 2026, month: 3, title: "Just For the Cameras", location: "The Barn Restaurant", pick: "Rachel's pick", note: "It was ok. I think Sue and Rachel liked it more than I did."},
   {year: 2026, month: 5, title: "Cleopatra", location: "Ocho Cafe, West Hartford", pick: "Megan's pick", note: "Fell flat. Sue really didn't like it."},
   {year: 2026, month: 6, title: "My Husband's Wife", location: "A day trip to Mystic, CT", pick: "Sue's pick", note: "5 stars for Sue. I thought it was great right until the ending — the ending didn't wrap things up for me."},
-  {year: 2026, month: 8, title: "Funny Story", location: "Snacks at the beach", pick: "Sue's pick", note: "Everyone really liked it. Sue and I gave it 5 stars, and Rachel + Alyssa gave it 4.5 stars."},
+  {year: 2026, month: 8, title: "Funny Story", location: "Beach day at Hammonasset Beach State Park", pick: "Sue's pick", note: "Everyone really liked it. Sue and I gave it 5 stars, and Rachel + Alyssa gave it 4.5 stars."},
   {year: 2026, month: 9, title: "Sharp Objects", location: "Sayulita Restaurant"},
 ];
