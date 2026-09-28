@@ -80,6 +80,21 @@
     .stat .v{ font-size: 18px; }
   }
 
+  .picks-strip{
+    display:flex; flex-wrap:wrap; align-items:center; gap: 10px;
+    padding: 16px 22px; margin-bottom: 32px;
+  }
+  .picks-strip .picks-label{
+    font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em;
+    color: var(--ink-soft); margin-right: 4px;
+  }
+  .pick-badge{
+    font-size: 12.5px; font-weight:500; padding: 6px 12px; border-radius: 8px;
+    border: 1px solid var(--border-strong); background: var(--surface-alt);
+    color: var(--ink); display:flex; align-items:center; gap:5px; white-space:nowrap;
+  }
+  .pick-badge .count{ color: var(--ink-soft); }
+
   .filter-bar{
     position: sticky; top:0; z-index: 40;
     background: rgba(247,244,239,0.92);
@@ -237,6 +252,7 @@
   </header>
 
   <div class="card stats-strip" id="statsStrip"></div>
+  <div class="card picks-strip" id="picksStrip"></div>
 
 </div>
 
@@ -327,6 +343,24 @@ function renderStats(){
   statsStrip.innerHTML = stats.map(s => `<div class="stat"><div class="v">${s.v}</div><div class="l">${s.l}</div></div>`).join("");
 }
 renderStats();
+
+/* ---------------- picks by person ---------------- */
+function renderPicks(){
+  const picksStrip = document.getElementById("picksStrip");
+  const pickCounts = {};
+  BOOK_CLUB.forEach(e => {
+    if(!e.pick) return;
+    const name = e.pick.replace(/'s pick$/i, "").trim() || e.pick;
+    pickCounts[name] = (pickCounts[name] || 0) + 1;
+  });
+  const sortedPicks = Object.entries(pickCounts).sort((a, b) => b[1] - a[1]);
+  if(!sortedPicks.length){ picksStrip.style.display = "none"; return; }
+  picksStrip.innerHTML = `<span class="picks-label">Picks by person</span>` +
+    sortedPicks.map(([name, count]) =>
+      `<span class="pick-badge">${name} <span class="count">× ${count}</span></span>`
+    ).join("");
+}
+renderPicks();
 
 /* ---------------- filter state ---------------- */
 let activeYear = "All";
