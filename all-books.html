@@ -562,8 +562,9 @@
 /* books, pastReads, SERIES, findRead, formatRating come from reading-data.js */
 
 if(typeof RATING_LEGEND !== "undefined"){
+  const maxStars = Math.max(...RATING_LEGEND.map(r => r.n));
   document.getElementById("ratingKeyRows").innerHTML = RATING_LEGEND.map(r => {
-    const dim = 5 - r.n;
+    const dim = maxStars - r.n;
     const stars = "★".repeat(r.n) + (dim > 0 ? `<span class="dim">${"★".repeat(dim)}</span>` : "");
     return `<div class="legend-row"><div class="stars">${stars}</div><div class="legend-text">${r.text}</div></div>`;
   }).join("");

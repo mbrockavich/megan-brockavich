@@ -11,8 +11,10 @@
 
    Optional fields you can add to any book entry (in `books` or `pastReads`),
    whenever you're ready:
-     rating: 1-5   : your star rating (half-stars like 3.5 are fine). Shown
-                     as ★ marks wherever the book appears — master list
+     rating: 1-6   : your star rating (half-stars like 3.5 are fine). 6 is
+                     reserved for all-time favorites — only use it when
+                     told to for a specific book, never guess. Shown as
+                     ★ marks wherever the book appears — master list
                      cards, series pop-ups, and the 2026 genre shelf.
      spicy: true   : marks it as spicy. Shown as a single 🌶️ sticker over
                      the bottom-left corner of the cover, and adds the book
@@ -100,7 +102,7 @@ const books = [
   {title:"The Assassin's Blade", cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1680869667i/126062562.jpg", author:"Sarah J. Maas", genre:["Fantasy","Young Adult"], pages:464, dateFinished:"2026-08-23", rating:5, pubYear:2014, pubDate:"March 2014", note:"Reread — I love it just as much the second time around."},
   {title:"Throne of Glass", cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1673566495i/76703559.jpg", author:"Sarah J. Maas", genre:["Fantasy","Young Adult"], pages:404, dateFinished:"2026-08-28", rating:5, pubYear:2012, pubDate:"August 2012", note:"Reread — read the physical copy and listened on audiobook. Love this series, easy 5 stars."},
   {title:"Verity", cover:"https://covers.openlibrary.org/b/isbn/9781791392796-L.jpg", author:"Colleen Hoover", genre:"Suspense", pages:336, dateFinished:"2026-08-29", rating:5, pubYear:2018, pubDate:"December 2018", spicy:true, note:"Messy and unsettling in the best way — everyone in this book is a little bit awful, and I'm still not sure how I feel about any of it. Now that I know how it ends, I kind of want to reread it just to decide for myself whether Verity was really the monster the manuscript makes her out to be."},
-  {title:"The Dungeon Anarchist's Cookbook", cover:"dungeon-crawler-carl/dungeon-anarchists-cookbook-cover.jpg", author:"Matt Dinniman", genre:"Science Fiction", pages:544, dateFinished:"2026-09-01", rating:4, pubYear:2021, pubDate:"March 2021", note:"My least favorite in the series so far. Between all the moving numbers and mechanics, I found myself getting confused, and honestly my attention started to drift a bit."},
+  {title:"The Dungeon Anarchist's Cookbook", cover:"dungeon-crawler-carl/dungeon-anarchists-cookbook-cover.jpg", author:"Matt Dinniman", genre:"Science Fiction", pages:544, dateFinished:"2026-09-01", rating:3, pubYear:2021, pubDate:"March 2021", note:"My least favorite in the series so far. Between all the moving numbers and mechanics, I found myself getting confused, and honestly my attention started to drift a bit."},
   {title:"The Gate of the Feral Gods", cover:"https://covers.openlibrary.org/b/isbn/9780593955970-L.jpg", author:"Matt Dinniman", genre:"Science Fiction", pages:592, dateFinished:"2026-09-05", rating:4, pubYear:2022, note:"Middle-of-the-road for me. It ended on a rough cliffhanger though: Odette's clearly up to something, and now she's got Beatrice with her. 😬 I'm going to take a break from the series for a bit before picking up book five."},
   {title:"Crown of Midnight", cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1673566594i/76705490.jpg", author:"Sarah J. Maas", genre:["Fantasy","Young Adult"], pages:440, dateFinished:"2026-09-09", rating:5, pubYear:2013, pubDate:"August 2013", note:"Reread — I feel like this book's ending is the beginning of where it really, really kicks off. 5 stars always. There's talk of sex and Celaena loses her virginity, but it isn't graphic."},
   {title:"Dear Monica Lewinsky: A Novel", cover:"https://covers.openlibrary.org/b/isbn/9780385551502-L.jpg", author:"Julia Langbein", genre:"Literary/Contemporary Fiction", pages:303, dateFinished:"2026-09-14", rating:2, pubYear:2026, note:"Didn't really like it and it kinda ended weird."},
@@ -415,13 +417,14 @@ function roundedRatingDisplay(rating) {
 function starRatingHTML(rating) {
   if (rating == null) return "";
   const display = roundedRatingDisplay(rating);
-  return `<span class="star-rating" role="img" aria-label="${display} out of 5 stars"><span class="star-rating-num">${display}</span> ★</span>`;
+  return `<span class="star-rating" role="img" aria-label="${display} out of 6 stars"><span class="star-rating-num">${display}</span> ★</span>`;
 }
 
 /* What each star count means. Shown as a "Rating Key" breakdown near the
    top of all-books.html and 2026-reading-stats.html. Each page builds its
    own themed row markup from this list. */
 const RATING_LEGEND = [
+  {n: 6, text: "One of my all-time favorites, no notes"},
   {n: 5, text: "I would recommend if you like this genre"},
   {n: 4, text: "I really liked it but I wouldn't necessarily recommend"},
   {n: 3, text: "It was fine"},
