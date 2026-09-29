@@ -30,6 +30,7 @@ const OWNED_BOOKS = {
     {title:"The Count of Monte Cristo", author:"Alexandre Dumas", cover:"count-of-monte-cristo/monte-cristo-cover.jpg"},
     {title:"Crown of Midnight", author:"Sarah J. Maas", cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1673566594i/76705490.jpg"},
     {title:"Dear Monica Lewinsky: A Novel", author:"Julia Langbein", cover:"https://covers.openlibrary.org/b/isbn/9780385551502-L.jpg"},
+    {title:"Butcher & Blackbird", author:"Brynne Weaver", cover:"https://covers.openlibrary.org/b/isbn/9780349441566-L.jpg"},
   ],
   audible: [
     {title:"And Now, Back to You", author:"B.K. Borison", narrator:"", cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1748482477i/217513554.jpg"},
@@ -40,6 +41,7 @@ const OWNED_BOOKS = {
     {title:"Crown of Midnight", author:"Sarah J. Maas", narrator:"", cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1673566594i/76705490.jpg"},
     {title:"The Butcher's Masquerade", author:"Matt Dinniman", narrator:"", cover:"https://covers.openlibrary.org/b/id/15231958-L.jpg"},
     {title:"The Eye of the Bedlam Bride", author:"Matt Dinniman", narrator:"", cover:"https://covers.openlibrary.org/b/id/15231488-L.jpg"},
+    {title:"Butcher & Blackbird", author:"Brynne Weaver", narrator:"", cover:"https://covers.openlibrary.org/b/isbn/9780349441566-L.jpg"},
   ],
   physical: [
     {title:"Control Unleashed: Creating a Focused and Confident Dog", spineTitle:"Control Unleashed", author:"Leslie McDevitt", cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1349894884i/2101812.jpg"},

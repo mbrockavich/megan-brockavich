@@ -110,6 +110,7 @@ const books = [
   {title:"The Butcher's Masquerade", cover:"https://covers.openlibrary.org/b/id/15231958-L.jpg", author:"Matt Dinniman", genre:"Science Fiction", pages:768, dateFinished:"2026-09-21", rating:4, pubYear:2022, pubDate:"February 2022", note:"Samantha cracks me up 🤣"},
   {title:"The Eye of the Bedlam Bride", cover:"https://covers.openlibrary.org/b/id/15231488-L.jpg", author:"Matt Dinniman", genre:"Science Fiction", pages:720, dateFinished:"2026-09-27", rating:4, pubYear:2023, pubDate:"August 2023"},
   {title:"Lore Olympus: Volume One", cover:"https://covers.openlibrary.org/b/isbn/9780593160299-L.jpg", author:"Rachel Smythe", genre:["Graphic Novel","Mythology"], pages:384, dateFinished:"2026-09-27", rating:5, pubYear:2021, pubDate:"November 2021", spicy:true, note:"I love mythology, and this artwork is so fun. Doesn't take long to read and feels like a new spin on an old story. Note: def for adults."},
+  {title:"Butcher & Blackbird", cover:"https://covers.openlibrary.org/b/isbn/9780349441566-L.jpg", author:"Brynne Weaver", genre:"Romance", pages:368, dateFinished:"2026-09-28", rating:4, pubYear:2024, pubDate:"January 2024", spicy:true, note:"Fun twist on a romance! Two serial killers falling for each other shouldn't work as well as it does. Sometimes it felt weird how normalized the murders were, but it gave me Dexter vibes, so I rolled with it and enjoyed the journey. Rose is my favorite and I need more of her, so I'm excited that book 3 looks like it's hers."},
 ];
 
 /* Everything finished before 2026 that still shows up as "read" on a
@@ -244,13 +245,13 @@ const pastReads = [
   {title:"Harry Potter and the Prisoner of Azkaban", cover:"https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1630547330i/5._SY180_.jpg", genre:["Fantasy","Young Adult"], author:"J.K. Rowling", readDate:null, rating:5, pubYear:1999, pubDate:"July 1999"},
   {title:"Harry Potter and the Sorcerer's Stone", cover:"https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1598823299i/42844155._SX120_.jpg", genre:["Fantasy","Young Adult"], author:"J.K. Rowling", readDate:null, rating:5, pubYear:1998, pubDate:"September 1998"},
   {title:"Haunted World: 101 Ghostly Places and Encounters", genre:"Nonfiction", author:"Theresa Cheung", readDate:"August 2025", rating:3, cover:"https://is1-ssl.mzstatic.com/image/thumb/Publication211/v4/40/52/1f/40521fcf-8823-305b-2b3e-101a83723931/9781789295818.jpg/600x600bb.jpg", pubYear:2024, pubDate:"September 2024"},
-  {title:"Haunting Adeline", cover:"https://covers.openlibrary.org/b/id/12992962-L.jpg", genre:"Horror", author:"H.D. Carlton", readDate:"April 2024", rating:3, pubYear:2021, pubDate:"August 2021"},
+  {title:"Haunting Adeline", cover:"https://covers.openlibrary.org/b/id/12992962-L.jpg", genre:"Romance", author:"H.D. Carlton", readDate:"April 2024", rating:3, pubYear:2021, pubDate:"August 2021"},
   {title:"He's Just Not That Into You: The No-Excuses Truth to Understanding Guys", cover:"https://covers.openlibrary.org/b/id/7109886-L.jpg", genre:"Nonfiction", subgenre:"Self-Development", author:"Greg Behrendt", readDate:null, rating:5, pubYear:2004, pubDate:"September 2004"},
   {title:"Hell Bent", cover:"https://covers.openlibrary.org/b/id/14357966-L.jpg", genre:"Fantasy", author:"Leigh Bardugo", readDate:"September 2024", rating:5, pubYear:2023, pubDate:"January 2023"},
   {title:"Holes", cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1618269830i/38709._SX300_.jpg", genre:["Middle Grade","Suspense"], author:"Louis Sachar", readDate:null, rating:3, pubYear:1998, pubDate:"August 1998"},
   {title:"Homegoing", cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1697879604i/163610118._SX300_.jpg", genre:["Historical Fiction","Literary/Contemporary Fiction"], author:"Yaa Gyasi", readDate:null, rating:4, pubYear:2016, pubDate:"June 2016"},
   {title:"How Stella Learned to Talk: The Groundbreaking Story of the World's First Talking Dog", cover:"https://covers.openlibrary.org/b/id/11007314-L.jpg", genre:"Nonfiction", subgenre:"Dogs", author:"Christina Hunger", readDate:"March 2023", rating:4, pubYear:2021, pubDate:"May 2021"},
-  {title:"Hunting Adeline", cover:"https://covers.openlibrary.org/b/id/14614757-L.jpg", genre:"Horror", author:"H.D. Carlton", readDate:"April 2024", rating:3, pubYear:2022, pubDate:"January 2022"},
+  {title:"Hunting Adeline", cover:"https://covers.openlibrary.org/b/id/14614757-L.jpg", genre:"Romance", author:"H.D. Carlton", readDate:"April 2024", rating:3, pubYear:2022, pubDate:"January 2022"},
   {title:"I'm Glad My Mom Died", cover:"https://covers.openlibrary.org/b/id/12855985-L.jpg", genre:"Memoir/Biography", author:"Jennette McCurdy", readDate:null, rating:3, pubYear:2022, pubDate:"August 2022"},
   {title:"Inside of a Dog: What Dogs See, Smell, and Know", cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1347980799i/6332526.jpg", genre:"Nonfiction", subgenre:"Dogs", author:"Alexandra Horowitz", readDate:"June 2024", rating:4, pubYear:2009, pubDate:"September 2009"},
   {title:"Insurgent", cover:"https://covers.openlibrary.org/b/id/7083755-L.jpg", genre:["Young Adult","Science Fiction"], author:"Veronica Roth", readDate:null, rating:5, pubYear:2012, pubDate:"May 2012"},
@@ -861,6 +862,17 @@ const SERIES = [
     books: [
       {title:"Haunting Adeline"},
       {title:"Hunting Adeline"}
+    ]
+  },
+  {
+    name: "The Ruinous Love Trilogy",
+    author: "Brynne Weaver",
+    activelyReading: true,
+    status: "complete",
+    books: [
+      {title:"Butcher & Blackbird", number:"1", pubDate:"January 2024"},
+      {title:"Leather & Lark", number:"2", pubDate:"June 2024"},
+      {title:"Scythe & Sparrow", number:"3", pubDate:"February 2025"}
     ]
   },
   {
