@@ -112,6 +112,7 @@ const books = [
   {title:"Lore Olympus: Volume One", cover:"https://covers.openlibrary.org/b/isbn/9780593160299-L.jpg", author:"Rachel Smythe", genre:["Graphic Novel","Mythology"], pages:384, dateFinished:"2026-09-27", rating:5, pubYear:2021, pubDate:"November 2021", spicy:true, note:"I love mythology, and this artwork is so fun. Doesn't take long to read and feels like a new spin on an old story. Note: def for adults."},
   {title:"Butcher & Blackbird", cover:"https://covers.openlibrary.org/b/isbn/9780349441566-L.jpg", author:"Brynne Weaver", genre:"Romance", pages:368, dateFinished:"2026-09-28", rating:4, pubYear:2024, pubDate:"January 2024", spicy:true, note:"Fun twist on a romance! Two serial killers falling for each other shouldn't work as well as it does. Sometimes it felt weird how normalized the murders were, but it gave me Dexter vibes, so I rolled with it and enjoyed the journey. Rose is my favorite and I need more of her, so I'm excited that book 3 looks like it's hers."},
   {title:"Actually, Nevermind", cover:"actually-nevermind/actually-nevermind-cover.jpg", author:"Taylor Tomlinson", genre:"Memoir/Biography", pages:304, dateFinished:"2026-09-29", rating:5, pubYear:2026, pubDate:"September 2026", note:"I devoured this book. Taylor Tomlinson is so funny and relatable, I was laughing out loud for most of it.\n\nAnd then by the end I was full-on sobbing.\n\nIt is very millennial female lol. One of my favorite lines \"I know the D.A.R.E program did a number on all of us, but that was for kids and you\u2019re a grown-up now.\"\n\nI absolutely loved it."},
+  {title:"Threshing Day", cover:"threshing-day/threshing-day-cover.jpg", author:"Rebecca Yarros", genre:"Fantasy", pages:224, dateFinished:"2026-10-03", rating:5, pubYear:2026, pubDate:"September 2026", note:"I can't tell if I'm obsessed with dragons or just Rebecca's dragons, but I loved every chapter of this book.\n\nIt's got easter eggs and little hints about what's ahead, and I devoured every one. Most of the chapters had me in tears as well, getting to see characters’ inner dialogue that we usually don’t get to see was emotional! Especially knowing how some things turn out.\n\nIt may not be essential to the series, and you could probably skip it, but why would you want to?"},
 ];
 
 /* Everything finished before 2026 that still shows up as "read" on a
@@ -488,7 +489,7 @@ const SERIES = [
       {title:"Fourth Wing"},
       {title:"Iron Flame"},
       {title:"Onyx Storm"},
-      {title:"Threshing Day", number:"Bonus", comingSoon:"September 2026"},
+      {title:"Threshing Day", number:"Bonus", pubDate:"September 2026"},
       {title:"Empyrean Book 4", comingSoon:true},
       {title:"Empyrean Book 5", comingSoon:true}
     ]
