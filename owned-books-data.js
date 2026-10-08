@@ -114,7 +114,7 @@ const OWNED_BOOKS = {
     {title:"Galatea: A Short Story", spineTitle:"Galatea", author:"Madeline Miller", cover:"covers/galatea.jpg"},
     {title:"Fairy Tale", author:"Stephen King", cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1647789287i/60177373.jpg"},
     {title:"Tress of the Emerald Sea", author:"Brandon Sanderson", cover:"https://covers.openlibrary.org/b/id/13143232-L.jpg"},
-    {title:"Wicked: The Life and Times of the Wicked Witch of the West", spineTitle:"Wicked", author:"Gregory Maguire", cover:"covers/wicked.jpg"},
+    {title:"Wicked", author:"Gregory Maguire", cover:"covers/wicked.jpg"},
     {title:"Fourth Wing", author:"Rebecca Yarros", cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1761312598i/61431922.jpg"},
     {title:"Iron Flame", author:"Rebecca Yarros", cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1706724269i/90202302.jpg"},
     {title:"Quicksilver", author:"Callie Hart", cover:"https://covers.openlibrary.org/b/id/15227615-L.jpg"},
