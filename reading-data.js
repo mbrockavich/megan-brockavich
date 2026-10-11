@@ -295,7 +295,7 @@ const pastReads = [
   {title:"Small Things", cover:"https://covers.openlibrary.org/b/id/8404327-L.jpg", genre:"Suspense", author:"Wanda M. Morris", readDate:"September 2025", rating:3, pubYear:1991},
   {title:"Specials", cover:"https://covers.openlibrary.org/b/id/761913-L.jpg", genre:["Young Adult","Science Fiction"], author:"Scott Westerfeld", readDate:null, rating:5, pubYear:2006, pubDate:"May 2006"},
   {title:"Spinning Silver", cover:"https://covers.openlibrary.org/b/id/8423441-L.jpg", genre:"Fantasy", author:"Naomi Novik", readDate:"March 2025", rating:3, pubYear:2018, pubDate:"July 2018"},
-  {title:"Sword of Destiny", cover:"https://covers.openlibrary.org/b/id/11102583-L.jpg", genre:"Fantasy", author:"Andrzej Sapkowski", readDate:"January 2024", rating:2, pubYear:2015},
+  {title:"Sword of Destiny", cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1671660198i/25454056.jpg", genre:"Fantasy", author:"Andrzej Sapkowski", readDate:"January 2024", rating:2, pubYear:2015},
   {title:"Talking As Fast As I Can: From Gilmore Girls to Gilmore Girls, and Everything in Between", cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1528327669i/40411206.jpg", genre:"Memoir/Biography", author:"Lauren Graham", readDate:"July 2024", rating:2, pubYear:2016, pubDate:"November 2016"},
   {title:"The 90-Day Novel", cover:"https://covers.openlibrary.org/b/id/8857110-L.jpg", genre:"Nonfiction", subgenre:"Self-Development", author:"Alan Watt", readDate:"January 2025", rating:4, pubYear:2017},
   {title:"The Alchemist", cover:"https://covers.openlibrary.org/b/id/11556106-L.jpg", genre:"Literary/Contemporary Fiction", author:"Paulo Coelho", readDate:null, pubYear:1988},
