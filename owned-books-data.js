@@ -43,6 +43,7 @@ const OWNED_BOOKS = {
     {title:"Crown of Midnight", author:"Sarah J. Maas", narrator:"", cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1673566594i/76705490.jpg"},
     {title:"The Butcher's Masquerade", author:"Matt Dinniman", narrator:"", cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1734098643i/220772913.jpg"},
     {title:"The Eye of the Bedlam Bride", author:"Matt Dinniman", narrator:"", cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1734098749i/220772912.jpg"},
+    {title:"This Inevitable Ruin", author:"Matt Dinniman", narrator:"", cover:"https://covers.openlibrary.org/b/isbn/9798217190041-L.jpg"},
     {title:"Butcher & Blackbird", author:"Brynne Weaver", narrator:"", cover:"https://covers.openlibrary.org/b/isbn/9780349441566-L.jpg"},
     {title:"Actually, Nevermind", author:"Taylor Tomlinson", narrator:"Taylor Tomlinson", cover:"actually-nevermind/actually-nevermind-cover.jpg"},
   ],

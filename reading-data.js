@@ -109,6 +109,7 @@ const books = [
   {title:"Heir of Fire", cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1673566654i/76706470.jpg", author:"Sarah J. Maas", genre:["Fantasy","Young Adult"], pages:565, dateFinished:"2026-09-19", rating:5, pubYear:2014, pubDate:"September 2014", note:"Reread — my favorite in the series. Celaena's arc is brutal in the best way, and her bond with Rowan hit even harder knowing where it goes. But Manon and Abraxos stole the show for me — I think I love that storyline more than the main one, and watching Manon and the Thirteen wrecked me both times. This is where the series really becomes epic."},
   {title:"The Butcher's Masquerade", cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1734098643i/220772913.jpg", author:"Matt Dinniman", genre:"Science Fiction", pages:768, dateFinished:"2026-09-21", rating:4, pubYear:2022, pubDate:"February 2022", note:"Samantha cracks me up 🤣"},
   {title:"The Eye of the Bedlam Bride", cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1734098749i/220772912.jpg", author:"Matt Dinniman", genre:"Science Fiction", pages:720, dateFinished:"2026-09-27", rating:4, pubYear:2023, pubDate:"August 2023"},
+  {title:"This Inevitable Ruin", cover:"https://covers.openlibrary.org/b/isbn/9798217190041-L.jpg", author:"Matt Dinniman", genre:"Science Fiction", pages:880, dateFinished:"2026-10-11", rating:4, pubYear:2025, pubDate:"September 2025"},
   {title:"Lore Olympus: Volume One", cover:"https://covers.openlibrary.org/b/isbn/9780593160299-L.jpg", author:"Rachel Smythe", genre:["Graphic Novel","Mythology"], pages:384, dateFinished:"2026-09-27", rating:5, pubYear:2021, pubDate:"November 2021", spicy:true, note:"I love mythology, and this artwork is so fun. Doesn't take long to read and feels like a new spin on an old story. Note: def for adults."},
   {title:"Butcher & Blackbird", cover:"https://covers.openlibrary.org/b/isbn/9780349441566-L.jpg", author:"Brynne Weaver", genre:"Romance", pages:368, dateFinished:"2026-09-28", rating:4, pubYear:2024, pubDate:"January 2024", spicy:true, note:"Fun twist on a romance! Two serial killers falling for each other shouldn't work as well as it does. Sometimes it felt weird how normalized the murders were, but it gave me Dexter vibes, so I rolled with it and enjoyed the journey. Rose is my favorite and I need more of her, so I'm excited that book 3 looks like it's hers."},
   {title:"Actually, Nevermind", cover:"actually-nevermind/actually-nevermind-cover.jpg", author:"Taylor Tomlinson", genre:"Memoir/Biography", pages:304, dateFinished:"2026-09-29", rating:5, pubYear:2026, pubDate:"September 2026", note:"I devoured this book. Taylor Tomlinson is so funny and relatable, I was laughing out loud for most of it.\n\nAnd then by the end I was full-on sobbing.\n\nIt is very millennial female lol. One of my favorite lines \"I know the D.A.R.E program did a number on all of us, but that was for kids and you\u2019re a grown-up now.\"\n\nI absolutely loved it."},
@@ -649,7 +650,7 @@ const SERIES = [
   {
     name: "Dungeon Crawler Carl",
     author: "Matt Dinniman",
-    status: "complete",
+    status: "ongoing",
     books: [
       {title:"Dungeon Crawler Carl", number:"1"},
       {title:"Carl's Doomsday Scenario", number:"2"},
@@ -657,7 +658,7 @@ const SERIES = [
       {title:"The Gate of the Feral Gods", number:"4"},
       {title:"The Butcher's Masquerade", number:"5", pubDate:"2022"},
       {title:"The Eye of the Bedlam Bride", number:"6", pubDate:"2023"},
-      {title:"This Inevitable Ruin", number:"7", pubDate:"2024"},
+      {title:"This Inevitable Ruin", number:"7", pubDate:"2025"},
       {title:"A Parade of Horribles", number:"8", pubDate:"2026"},
       {title:"The Beautiful Place", number:"9", comingSoon:true},
       {title:"Dungeon Crawler Carl, Book 10", number:"10", comingSoon:true}
