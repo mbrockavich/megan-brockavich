@@ -186,6 +186,7 @@
   }
   .master-status-tag.complete{ color: var(--sage); }
   .master-status-tag.caughtup{ color: var(--accent); }
+  .master-status-tag.dnf{ color: var(--ink-faint); }
   .master-status-tag.progress{ color: var(--ink-soft); }
 
   section.section-head{ margin: 0 0 18px; text-align:left; }
@@ -981,6 +982,7 @@ function seriesNextReleaseTime(s){
 }
 
 function seriesStatus(s){
+  if(s.dnf) return {text: "DNF", cls: "dnf"};
   const caughtUp = seriesIsCaughtUp(s);
   if(caughtUp && s.status === "complete") return {text: "Series Complete", cls: "complete"};
   if(caughtUp) return {text: "Caught Up", cls: "caughtup"};
@@ -991,7 +993,7 @@ function seriesStatus(s){
    same visual language as a genre shelf but the top-left tag shows
    completion status instead of genre, and the count badge is always
    read/total (not just when partially read). */
-const SERIES_STATUS_RANK = {progress: 0, caughtup: 1, complete: 2};
+const SERIES_STATUS_RANK = {progress: 0, caughtup: 1, complete: 2, dnf: 3};
 
 function renderSeriesGrid(){
   const term = searchTerm;

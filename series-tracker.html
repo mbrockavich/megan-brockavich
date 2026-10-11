@@ -152,11 +152,7 @@
   .series-status.progress{ background: var(--accent-soft); color: var(--accent); }
   .series-status.caughtup{ background: var(--sage-soft); color: var(--sage); }
   .series-status.complete{ background: var(--surface-alt); color: var(--ink-soft); }
-  .series-active-badge{
-    display:inline-block; margin-left:8px; font-size: 10px; font-weight:700;
-    letter-spacing:0.02em; padding: 2px 8px; border-radius: 5px;
-    background: rgba(107,122,161,0.12); color: var(--slate);
-  }
+  .series-status.dnf{ background: var(--surface-alt); color: var(--ink-faint); text-decoration: line-through; }
 
   .series-author{ font-size: 12.5px; color: var(--ink-soft); margin-bottom: 16px; }
 
@@ -222,6 +218,8 @@
         <option value="author">Author (A–Z)</option>
         <option value="rating">Highest Rated</option>
         <option value="mostRead">Most Books Read</option>
+        <option value="fewestLeft">Fewest Books Left</option>
+        <option value="mostLeft">Most Books Left</option>
       </select>
     </div>
   </div>
@@ -260,6 +258,7 @@ function seriesIsCaughtUp(s){
 }
 
 function seriesStatus(s){
+  if(s.dnf) return {text: "DNF", cls: "dnf"};
   const caughtUp = seriesIsCaughtUp(s);
   if(caughtUp && s.status === "complete") return {text: "Series Complete", cls: "complete"};
   if(caughtUp) return {text: "Caught Up", cls: "caughtup"};
@@ -291,7 +290,7 @@ function seriesLastReadTime(s){
   return max;
 }
 
-const SERIES_STATUS_RANK = {progress: 0, caughtup: 1, complete: 2};
+const SERIES_STATUS_RANK = {progress: 0, caughtup: 1, complete: 2, dnf: 3};
 
 /* Average rating across every rated book in the series (not just the
    released-and-unread split above) — used only for the "Highest Rated"
@@ -303,15 +302,15 @@ function seriesAvgRating(s){
 
 /* ---------------- hero + stats ---------------- */
 let totalReleased = 0, totalRead = 0;
-let progressCount = 0, caughtUpCount = 0, completeCount = 0, activelyReadingCount = 0;
+let progressCount = 0, caughtUpCount = 0, completeCount = 0, dnfCount = 0, dnfUnread = 0;
 SERIES.forEach(s => {
   totalReleased += seriesReleased(s).length;
   totalRead += seriesReadCount(s);
   const cls = seriesStatus(s).cls;
   if(cls === "progress") progressCount++;
   else if(cls === "caughtup") caughtUpCount++;
+  else if(cls === "dnf"){ dnfCount++; dnfUnread += seriesBooksRemaining(s); }
   else completeCount++;
-  if(s.activelyReading) activelyReadingCount++;
 });
 
 document.getElementById("heroSub").textContent =
@@ -325,9 +324,8 @@ function renderStats(){
   const stats = [
     {v: SERIES.length, l: "Series Tracked"},
     {v: totalRead, l: "Books Read"},
-    {v: totalReleased - totalRead, l: "Books To Go"},
-    {v: caughtUpCount + completeCount, l: "Caught Up"},
-    {v: activelyReadingCount, l: "Actively Working On"}
+    {v: totalReleased - totalRead - dnfUnread, l: "Books To Go"},
+    {v: caughtUpCount + completeCount, l: "Caught Up"}
   ];
   statsStrip.innerHTML = stats.map(s => `<div class="stat"><div class="v">${s.v}</div><div class="l">${s.l}</div></div>`).join("");
 }
@@ -337,6 +335,14 @@ renderStats();
 let activeStatus = "All";
 let searchTerm = "";
 let sortKey = "default";
+/* Series with nothing left to read, and DNF series, sink to the bottom in
+   both directions so the sort only ranks series you could still pick up. */
+function booksLeftCompare(a, b, dir){
+  const left = s => (s.dnf || seriesBooksRemaining(s) === 0) ? null : seriesBooksRemaining(s);
+  const x = left(a), y = left(b);
+  if(x == null || y == null) return (x == null) - (y == null) || a.name.localeCompare(b.name);
+  return dir * (x - y) || a.name.localeCompare(b.name);
+}
 const SERIES_SORTERS = {
   // null falls through to renderSeries()'s existing status-tiered sort
   default: null,
@@ -344,16 +350,18 @@ const SERIES_SORTERS = {
   author: (a, b) => a.author.localeCompare(b.author) || a.name.localeCompare(b.name),
   rating: (a, b) => seriesAvgRating(b) - seriesAvgRating(a) || a.name.localeCompare(b.name),
   mostRead: (a, b) => seriesReadCount(b) - seriesReadCount(a) || a.name.localeCompare(b.name),
+  fewestLeft: (a, b) => booksLeftCompare(a, b, 1),
+  mostLeft: (a, b) => booksLeftCompare(a, b, -1),
 };
 
 function renderStatusPills(){
   const container = document.getElementById("statusPills");
   const defs = [
     {key: "All", label: "All", count: SERIES.length},
-    {key: "active", label: "🎯 Actively Working On", count: activelyReadingCount},
     {key: "progress", label: "📖 In Progress", count: progressCount},
     {key: "caughtup", label: "✅ Caught Up", count: caughtUpCount},
-    {key: "complete", label: "🏁 Series Complete", count: completeCount}
+    {key: "complete", label: "🏁 Series Complete", count: completeCount},
+    {key: "dnf", label: "🚫 DNF", count: dnfCount}
   ];
   container.innerHTML = "";
   defs.forEach(d => {
@@ -413,8 +421,7 @@ function renderSeries(){
   const term = searchTerm;
   const filtered = SERIES.filter(s => {
     if(term && !s.name.toLowerCase().includes(term) && !s.author.toLowerCase().includes(term)) return false;
-    if(activeStatus === "active"){ if(!s.activelyReading) return false; }
-    else if(activeStatus !== "All" && seriesStatus(s).cls !== activeStatus) return false;
+    if(activeStatus !== "All" && seriesStatus(s).cls !== activeStatus) return false;
     return true;
   }).sort(SERIES_SORTERS[sortKey] || ((a, b) => {
     const clsA = seriesStatus(a).cls, clsB = seriesStatus(b).cls;
@@ -435,7 +442,7 @@ function renderSeries(){
     return `
       <div class="card series-card">
         <div class="series-head">
-          <div class="series-name">${s.name}<span class="series-status ${status.cls}">${status.text}</span>${s.activelyReading ? `<span class="series-active-badge">🎯 Actively Working On</span>` : ""}</div>
+          <div class="series-name">${s.name}<span class="series-status ${status.cls}">${status.text}</span></div>
           <div class="series-progress">${read} / ${released.length} read</div>
         </div>
         <div class="series-author">${s.author}</div>
