@@ -131,8 +131,13 @@
   .search-input::placeholder{ color: var(--ink-faint); }
   .search-input:focus{ border-color: var(--accent); }
   .filter-selects{ display:flex; gap: 8px; flex-wrap:wrap; }
+  .filter-field{ flex: 1 1 140px; display:flex; flex-direction:column; gap:4px; min-width:0; }
+  .filter-field > label{
+    font-size: 11px; font-weight:600; letter-spacing:.06em; text-transform:uppercase;
+    color: var(--ink-soft);
+  }
   .filter-select{
-    flex: 1 1 180px; padding: 10px 14px; border: 1px solid var(--border-strong);
+    width:100%; padding: 10px 14px; border: 1px solid var(--border-strong);
     border-radius: 8px; font-family:'Inter', sans-serif; font-size: 14px; font-weight:500;
     background: var(--surface); color: var(--ink); cursor:pointer;
   }
@@ -142,7 +147,8 @@
     .filter-bar{ padding: 11px 0 11px; }
     .search-input{ padding: 13px 14px; margin-bottom: 9px; font-size: 16px; }
     .filter-selects{ flex-direction:column; }
-    .filter-select{ flex: 0 0 auto; width:100%; font-size: 16px; padding: 12px 14px; }
+    .filter-field{ flex: 0 0 auto; }
+    .filter-select{ font-size: 16px; padding: 12px 14px; }
   }
 
   /* fade mask hints that the favorites carousel has more content
@@ -486,15 +492,28 @@
   <div class="filter-bar-inner">
     <input type="text" class="search-input" id="searchInput" placeholder="Search by title or author...">
     <div class="filter-selects">
-      <select class="filter-select" id="genreSelect" aria-label="Filter by genre"></select>
-      <select class="filter-select" id="formatSelect" aria-label="Filter by format"></select>
-      <select class="filter-select" id="sortSelect" aria-label="Sort by">
-        <option value="author">Sort: Author (A–Z)</option>
-        <option value="title">Sort: Title (A–Z)</option>
-        <option value="rating">Sort: Highest Rated</option>
-        <option value="dateRead">Sort: Most Recently Read</option>
-        <option value="pubYear">Sort: Publish Date (Newest)</option>
-      </select>
+      <div class="filter-field">
+        <label for="genreSelect">Show</label>
+        <select class="filter-select" id="genreSelect"></select>
+      </div>
+      <div class="filter-field" id="formatField">
+        <label for="formatSelect">Format</label>
+        <select class="filter-select" id="formatSelect"></select>
+      </div>
+      <div class="filter-field" id="sortField">
+        <label for="sortSelect">Sort by</label>
+        <select class="filter-select" id="sortSelect">
+          <option value="author">Author</option>
+          <option value="title">Title</option>
+          <option value="rating">Rating</option>
+          <option value="dateRead">Date read</option>
+          <option value="pubYear">Publish date</option>
+        </select>
+      </div>
+      <div class="filter-field" id="orderField">
+        <label for="orderSelect">Order</label>
+        <select class="filter-select" id="orderSelect"></select>
+      </div>
     </div>
   </div>
 </div>
@@ -651,18 +670,30 @@ const seriesByName = new Map(SERIES.map(s => [s.name, s]));
    full comparator (with its own tiebreaks) so the grid order is stable
    regardless of which one's active. Separate from ALL_BOOKS, which stays
    sorted by date-read for the stats strip's "oldest/newest". */
+const SORT_OPTIONS = {
+  author:   { orders: [["asc","A → Z"], ["desc","Z → A"]], dflt: "asc" },
+  title:    { orders: [["asc","A → Z"], ["desc","Z → A"]], dflt: "asc" },
+  rating:   { orders: [["desc","Highest first"], ["asc","Lowest first"]], dflt: "desc" },
+  dateRead: { orders: [["desc","Newest first"], ["asc","Oldest first"]], dflt: "desc" },
+  pubYear:  { orders: [["desc","Newest first"], ["asc","Oldest first"]], dflt: "desc" },
+};
+/* Books missing a rating / publish year always sink to the bottom, in
+   either direction. */
+const missingLast = (x, y, dir, fn) =>
+  x == null || y == null ? (x == null) - (y == null) : dir * fn(x, y);
 const MASTER_SORTERS = {
-  author: (a, b) => a.author.localeCompare(b.author)
+  author: (a, b, d) => d * a.author.localeCompare(b.author)
     || (a.pubYear ?? Infinity) - (b.pubYear ?? Infinity)
     || a.title.localeCompare(b.title),
-  title: (a, b) => a.title.localeCompare(b.title),
-  rating: (a, b) => (b.rating ?? -1) - (a.rating ?? -1)
+  title: (a, b, d) => d * a.title.localeCompare(b.title),
+  rating: (a, b, d) => missingLast(a.rating, b.rating, d, (x, y) => x - y)
     || a.title.localeCompare(b.title),
-  dateRead: (a, b) => b.sortTime - a.sortTime,
-  pubYear: (a, b) => (b.pubYear ?? -Infinity) - (a.pubYear ?? -Infinity)
+  dateRead: (a, b, d) => d * (a.sortTime - b.sortTime),
+  pubYear: (a, b, d) => missingLast(a.pubYear, b.pubYear, d, (x, y) => x - y)
     || a.title.localeCompare(b.title),
 };
 let sortKey = "author";
+let sortDir = "asc";
 
 /* ---------------- hero + footer ---------------- */
 const genreCounts = {};
@@ -820,7 +851,7 @@ function addOption(select, value, label, active){
   select.appendChild(opt);
 }
 function renderFormatPills(){
-  if(!hasOwnedLookup){ formatSelect.style.display = "none"; return; }
+  if(!hasOwnedLookup){ document.getElementById("formatField").style.display = "none"; return; }
   formatSelect.innerHTML = "";
   addOption(formatSelect, "All", "All Formats", activeFormat === "All");
   ["kindle","audible","physical"].forEach(fmt => {
@@ -856,10 +887,20 @@ if(hashSlug === "series") activeGenre = "Series";
 else if(savedGenre) activeGenre = savedGenre;
 if(FORMAT_INFO[hashSlug]) activeFormat = hashSlug;
 else if(savedFormat) activeFormat = savedFormat;
+let savedOrder = null;
+try{ savedOrder = localStorage.getItem("sortDir"); }catch(e){}
 if(savedSort && MASTER_SORTERS[savedSort]){
   sortKey = savedSort;
+  sortDir = SORT_OPTIONS[sortKey].dflt;
   document.getElementById("sortSelect").value = savedSort;
 }
+function renderOrderOptions(){
+  orderSelect.innerHTML = "";
+  SORT_OPTIONS[sortKey].orders.forEach(([v, label]) => addOption(orderSelect, v, label, v === sortDir));
+}
+const orderSelect = document.getElementById("orderSelect");
+if(SORT_OPTIONS[sortKey].orders.some(([v]) => v === savedOrder)) sortDir = savedOrder;
+renderOrderOptions();
 renderPills();
 renderFormatPills();
 renderStats();
@@ -872,7 +913,14 @@ document.getElementById("searchInput").addEventListener("input", (e) => {
 const sortSelect = document.getElementById("sortSelect");
 sortSelect.addEventListener("change", (e) => {
   sortKey = e.target.value;
-  try{ localStorage.setItem("sortKey", sortKey); }catch(e){}
+  sortDir = SORT_OPTIONS[sortKey].dflt;
+  try{ localStorage.setItem("sortKey", sortKey); localStorage.setItem("sortDir", sortDir); }catch(e){}
+  renderOrderOptions();
+  renderShelf();
+});
+orderSelect.addEventListener("change", (e) => {
+  sortDir = e.target.value;
+  try{ localStorage.setItem("sortDir", sortDir); }catch(e){}
   renderShelf();
 });
 
@@ -993,13 +1041,15 @@ function renderSeriesGrid(){
 }
 
 function renderShelf(){
-  sortSelect.style.display = activeGenre === "Series" ? "none" : "";
+  const hideSort = activeGenre === "Series";
+  document.getElementById("sortField").style.display = hideSort ? "none" : "";
+  document.getElementById("orderField").style.display = hideSort ? "none" : "";
   if(activeGenre === "Series"){
     renderSeriesGrid();
     return;
   }
 
-  const masterSorted = [...ALL_BOOKS].sort(MASTER_SORTERS[sortKey]);
+  const masterSorted = [...ALL_BOOKS].sort((a, b) => MASTER_SORTERS[sortKey](a, b, sortDir === "asc" ? 1 : -1));
   const filtered = masterSorted.filter(b => {
     const genreMatch = matchesGenreFilter(b);
     const formatMatch = activeFormat === "All" || (hasOwnedLookup && findOwnedFormats(b.title).includes(activeFormat));
