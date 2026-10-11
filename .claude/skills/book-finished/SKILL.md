@@ -6,7 +6,7 @@ description: Log a book Megan just finished reading into her personal reading-tr
 # Logging a finished book
 
 This repo (`megan-brockavich`) is Megan's personal reading tracker. Every page —
-2026 stats, the master list, series tracker, author tracker, book club — reads
+2026 stats, the master list, series tracker, book club — reads
 from the same handful of data files, so finishing a book is really just one
 good edit to `reading-data.js` (plus, sometimes, `owned-books-data.js`) that
 then shows up everywhere automatically.
