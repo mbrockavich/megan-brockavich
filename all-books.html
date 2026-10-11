@@ -140,7 +140,15 @@
     width:100%; padding: 10px 14px; border: 1px solid var(--border-strong);
     border-radius: 8px; font-family:'Inter', sans-serif; font-size: 14px; font-weight:500;
     background: var(--surface); color: var(--ink); cursor:pointer;
+    -webkit-appearance:none; appearance:none; padding-right: 38px;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1.5l5 5 5-5' fill='none' stroke='%237a7160' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+    background-repeat:no-repeat; background-position: right 14px center; background-size: 12px 8px;
+    text-overflow: ellipsis;
   }
+  .sort-field{ flex: 2 1 300px; }
+  .sort-pair{ display:flex; gap:6px; }
+  .sort-pair .filter-select:first-child{ flex: 1 1 50%; min-width:0; }
+  .sort-pair .filter-select:last-child{ flex: 1 1 50%; min-width:0; }
   .filter-select:focus{ border-color: var(--accent); outline:none; }
 
   @media (max-width: 700px){
@@ -500,19 +508,19 @@
         <label for="formatSelect">Format</label>
         <select class="filter-select" id="formatSelect"></select>
       </div>
-      <div class="filter-field" id="sortField">
-        <label for="sortSelect">Sort by</label>
-        <select class="filter-select" id="sortSelect">
-          <option value="author">Author</option>
-          <option value="title">Title</option>
-          <option value="rating">Rating</option>
-          <option value="dateRead">Date read</option>
-          <option value="pubYear">Publish date</option>
-        </select>
+      <div class="filter-field sort-field">
+        <label for="sort0Key">Sort by</label>
+        <div class="sort-pair">
+          <select class="filter-select" id="sort0Key"></select>
+          <select class="filter-select" id="sort0Dir" aria-label="Sort order"></select>
+        </div>
       </div>
-      <div class="filter-field" id="orderField">
-        <label for="orderSelect">Order</label>
-        <select class="filter-select" id="orderSelect"></select>
+      <div class="filter-field sort-field">
+        <label for="sort1Key">Then by</label>
+        <div class="sort-pair">
+          <select class="filter-select" id="sort1Key"></select>
+          <select class="filter-select" id="sort1Dir" aria-label="Then sort order"></select>
+        </div>
       </div>
     </div>
   </div>
@@ -671,29 +679,35 @@ const seriesByName = new Map(SERIES.map(s => [s.name, s]));
    regardless of which one's active. Separate from ALL_BOOKS, which stays
    sorted by date-read for the stats strip's "oldest/newest". */
 const SORT_OPTIONS = {
-  author:   { orders: [["asc","A → Z"], ["desc","Z → A"]], dflt: "asc" },
-  title:    { orders: [["asc","A → Z"], ["desc","Z → A"]], dflt: "asc" },
-  rating:   { orders: [["desc","Highest first"], ["asc","Lowest first"]], dflt: "desc" },
-  dateRead: { orders: [["desc","Newest first"], ["asc","Oldest first"]], dflt: "desc" },
-  pubYear:  { orders: [["desc","Newest first"], ["asc","Oldest first"]], dflt: "desc" },
+  author:   { label: "Author",       orders: [["asc","A → Z"], ["desc","Z → A"]], dflt: "asc" },
+  title:    { label: "Title",        orders: [["asc","A → Z"], ["desc","Z → A"]], dflt: "asc" },
+  rating:   { label: "Rating",       orders: [["desc","Highest first"], ["asc","Lowest first"]], dflt: "desc" },
+  dateRead: { label: "Date read",    orders: [["desc","Newest first"], ["asc","Oldest first"]], dflt: "desc" },
+  pubYear:  { label: "Publish date", orders: [["asc","Oldest first"], ["desc","Newest first"]], dflt: "asc" },
 };
 /* Books missing a rating / publish year always sink to the bottom, in
    either direction. */
 const missingLast = (x, y, dir, fn) =>
   x == null || y == null ? (x == null) - (y == null) : dir * fn(x, y);
+/* Pure single-key comparators (0 on a tie) so they can be chained. */
 const MASTER_SORTERS = {
-  author: (a, b, d) => d * a.author.localeCompare(b.author)
-    || (a.pubYear ?? Infinity) - (b.pubYear ?? Infinity)
-    || a.title.localeCompare(b.title),
+  author: (a, b, d) => d * a.author.localeCompare(b.author),
   title: (a, b, d) => d * a.title.localeCompare(b.title),
-  rating: (a, b, d) => missingLast(a.rating, b.rating, d, (x, y) => x - y)
-    || a.title.localeCompare(b.title),
+  rating: (a, b, d) => missingLast(a.rating, b.rating, d, (x, y) => x - y),
   dateRead: (a, b, d) => d * (a.sortTime - b.sortTime),
-  pubYear: (a, b, d) => missingLast(a.pubYear, b.pubYear, d, (x, y) => x - y)
-    || a.title.localeCompare(b.title),
+  pubYear: (a, b, d) => missingLast(a.pubYear, b.pubYear, d, (x, y) => x - y),
 };
-let sortKey = "author";
-let sortDir = "asc";
+/* Up to two chained sort levels; level 2 may be "none". Title is the
+   final tiebreak so the order is always stable. */
+let sorts = [{ key: "author", dir: "asc" }, { key: "pubYear", dir: "asc" }];
+function compareBooks(a, b){
+  for(const s of sorts){
+    if(!s.key) continue;
+    const r = MASTER_SORTERS[s.key](a, b, s.dir === "asc" ? 1 : -1);
+    if(r) return r;
+  }
+  return a.title.localeCompare(b.title);
+}
 
 /* ---------------- hero + footer ---------------- */
 const genreCounts = {};
@@ -880,27 +894,29 @@ let savedGenre = null;
 try{ savedGenre = localStorage.getItem("activeGenre"); }catch(e){}
 let savedFormat = null;
 try{ savedFormat = localStorage.getItem("activeFormat"); }catch(e){}
-let savedSort = null;
-try{ savedSort = localStorage.getItem("sortKey"); }catch(e){}
 const hashSlug = location.hash.replace("#", "");
 if(hashSlug === "series") activeGenre = "Series";
 else if(savedGenre) activeGenre = savedGenre;
 if(FORMAT_INFO[hashSlug]) activeFormat = hashSlug;
 else if(savedFormat) activeFormat = savedFormat;
-let savedOrder = null;
-try{ savedOrder = localStorage.getItem("sortDir"); }catch(e){}
-if(savedSort && MASTER_SORTERS[savedSort]){
-  sortKey = savedSort;
-  sortDir = SORT_OPTIONS[sortKey].dflt;
-  document.getElementById("sortSelect").value = savedSort;
+try{
+  const saved = JSON.parse(localStorage.getItem("sorts"));
+  if(Array.isArray(saved) && saved.length === 2 && saved.every(x =>
+    (x.key === "" || SORT_OPTIONS[x.key]) && (x.key === "" || SORT_OPTIONS[x.key].orders.some(([v]) => v === x.dir)))) sorts = saved;
+}catch(e){}
+function renderSortControls(){
+  sorts.forEach((s, i) => {
+    const keySel = document.getElementById(`sort${i}Key`);
+    const dirSel = document.getElementById(`sort${i}Dir`);
+    keySel.innerHTML = "";
+    if(i > 0) addOption(keySel, "", "None", !s.key);
+    Object.entries(SORT_OPTIONS).forEach(([k, o]) => addOption(keySel, k, o.label, s.key === k));
+    dirSel.innerHTML = "";
+    dirSel.disabled = !s.key;
+    if(s.key) SORT_OPTIONS[s.key].orders.forEach(([v, label]) => addOption(dirSel, v, label, v === s.dir));
+  });
 }
-function renderOrderOptions(){
-  orderSelect.innerHTML = "";
-  SORT_OPTIONS[sortKey].orders.forEach(([v, label]) => addOption(orderSelect, v, label, v === sortDir));
-}
-const orderSelect = document.getElementById("orderSelect");
-if(SORT_OPTIONS[sortKey].orders.some(([v]) => v === savedOrder)) sortDir = savedOrder;
-renderOrderOptions();
+renderSortControls();
 renderPills();
 renderFormatPills();
 renderStats();
@@ -910,18 +926,17 @@ document.getElementById("searchInput").addEventListener("input", (e) => {
   renderShelf();
 });
 
-const sortSelect = document.getElementById("sortSelect");
-sortSelect.addEventListener("change", (e) => {
-  sortKey = e.target.value;
-  sortDir = SORT_OPTIONS[sortKey].dflt;
-  try{ localStorage.setItem("sortKey", sortKey); localStorage.setItem("sortDir", sortDir); }catch(e){}
-  renderOrderOptions();
-  renderShelf();
-});
-orderSelect.addEventListener("change", (e) => {
-  sortDir = e.target.value;
-  try{ localStorage.setItem("sortDir", sortDir); }catch(e){}
-  renderShelf();
+function saveSorts(){ try{ localStorage.setItem("sorts", JSON.stringify(sorts)); }catch(e){} }
+sorts.forEach((s, i) => {
+  document.getElementById(`sort${i}Key`).addEventListener("change", (e) => {
+    s.key = e.target.value;
+    if(s.key) s.dir = SORT_OPTIONS[s.key].dflt;
+    saveSorts(); renderSortControls(); renderShelf();
+  });
+  document.getElementById(`sort${i}Dir`).addEventListener("change", (e) => {
+    s.dir = e.target.value;
+    saveSorts(); renderShelf();
+  });
 });
 
 /* ---------------- master catalog list ---------------- */
@@ -1042,14 +1057,13 @@ function renderSeriesGrid(){
 
 function renderShelf(){
   const hideSort = activeGenre === "Series";
-  document.getElementById("sortField").style.display = hideSort ? "none" : "";
-  document.getElementById("orderField").style.display = hideSort ? "none" : "";
+  document.querySelectorAll(".sort-field").forEach(f => { f.style.display = hideSort ? "none" : ""; });
   if(activeGenre === "Series"){
     renderSeriesGrid();
     return;
   }
 
-  const masterSorted = [...ALL_BOOKS].sort((a, b) => MASTER_SORTERS[sortKey](a, b, sortDir === "asc" ? 1 : -1));
+  const masterSorted = [...ALL_BOOKS].sort(compareBooks);
   const filtered = masterSorted.filter(b => {
     const genreMatch = matchesGenreFilter(b);
     const formatMatch = activeFormat === "All" || (hasOwnedLookup && findOwnedFormats(b.title).includes(activeFormat));
