@@ -449,6 +449,7 @@
   .owned-pill.k{ background:#7c9473; }
   .owned-pill.a{ background:#b5726f; }
   .owned-pill.p{ background:#b5502f; }
+  .owned-pill.u{ background:#6b7aa1; }
   .modal-note2{ font-size:12.5px; font-style:italic; color:var(--ink-soft); line-height:1.5; border-left:2px solid var(--accent); padding-left:10px; text-align:left; white-space:pre-line; }
 
   footer.page-foot{
@@ -585,6 +586,7 @@
 <script src="owned-books-data.js"></script>
 <script>
 /* books, pastReads, SERIES, findRead, formatRating come from reading-data.js */
+
 if(typeof RATING_LEGEND !== "undefined"){
   document.getElementById("ratingKeyRows").innerHTML = RATING_LEGEND.map(r => {
     const dim = 5 - r.n;
@@ -845,6 +847,7 @@ const FORMAT_INFO = {
   kindle: {emoji:"📱", label:"Kindle"},
   audible: {emoji:"🎧", label:"Audible"},
   physical: {emoji:"📚", label:"Physical"},
+  kindleUnlimited: {emoji:"🔄", label:"Kindle Unlimited"},
 };
 const formatSelect = document.getElementById("formatSelect");
 formatSelect.addEventListener("change", (e) => selectFormat(e.target.value));
@@ -869,7 +872,7 @@ function renderFormatPills(){
   if(!hasOwnedLookup){ document.getElementById("formatField").style.display = "none"; return; }
   formatSelect.innerHTML = "";
   addOption(formatSelect, "All", "All Formats", activeFormat === "All");
-  ["kindle","audible","physical"].forEach(fmt => {
+  ["kindle","audible","physical","kindleUnlimited"].forEach(fmt => {
     const info = FORMAT_INFO[fmt];
     addOption(formatSelect, fmt, `${info.emoji} ${info.label} (${ownedFormatCount(fmt)})`, activeFormat === fmt);
   });
@@ -1489,6 +1492,7 @@ const OWNED_PILL_INFO = {
   kindle: {cls: "k", label: "📱 Kindle"},
   audible: {cls: "a", label: "🎧 Audible"},
   physical: {cls: "p", label: "📚 Physical"},
+  kindleUnlimited: {cls: "u", label: "🔄 Kindle Unlimited"},
 };
 
 /* eyebrow: optional badge text above the title (e.g. "Favorite"). Pass
