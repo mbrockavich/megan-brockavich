@@ -191,6 +191,7 @@ const OWNED_BOOKS = {
     {title:"The Eye of the Bedlam Bride", author:"Matt Dinniman", cover:"https://covers.openlibrary.org/b/id/15231488-L.jpg"},
     {title:"This Inevitable Ruin", author:"Matt Dinniman"},
     {title:"A Parade of Horribles", author:"Matt Dinniman"},
+    {title:"Cryptid Club", author:"Sarah Andersen", cover:"https://covers.openlibrary.org/b/isbn/9781524875541-L.jpg"},
   ],
 };
 
