@@ -38,6 +38,7 @@ const OWNED_BOOKS = {
     {title:"Butcher & Blackbird", author:"Brynne Weaver", cover:"https://covers.openlibrary.org/b/isbn/9780349441566-L.jpg"},
     {title:"Actually, Nevermind", author:"Taylor Tomlinson", cover:"actually-nevermind/actually-nevermind-cover.jpg"},
     {title:"Threshing Day", author:"Rebecca Yarros", cover:"threshing-day/threshing-day-cover.jpg"},
+    {title:"Misquoting Jesus: The Story Behind Who Changed the Bible and Why", author:"Bart D. Ehrman", cover:"https://covers.openlibrary.org/b/isbn/9780060859510-L.jpg"},
   ],
   audible: [
     {title:"And Now, Back to You", author:"B.K. Borison", narrator:"", cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1748482477i/217513554.jpg"},
@@ -57,6 +58,7 @@ const OWNED_BOOKS = {
     {title:"Onyx Storm", author:"Rebecca Yarros", cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1720446381i/209668781.jpg"},
     {title:"Actually, Nevermind", author:"Taylor Tomlinson", cover:"actually-nevermind/actually-nevermind-cover.jpg"},
     {title:"Threshing Day", author:"Rebecca Yarros", cover:"threshing-day/threshing-day-cover.jpg"},
+    {title:"Misquoting Jesus: The Story Behind Who Changed the Bible and Why", author:"Bart D. Ehrman", cover:"https://covers.openlibrary.org/b/isbn/9780060859510-L.jpg", spineTitle:"Misquoting Jesus"},
     {title:"Throne of Glass", author:"Sarah J. Maas", cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1673566495i/76703559.jpg"},
     {title:"Crown of Midnight", author:"Sarah J. Maas", cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1673566594i/76705490.jpg"},
     {title:"Heir of Fire", author:"Sarah J. Maas", cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1673566654i/76706470.jpg"},
