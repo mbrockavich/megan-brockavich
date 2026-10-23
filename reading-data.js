@@ -461,7 +461,7 @@ const SERIES = [
     status: "ongoing",
     books: [
       {title:"Dungeon Crawler Carl, Vol. 1 (Graphic Novel)"},
-      {title:"Dungeon Crawler Carl, Vol. 2 (Graphic Novel)", comingSoon:"October 2026"},
+      {title:"Dungeon Crawler Carl, Vol. 2 (Graphic Novel)", pubDate:"October 2026"},
       {title:"Dungeon Crawler Carl, Vol. 3 (Graphic Novel)", comingSoon:"March 2027"}
     ]
   },
@@ -624,7 +624,7 @@ const SERIES = [
       {title:"Beyond the Veil", number:"8.5"},
       {title:"Live and Let Lionel", number:"Bonus"},
       {title:"Restless Stars", number:"9"},
-      {title:"On the Cursed Day of Christmas", number:"10", comingSoon:"October 2026"}
+      {title:"On the Cursed Day of Christmas", number:"10", pubDate:"October 2026"}
     ]
   },
   {
@@ -956,7 +956,7 @@ const SERIES = [
     books: [
       {title:"Ninth House"},
       {title:"Hell Bent"},
-      {title:"Dead Beat", comingSoon:"September 2026"}
+      {title:"Dead Beat", pubDate:"September 2026"}
     ]
   },
   {
@@ -1056,7 +1056,7 @@ const SERIES = [
       {title:"Once Upon a Broken Heart"},
       {title:"The Ballad of Never After"},
       {title:"A Curse for True Love"},
-      {title:"The Mirror of Infinite Endings", comingSoon:"September 2026"}
+      {title:"The Mirror of Infinite Endings", pubDate:"September 2026"}
     ]
   },
   {
