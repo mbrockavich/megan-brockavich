@@ -185,6 +185,7 @@ const OWNED_BOOKS = {
     {title:"Restless Stars", author:"Caroline Peckham & Susanne Valenti", cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1711995687i/198954263.jpg"},
   ],
   kindleUnlimited: [
+    {title:"Feathers So Vicious", author:"Liv Zander", cover:"https://covers.openlibrary.org/b/isbn/9781955871082-L.jpg"},
     {title:"Dungeon Crawler Carl", author:"Matt Dinniman", cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1715780755i/211721806.jpg"},
     {title:"Carl's Doomsday Scenario", author:"Matt Dinniman", cover:"https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1719949673i/212393364._SY180_.jpg"},
     {title:"The Dungeon Anarchist's Cookbook", author:"Matt Dinniman", cover:"dungeon-crawler-carl/dungeon-anarchists-cookbook-cover.jpg"},
