@@ -647,6 +647,7 @@ const SERIES = [
       {title:"Kingdom of Claw"},
       {title:"Roots of Darkness"},
       {title:"Dawn of the North"},
+      {title:"Embers of Chaos", comingSoon:"May 2027"},
       {title:"The Ashen Book 5", comingSoon:true}
     ]
   },
@@ -678,7 +679,7 @@ const SERIES = [
       {title:"Iron Gold"},
       {title:"Dark Age"},
       {title:"Light Bringer", cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1667655583i/29227774.jpg"},
-      {title:"Red God", comingSoon:"Late 2026 (estimate)"}
+      {title:"Red God", comingSoon:true}
     ]
   },
   {
