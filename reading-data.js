@@ -764,6 +764,7 @@ const SERIES = [
     name: "Skye O'Shea Paranormal Cozy Mystery",
     author: "Rowan Dillon",
     status: "ongoing",
+    dnf: true,
     books: [
       {title:"A Mystical Legacy", number:"0.5"},
       {title:"Bogs, Brews, and Banshees", number:"1", cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1699539434i/201899519.jpg", pubDate:"March 2024"},
@@ -835,6 +836,7 @@ const SERIES = [
     name: "The Mortal Instruments",
     author: "Cassandra Clare",
     status: "complete",
+    dnf: true,
     books: [
       {title:"City of Bones"},
       {title:"City of Ashes"},
@@ -931,6 +933,7 @@ const SERIES = [
     name: "Bloody Jack",
     author: "L.A. Meyer",
     status: "ongoing",
+    dnf: true,
     books: [
       {title:"Bloody Jack: Being an Account of the Curious Adventures of Mary \"Jacky\" Faber, Ship's Boy"},
       {title:"Curse of the Blue Tattoo: Being an Account of the Misadventures of Jacky Faber, Midshipman and Fine Lady"},
@@ -1130,6 +1133,7 @@ const SERIES = [
     name: "The Inheritance Cycle",
     author: "Christopher Paolini",
     status: "ongoing",
+    dnf: true,
     books: [
       {title:"Eragon"},
       {title:"Eldest", pubDate:"August 2005"},
@@ -1144,6 +1148,7 @@ const SERIES = [
     name: "His Dark Materials",
     author: "Philip Pullman",
     status: "complete",
+    dnf: true,
     books: [
       {title:"Once Upon a Time in the North", number:"0.5", pubDate:"April 2008"},
       {title:"The Collectors", number:"0.6", pubDate:"September 2022"},
@@ -1159,6 +1164,7 @@ const SERIES = [
     name: "The Giver Quartet",
     author: "Lois Lowry",
     status: "complete",
+    dnf: true,
     books: [
       {title:"The Giver"},
       {title:"Gathering Blue", pubDate:"September 2000"},
