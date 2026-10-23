@@ -432,7 +432,11 @@ function renderSeries(){
     return seriesLastReadTime(b) - seriesLastReadTime(a);
   }));
 
-  seriesCountEl.textContent = `Showing ${filtered.length} of ${SERIES.length} series`;
+  /* Unread books that are actually out right now, across whatever's showing.
+     DNF series don't count unless you're looking at the DNF filter (same
+     rule as the "Books To Go" stat up top). */
+  const unreadOut = filtered.reduce((sum, s) => sum + ((s.dnf && activeStatus !== "dnf") ? 0 : seriesBooksRemaining(s)), 0);
+  seriesCountEl.textContent = `Showing ${filtered.length} of ${SERIES.length} series · ${unreadOut} unread ${unreadOut === 1 ? "book" : "books"} out now`;
   noResults.style.display = filtered.length === 0 ? "block" : "none";
 
   seriesListEl.innerHTML = filtered.map(s => {
