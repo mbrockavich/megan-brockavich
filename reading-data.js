@@ -717,7 +717,6 @@ const SERIES = [
     name: "Court of Ravens",
     author: "Liv Zander",
     status: "complete",
-    activelyReading: true,
     books: [
       {title:"Feathers So Vicious"},
       {title:"Shadows So Cruel", pubDate:"2023", cover:"https://covers.openlibrary.org/b/isbn/9781955871136-L.jpg"}
