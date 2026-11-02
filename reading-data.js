@@ -519,6 +519,7 @@ const SERIES = [
     name: "A Court of Thorns and Roses",
     author: "Sarah J. Maas",
     status: "ongoing",
+    activelyReading: true,
     books: [
       {title:"A Court of Thorns and Roses"},
       {title:"A Court of Mist and Fury"},
