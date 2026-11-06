@@ -473,7 +473,6 @@ const SERIES = [
     name: "Lore Olympus",
     author: "Rachel Smythe",
     status: "ongoing",
-    activelyReading: true,
     books: [
       {title:"Lore Olympus: Volume One"},
       {title:"Lore Olympus: Volume Two", pubDate:"July 2022"},
@@ -520,7 +519,6 @@ const SERIES = [
     name: "A Court of Thorns and Roses",
     author: "Sarah J. Maas",
     status: "ongoing",
-    activelyReading: true,
     books: [
       {title:"A Court of Thorns and Roses"},
       {title:"A Court of Mist and Fury"},
