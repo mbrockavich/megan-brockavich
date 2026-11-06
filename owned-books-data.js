@@ -41,6 +41,7 @@ const OWNED_BOOKS = {
     {title:"Threshing Day", author:"Rebecca Yarros", cover:"threshing-day/threshing-day-cover.jpg"},
     {title:"Misquoting Jesus: The Story Behind Who Changed the Bible and Why", author:"Bart D. Ehrman", cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1407109431i/51364.jpg"},
     {title:"Save the Cat! Writes a Novel", author:"Jessica Brody", cover:"https://covers.openlibrary.org/b/isbn/9780399579745-L.jpg"},
+    {title:"Son of a Witch", author:"Gregory Maguire", cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1370992595i/13521.jpg"},
   ],
   audible: [
     {title:"A Court of Splintered Harmony", author:"Sarah J. Maas", narrator:"", cover:"https://covers.openlibrary.org/b/isbn/9781639739134-L.jpg"},
@@ -56,6 +57,7 @@ const OWNED_BOOKS = {
     {title:"Butcher & Blackbird", author:"Brynne Weaver", narrator:"", cover:"https://covers.openlibrary.org/b/isbn/9780349441566-L.jpg"},
     {title:"Actually, Nevermind", author:"Taylor Tomlinson", narrator:"Taylor Tomlinson", cover:"actually-nevermind/actually-nevermind-cover.jpg"},
     {title:"Save the Cat! Writes a Novel", author:"Jessica Brody", narrator:"", cover:"https://covers.openlibrary.org/b/isbn/9780399579745-L.jpg"},
+    {title:"Son of a Witch", author:"Gregory Maguire", narrator:"", cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1370992595i/13521.jpg"},
   ],
   physical: [
     {title:"Control Unleashed: Creating a Focused and Confident Dog", spineTitle:"Control Unleashed", author:"Leslie McDevitt", cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1349894884i/2101812.jpg"},
