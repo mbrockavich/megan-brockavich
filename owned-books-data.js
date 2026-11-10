@@ -4,7 +4,7 @@
    without being read yet, or read without being owned (library loans,
    borrowed copies, etc).
 
-   Used by the format filter (Kindle / Audible / Physical / Kindle Unlimited)
+   Used by the format filter (Kindle / Audible / Physical / Kindle+)
    on all-books.html, which also cross-references reading-data.js by title —
    if a book here has also been logged as read there, its rating and note
    show up automatically when you tap it. Nothing to do on this end for that
@@ -12,7 +12,7 @@
 
    kindleUnlimited is separate from kindle: kindle means she owns/bought the
    Kindle edition outright, kindleUnlimited means it's currently readable via
-   a Kindle Unlimited subscription (can disappear from KU later — just move
+   a Kindle+ subscription (can disappear from Kindle+ later — just move
    or remove the entry if that happens).
 
    Each entry needs at least a title. Everything else is optional but
@@ -209,7 +209,7 @@ const OWNED_BOOKS = {
 /* Looks a title up across all owned-format lists. Returns an array of
    format keys ("kindle","audible","physical","kindleUnlimited") the title
    appears in, in that order, or [] if it isn't owned/available in any
-   format. Powers the Kindle / Audible / Physical / Kindle Unlimited filter
+   format. Powers the Kindle / Audible / Physical / Kindle+ filter
    pills on all-books.html. */
 function findOwnedFormats(title) {
   return ["kindle", "audible", "physical", "kindleUnlimited"].filter(
