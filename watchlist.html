@@ -68,6 +68,9 @@
   .ph .t{ font-family:'Fraunces',serif; font-weight:700; font-size:8.5px; line-height:1.1; color:#fff; text-shadow:0 1px 5px rgba(0,0,0,.4); }
   .ph .a{ display:none; }
   @media (min-width:600px){ .ph .t{ font-size:12px; } .ph{ padding:8px; } }
+  .mosaic{ position:absolute; inset:0; display:grid; grid-template-columns:1fr 1fr; grid-auto-rows:1fr; gap:1px; }
+  .tile{ position:relative !important; inset:auto !important; overflow:hidden; }
+  .tile .ph .t{ display:none; }
   .more{ position:absolute; right:3px; bottom:3px; z-index:4; background:var(--gold); color:#2a1d05; font-size:10px; font-weight:800;
     border-radius:999px; padding:1px 6px; box-shadow:0 2px 6px rgba(0,0,0,.5); }
   .day.has.multi .hol{ bottom:auto; top:3px; left:auto; right:4px; width:auto; }
@@ -114,6 +117,8 @@
   .gr:hover{ background:rgba(240,192,96,.16); }
   .btn{ width:100%; margin-top:16px; font:inherit; font-weight:700; font-size:14px; padding:12px; border-radius:12px; cursor:pointer; border:1px solid var(--gold); background:var(--gold); color:#2a1d05; }
 
+  .diag{ margin:18px auto 0; max-width:540px; font-size:11px; color:var(--faint); }
+  .diag pre{ white-space:pre-wrap; background:rgba(255,255,255,.04); border-radius:8px; padding:10px; margin:8px 0 0; font-family:ui-monospace,monospace; }
   footer{ text-align:center; color:var(--faint); font-size:12px; line-height:1.7; margin:46px auto 0; max-width:540px; }
   .todaybtn{ position:fixed; right:14px; bottom:calc(16px + env(safe-area-inset-bottom)); z-index:20; font:inherit; font-size:12.5px; font-weight:700;
     background:var(--gold); color:#2a1d05; border:none; border-radius:999px; padding:10px 16px; cursor:pointer; box-shadow:0 8px 20px rgba(0,0,0,.5); }
@@ -132,6 +137,7 @@
   <div id="cal"></div>
   <div id="tba"></div>
   <footer id="foot"></footer>
+  <details class="diag"><summary>Cover diagnostics</summary><pre id="diag">...</pre></details>
 </div>
 <button class="todaybtn" id="todayBtn">Today</button>
 <div class="veil" id="veil"><div class="sheet" id="sheet"></div></div>
@@ -187,28 +193,45 @@ function srcList(b){const l=[];
 function isbn10(i13){ if(!/^978\d{10}$/.test(i13))return null; const d=i13.slice(3,12); let sum=0;
   for(let k=0;k<9;k++)sum+=(10-k)*+d[k]; const c=(11-sum%11)%11; return d+(c===10?"X":c); }
 function nextSrc(img){const l=JSON.parse(img.dataset.srcs||"[]");const i=+img.dataset.i+1;if(i<l.length){img.dataset.i=i;img.src=l[i];}else img.remove();}
+const coverLog={google:{ok:0,miss:0,err:{}},apple:{ok:0,miss:0,err:{}},openlib:{ok:0,miss:0,err:{}},img:"testing..."};
+const logErr=(src,e,status)=>{const k=status?("HTTP "+status):String(e&&e.message||e);coverLog[src].err[k]=(coverLog[src].err[k]||0)+1;renderDiag();};
 async function lookup(b){
   const last=b.author.split(" ").pop().replace(/[^\w]/g,"");
   const t=b.title.replace(/[:&].*$/,"").replace(/\(.*?\)/g,"").trim();
   try{
     const r=await fetch("https://www.googleapis.com/books/v1/volumes?maxResults=6&q="+encodeURIComponent(`intitle:${t} inauthor:${last}`));
     if(r.ok){const j=await r.json();const v=(j.items||[]).find(x=>x.volumeInfo&&x.volumeInfo.imageLinks);
-      if(v){const u=(v.volumeInfo.imageLinks.thumbnail||v.volumeInfo.imageLinks.smallThumbnail).replace("http://","https://").replace("&edge=curl","");return u+"&zoom=2";}}
-  }catch(e){}
+      if(v){coverLog.google.ok++;const u=(v.volumeInfo.imageLinks.thumbnail||v.volumeInfo.imageLinks.smallThumbnail).replace("http://","https://").replace("&edge=curl","");return u+"&zoom=2";}
+      coverLog.google.miss++;
+    }else logErr("google",0,r.status);
+  }catch(e){logErr("google",e);}
   try{   /* Apple Books lists preorders, so it often has covers the others don't yet */
     const r=await fetch("https://itunes.apple.com/search?"+new URLSearchParams({term:t+" "+b.author,media:"ebook",limit:"8"}));
     if(r.ok){
       const j=await r.json(), w=t.toLowerCase();
       const hit=(j.results||[]).find(x=>x.artworkUrl100&&(x.trackName||"").toLowerCase().includes(w.slice(0,18))&&(x.artistName||"").toLowerCase().includes(last.toLowerCase()));
-      if(hit)return hit.artworkUrl100.replace(/\/\d+x\d+bb/,"/600x600bb");
-    }
-  }catch(e){}
+      if(hit){coverLog.apple.ok++;return hit.artworkUrl100.replace(/\/\d+x\d+bb/,"/600x600bb");}
+      coverLog.apple.miss++;
+    }else logErr("apple",0,r.status);
+  }catch(e){logErr("apple",e);}
   try{
     const r=await fetch("https://openlibrary.org/search.json?"+new URLSearchParams({title:t,author:b.author,limit:"5",fields:"cover_i"}));
-    if(r.ok){const d=((await r.json()).docs||[]).find(x=>x.cover_i);if(d)return `https://covers.openlibrary.org/b/id/${d.cover_i}-L.jpg`;}
-  }catch(e){}
+    if(r.ok){const d=((await r.json()).docs||[]).find(x=>x.cover_i);if(d){coverLog.openlib.ok++;return `https://covers.openlibrary.org/b/id/${d.cover_i}-L.jpg`;}coverLog.openlib.miss++;}
+    else logErr("openlib",0,r.status);
+  }catch(e){logErr("openlib",e);}
   return null;
 }
+function renderDiag(){
+  const el=document.getElementById("diag"); if(!el)return;
+  const f=o=>`found ${o.ok}, no match ${o.miss}, errors ${Object.keys(o.err).length?Object.entries(o.err).map(([k,v])=>k+" x"+v).join("; "):"none"}`;
+  const shown=document.querySelectorAll(".day img, .tb img").length;
+  el.textContent=`Covers showing: ${shown}\nGoogle Books: ${f(coverLog.google)}\nApple Books: ${f(coverLog.apple)}\nOpen Library: ${f(coverLog.openlib)}\nCover image host test: ${coverLog.img}`;
+}
+function probeImages(){
+  const im=new Image(); im.onload=()=>{coverLog.img="loaded OK";renderDiag();}; im.onerror=()=>{coverLog.img="FAILED to load";renderDiag();};
+  im.src="https://covers.openlibrary.org/b/isbn/9781524875541-L.jpg?t="+Date.now();
+}
+setInterval(renderDiag,2000);
 const hue=s=>{let h=0;for(const c of s)h=(h*31+c.charCodeAt(0))%360;return h;};
 function coverInner(b){
   const h=hue(b.title+b.author), l=srcList(b);
@@ -249,8 +272,10 @@ function dayCell(y,m,d){
   if(bs.length){
     cls.push("has"); if(bs.length>1)cls.push("multi"); if(bs.every(b=>b.read))cls.push("allread");
     const b0=bs[0], pre=id<winStart;
-    return `<div class="${cls.join(" ")}" data-day="${id}"><span class="n">${d}</span>${bookMini(b0)}${pre?'<span class="ballot26"></span>':''}
-      ${emoji?`<span class="hol">${emoji}</span>`:""}${bs.length>1?`<span class="more">+${bs.length-1}</span>`:""}${bs.every(b=>b.read)?'<span class="chk">✓</span>':""}</div>`;
+    const art=bs.length===1?bookMini(b0)
+      :`<div class="mosaic">${bs.slice(0,4).map(b=>`<div class="cover tile" data-bk="${esc(key(b))}">${coverInner(b)}</div>`).join("")}</div>`;
+    return `<div class="${cls.join(" ")}" data-day="${id}"><span class="n">${d}</span>${art}${pre?'<span class="ballot26"></span>':''}
+      ${emoji?`<span class="hol">${emoji}</span>`:""}${bs.length>4?`<span class="more">+${bs.length-4}</span>`:""}${bs.every(b=>b.read)?'<span class="chk">✓</span>':""}</div>`;
   }
   return `<div class="${cls.join(" ")}" ${hol||edge?`data-day="${id}"`:""}><span class="n">${d}</span>${emoji?`<span class="hol">${emoji}</span>`:""}</div>`;
 }
@@ -309,7 +334,7 @@ document.getElementById("kicker").textContent=`${winStart.slice(0,4)} to ${winEn
 document.getElementById("sub").textContent=`A calendar of books that could land on the ${winEnd.slice(0,4)} Goodreads Choice Awards ballot, on the day they come out. Tap a day for details.`;
 document.getElementById("meter").innerHTML=`<span class="chip"><b>${readN}</b>of ${inWin.length} read</span><span class="chip"><b>${items.filter(b=>!b.p.exact||b.date>todayISO).length}</b>still to come</span>`;
 document.getElementById("foot").innerHTML=`Last refreshed ${fmt(WATCHLIST_META.lastRefreshed)}.<br>Release dates come from preview lists and often shift.`;
-renderCal(); scrollToday(false); findCovers();
+renderCal(); scrollToday(false); probeImages(); findCovers();
 </script>
 </body>
 </html>
