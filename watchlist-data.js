@@ -61,6 +61,8 @@ const watchlist = [
   {title:"Sunflower Season", author:"Danica Nava", date:"2026-11-03", cat:"Romance", note:"Screenwriter teams up with a nerdy assistant to write a script."},
   {title:"Hate and Other Acts of Fiction", author:"Megan Oliver", date:"2026-11-10", cat:"Romance", note:"Rival tour guides team up for a murder-mystery event."},
 
+  {title:"Crying on the Kitchen Floor", author:"Trisha Paytas", date:"2026-11-10", cat:"Memoir & Biography", isbn:"9781538781173", note:"Long-awaited tell-all memoir from Grand Central (368 pages). The audiobook is read by Paytas herself. One outlet reported Nov 11, but the publisher lists Nov 10.", buzz:"Big preorder buzz"},
+
   /* ---- Nov 2026, other genres (still on the 2026 ballot) ---- */
   {title:"Monsters of Ohio", author:"John Scalzi", date:"2026-11-03", cat:"Science Fiction", buzz:"On Time Out's most-anticipated November list"},
   {title:"West of Loveland", author:"Tom Drury", date:"2026-11-03", cat:"Fiction", note:"Literary fiction, praised as funny and beautiful."},

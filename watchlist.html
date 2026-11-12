@@ -181,8 +181,11 @@ const coverCache=lsGet("watchlist-covers-v2",{});
 function srcList(b){const l=[];
   if(b.cover)l.push(b.cover);
   if(b.isbn)l.push(`https://covers.openlibrary.org/b/isbn/${b.isbn}-L.jpg?default=false`);
+  if(b.isbn&&isbn10(b.isbn))l.push(`https://images-na.ssl-images-amazon.com/images/P/${isbn10(b.isbn)}.01.LZZZZZZZ.jpg`);
   if(coverCache[key(b)])l.push(coverCache[key(b)]);
   return l;}
+function isbn10(i13){ if(!/^978\d{10}$/.test(i13))return null; const d=i13.slice(3,12); let sum=0;
+  for(let k=0;k<9;k++)sum+=(10-k)*+d[k]; const c=(11-sum%11)%11; return d+(c===10?"X":c); }
 function nextSrc(img){const l=JSON.parse(img.dataset.srcs||"[]");const i=+img.dataset.i+1;if(i<l.length){img.dataset.i=i;img.src=l[i];}else img.remove();}
 async function lookup(b){
   const last=b.author.split(" ").pop().replace(/[^\w]/g,"");
@@ -191,6 +194,14 @@ async function lookup(b){
     const r=await fetch("https://www.googleapis.com/books/v1/volumes?maxResults=6&q="+encodeURIComponent(`intitle:${t} inauthor:${last}`));
     if(r.ok){const j=await r.json();const v=(j.items||[]).find(x=>x.volumeInfo&&x.volumeInfo.imageLinks);
       if(v){const u=(v.volumeInfo.imageLinks.thumbnail||v.volumeInfo.imageLinks.smallThumbnail).replace("http://","https://").replace("&edge=curl","");return u+"&zoom=2";}}
+  }catch(e){}
+  try{   /* Apple Books lists preorders, so it often has covers the others don't yet */
+    const r=await fetch("https://itunes.apple.com/search?"+new URLSearchParams({term:t+" "+b.author,media:"ebook",limit:"8"}));
+    if(r.ok){
+      const j=await r.json(), w=t.toLowerCase();
+      const hit=(j.results||[]).find(x=>x.artworkUrl100&&(x.trackName||"").toLowerCase().includes(w.slice(0,18))&&(x.artistName||"").toLowerCase().includes(last.toLowerCase()));
+      if(hit)return hit.artworkUrl100.replace(/\/\d+x\d+bb/,"/600x600bb");
+    }
   }catch(e){}
   try{
     const r=await fetch("https://openlibrary.org/search.json?"+new URLSearchParams({title:t,author:b.author,limit:"5",fields:"cover_i"}));
@@ -205,13 +216,15 @@ function coverInner(b){
   return l.length?`${ph}<img src="${esc(l[0])}" data-srcs="${esc(JSON.stringify(l))}" data-i="0" alt="Cover of ${esc(b.title)}" loading="lazy" onload="if(this.naturalWidth<60)nextSrc(this)" onerror="nextSrc(this)">`:ph;
 }
 async function findCovers(){
-  for(const b of items){
-    if(b.cover||b.isbn||key(b) in coverCache)continue;
-    const u=await lookup(b); if(!u)continue;      /* try again next visit */
-    coverCache[key(b)]=u; lsSet("watchlist-covers-v2",coverCache);
-    document.querySelectorAll(`[data-bk="${CSS.escape(key(b))}"]`).forEach(el=>{el.innerHTML=coverInner(b);});
-    await new Promise(r=>setTimeout(r,150));
+  const todo=items.filter(b=>!b.cover&&!(key(b) in coverCache));
+  async function worker(){
+    while(todo.length){
+      const b=todo.shift(), u=await lookup(b); if(!u)continue;   /* miss: try again next visit */
+      coverCache[key(b)]=u; lsSet("watchlist-covers-v2",coverCache);
+      document.querySelectorAll(`[data-bk="${CSS.escape(key(b))}"]`).forEach(el=>{el.innerHTML=coverInner(b);});
+    }
   }
+  await Promise.all([worker(),worker(),worker(),worker()]);
 }
 
 /* ---- calendar ---- */
