@@ -49,7 +49,7 @@ const WATCHLIST_META = {
 const CATS = [
   "Romance", "Romantasy", "Fantasy", "Science Fiction",
   "Mystery & Thriller", "Horror", "Historical Fiction", "Fiction", "Young Adult",
-  "Memoir & Biography", "Nonfiction",
+  "Memoir & Biography", "Nonfiction", "Graphic Novel",
 ];
 
 const watchlist = [
@@ -86,7 +86,7 @@ const watchlist = [
 
   /* ---- January 2027 ---- */
   {title:"Love Interest", author:"Chloe Liese", date:"2027-01-05", cat:"Romance"},
-  {title:"A Court of Forgotten Melody", author:"Sarah J. Maas", date:"2027-01-12", cat:"Romantasy", hot:true, series:"Valkyrie Cycle, Movements II & III", note:"Maas is a perennial Choice Awards contender.", buzz:"#1 on Bookishelf's 2027 most-wanted ranking"},
+  {title:"A Court of Forgotten Melody", author:"Sarah J. Maas", date:"2027-01-12", cat:"Romantasy", hot:true, series:"ACOTAR #7 (Valkyrie Cycle II & III)", note:"Maas is a perennial Choice Awards contender.", buzz:"#1 on Bookishelf's 2027 most-wanted ranking"},
   {title:"The Things You'll Never Know", author:"Ashley Audrain", date:"2027-01", cat:"Fiction", buzz:"#2 on Bookishelf's 2027 most-wanted ranking"},
   {title:"The Stars Look Like Home", author:"TJ Klune", date:"2027-01-12", cat:"Science Fiction", hot:true, buzz:"#3 on Bookishelf's 2027 most-wanted ranking"},
   {title:"In One Brief Moment All Eternity", author:"Elif Shafak", date:"2027-01-12", cat:"Fiction"},
@@ -132,7 +132,18 @@ const watchlist = [
   {title:"Well, That Could Have Gone Better", author:"Jodi Taylor", date:"2027-08-12", cat:"Science Fiction", series:"Chronicles of St. Mary's #15"},
   {title:"Untitled Colleen Hoover novel", author:"Colleen Hoover", date:"2027-10-05", cat:"Mystery & Thriller", note:"Publisher lists it as a new psychological suspense. Date is provisional."},
   {title:"Sweet Chaos", author:"Tracy Wolff", date:"2027-11-02", cat:"Young Adult", series:"The Calder Academy #2"},
-  {title:"Red God", author:"Pierce Brown", date:"2027", cat:"Science Fiction", hot:true, series:"Red Rising #7", note:"Listed for 2027 but the date is only an estimate."},
+  {title:"Red God", author:"Pierce Brown", date:"2027", cat:"Science Fiction", hot:true, series:"Red Rising #7", note:"No release date yet. Pierce Brown has said the book is not finished, and Penguin Random House confirms no date. 2027 looks more likely than 2026, and it may be split into two volumes."},
   {title:"Kingsbridge Book 6", author:"Ken Follett", date:"2027", cat:"Historical Fiction", note:"Listed as an estimate for 2027. Title not announced."},
   {title:"Untitled memoir", author:"Tara Westover", date:"2027", cat:"Memoir & Biography", note:"Book Riot reports a new Westover memoir is coming in 2027. No date or title yet."},
+
+  /* ---- from Megan's series tracker and most-read authors (monthly check) ---- */
+  {title:"The Golden Child", author:"Lucinda Berry", date:"2027-01-12", cat:"Mystery & Thriller", note:"Psychological thriller about choosing between saving one child or the other. A few listings say Jan 14.", buzz:"A Lucinda Berry book (you've read 3)"},
+  {title:"Longtime Listener", author:"B.K. Borison", date:"2027-02-23", cat:"Romance", hot:true, series:"Heartstrings #3", note:"Book 3 in the series you're reading. The audiobook is listed for Feb 25. It appears to wrap up the trilogy.", buzz:"Penguin Random House and Bookishelf agree on the date"},
+  {title:"Dungeon Crawler Carl, Vol. 3 (Graphic Novel)", author:"Matt Dinniman", date:"2027-03", cat:"Graphic Novel", series:"Dungeon Crawler Carl (graphic novel)", note:"Date comes from your series tracker. I couldn't re-confirm it."},
+  {title:"The Sleepwalker", author:"Freida McFadden", date:"2027-03-23", cat:"Mystery & Thriller", hot:true, note:"Standalone psychological thriller about a nurse whose sleepwalking gets tangled up with murder. McFadden's deal with Sourcebooks also points to a second 2027 title that hasn't been announced.", buzz:"A Freida McFadden book (you've read 5)"},
+  {title:"Embers of Chaos", author:"Demi Winters", date:"2027-05-18", cat:"Romantasy", hot:true, series:"The Ashen #4", note:"Book 4 of a series you rated 5 stars. Penguin Random House's page shows May 4, so the day may shift. A fifth Ashen book is also planned.", buzz:"You've read all 4 so far"},
+  {title:"Daemonica", author:"Kaylie Smith", date:"2027-09", cat:"Romance", series:"Wicked Games", note:"Date comes from your series tracker. I couldn't re-confirm it."},
+  {title:"The End Times: Volume One", author:"Stephen King & Benjamin Percy", date:"2027", cat:"Horror", note:"Their serial novella expanded into a full-length hardcover from Bad Hand Books. Preorders are open and it's expected early 2027, with no exact date yet."},
+  {title:"The Beautiful Place", author:"Matt Dinniman", date:"2027", cat:"Science Fiction", hot:true, series:"Dungeon Crawler Carl #9", note:"No date yet. Dinniman said at Comic-Con that it doesn't have one, and 2027 is only an estimate. It may be released as two books."},
+  {title:"Crowns of Nyaxia, Book 6", author:"Carissa Broadbent", date:"2027", cat:"Romantasy", series:"Crowns of Nyaxia #6", note:"The final main-series novel. Title and date aren't announced, and 2027 is only a placeholder."},
 ];

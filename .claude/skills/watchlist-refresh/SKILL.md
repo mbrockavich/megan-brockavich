@@ -82,6 +82,37 @@ Watch for last year's lists showing up in results (check the year).
   (move them to a `watchlist-archive-YYYY.js` or delete them), bump
   `windowStart`/`windowEnd`, and update the page heading/text if the year changed.
 
+## Monthly: check against what Megan reads (series and favorite authors)
+Do this every refresh, in addition to the genre sweep. It's about her own
+reading, not just award buzz.
+
+1. **Series check.** Run a script that loads `reading-data.js` and lists every
+   series in `SERIES` with: books read / released, last book, any `comingSoon`
+   entries, and whether it's DNF. Skip DNF and fully caught-up complete series.
+   For every active series (she's reading it, or a new book is expected), search
+   for the next book's title and release date.
+   - New or confirmed dates: add to `watchlist-data.js` (put the series and
+     number in `series`, and set `hot: true` if she's read most of it), and
+     update the matching `comingSoon` entry in `reading-data.js` (use the real
+     title instead of a placeholder like "Book 7", and a "Month YYYY" string).
+   - Books listed in `SERIES` that are missing from the tracker: add them.
+   - Any `comingSoon` whose month has already passed: tell Megan and ask her to
+     confirm it's out before flipping it to a normal released book (that changes
+     her "books to go" counts, so don't flip it silently).
+2. **Author check.** Count authors across `books` and `pastReads` (pastReads
+   mostly has no `author`, so counts are from this year's reads) and take the
+   top ~25. Search each for new books, ignoring ones already on the list or in
+   the tracker. Skip reissues, new editions and short stories unless she'd care,
+   and say so.
+3. **Report.** Tell her what was added, what is already out but unread, and
+   what has no date yet. A search that returns nothing means "no date found",
+   not "nothing coming". Say which authors you couldn't find anything for.
+
+Last full check: November 12, 2026. Authors with no confirmed 2027 book found:
+J.K. Rowling, Suzanne Collins, Madeline Miller (short story *Mestra* only),
+Stephanie Garber (only a paperback edition), Kate Stewart, Liv Zander,
+Scott Westerfeld, James Dashner, Lev Grossman, Veronica Roth.
+
 ## Checking books off
 There is no filtering and no per-browser "want list" (Megan didn't want anything
 that only works in one browser). When she says she read a watchlist book, set

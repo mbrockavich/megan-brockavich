@@ -528,7 +528,7 @@ const SERIES = [
       {title:"A Court of Frost and Starlight"},
       {title:"A Court of Silver Flames"},
       {title:"A Court of Splintered Harmony", cover:"https://covers.openlibrary.org/b/isbn/9781639739134-L.jpg", pubDate:"October 2026"},
-      {title:"ACOTAR Book 7", comingSoon:"January 2027"}
+      {title:"A Court of Forgotten Melody", comingSoon:"January 2027"}
     ]
   },
   {
