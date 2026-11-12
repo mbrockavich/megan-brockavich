@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Choice Awards Watchlist · Megan's Library</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#f7f4ef">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🏆</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#f7f4ef; --surface:#fff; --surface-alt:#f0eae0; --border:#e4ddd2; --border-strong:#d9d2c4;
+    --ink:#242018; --ink-soft:#6b6455; --ink-faint:#a39a89;
+    --accent:#b5502f; --accent-soft:rgba(181,80,47,.09); --sage:#6f8f63; --sage-soft:rgba(111,143,99,.14);
+    --gold:#b88a2a; --gold-soft:rgba(184,138,42,.14);
+  }
+  *{ box-sizing:border-box; }
+  html{ overflow-x:hidden; }
+  body{ margin:0; background:var(--bg); font-family:'Inter',sans-serif; color:var(--ink);
+    padding:0 0 calc(70px + env(safe-area-inset-bottom)); overflow-x:hidden; -webkit-tap-highlight-color:transparent; }
+  a{ color:inherit; }
+  .page{ max-width:900px; margin:0 auto; padding:36px 20px 0; }
+  @media (max-width:560px){ .page{ padding:24px 16px 0; } }
+
+  .topnav{ text-align:center; margin-bottom:26px; font-size:12px; letter-spacing:.04em; }
+  .topnav a{ color:var(--ink-soft); text-decoration:none; font-weight:500; }
+  .topnav a:hover{ color:var(--accent); }
+  .topnav .sep{ color:var(--border-strong); margin:0 10px; }
+
+  header{ text-align:center; margin-bottom:28px; }
+  header .eyebrow{ font-size:13px; font-style:italic; color:var(--ink-faint); margin-bottom:10px; }
+  header h1{ font-weight:700; letter-spacing:-.01em; font-size:clamp(28px,4.4vw,42px); margin:0 0 8px; }
+  header p{ font-size:14px; color:var(--ink-soft); margin:0 auto; max-width:560px; line-height:1.5; }
+
+  .card{ background:var(--surface); border:1px solid var(--border); border-radius:10px; }
+  .stats-strip{ display:flex; flex-wrap:wrap; gap:22px; justify-content:center; padding:20px 24px; margin-bottom:26px; }
+  .stat{ text-align:center; min-width:100px; }
+  .stat .v{ font-weight:700; font-size:21px; }
+  .stat .l{ font-size:11px; text-transform:uppercase; letter-spacing:.05em; color:var(--ink-soft); margin-top:3px; }
+  @media (max-width:560px){ .stats-strip{ gap:12px 18px; padding:16px 12px; } .stat{ min-width:40%; } .stat .v{ font-size:18px; } }
+
+  .filter-bar{ position:sticky; top:0; z-index:40; background:rgba(247,244,239,.93); backdrop-filter:blur(8px);
+    padding:12px 0; border-bottom:1px solid var(--border); }
+  .filter-inner{ max-width:900px; margin:0 auto; padding:0 20px; }
+  @media (max-width:560px){ .filter-inner{ padding:0 16px; } }
+  .search-input{ width:100%; padding:10px 14px; border:1px solid var(--border-strong); border-radius:8px;
+    font:inherit; font-size:15px; background:var(--surface); color:var(--ink); outline:none; margin-bottom:9px; -webkit-appearance:none; appearance:none; }
+  .search-input:focus{ border-color:var(--accent); }
+  .pills{ display:flex; gap:7px; overflow-x:auto; scrollbar-width:none; padding-bottom:2px; }
+  .pills::-webkit-scrollbar{ display:none; }
+  .pills + .pills{ margin-top:8px; }
+  .pill{ flex:0 0 auto; font:inherit; font-size:12.5px; font-weight:500; padding:7px 13px; border-radius:8px;
+    border:1px solid var(--border-strong); background:var(--surface); color:var(--ink-soft); cursor:pointer; white-space:nowrap; }
+  .pill:hover{ border-color:var(--accent); color:var(--ink); }
+  .pill.active{ background:var(--accent); color:#fff; border-color:var(--accent); font-weight:600; }
+  .pill .count{ opacity:.65; font-size:11px; margin-left:3px; }
+
+  .section-title{ font-size:13px; text-transform:uppercase; letter-spacing:.07em; font-weight:700; color:var(--ink-soft);
+    margin:30px 0 4px; display:flex; align-items:baseline; gap:10px; }
+  .section-title .sub{ font-size:12px; text-transform:none; letter-spacing:0; font-weight:400; color:var(--ink-faint); }
+  .month-head{ font-size:17px; font-weight:700; margin:22px 0 10px; }
+  .none{ color:var(--ink-soft); font-style:italic; font-size:13.5px; padding:14px 2px; }
+
+  .rows{ display:flex; flex-direction:column; gap:8px; }
+  .row{ display:grid; grid-template-columns:62px 1fr auto; gap:14px; align-items:center; padding:12px 14px; }
+  @media (max-width:560px){ .row{ grid-template-columns:50px 1fr auto; gap:11px; padding:11px 12px; } }
+  .date{ text-align:center; line-height:1.1; }
+  .date .d{ font-size:21px; font-weight:700; }
+  .date .m{ font-size:10px; text-transform:uppercase; letter-spacing:.06em; color:var(--ink-soft); margin-top:3px; }
+  .date .tbc{ font-size:11px; color:var(--ink-faint); font-weight:600; }
+  .title{ font-size:15px; font-weight:700; line-height:1.3; }
+  .by{ font-size:12.5px; color:var(--ink-soft); margin-top:2px; }
+  .note{ font-size:12.5px; color:var(--ink-soft); margin-top:6px; line-height:1.45; }
+  .tags{ display:flex; flex-wrap:wrap; gap:5px; margin-top:7px; }
+  .tag{ font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:.03em; padding:2px 8px; border-radius:5px;
+    background:var(--surface-alt); color:var(--ink-soft); }
+  .tag.hot{ background:var(--gold-soft); color:var(--gold); }
+  .tag.buzz{ background:var(--accent-soft); color:var(--accent); text-transform:none; letter-spacing:0; font-weight:600; }
+  .tag.read{ background:var(--sage-soft); color:var(--sage); }
+  .tag.old{ background:transparent; border:1px dashed var(--border-strong); color:var(--ink-faint); }
+  .want{ font:inherit; font-size:20px; line-height:1; background:none; border:1px solid var(--border-strong); border-radius:8px;
+    width:40px; height:40px; cursor:pointer; color:var(--ink-faint); }
+  .want:hover{ border-color:var(--gold); color:var(--gold); }
+  .want.on{ background:var(--gold-soft); border-color:var(--gold); color:var(--gold); }
+  .row.is-read{ opacity:.6; }
+
+  footer.foot{ text-align:center; font-size:11.5px; color:var(--ink-faint); margin:34px auto 0; max-width:560px; line-height:1.6; }
+</style>
+</head>
+<body>
+<div class="page">
+  <nav class="topnav">
+    <a href="library.html">← Megan's Library</a><span class="sep">·</span>
+    <a href="all-books.html">Every Book I've Read</a><span class="sep">·</span>
+    <a href="series-tracker.html">Series Tracker</a><span class="sep">·</span>
+    <a href="2026-reading-stats.html">2026 Stats</a>
+  </nav>
+  <header>
+    <div class="eyebrow">books that could end up on the ballot</div>
+    <h1>Choice Awards Watchlist</h1>
+    <p id="heroSub"></p>
+  </header>
+  <div class="card stats-strip" id="stats"></div>
+</div>
+
+<div class="filter-bar"><div class="filter-inner">
+  <input type="text" class="search-input" id="search" placeholder="Search title or author...">
+  <div class="pills" id="catPills"></div>
+  <div class="pills" id="viewPills"></div>
+</div></div>
+
+<div class="page">
+  <div id="out"></div>
+  <div id="soon"></div>
+  <footer class="foot" id="foot"></footer>
+</div>
+
+<script src="reading-data.js"></script>
+<script src="watchlist-data.js"></script>
+<script>
+/* Out-now vs coming-up is decided from today's date, so no hand-sorting. */
+const MONTHS = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+const MONTH_FULL = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+const esc = s => String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/"/g,"&quot;");
+
+/* Per-viewer "want to read" picks. Page works fine if storage is blocked. */
+const WANT_KEY = "watchlist-want-v1";
+let want = new Set();
+try { want = new Set(JSON.parse(localStorage.getItem(WANT_KEY) || "[]")); } catch(e){}
+function saveWant(){ try { localStorage.setItem(WANT_KEY, JSON.stringify([...want])); } catch(e){} }
+
+const key = b => b.title + "|" + b.author;
+function parseDate(str){
+  const p = String(str).split("-").map(Number);
+  if(p.length === 3) return {y:p[0], m:p[1], d:p[2], exact:true, t:new Date(p[0],p[1]-1,p[2]).getTime()};
+  if(p.length === 2) return {y:p[0], m:p[1], d:null, exact:false, t:new Date(p[0],p[1]-1,28).getTime()};
+  return {y:p[0], m:null, d:null, exact:false, t:new Date(p[0],11,31).getTime()};
+}
+const today = new Date(); today.setHours(0,0,0,0);
+const winStart = parseDate(WATCHLIST_META.windowStart).t;
+
+const items = watchlist.map(b => ({...b, p:parseDate(b.date), isRead: !!findRead(b.title)}));
+const isOut = b => b.p.exact ? b.p.t <= today.getTime() : (b.p.m && b.p.t < today.getTime() && !(b.p.y === today.getFullYear() && b.p.m === today.getMonth()+1));
+
+let cat = "All", view = "All", term = "";
+
+function matches(b){
+  if(cat !== "All" && b.cat !== cat) return false;
+  if(view === "want" && !want.has(key(b))) return false;
+  if(view === "hot" && !b.hot && !b.buzz) return false;
+  if(view === "unread" && b.isRead) return false;
+  if(term && !(b.title + " " + b.author).toLowerCase().includes(term)) return false;
+  return true;
+}
+
+function rowHTML(b){
+  const dateCol = b.p.exact
+    ? `<div class="d">${b.p.d}</div><div class="m">${MONTHS[b.p.m-1]}</div>`
+    : b.p.m ? `<div class="tbc">${MONTHS[b.p.m-1]}</div><div class="m">date TBC</div>`
+            : `<div class="tbc">${b.p.y}</div><div class="m">date TBA</div>`;
+  const before = b.p.t < winStart;
+  const tags = [
+    b.hot ? `<span class="tag hot">★ Top pick</span>` : "",
+    `<span class="tag">${esc(b.cat)}</span>`,
+    b.series ? `<span class="tag">${esc(b.series)}</span>` : "",
+    before ? `<span class="tag old">2026 ballot</span>` : "",
+    b.isRead ? `<span class="tag read">Read ✓</span>` : "",
+    b.buzz ? `<span class="tag buzz">🔥 ${esc(b.buzz)}</span>` : "",
+  ].join("");
+  return `<div class="card row ${b.isRead ? "is-read" : ""}">
+    <div class="date">${dateCol}</div>
+    <div>
+      <div class="title">${esc(b.title)}</div>
+      <div class="by">${esc(b.author)}</div>
+      ${b.note ? `<div class="note">${esc(b.note)}</div>` : ""}
+      <div class="tags">${tags}</div>
+    </div>
+    <button class="want ${want.has(key(b)) ? "on" : ""}" data-k="${esc(key(b))}" aria-label="Want to read" title="Want to read">${want.has(key(b)) ? "★" : "☆"}</button>
+  </div>`;
+}
+
+function render(){
+  const all = items.filter(matches);
+  const out = all.filter(isOut).sort((a,b) => b.p.t - a.p.t);
+  const soon = all.filter(b => !isOut(b)).sort((a,b) => a.p.t - b.p.t);
+
+  document.getElementById("out").innerHTML = `
+    <div class="section-title">Out now <span class="sub">newest first, ${out.length} ${out.length===1?"book":"books"}</span></div>
+    ${out.length ? `<div class="rows">${out.map(rowHTML).join("")}</div>` : `<div class="none">Nothing out yet that matches.</div>`}`;
+
+  let soonHTML = `<div class="section-title">Coming up <span class="sub">${soon.length} ${soon.length===1?"book":"books"}</span></div>`;
+  if(!soon.length) soonHTML += `<div class="none">Nothing upcoming that matches.</div>`;
+  let last = "";
+  soon.forEach(b => {
+    const label = b.p.m ? `${MONTH_FULL[b.p.m-1]} ${b.p.y}` : `${b.p.y}, date TBA`;
+    if(label !== last){ if(last) soonHTML += `</div>`; soonHTML += `<div class="month-head">${label}</div><div class="rows">`; last = label; }
+    soonHTML += rowHTML(b);
+  });
+  if(last) soonHTML += `</div>`;
+  document.getElementById("soon").innerHTML = soonHTML;
+}
+
+function renderPills(){
+  const cats = ["All", ...CATS.filter(c => items.some(b => b.cat === c))];
+  document.getElementById("catPills").innerHTML = cats.map(c => {
+    const n = c === "All" ? items.length : items.filter(b => b.cat === c).length;
+    return `<button class="pill ${cat===c?"active":""}" data-cat="${esc(c)}">${c}<span class="count">${n}</span></button>`;
+  }).join("");
+  const views = [["All","Everything"],["hot","🔥 Hot & top picks"],["unread","Not read yet"],["want","★ My want list"]];
+  document.getElementById("viewPills").innerHTML = views.map(([k,l]) =>
+    `<button class="pill ${view===k?"active":""}" data-view="${k}">${l}</button>`).join("");
+}
+
+document.getElementById("catPills").addEventListener("click", e => {
+  const b = e.target.closest("[data-cat]"); if(!b) return; cat = b.dataset.cat; renderPills(); render();
+});
+document.getElementById("viewPills").addEventListener("click", e => {
+  const b = e.target.closest("[data-view]"); if(!b) return; view = b.dataset.view; renderPills(); render();
+});
+document.getElementById("search").addEventListener("input", e => { term = e.target.value.trim().toLowerCase(); render(); });
+document.addEventListener("click", e => {
+  const b = e.target.closest(".want"); if(!b) return;
+  const k = b.dataset.k;
+  want.has(k) ? want.delete(k) : want.add(k);
+  saveWant(); render(); updateStats();
+});
+
+function updateStats(){
+  const upcoming = items.filter(b => !isOut(b)).length;
+  const outInWindow = items.filter(b => isOut(b) && b.p.t >= winStart);
+  const readInWindow = outInWindow.filter(b => b.isRead).length;
+  const stats = [
+    {v: outInWindow.length, l: "Out this award year"},
+    {v: readInWindow, l: "Read so far"},
+    {v: upcoming, l: "Coming up"},
+    {v: want.size, l: "On my want list"},
+  ];
+  document.getElementById("stats").innerHTML = stats.map(s => `<div class="stat"><div class="v">${s.v}</div><div class="l">${s.l}</div></div>`).join("");
+}
+
+function fmt(str){ const p = parseDate(str); return `${MONTH_FULL[p.m-1]} ${p.d}, ${p.y}`; }
+document.getElementById("heroSub").textContent =
+  `Eligible books for the 2027 Goodreads Choice Awards run ${fmt(WATCHLIST_META.windowStart)} to ${fmt(WATCHLIST_META.windowEnd)}. Star the ones you want to read.`;
+document.getElementById("foot").innerHTML =
+  `Last refreshed ${fmt(WATCHLIST_META.lastRefreshed)}. Release dates come from preview lists and often shift, so double-check before pre-ordering. ` +
+  `To update, edit <code>watchlist-data.js</code> or ask Claude to refresh the watchlist.`;
+
+renderPills(); render(); updateStats();
+</script>
+</body>
+</html>
