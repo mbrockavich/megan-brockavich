@@ -21,6 +21,9 @@
      read                    : true once Megan has read it. Shows a green check
                                and dims the cover. Set by hand (ask Claude), so it
                                looks the same in every browser.
+     goodreads               : optional direct Goodreads book URL. If left off, the
+                               "View on Goodreads" button opens a Goodreads search
+                               for the title + author.
      isbn                    : optional ISBN-13 (digits only). Most reliable way to
                                get a cover; the page tries it before any lookup.
      cover                   : optional image URL. If left off, the page looks

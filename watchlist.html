@@ -109,6 +109,9 @@
   .tag.b{ background:rgba(255,122,156,.16); color:var(--rose); text-transform:none; letter-spacing:0; }
   .tag.m{ background:rgba(127,224,195,.18); color:var(--mint); }
   .sbook p{ color:var(--soft); font-size:14px; line-height:1.6; margin:10px 0 0; }
+  .gr{ display:block; margin-top:12px; text-align:center; text-decoration:none; font-weight:700; font-size:13.5px; padding:11px; border-radius:12px;
+    border:1px solid var(--gold2); color:var(--gold); background:rgba(240,192,96,.08); }
+  .gr:hover{ background:rgba(240,192,96,.16); }
   .btn{ width:100%; margin-top:16px; font:inherit; font-weight:700; font-size:14px; padding:12px; border-radius:12px; cursor:pointer; border:1px solid var(--gold); background:var(--gold); color:#2a1d05; }
 
   footer{ text-align:center; color:var(--faint); font-size:12px; line-height:1.7; margin:46px auto 0; max-width:540px; }
@@ -258,12 +261,15 @@ function renderCal(){
 
 /* ---- sheet ---- */
 const fmt=s=>{const p=pd(s);return `${DOW[new Date(p.y,p.m-1,p.d).getDay()]}, ${MONTH_FULL[p.m-1]} ${p.d}, ${p.y}`;};
+/* Direct link if the entry has `goodreads`, otherwise a Goodreads search for title + author. */
+const grUrl=b=>b.goodreads||("https://www.goodreads.com/search?q="+encodeURIComponent(b.title.replace(/\s*\(.*?\)/g,"")+" "+b.author));
 function bookBlock(b){
   const when=b.p.exact?(b.date<=todayISO?"Out now":"Releases "+MONTH_FULL[b.p.m-1]+" "+b.p.d):b.p.m?`${MONTH_FULL[b.p.m-1]} ${b.p.y}, date TBC`:`${b.p.y}, date TBA`;
   return `<div class="sbook"><div class="top"><div class="mini"><div class="cv" data-bk="${esc(key(b))}">${coverInner(b)}</div></div>
     <div><h3>${esc(b.title)}</h3><div class="by">${esc(b.author)}</div>
     <div class="tags"><span class="tag g">${esc(b.cat)}</span>${b.series?`<span class="tag">${esc(b.series)}</span>`:""}${b.read?'<span class="tag m">✓ Read</span>':""}<span class="tag">${when}</span></div></div></div>
-    ${b.buzz?`<div class="tags"><span class="tag b">🔥 ${esc(b.buzz)}</span></div>`:""}${b.note?`<p>${esc(b.note)}</p>`:""}</div>`;
+    ${b.buzz?`<div class="tags"><span class="tag b">🔥 ${esc(b.buzz)}</span></div>`:""}${b.note?`<p>${esc(b.note)}</p>`:""}
+    <a class="gr" href="${esc(grUrl(b))}" target="_blank" rel="noopener">View on Goodreads ↗</a></div>`;
 }
 function openSheet(head,html){document.getElementById("sheet").innerHTML=`<div class="sdate">${head}</div>${html}<button class="btn" data-close="1">Close</button>`;document.getElementById("veil").classList.add("open");}
 const closeSheet=()=>document.getElementById("veil").classList.remove("open");
