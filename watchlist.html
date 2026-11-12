@@ -16,104 +16,104 @@
     --gold:#f0c060; --gold2:#c9922e; --rose:#ff7a9c; --mint:#7fe0c3;
   }
   *{ box-sizing:border-box; }
-  html{ overflow-x:hidden; }
+  html{ overflow-x:hidden; scroll-behavior:smooth; }
   body{ margin:0; font-family:'Manrope',sans-serif; color:var(--ink); overflow-x:hidden;
     background:
       radial-gradient(900px 500px at 85% -10%, rgba(240,192,96,.16), transparent 60%),
       radial-gradient(700px 500px at -10% 10%, rgba(255,122,156,.12), transparent 60%),
       var(--bg);
     background-attachment:fixed;
-    padding-bottom:calc(60px + env(safe-area-inset-bottom)); -webkit-tap-highlight-color:transparent; }
-  .wrap{ max-width:1080px; margin:0 auto; padding:0 20px; }
-  @media (max-width:560px){ .wrap{ padding:0 14px; } }
+    padding-bottom:calc(80px + env(safe-area-inset-bottom)); -webkit-tap-highlight-color:transparent; }
+  .wrap{ max-width:860px; margin:0 auto; padding:0 14px; }
+  @media (min-width:600px){ .wrap{ padding:0 20px; } }
 
   .back{ display:inline-block; margin:22px 0 0; font-size:12px; color:var(--faint); text-decoration:none; letter-spacing:.05em; }
   .back:hover{ color:var(--gold); }
-
-  header{ text-align:center; padding:26px 0 30px; }
+  header{ text-align:center; padding:22px 0 18px; }
   .kicker{ font-size:11px; letter-spacing:.28em; text-transform:uppercase; color:var(--gold); font-weight:700; }
-  h1{ font-family:'Fraunces',serif; font-weight:700; font-size:clamp(40px,8vw,78px); line-height:.98; margin:12px 0 14px; letter-spacing:-.02em; }
+  h1{ font-family:'Fraunces',serif; font-weight:700; font-size:clamp(40px,8vw,72px); line-height:.98; margin:12px 0 14px; letter-spacing:-.02em; }
   h1 em{ font-style:italic; font-weight:500; color:var(--gold); }
-  .sub{ color:var(--soft); font-size:14.5px; line-height:1.6; max-width:560px; margin:0 auto; }
-
-  .meter{ display:flex; justify-content:center; gap:10px; flex-wrap:wrap; margin-top:22px; }
+  .sub{ color:var(--soft); font-size:14.5px; line-height:1.6; max-width:540px; margin:0 auto; }
+  .meter{ display:flex; justify-content:center; gap:10px; flex-wrap:wrap; margin-top:20px; }
   .chip{ border:1px solid var(--line); background:rgba(255,255,255,.04); border-radius:999px; padding:8px 16px; font-size:12.5px; color:var(--soft); }
   .chip b{ color:var(--ink); font-size:15px; margin-right:5px; }
+  .legend{ display:flex; justify-content:center; gap:16px; flex-wrap:wrap; font-size:11.5px; color:var(--faint); margin:16px 0 4px; }
 
-  .bar{ position:sticky; top:0; z-index:30; background:rgba(18,15,36,.88); backdrop-filter:blur(10px);
-    border-bottom:1px solid var(--line); padding:12px 0; }
-  .search{ width:100%; font:inherit; font-size:15px; color:var(--ink); background:rgba(255,255,255,.06);
-    border:1px solid var(--line); border-radius:12px; padding:11px 14px; outline:none; margin-bottom:9px; }
-  .search::placeholder{ color:var(--faint); }
-  .search:focus{ border-color:var(--gold2); }
-  .pills{ display:flex; gap:7px; overflow-x:auto; scrollbar-width:none; }
-  .pills::-webkit-scrollbar{ display:none; }
-  .pills + .pills{ margin-top:8px; }
-  .pill{ flex:0 0 auto; font:inherit; font-size:12.5px; font-weight:600; padding:7px 14px; border-radius:999px; cursor:pointer;
-    background:transparent; color:var(--soft); border:1px solid var(--line); white-space:nowrap; }
-  .pill:hover{ color:var(--ink); border-color:var(--gold2); }
-  .pill.on{ background:var(--gold); color:#2a1d05; border-color:var(--gold); }
-  .pill .n{ opacity:.6; margin-left:4px; font-size:11px; }
+  /* ---- month ---- */
+  .month{ margin:34px 0 8px; scroll-margin-top:12px; }
+  .mhead{ display:flex; align-items:baseline; justify-content:space-between; gap:12px; margin-bottom:12px; padding:0 2px; }
+  .mname{ font-family:'Fraunces',serif; font-size:clamp(26px,5vw,36px); font-weight:700; letter-spacing:-.01em; }
+  .mname em{ font-style:italic; font-weight:500; color:var(--gold); }
+  .mcount{ font-size:12px; color:var(--faint); white-space:nowrap; }
+  .dow, .days{ display:grid; grid-template-columns:repeat(7,minmax(0,1fr)); gap:4px; }
+  @media (min-width:600px){ .dow, .days{ gap:6px; } }
+  .dow div{ text-align:center; font-size:10px; letter-spacing:.14em; text-transform:uppercase; color:var(--faint); font-weight:700; padding-bottom:6px; }
+  .days{ margin-top:0; }
 
-  h2{ font-family:'Fraunces',serif; font-size:26px; margin:38px 0 4px; letter-spacing:-.01em; }
-  h2 small{ font-family:'Manrope',sans-serif; font-size:12px; color:var(--faint); font-weight:500; margin-left:8px; letter-spacing:0; }
-  .month{ font-size:11px; letter-spacing:.2em; text-transform:uppercase; color:var(--gold); font-weight:700; margin:26px 0 14px;
-    display:flex; align-items:center; gap:12px; }
-  .month::after{ content:""; flex:1; height:1px; background:var(--line); }
-  .empty{ color:var(--faint); font-style:italic; font-size:14px; padding:16px 0; }
-
-  .grid{ display:grid; grid-template-columns:repeat(auto-fill,minmax(150px,1fr)); gap:22px 16px; }
-  @media (max-width:560px){ .grid{ grid-template-columns:repeat(2,1fr); gap:20px 12px; } }
-
-  .book{ position:relative; cursor:pointer; }
-  .cover{ position:relative; aspect-ratio:2/3; border-radius:6px 10px 10px 6px; overflow:hidden;
-    box-shadow:0 10px 24px rgba(0,0,0,.5), inset 3px 0 0 rgba(255,255,255,.12); transition:transform .18s ease; background:var(--card); }
-  .book:hover .cover{ transform:translateY(-4px) rotate(-.6deg); }
+  .day{ position:relative; aspect-ratio:2/3; border-radius:8px; background:rgba(255,255,255,.035); border:1px solid var(--line); overflow:hidden; }
+  .day.blank{ background:none; border:none; }
+  .day .n{ position:absolute; left:5px; top:3px; font-size:10.5px; font-weight:700; color:var(--faint); z-index:3; }
+  .day .hol{ position:absolute; left:0; right:0; bottom:3px; text-align:center; font-size:clamp(13px,3.4vw,19px); z-index:3; line-height:1; }
+  .day.past .n{ opacity:.55; }
+  .day.today{ border-color:var(--gold); box-shadow:0 0 0 1px var(--gold), 0 0 18px rgba(240,192,96,.35); }
+  .day.today .n{ color:var(--gold); }
+  .day.edge{ border-color:rgba(240,192,96,.55); background:rgba(240,192,96,.08); }
+  .day.has{ border:none; background:var(--card); cursor:pointer; box-shadow:0 6px 14px rgba(0,0,0,.45); }
+  .day.has .n{ color:#fff; text-shadow:0 1px 4px rgba(0,0,0,.8); background:rgba(18,15,36,.6); border-radius:5px; padding:0 4px; left:3px; top:3px; }
+  .day.has .hol{ text-shadow:0 1px 4px rgba(0,0,0,.8); }
+  .day:active.has{ transform:scale(.97); }
+  .day .cover{ position:absolute; inset:0; }
   .cover img{ position:absolute; inset:0; width:100%; height:100%; object-fit:cover; }
-  .ph{ position:absolute; inset:0; display:flex; flex-direction:column; justify-content:space-between; padding:44px 12px 40px; text-align:left; }
-  .ph .t{ font-family:'Fraunces',serif; font-weight:700; font-size:clamp(15px,2.1vw,19px); line-height:1.12; color:#fff; text-shadow:0 1px 8px rgba(0,0,0,.35); }
-  .ph .a{ font-size:10px; letter-spacing:.14em; text-transform:uppercase; color:rgba(255,255,255,.85); font-weight:700; }
-  .over{ position:absolute; inset:0; pointer-events:none; }
-  .date{ position:absolute; left:8px; top:8px; background:rgba(18,15,36,.86); backdrop-filter:blur(4px); border:1px solid var(--line);
-    border-radius:8px; padding:4px 8px; font-size:10.5px; font-weight:700; letter-spacing:.04em; color:var(--ink); }
-  .date.out{ background:var(--gold); color:#2a1d05; border-color:var(--gold); }
-  .check{ position:absolute; right:7px; top:7px; width:30px; height:30px; border-radius:50%; background:var(--mint); color:#06251c;
-    display:flex; align-items:center; justify-content:center; font-size:17px; font-weight:800; box-shadow:0 2px 8px rgba(0,0,0,.4); }
-  .book.read .cover img, .book.read .ph{ filter:saturate(.55) brightness(.62); }
-  .book.read .bt{ color:var(--soft); }
-  .flag{ position:absolute; left:0; bottom:10px; background:linear-gradient(90deg,var(--rose),#ff9f6b); color:#2a0a14;
-    font-size:9.5px; font-weight:800; letter-spacing:.08em; text-transform:uppercase; padding:3px 9px 3px 7px; border-radius:0 6px 6px 0; }
-  .bt{ font-family:'Fraunces',serif; font-weight:700; font-size:14.5px; line-height:1.22; margin:10px 0 2px; }
-  .ba{ font-size:12px; color:var(--soft); }
+  .ph{ position:absolute; inset:0; display:flex; flex-direction:column; justify-content:flex-end; padding:5px 4px; }
+  .ph .t{ font-family:'Fraunces',serif; font-weight:700; font-size:8.5px; line-height:1.1; color:#fff; text-shadow:0 1px 5px rgba(0,0,0,.4); }
+  .ph .a{ display:none; }
+  @media (min-width:600px){ .ph .t{ font-size:12px; } .ph{ padding:8px; } }
+  .more{ position:absolute; right:3px; bottom:3px; z-index:4; background:var(--gold); color:#2a1d05; font-size:10px; font-weight:800;
+    border-radius:999px; padding:1px 6px; box-shadow:0 2px 6px rgba(0,0,0,.5); }
+  .day.has.multi .hol{ bottom:auto; top:3px; left:auto; right:4px; width:auto; }
+  .chk{ position:absolute; left:3px; bottom:3px; z-index:4; width:17px; height:17px; border-radius:50%; background:var(--mint); color:#06251c;
+    font-size:11px; font-weight:800; display:flex; align-items:center; justify-content:center; box-shadow:0 2px 6px rgba(0,0,0,.5); }
+  .day.allread .cover{ filter:saturate(.5) brightness(.6); }
+  .ballot26{ outline:1.5px dashed rgba(255,255,255,.4); outline-offset:-3px; border-radius:8px; position:absolute; inset:0; z-index:2; }
 
-  .lead{ display:flex; gap:18px; overflow-x:auto; padding:6px 2px 14px; scrollbar-width:none; }
-  .lead::-webkit-scrollbar{ display:none; }
-  .lead .book{ flex:0 0 150px; }
+  .tbc{ margin-top:12px; padding:12px 12px 10px; border:1px dashed var(--line); border-radius:12px; background:rgba(255,255,255,.025); }
+  .tbc h4{ margin:0 0 10px; font-size:11px; letter-spacing:.16em; text-transform:uppercase; color:var(--gold); font-weight:700; }
+  .tbcrow{ display:flex; gap:10px; overflow-x:auto; scrollbar-width:none; padding-bottom:4px; }
+  .tbcrow::-webkit-scrollbar{ display:none; }
+  .tb{ flex:0 0 74px; cursor:pointer; position:relative; }
+  .tb .cv{ position:relative; aspect-ratio:2/3; border-radius:6px; overflow:hidden; box-shadow:0 6px 14px rgba(0,0,0,.45); }
+  .tb .cv .ph .t{ font-size:9px; }
+  .tb .bt2{ font-size:10.5px; line-height:1.2; margin-top:5px; color:var(--soft); font-weight:600; }
+  .tb.read .cv{ filter:saturate(.5) brightness(.6); }
+  .tb .chk{ left:auto; right:3px; top:3px; bottom:auto; }
+  .tba{ margin-top:46px; }
 
-  /* detail sheet */
-  .veil{ position:fixed; inset:0; background:rgba(8,6,20,.7); backdrop-filter:blur(6px); z-index:60; display:none;
-    align-items:flex-end; justify-content:center; }
+  /* ---- sheet ---- */
+  .veil{ position:fixed; inset:0; background:rgba(8,6,20,.7); backdrop-filter:blur(6px); z-index:60; display:none; align-items:flex-end; justify-content:center; }
   .veil.open{ display:flex; }
   .sheet{ width:100%; max-width:560px; background:var(--bg2); border:1px solid var(--line); border-radius:22px 22px 0 0;
     padding:22px 20px calc(24px + env(safe-area-inset-bottom)); max-height:88vh; overflow:auto; }
   @media (min-width:700px){ .veil{ align-items:center; } .sheet{ border-radius:22px; } }
-  .sheet .top{ display:flex; gap:16px; }
-  .sheet .mini{ flex:0 0 108px; }
-  .sheet h3{ font-family:'Fraunces',serif; font-size:23px; line-height:1.15; margin:0 0 4px; }
-  .sheet .by{ color:var(--soft); font-size:14px; margin-bottom:10px; }
-  .sheet .tags{ display:flex; flex-wrap:wrap; gap:6px; margin:10px 0; }
-  .tag{ font-size:10.5px; font-weight:700; letter-spacing:.05em; text-transform:uppercase; padding:4px 10px; border-radius:999px;
-    background:rgba(255,255,255,.07); color:var(--soft); }
+  .sdate{ font-size:11px; letter-spacing:.2em; text-transform:uppercase; color:var(--gold); font-weight:700; margin-bottom:14px; }
+  .sbook{ padding:14px 0; border-top:1px solid var(--line); }
+  .sbook:first-of-type{ border-top:none; padding-top:0; }
+  .top{ display:flex; gap:14px; }
+  .mini{ flex:0 0 92px; }
+  .mini .cv{ position:relative; aspect-ratio:2/3; border-radius:6px 9px 9px 6px; overflow:hidden; box-shadow:0 8px 18px rgba(0,0,0,.5); }
+  .mini .ph .t{ font-size:12px; } .mini .ph{ padding:8px; }
+  .sheet h3{ font-family:'Fraunces',serif; font-size:21px; line-height:1.15; margin:0 0 4px; }
+  .by{ color:var(--soft); font-size:14px; margin-bottom:8px; }
+  .tags{ display:flex; flex-wrap:wrap; gap:6px; margin:8px 0 0; }
+  .tag{ font-size:10.5px; font-weight:700; letter-spacing:.05em; text-transform:uppercase; padding:4px 10px; border-radius:999px; background:rgba(255,255,255,.07); color:var(--soft); }
   .tag.g{ background:rgba(240,192,96,.16); color:var(--gold); }
   .tag.b{ background:rgba(255,122,156,.16); color:var(--rose); text-transform:none; letter-spacing:0; }
-  .sheet p{ color:var(--soft); font-size:14px; line-height:1.6; margin:10px 0 0; }
-  .sheet .row{ display:flex; gap:10px; margin-top:18px; }
-  .btn{ flex:1; font:inherit; font-weight:700; font-size:14px; padding:12px; border-radius:12px; cursor:pointer; border:1px solid var(--line);
-    background:transparent; color:var(--ink); }
-  .btn.p{ background:var(--gold); color:#2a1d05; border-color:var(--gold); }
+  .tag.m{ background:rgba(127,224,195,.18); color:var(--mint); }
+  .sbook p{ color:var(--soft); font-size:14px; line-height:1.6; margin:10px 0 0; }
+  .btn{ width:100%; margin-top:16px; font:inherit; font-weight:700; font-size:14px; padding:12px; border-radius:12px; cursor:pointer; border:1px solid var(--gold); background:var(--gold); color:#2a1d05; }
 
   footer{ text-align:center; color:var(--faint); font-size:12px; line-height:1.7; margin:46px auto 0; max-width:540px; }
-  footer code{ color:var(--soft); }
+  .todaybtn{ position:fixed; right:14px; bottom:calc(16px + env(safe-area-inset-bottom)); z-index:20; font:inherit; font-size:12.5px; font-weight:700;
+    background:var(--gold); color:#2a1d05; border:none; border-radius:999px; padding:10px 16px; cursor:pointer; box-shadow:0 8px 20px rgba(0,0,0,.5); }
 </style>
 </head>
 <body>
@@ -125,13 +125,12 @@
     <p class="sub" id="sub"></p>
     <div class="meter" id="meter"></div>
   </header>
-</div>
-
-<div class="wrap">
+  <div class="legend"><span>🏆 award year starts / ends</span><span>✓ read</span><span>dashed edge = still on the 2026 ballot</span><span>+2 = more books that day</span></div>
   <div id="cal"></div>
+  <div id="tba"></div>
   <footer id="foot"></footer>
 </div>
-
+<button class="todaybtn" id="todayBtn">Today</button>
 <div class="veil" id="veil"><div class="sheet" id="sheet"></div></div>
 
 <script src="watchlist-data.js"></script>
@@ -139,65 +138,62 @@
 /* Standalone page: depends only on watchlist-data.js. */
 const MONTHS=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
 const MONTH_FULL=["January","February","March","April","May","June","July","August","September","October","November","December"];
+const DOW=["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
 const esc=s=>String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
 const lsGet=(k,d)=>{try{const v=localStorage.getItem(k);return v==null?d:JSON.parse(v);}catch(e){return d;}};
 const lsSet=(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v));}catch(e){}};
-
 const key=b=>b.title+"|"+b.author;
+const iso=(y,m,d)=>`${y}-${String(m).padStart(2,"0")}-${String(d).padStart(2,"0")}`;
 function pd(str){const p=String(str).split("-").map(Number);
-  if(p.length===3)return{y:p[0],m:p[1],d:p[2],exact:true,t:new Date(p[0],p[1]-1,p[2]).getTime()};
-  if(p.length===2)return{y:p[0],m:p[1],d:null,exact:false,t:new Date(p[0],p[1]-1,28).getTime()};
-  return{y:p[0],m:null,d:null,exact:false,t:new Date(p[0],11,31).getTime()};}
-const today=new Date();today.setHours(0,0,0,0);
-const winStart=pd(WATCHLIST_META.windowStart).t;
-/* Read status is set by hand in watchlist-data.js (read:true), so it looks the
-   same in every browser. Nothing is stored per-browser except cached cover lookups. */
-const items=watchlist.map(b=>({...b,p:pd(b.date)}));
-const isOut=b=>b.p.exact?b.p.t<=today.getTime():(b.p.m&&(b.p.y<today.getFullYear()||(b.p.y===today.getFullYear()&&b.p.m<today.getMonth()+1)));
-const dateLabel=b=>b.p.exact?`${MONTHS[b.p.m-1]} ${b.p.d}`:b.p.m?`${MONTHS[b.p.m-1]} · TBC`:`${b.p.y} · TBA`;
+  if(p.length===3)return{y:p[0],m:p[1],d:p[2],exact:true};
+  if(p.length===2)return{y:p[0],m:p[1],d:null,exact:false};
+  return{y:p[0],m:null,d:null,exact:false};}
+const items=watchlist.map(b=>({...b,p:pd(b.date)}));   /* read:true is set by hand in the data file */
+const now=new Date(), todayISO=iso(now.getFullYear(),now.getMonth()+1,now.getDate());
+const winStart=WATCHLIST_META.windowStart, winEnd=WATCHLIST_META.windowEnd;
 
-/* ---- covers ----
-   Order tried for each book: `cover` (explicit URL) -> `isbn` (Open Library) ->
-   a lookup done in the browser (Google Books, then Open Library), remembered
-   in this browser. If every source misses, a designed placeholder shows. ---- */
+/* ---- holidays (computed so they stay right every year) ---- */
+function nthDow(y,m,dow,n){const first=new Date(y,m-1,1).getDay();return 1+((dow-first+7)%7)+7*(n-1);}
+function lastDow(y,m,dow){const last=new Date(y,m,0);return last.getDate()-((last.getDay()-dow+7)%7);}
+function easter(y){const a=y%19,b=Math.floor(y/100),c=y%100,d=Math.floor(b/4),e=b%4,f=Math.floor((b+8)/25),g=Math.floor((b-f+1)/3),
+  h=(19*a+b-d-g+15)%30,i=Math.floor(c/4),k=c%4,l=(32+2*e+2*i-h-k)%7,m=Math.floor((a+11*h+22*l)/451),
+  mo=Math.floor((h+l-7*m+114)/31),da=((h+l-7*m+114)%31)+1;return[mo,da];}
+const holCache={};
+function holidays(y){
+  if(holCache[y])return holCache[y];
+  const h={}, add=(m,d,e,n)=>{h[iso(y,m,d)]={e,n};}, [em,ed]=easter(y);
+  add(1,1,"🎉","New Year's Day"); add(1,nthDow(y,1,1,3),"✊","MLK Day");
+  add(2,2,"🦫","Groundhog Day"); add(2,14,"🥰","Valentine's Day"); add(2,nthDow(y,2,1,3),"🇺🇸","Presidents' Day");
+  add(3,17,"🍀","St. Patrick's Day"); add(em,ed,"🐣","Easter"); add(4,22,"🌍","Earth Day");
+  add(5,5,"🌮","Cinco de Mayo"); add(5,nthDow(y,5,0,2),"💐","Mother's Day"); add(5,lastDow(y,5,1),"🇺🇸","Memorial Day");
+  add(6,19,"✨","Juneteenth"); add(6,nthDow(y,6,0,3),"👔","Father's Day"); add(7,4,"🎆","Independence Day");
+  add(9,nthDow(y,9,1,1),"🧺","Labor Day"); add(10,31,"🎃","Halloween");
+  add(11,nthDow(y,11,4,4),"🦃","Thanksgiving"); add(11,nthDow(y,11,4,4)+1,"🛍️","Black Friday");
+  add(12,24,"🎄","Christmas Eve"); add(12,25,"🎁","Christmas"); add(12,31,"🥂","New Year's Eve");
+  return holCache[y]=h;
+}
+
+/* ---- covers: cover (url) -> isbn (Open Library) -> browser lookup (Google Books, Open Library) -> placeholder ---- */
 const coverCache=lsGet("watchlist-covers-v2",{});
-function srcList(b){
-  const l=[];
+function srcList(b){const l=[];
   if(b.cover)l.push(b.cover);
   if(b.isbn)l.push(`https://covers.openlibrary.org/b/isbn/${b.isbn}-L.jpg?default=false`);
   if(coverCache[key(b)])l.push(coverCache[key(b)]);
-  return l;
-}
-function nextSrc(img){            /* onerror/tiny image: move on to the next candidate */
-  const l=JSON.parse(img.dataset.srcs||"[]"); const i=+img.dataset.i+1;
-  if(i<l.length){img.dataset.i=i;img.src=l[i];}else img.remove();
-}
+  return l;}
+function nextSrc(img){const l=JSON.parse(img.dataset.srcs||"[]");const i=+img.dataset.i+1;if(i<l.length){img.dataset.i=i;img.src=l[i];}else img.remove();}
 async function lookup(b){
   const last=b.author.split(" ").pop().replace(/[^\w]/g,"");
   const t=b.title.replace(/[:&].*$/,"").replace(/\(.*?\)/g,"").trim();
   try{
     const r=await fetch("https://www.googleapis.com/books/v1/volumes?maxResults=6&q="+encodeURIComponent(`intitle:${t} inauthor:${last}`));
-    if(r.ok){
-      const j=await r.json();
-      const v=(j.items||[]).find(x=>x.volumeInfo&&x.volumeInfo.imageLinks);
-      if(v){const u=(v.volumeInfo.imageLinks.thumbnail||v.volumeInfo.imageLinks.smallThumbnail).replace("http://","https://").replace("&edge=curl","");return u+"&zoom=2";}
-    }
+    if(r.ok){const j=await r.json();const v=(j.items||[]).find(x=>x.volumeInfo&&x.volumeInfo.imageLinks);
+      if(v){const u=(v.volumeInfo.imageLinks.thumbnail||v.volumeInfo.imageLinks.smallThumbnail).replace("http://","https://").replace("&edge=curl","");return u+"&zoom=2";}}
   }catch(e){}
   try{
     const r=await fetch("https://openlibrary.org/search.json?"+new URLSearchParams({title:t,author:b.author,limit:"5",fields:"cover_i"}));
-    if(r.ok){const d=((await r.json()).docs||[]).find(x=>x.cover_i); if(d)return `https://covers.openlibrary.org/b/id/${d.cover_i}-L.jpg`;}
+    if(r.ok){const d=((await r.json()).docs||[]).find(x=>x.cover_i);if(d)return `https://covers.openlibrary.org/b/id/${d.cover_i}-L.jpg`;}
   }catch(e){}
   return null;
-}
-async function findCovers(){
-  for(const b of items){
-    if(b.cover||b.isbn||key(b) in coverCache)continue;
-    const u=await lookup(b);
-    if(!u)continue;                      /* try again next visit */
-    coverCache[key(b)]=u; lsSet("watchlist-covers-v2",coverCache);
-    document.querySelectorAll(`[data-k="${CSS.escape(key(b))}"] .cover`).forEach(c=>{c.innerHTML=coverInner(b)+c.querySelector(".over").outerHTML;});
-    await new Promise(r=>setTimeout(r,150));
-  }
 }
 const hue=s=>{let h=0;for(const c of s)h=(h*31+c.charCodeAt(0))%360;return h;};
 function coverInner(b){
@@ -205,65 +201,96 @@ function coverInner(b){
   const ph=`<div class="ph" style="background:linear-gradient(155deg,hsl(${h},48%,34%),hsl(${(h+50)%360},55%,18%))"><div class="t">${esc(b.title)}</div><div class="a">${esc(b.author)}</div></div>`;
   return l.length?`${ph}<img src="${esc(l[0])}" data-srcs="${esc(JSON.stringify(l))}" data-i="0" alt="Cover of ${esc(b.title)}" loading="lazy" onload="if(this.naturalWidth<60)nextSrc(this)" onerror="nextSrc(this)">`:ph;
 }
-
-function card(b){
-  const out=isOut(b);
-  return `<div class="book ${b.read?"read":""}" data-k="${esc(key(b))}">
-    <div class="cover">${coverInner(b)}<span class="over">
-      <span class="date ${out?"out":""}">${out?"OUT · ":""}${dateLabel(b)}</span>
-      ${b.read?`<span class="check" title="Read">✓</span>`:""}
-      ${b.p.t<winStart?`<span class="flag" style="background:linear-gradient(90deg,#8d86b3,#6f6893);color:#fff">2026 ballot</span>`:b.hot&&!b.read?`<span class="flag">Top pick</span>`:""}
-    </span></div>
-    <div class="bt">${esc(b.title)}</div><div class="ba">${esc(b.author)}</div>
-  </div>`;
+async function findCovers(){
+  for(const b of items){
+    if(b.cover||b.isbn||key(b) in coverCache)continue;
+    const u=await lookup(b); if(!u)continue;      /* try again next visit */
+    coverCache[key(b)]=u; lsSet("watchlist-covers-v2",coverCache);
+    document.querySelectorAll(`[data-bk="${CSS.escape(key(b))}"]`).forEach(el=>{el.innerHTML=coverInner(b);});
+    await new Promise(r=>setTimeout(r,150));
+  }
 }
-/* One calendar, soonest first: what's already out (newest first), then each
-   upcoming month in order. */
-function render(){
-  const out=items.filter(isOut).sort((a,b)=>b.p.t-a.p.t);
-  const soon=items.filter(b=>!isOut(b)).sort((a,b)=>a.p.t-b.p.t);
+
+/* ---- calendar ---- */
+const byDay={}, byMonthTBC={}, tba=[];
+items.forEach(b=>{
+  if(b.p.exact)(byDay[b.date]=byDay[b.date]||[]).push(b);
+  else if(b.p.m)(byMonthTBC[`${b.p.y}-${b.p.m}`]=byMonthTBC[`${b.p.y}-${b.p.m}`]||[]).push(b);
+  else tba.push(b);
+});
+function monthRange(){
+  const all=items.filter(b=>b.p.m).map(b=>b.p.y*12+b.p.m-1);
+  const s=pd(winStart), e=pd(winEnd);
+  const lo=Math.min(s.y*12+s.m-1,...all,now.getFullYear()*12+now.getMonth()), hi=Math.max(e.y*12+e.m-1,...all);
+  const out=[];for(let i=lo;i<=hi;i++)out.push([Math.floor(i/12),i%12+1]);return out;
+}
+const bookMini=b=>`<div class="cover" data-bk="${esc(key(b))}">${coverInner(b)}</div>`;
+function dayCell(y,m,d){
+  const id=iso(y,m,d), bs=byDay[id]||[], hol=holidays(y)[id];
+  const edge=id===winStart||id===winEnd;
+  let emoji=hol?hol.e:""; if(edge&&!emoji)emoji="🏆";
+  const cls=["day"]; if(id===todayISO)cls.push("today"); if(id<todayISO)cls.push("past"); if(edge)cls.push("edge");
+  if(bs.length){
+    cls.push("has"); if(bs.length>1)cls.push("multi"); if(bs.every(b=>b.read))cls.push("allread");
+    const b0=bs[0], pre=id<winStart;
+    return `<div class="${cls.join(" ")}" data-day="${id}"><span class="n">${d}</span>${bookMini(b0)}${pre?'<span class="ballot26"></span>':''}
+      ${emoji?`<span class="hol">${emoji}</span>`:""}${bs.length>1?`<span class="more">+${bs.length-1}</span>`:""}${bs.every(b=>b.read)?'<span class="chk">✓</span>':""}</div>`;
+  }
+  return `<div class="${cls.join(" ")}" ${hol||edge?`data-day="${id}"`:""}><span class="n">${d}</span>${emoji?`<span class="hol">${emoji}</span>`:""}</div>`;
+}
+function tbRow(list){return list.map(b=>`<div class="tb ${b.read?"read":""}" data-one="${esc(key(b))}"><div class="cv" data-bk="${esc(key(b))}">${coverInner(b)}</div>${b.read?'<span class="chk">✓</span>':""}<div class="bt2">${esc(b.title)}</div></div>`).join("");}
+function renderCal(){
   let h="";
-  if(out.length)h+=`<div class="month">Out now</div><div class="grid">${out.map(card).join("")}</div>`;
-  let last="",open=false;
-  soon.forEach(b=>{
-    const l=b.p.m?`${MONTH_FULL[b.p.m-1]} ${b.p.y}`:`${b.p.y} · date to be announced`;
-    if(l!==last){if(open)h+="</div>";h+=`<div class="month">${l}</div><div class="grid">`;last=l;open=true;}
-    h+=card(b);
+  monthRange().forEach(([y,m])=>{
+    const first=new Date(y,m-1,1).getDay(), n=new Date(y,m,0).getDate();
+    const cnt=items.filter(b=>b.p.y===y&&b.p.m===m).length;
+    h+=`<section class="month" id="m-${y}-${m}"><div class="mhead"><div class="mname">${MONTH_FULL[m-1]} <em>${y}</em></div><div class="mcount">${cnt?cnt+(cnt===1?" release":" releases"):""}</div></div>
+      <div class="dow">${DOW.map(x=>`<div>${x}</div>`).join("")}</div><div class="days">`;
+    for(let i=0;i<first;i++)h+=`<div class="day blank"></div>`;
+    for(let d=1;d<=n;d++)h+=dayCell(y,m,d);
+    h+=`</div>`;
+    const t=byMonthTBC[`${y}-${m}`]; if(t)h+=`<div class="tbc"><h4>🗓️ Sometime in ${MONTH_FULL[m-1]}, date TBC</h4><div class="tbcrow">${tbRow(t)}</div></div>`;
+    h+=`</section>`;
   });
-  if(open)h+="</div>";
   document.getElementById("cal").innerHTML=h;
+  document.getElementById("tba").innerHTML=tba.length?`<section class="tba"><div class="tbc"><h4>✨ ${tba[0].p.y}, date to be announced</h4><div class="tbcrow">${tbRow(tba)}</div></div></section>`:"";
 }
-function meter(){
-  const inWin=items.filter(b=>b.p.t>=winStart), read=inWin.filter(b=>b.read).length;
-  document.getElementById("meter").innerHTML=
-    `<span class="chip"><b>${read}</b>of ${inWin.length} read</span><span class="chip"><b>${items.filter(b=>!isOut(b)).length}</b>coming up</span>`;
-}
-const fmt=s=>{const p=pd(s);return `${MONTH_FULL[p.m-1]} ${p.d}, ${p.y}`;};
 
-function openSheet(k){
-  const b=items.find(x=>key(x)===k); if(!b)return;
-  document.getElementById("sheet").innerHTML=`
-    <div class="top"><div class="mini"><div class="cover">${coverInner(b)}</div></div>
+/* ---- sheet ---- */
+const fmt=s=>{const p=pd(s);return `${DOW[new Date(p.y,p.m-1,p.d).getDay()]}, ${MONTH_FULL[p.m-1]} ${p.d}, ${p.y}`;};
+function bookBlock(b){
+  const when=b.p.exact?(b.date<=todayISO?"Out now":"Releases "+MONTH_FULL[b.p.m-1]+" "+b.p.d):b.p.m?`${MONTH_FULL[b.p.m-1]} ${b.p.y}, date TBC`:`${b.p.y}, date TBA`;
+  return `<div class="sbook"><div class="top"><div class="mini"><div class="cv" data-bk="${esc(key(b))}">${coverInner(b)}</div></div>
     <div><h3>${esc(b.title)}</h3><div class="by">${esc(b.author)}</div>
-      <div class="tags"><span class="tag g">${esc(b.cat)}</span>${b.series?`<span class="tag">${esc(b.series)}</span>`:""}
-      ${b.read?`<span class="tag" style="background:rgba(127,224,195,.18);color:var(--mint)">✓ Read</span>`:""}
-      <span class="tag">${isOut(b)?"Out ":"Releases "}${b.p.exact?fmt(b.date):b.p.m?MONTH_FULL[b.p.m-1]+" "+b.p.y+" (date TBC)":b.p.y+" (date TBA)"}</span></div></div></div>
-    ${b.buzz?`<div class="tags"><span class="tag b">🔥 ${esc(b.buzz)}</span></div>`:""}
-    ${b.note?`<p>${esc(b.note)}</p>`:""}
-    <div class="row"><button class="btn p" data-close="1">Close</button></div>`;
-  document.getElementById("veil").classList.add("open");
+    <div class="tags"><span class="tag g">${esc(b.cat)}</span>${b.series?`<span class="tag">${esc(b.series)}</span>`:""}${b.read?'<span class="tag m">✓ Read</span>':""}<span class="tag">${when}</span></div></div></div>
+    ${b.buzz?`<div class="tags"><span class="tag b">🔥 ${esc(b.buzz)}</span></div>`:""}${b.note?`<p>${esc(b.note)}</p>`:""}</div>`;
 }
+function openSheet(head,html){document.getElementById("sheet").innerHTML=`<div class="sdate">${head}</div>${html}<button class="btn" data-close="1">Close</button>`;document.getElementById("veil").classList.add("open");}
 const closeSheet=()=>document.getElementById("veil").classList.remove("open");
 document.addEventListener("click",e=>{
   if(e.target.closest("[data-close]")||e.target.id==="veil"){closeSheet();return;}
-  const bk=e.target.closest(".book");if(bk)openSheet(bk.dataset.k);
+  const dc=e.target.closest("[data-day]");
+  if(dc){const id=dc.dataset.day,p=pd(id),bs=byDay[id]||[],hol=holidays(p.y)[id];
+    let head=fmt(id)+(hol?` · ${hol.e} ${hol.n}`:"");
+    if(id===winStart)head+=" · 🏆 award year begins"; if(id===winEnd)head+=" · 🏆 award year ends";
+    openSheet(head,bs.length?bs.map(bookBlock).join(""):`<p style="color:var(--soft);margin:0">No releases on the list today.</p>`);return;}
+  const one=e.target.closest("[data-one]");
+  if(one){const b=items.find(x=>key(x)===one.dataset.one);if(b)openSheet(b.p.m?`${MONTH_FULL[b.p.m-1]} ${b.p.y}`:`${b.p.y}`,bookBlock(b));}
 });
 document.addEventListener("keydown",e=>{if(e.key==="Escape")closeSheet();});
 
-document.getElementById("kicker").textContent=`${WATCHLIST_META.windowStart.slice(0,4)} to ${WATCHLIST_META.windowEnd.slice(0,4)} award year`;
-document.getElementById("sub").textContent=`Books that could land on the ${WATCHLIST_META.windowEnd.slice(0,4)} Goodreads Choice Awards ballot (eligible ${fmt(WATCHLIST_META.windowStart)} to ${fmt(WATCHLIST_META.windowEnd)}), in release order. Tap a book for details.`;
-document.getElementById("foot").innerHTML=`Last refreshed ${fmt(WATCHLIST_META.lastRefreshed)}. Release dates come from preview lists and often shift.`;
-render();meter();findCovers();
+function scrollToday(smooth){
+  const el=document.getElementById(`m-${now.getFullYear()}-${now.getMonth()+1}`)||document.querySelector(".month");
+  if(el)el.scrollIntoView({behavior:smooth?"smooth":"auto",block:"start"});
+}
+document.getElementById("todayBtn").addEventListener("click",()=>scrollToday(true));
+
+const inWin=items.filter(b=>b.date>=winStart||!b.p.exact), readN=inWin.filter(b=>b.read).length;
+document.getElementById("kicker").textContent=`${winStart.slice(0,4)} to ${winEnd.slice(0,4)} award year`;
+document.getElementById("sub").textContent=`A calendar of books that could land on the ${winEnd.slice(0,4)} Goodreads Choice Awards ballot, on the day they come out. Tap a day for details.`;
+document.getElementById("meter").innerHTML=`<span class="chip"><b>${readN}</b>of ${inWin.length} read</span><span class="chip"><b>${items.filter(b=>!b.p.exact||b.date>todayISO).length}</b>still to come</span>`;
+document.getElementById("foot").innerHTML=`Last refreshed ${fmt(WATCHLIST_META.lastRefreshed)}.<br>Release dates come from preview lists and often shift.`;
+renderCal(); scrollToday(false); findCovers();
 </script>
 </body>
 </html>

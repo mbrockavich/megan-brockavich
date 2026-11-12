@@ -6,8 +6,11 @@ description: Monthly refresh of Megan's Choice Awards Watchlist (watchlist.html 
 # Refreshing the Choice Awards Watchlist
 
 The page is `watchlist.html`; **all content lives in `watchlist-data.js`**. Never
-hand-edit the HTML for a refresh. The page splits "Out now" vs "Coming up" from
-today's date by itself.
+hand-edit the HTML for a refresh. The page is a long scrolling month-by-month calendar: covers sit on their
+release day (days with several books show "+N" and open a list), month-only
+dates go in a "date TBC" row under that month, year-only dates go at the very
+bottom. Holidays (with emoji) are computed in `watchlist.html`; add more there if
+she asks. Months extend automatically to cover every entry and the award window.
 
 **The page is deliberately standalone** (own dark design, "The Ballot Watch").
 Megan does not want it tied to the rest of the site: don't make it read
