@@ -48,7 +48,8 @@ const WATCHLIST_META = {
 
 const CATS = [
   "Romance", "Romantasy", "Fantasy", "Science Fiction",
-  "Mystery & Thriller", "Historical Fiction", "Fiction", "Young Adult", "Nonfiction",
+  "Mystery & Thriller", "Horror", "Historical Fiction", "Fiction", "Young Adult",
+  "Memoir & Biography", "Nonfiction",
 ];
 
 const watchlist = [
@@ -60,9 +61,26 @@ const watchlist = [
   {title:"Sunflower Season", author:"Danica Nava", date:"2026-11-03", cat:"Romance", note:"Screenwriter teams up with a nerdy assistant to write a script."},
   {title:"Hate and Other Acts of Fiction", author:"Megan Oliver", date:"2026-11-10", cat:"Romance", note:"Rival tour guides team up for a murder-mystery event."},
 
+  /* ---- Nov 2026, other genres (still on the 2026 ballot) ---- */
+  {title:"Monsters of Ohio", author:"John Scalzi", date:"2026-11-03", cat:"Science Fiction", buzz:"On Time Out's most-anticipated November list"},
+  {title:"West of Loveland", author:"Tom Drury", date:"2026-11-03", cat:"Fiction", note:"Literary fiction, praised as funny and beautiful."},
+  {title:"Stations", author:"Louise Kennedy", date:"2026-11-03", cat:"Historical Fiction", buzz:"AV Club's November historical fiction pick"},
+  {title:"Desire Feeds the Feast", author:"Tarajia Morrell", date:"2026-11-03", cat:"Memoir & Biography", buzz:"Marie Claire's must-read November list"},
+  {title:"Jolt", author:"Ted Scheinman", date:"2026-11-10", cat:"Memoir & Biography", note:"Memoir about a controversial therapy; Kirkus calls it witty and candid."},
+  {title:"Don't Stop Snowing", author:"Gabriel Bump", date:"2026-11-10", cat:"Fiction", buzz:"Lit Hub November pick"},
+  {title:"The Squatters", author:"Salva Brelvi", date:"2026-11-10", cat:"Fiction", buzz:"AV Club's November fiction pick"},
+  {title:"The Cold Read", author:"Tara Laskowski", date:"2026-11-10", cat:"Mystery & Thriller", note:"Locked-room story about a jury in a Hollywood murder trial.", buzz:"Fangirlish's best November thrillers"},
+  {title:"When They Find Me", author:"Carter Wilson", date:"2026-11-10", cat:"Mystery & Thriller", buzz:"Fangirlish's best November thrillers"},
+
   /* ---- 2027 awards window opens ---- */
   {title:"Peculiar Stars", author:"Rebecca Yarros", date:"2026-11-17", cat:"Romantasy", hot:true, note:"Yarros has won the Romantasy category before (Onyx Storm, 2025).", buzz:"Named a most-anticipated November release"},
   {title:"The Wrath Gods Reap", author:"Abigail Owen", date:"2026-11-17", cat:"Romantasy", note:"Finale of a Greek gods romantasy series."},
+
+  {title:"All the Little Secrets", author:"May Cobb", date:"2026-11-17", cat:"Mystery & Thriller", buzz:"AV Club's November thriller pick"},
+  {title:"Dead New World", author:"Lin Darrow", date:"2026-11-17", cat:"Mystery & Thriller", buzz:"Book Riot's November mysteries and thrillers"},
+  {title:"Between the River and the Railroad Tracks", author:"Nicole R. Fleetwood", date:"2026-11-17", cat:"Memoir & Biography", note:"Kirkus: a counter-story to Hillbilly Elegy's portrait of southwestern Ohio."},
+  {title:"The First House", author:"Avni Doshi", date:"2026-11", cat:"Fiction", note:"Listings disagree: Nov 10 or Nov 17."},
+  {title:"Primeval and Other Times", author:"Olga Tokarczuk", date:"2026-12-01", cat:"Fiction", note:"Listed for Dec 1. May be a new edition of an earlier book, so verify."},
 
   /* ---- January 2027 ---- */
   {title:"Love Interest", author:"Chloe Liese", date:"2027-01-05", cat:"Romance"},

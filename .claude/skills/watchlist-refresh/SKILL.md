@@ -26,6 +26,16 @@ Nov 11 of one year through Nov 10 of the next (2026 rules were Nov 12 2025 to
 Nov 10 2026). Confirm against goodreads.com/choiceawards once the 2027 rules post,
 then fix `windowStart`/`windowEnd` in `WATCHLIST_META`.
 
+## Cover ALL genres (important)
+Megan noticed the first version only had romance, romantasy and fantasy. Every
+refresh must sweep each category in `CATS`, one search per genre per month:
+mystery/thriller, horror, sci-fi, historical fiction, literary/general fiction,
+YA, memoir/biography and nonfiction too, not just romance and fantasy. Genre roundups that
+worked: CrimeReads (thrillers), Fangirlish, Book Riot (monthly per-genre posts),
+Lit Hub (sci-fi/fantasy), AV Club and Time Out (all-genre monthly picks), Kirkus
+(release dates for nonfiction), Marie Claire, Hachette's monthly nonfiction post.
+Watch for last year's lists showing up in results (check the year).
+
 ## Monthly steps
 1. **Read `watchlist-data.js`** first, so you build on what's there.
 2. **Search for the current month and the next 2 to 3 months** (WebSearch):
