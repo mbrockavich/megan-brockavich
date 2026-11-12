@@ -18,6 +18,11 @@
      note                    : one line on why it's worth watching
      buzz                    : optional, evidence of hype (shown as a flame tag)
      hot                     : true = lead pick (shown first, gets a ★)
+     read                    : true once Megan has read it. Shows a green check
+                               and dims the cover. Set by hand (ask Claude), so it
+                               looks the same in every browser.
+     isbn                    : optional ISBN-13 (digits only). Most reliable way to
+                               get a cover; the page tries it before any lookup.
      cover                   : optional image URL. If left off, the page looks
                                the book up on Open Library by title + author in
                                the browser and falls back to a designed

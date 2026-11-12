@@ -73,12 +73,14 @@
   .ph{ position:absolute; inset:0; display:flex; flex-direction:column; justify-content:space-between; padding:44px 12px 14px; text-align:left; }
   .ph .t{ font-family:'Fraunces',serif; font-weight:700; font-size:clamp(15px,2.1vw,19px); line-height:1.12; color:#fff; text-shadow:0 1px 8px rgba(0,0,0,.35); }
   .ph .a{ font-size:10px; letter-spacing:.14em; text-transform:uppercase; color:rgba(255,255,255,.85); font-weight:700; }
+  .over{ position:absolute; inset:0; pointer-events:none; }
   .date{ position:absolute; left:8px; top:8px; background:rgba(18,15,36,.86); backdrop-filter:blur(4px); border:1px solid var(--line);
     border-radius:8px; padding:4px 8px; font-size:10.5px; font-weight:700; letter-spacing:.04em; color:var(--ink); }
   .date.out{ background:var(--gold); color:#2a1d05; border-color:var(--gold); }
-  .star{ position:absolute; right:7px; top:7px; width:34px; height:34px; border-radius:50%; border:1px solid var(--line);
-    background:rgba(18,15,36,.78); backdrop-filter:blur(4px); color:var(--soft); font-size:17px; cursor:pointer; line-height:1; padding:0; }
-  .star.on{ background:var(--gold); color:#2a1d05; border-color:var(--gold); }
+  .check{ position:absolute; right:7px; top:7px; width:30px; height:30px; border-radius:50%; background:var(--mint); color:#06251c;
+    display:flex; align-items:center; justify-content:center; font-size:17px; font-weight:800; box-shadow:0 2px 8px rgba(0,0,0,.4); }
+  .book.read .cover img, .book.read .ph{ filter:saturate(.55) brightness(.62); }
+  .book.read .bt{ color:var(--soft); }
   .flag{ position:absolute; left:0; bottom:10px; background:linear-gradient(90deg,var(--rose),#ff9f6b); color:#2a0a14;
     font-size:9.5px; font-weight:800; letter-spacing:.08em; text-transform:uppercase; padding:3px 9px 3px 7px; border-radius:0 6px 6px 0; }
   .bt{ font-family:'Fraunces',serif; font-weight:700; font-size:14.5px; line-height:1.22; margin:10px 0 2px; }
@@ -125,16 +127,8 @@
   </header>
 </div>
 
-<div class="bar"><div class="wrap">
-  <input class="search" id="search" type="search" placeholder="Search title or author...">
-  <div class="pills" id="cats"></div>
-  <div class="pills" id="views"></div>
-</div></div>
-
 <div class="wrap">
-  <div id="leadWrap"></div>
-  <div id="out"></div>
-  <div id="soon"></div>
+  <div id="cal"></div>
   <footer id="foot"></footer>
 </div>
 
@@ -149,7 +143,6 @@ const esc=s=>String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"
 const lsGet=(k,d)=>{try{const v=localStorage.getItem(k);return v==null?d:JSON.parse(v);}catch(e){return d;}};
 const lsSet=(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v));}catch(e){}};
 
-let want=new Set(lsGet("watchlist-want-v1",[]));
 const key=b=>b.title+"|"+b.author;
 function pd(str){const p=String(str).split("-").map(Number);
   if(p.length===3)return{y:p[0],m:p[1],d:p[2],exact:true,t:new Date(p[0],p[1]-1,p[2]).getTime()};
@@ -157,68 +150,80 @@ function pd(str){const p=String(str).split("-").map(Number);
   return{y:p[0],m:null,d:null,exact:false,t:new Date(p[0],11,31).getTime()};}
 const today=new Date();today.setHours(0,0,0,0);
 const winStart=pd(WATCHLIST_META.windowStart).t;
+/* Read status is set by hand in watchlist-data.js (read:true), so it looks the
+   same in every browser. Nothing is stored per-browser except cached cover lookups. */
 const items=watchlist.map(b=>({...b,p:pd(b.date)}));
 const isOut=b=>b.p.exact?b.p.t<=today.getTime():(b.p.m&&(b.p.y<today.getFullYear()||(b.p.y===today.getFullYear()&&b.p.m<today.getMonth()+1)));
 const dateLabel=b=>b.p.exact?`${MONTHS[b.p.m-1]} ${b.p.d}`:b.p.m?`${MONTHS[b.p.m-1]} · TBC`:`${b.p.y} · TBA`;
 
-/* ---- covers: explicit `cover` in the data wins; otherwise look the book up on
-   Open Library once and remember the answer in this browser. A designed
-   placeholder shows until (or unless) a cover turns up. ---- */
-const coverCache=lsGet("watchlist-covers-v1",{});
-const covers={};
-function coverFor(b){return b.cover||coverCache[key(b)]||covers[key(b)]||null;}
-async function findCovers(){
-  const todo=items.filter(b=>!b.cover&&!(key(b) in coverCache));
-  for(const b of todo){
-    try{
-      const q=new URLSearchParams({title:b.title.replace(/\(.*?\)/g,""),author:b.author,limit:"5",fields:"cover_i,title"});
-      const r=await fetch("https://openlibrary.org/search.json?"+q);
-      if(!r.ok)throw 0;
+/* ---- covers ----
+   Order tried for each book: `cover` (explicit URL) -> `isbn` (Open Library) ->
+   a lookup done in the browser (Google Books, then Open Library), remembered
+   in this browser. If every source misses, a designed placeholder shows. ---- */
+const coverCache=lsGet("watchlist-covers-v2",{});
+function srcList(b){
+  const l=[];
+  if(b.cover)l.push(b.cover);
+  if(b.isbn)l.push(`https://covers.openlibrary.org/b/isbn/${b.isbn}-L.jpg?default=false`);
+  if(coverCache[key(b)])l.push(coverCache[key(b)]);
+  return l;
+}
+function nextSrc(img){            /* onerror/tiny image: move on to the next candidate */
+  const l=JSON.parse(img.dataset.srcs||"[]"); const i=+img.dataset.i+1;
+  if(i<l.length){img.dataset.i=i;img.src=l[i];}else img.remove();
+}
+async function lookup(b){
+  const last=b.author.split(" ").pop().replace(/[^\w]/g,"");
+  const t=b.title.replace(/[:&].*$/,"").replace(/\(.*?\)/g,"").trim();
+  try{
+    const r=await fetch("https://www.googleapis.com/books/v1/volumes?maxResults=6&q="+encodeURIComponent(`intitle:${t} inauthor:${last}`));
+    if(r.ok){
       const j=await r.json();
-      const hit=(j.docs||[]).find(d=>d.cover_i);
-      coverCache[key(b)]=hit?`https://covers.openlibrary.org/b/id/${hit.cover_i}-L.jpg`:"";
-    }catch(e){ continue; }   /* offline or blocked: try again next visit */
-    lsSet("watchlist-covers-v1",coverCache);
-    document.querySelectorAll(`[data-k="${CSS.escape(key(b))}"] .cover`).forEach(c=>{c.innerHTML=coverInner(b);});
+      const v=(j.items||[]).find(x=>x.volumeInfo&&x.volumeInfo.imageLinks);
+      if(v){const u=(v.volumeInfo.imageLinks.thumbnail||v.volumeInfo.imageLinks.smallThumbnail).replace("http://","https://").replace("&edge=curl","");return u+"&zoom=2";}
+    }
+  }catch(e){}
+  try{
+    const r=await fetch("https://openlibrary.org/search.json?"+new URLSearchParams({title:t,author:b.author,limit:"5",fields:"cover_i"}));
+    if(r.ok){const d=((await r.json()).docs||[]).find(x=>x.cover_i); if(d)return `https://covers.openlibrary.org/b/id/${d.cover_i}-L.jpg`;}
+  }catch(e){}
+  return null;
+}
+async function findCovers(){
+  for(const b of items){
+    if(b.cover||b.isbn||key(b) in coverCache)continue;
+    const u=await lookup(b);
+    if(!u)continue;                      /* try again next visit */
+    coverCache[key(b)]=u; lsSet("watchlist-covers-v2",coverCache);
+    document.querySelectorAll(`[data-k="${CSS.escape(key(b))}"] .cover`).forEach(c=>{c.innerHTML=coverInner(b)+c.querySelector(".over").outerHTML;});
+    await new Promise(r=>setTimeout(r,150));
   }
 }
 const hue=s=>{let h=0;for(const c of s)h=(h*31+c.charCodeAt(0))%360;return h;};
 function coverInner(b){
-  const h=hue(b.title+b.author), c=coverFor(b);
+  const h=hue(b.title+b.author), l=srcList(b);
   const ph=`<div class="ph" style="background:linear-gradient(155deg,hsl(${h},48%,34%),hsl(${(h+50)%360},55%,18%))"><div class="t">${esc(b.title)}</div><div class="a">${esc(b.author)}</div></div>`;
-  return c?`${ph}<img src="${esc(c)}" alt="Cover of ${esc(b.title)}" loading="lazy" onload="if(this.naturalWidth<40)this.remove()" onerror="this.remove()">`:ph;
+  return l.length?`${ph}<img src="${esc(l[0])}" data-srcs="${esc(JSON.stringify(l))}" data-i="0" alt="Cover of ${esc(b.title)}" loading="lazy" onload="if(this.naturalWidth<60)nextSrc(this)" onerror="nextSrc(this)">`:ph;
 }
 
-let cat="All",view="All",term="";
-function matches(b){
-  if(cat!=="All"&&b.cat!==cat)return false;
-  if(view==="want"&&!want.has(key(b)))return false;
-  if(view==="hot"&&!b.hot&&!b.buzz)return false;
-  if(term&&!(b.title+" "+b.author).toLowerCase().includes(term))return false;
-  return true;
-}
 function card(b){
-  const out=isOut(b), on=want.has(key(b));
-  return `<div class="book" data-k="${esc(key(b))}">
-    <div class="cover">${coverInner(b)}
+  const out=isOut(b);
+  return `<div class="book ${b.read?"read":""}" data-k="${esc(key(b))}">
+    <div class="cover">${coverInner(b)}<span class="over">
       <span class="date ${out?"out":""}">${out?"OUT · ":""}${dateLabel(b)}</span>
-      <button class="star ${on?"on":""}" data-star="${esc(key(b))}" aria-label="Want to read">${on?"★":"☆"}</button>
-      ${b.p.t<winStart?`<span class="flag" style="background:linear-gradient(90deg,#8d86b3,#6f6893);color:#fff">2026 ballot</span>`:b.hot?`<span class="flag">Top pick</span>`:""}
-    </div>
+      ${b.read?`<span class="check" title="Read">✓</span>`:""}
+      ${b.p.t<winStart?`<span class="flag" style="background:linear-gradient(90deg,#8d86b3,#6f6893);color:#fff">2026 ballot</span>`:b.hot&&!b.read?`<span class="flag">Top pick</span>`:""}
+    </span></div>
     <div class="bt">${esc(b.title)}</div><div class="ba">${esc(b.author)}</div>
   </div>`;
 }
+/* One calendar, soonest first: what's already out (newest first), then each
+   upcoming month in order. */
 function render(){
-  const all=items.filter(matches);
-  const out=all.filter(isOut).sort((a,b)=>b.p.t-a.p.t);
-  const soon=all.filter(b=>!isOut(b)).sort((a,b)=>a.p.t-b.p.t);
-  const lead=items.filter(b=>b.hot&&!isOut(b)&&matches(b)).sort((a,b)=>a.p.t-b.p.t);
-  document.getElementById("leadWrap").innerHTML=lead.length&&cat==="All"&&!term&&view==="All"
-    ?`<h2>Lead picks<small>the ones most likely to be on the ballot</small></h2><div class="lead">${lead.map(card).join("")}</div>`:"";
-  document.getElementById("out").innerHTML=`<h2>Out now<small>newest first</small></h2>`+
-    (out.length?`<div class="grid">${out.map(card).join("")}</div>`:`<div class="empty">Nothing out yet that matches.</div>`);
-  let h=`<h2>Coming up<small>${soon.length} ${soon.length===1?"book":"books"}</small></h2>`;
-  if(!soon.length)h+=`<div class="empty">Nothing upcoming that matches.</div>`;
+  const out=items.filter(isOut).sort((a,b)=>b.p.t-a.p.t);
+  const soon=items.filter(b=>!isOut(b)).sort((a,b)=>a.p.t-b.p.t);
+  let h="";
+  if(out.length)h+=`<div class="month">Out now</div><div class="grid">${out.map(card).join("")}</div>`;
   let last="",open=false;
   soon.forEach(b=>{
     const l=b.p.m?`${MONTH_FULL[b.p.m-1]} ${b.p.y}`:`${b.p.y} · date to be announced`;
@@ -226,50 +231,39 @@ function render(){
     h+=card(b);
   });
   if(open)h+="</div>";
-  document.getElementById("soon").innerHTML=h;
-}
-function pills(){
-  const cats=["All",...CATS.filter(c=>items.some(b=>b.cat===c))];
-  document.getElementById("cats").innerHTML=cats.map(c=>`<button class="pill ${cat===c?"on":""}" data-cat="${esc(c)}">${c}<span class="n">${c==="All"?items.length:items.filter(b=>b.cat===c).length}</span></button>`).join("");
-  document.getElementById("views").innerHTML=[["All","Everything"],["hot","🔥 Hot"],["want","★ My list"]].map(([k,l])=>`<button class="pill ${view===k?"on":""}" data-view="${k}">${l}</button>`).join("");
+  document.getElementById("cal").innerHTML=h;
 }
 function meter(){
-  const up=items.filter(b=>!isOut(b)).length, outW=items.filter(b=>isOut(b)&&b.p.t>=winStart).length;
+  const inWin=items.filter(b=>b.p.t>=winStart), read=inWin.filter(b=>b.read).length;
   document.getElementById("meter").innerHTML=
-    `<span class="chip"><b>${outW}</b>out this award year</span><span class="chip"><b>${up}</b>coming up</span><span class="chip"><b>${want.size}</b>on my list</span>`;
+    `<span class="chip"><b>${read}</b>of ${inWin.length} read</span><span class="chip"><b>${items.filter(b=>!isOut(b)).length}</b>coming up</span>`;
 }
 const fmt=s=>{const p=pd(s);return `${MONTH_FULL[p.m-1]} ${p.d}, ${p.y}`;};
 
 function openSheet(k){
   const b=items.find(x=>key(x)===k); if(!b)return;
-  const on=want.has(k);
   document.getElementById("sheet").innerHTML=`
     <div class="top"><div class="mini"><div class="cover">${coverInner(b)}</div></div>
     <div><h3>${esc(b.title)}</h3><div class="by">${esc(b.author)}</div>
       <div class="tags"><span class="tag g">${esc(b.cat)}</span>${b.series?`<span class="tag">${esc(b.series)}</span>`:""}
+      ${b.read?`<span class="tag" style="background:rgba(127,224,195,.18);color:var(--mint)">✓ Read</span>`:""}
       <span class="tag">${isOut(b)?"Out ":"Releases "}${b.p.exact?fmt(b.date):b.p.m?MONTH_FULL[b.p.m-1]+" "+b.p.y+" (date TBC)":b.p.y+" (date TBA)"}</span></div></div></div>
     ${b.buzz?`<div class="tags"><span class="tag b">🔥 ${esc(b.buzz)}</span></div>`:""}
     ${b.note?`<p>${esc(b.note)}</p>`:""}
-    <div class="row"><button class="btn ${on?"":"p"}" data-star="${esc(k)}" data-close="1">${on?"★ On my list":"☆ Add to my list"}</button><button class="btn" data-close="1" data-only="1">Close</button></div>`;
+    <div class="row"><button class="btn p" data-close="1">Close</button></div>`;
   document.getElementById("veil").classList.add("open");
 }
 const closeSheet=()=>document.getElementById("veil").classList.remove("open");
-
 document.addEventListener("click",e=>{
-  const s=e.target.closest("[data-star]");
-  if(s){e.stopPropagation();const k=s.dataset.star;want.has(k)?want.delete(k):want.add(k);lsSet("watchlist-want-v1",[...want]);render();meter();if(s.dataset.close)closeSheet();return;}
-  if(e.target.closest("[data-only]")||e.target.id==="veil"){closeSheet();return;}
-  const c=e.target.closest("[data-cat]");if(c){cat=c.dataset.cat;pills();render();return;}
-  const v=e.target.closest("[data-view]");if(v){view=v.dataset.view;pills();render();return;}
+  if(e.target.closest("[data-close]")||e.target.id==="veil"){closeSheet();return;}
   const bk=e.target.closest(".book");if(bk)openSheet(bk.dataset.k);
 });
 document.addEventListener("keydown",e=>{if(e.key==="Escape")closeSheet();});
-document.getElementById("search").addEventListener("input",e=>{term=e.target.value.trim().toLowerCase();render();});
 
 document.getElementById("kicker").textContent=`${WATCHLIST_META.windowStart.slice(0,4)} to ${WATCHLIST_META.windowEnd.slice(0,4)} award year`;
-document.getElementById("sub").textContent=`Books that could land on the ${WATCHLIST_META.windowEnd.slice(0,4)} Goodreads Choice Awards ballot, eligible ${fmt(WATCHLIST_META.windowStart)} to ${fmt(WATCHLIST_META.windowEnd)}. Tap a book for details, star the ones to read.`;
-document.getElementById("foot").innerHTML=`Last refreshed ${fmt(WATCHLIST_META.lastRefreshed)}. Release dates come from preview lists and often shift.<br>Update by editing <code>watchlist-data.js</code> or asking Claude to refresh it.`;
-pills();render();meter();findCovers();
+document.getElementById("sub").textContent=`Books that could land on the ${WATCHLIST_META.windowEnd.slice(0,4)} Goodreads Choice Awards ballot (eligible ${fmt(WATCHLIST_META.windowStart)} to ${fmt(WATCHLIST_META.windowEnd)}), in release order. Tap a book for details.`;
+document.getElementById("foot").innerHTML=`Last refreshed ${fmt(WATCHLIST_META.lastRefreshed)}. Release dates come from preview lists and often shift.`;
+render();meter();findCovers();
 </script>
 </body>
 </html>

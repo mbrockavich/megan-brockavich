@@ -69,8 +69,20 @@ then fix `windowStart`/`windowEnd` in `WATCHLIST_META`.
   (move them to a `watchlist-archive-YYYY.js` or delete them), bump
   `windowStart`/`windowEnd`, and update the page heading/text if the year changed.
 
+## Checking books off
+There is no filtering and no per-browser "want list" (Megan didn't want anything
+that only works in one browser). When she says she read a watchlist book, set
+`read: true` on its entry in `watchlist-data.js` and push; also log it in
+`reading-data.js` per the `book-finished` skill. At each refresh, glance at
+`books`/`pastReads` in `reading-data.js` and offer to check off any watchlist
+titles she has already logged.
+
+## Covers
+Prefer adding `isbn` (ISBN-13) to each new entry once it exists; that is the most
+reliable cover source. Otherwise the page looks covers up in the browser (Google
+Books, then Open Library) and falls back to a placeholder. Open Library and Google
+image hosts are blocked from cloud sessions, so covers can't be verified here.
+
 ## Manual requests
 If Megan says "add X to the watchlist", add just that entry (look up the date
-and category) and push. If she wants a "want list" reset: that's stored in her
-own browser (`localStorage` key `watchlist-want-v1`), so it can't be changed from
-here; she can clear it by un-starring.
+and category) and push. 
