@@ -91,9 +91,9 @@ const watchlist = [
   {title:"The Stars Look Like Home", author:"TJ Klune", date:"2027-01-12", cat:"Science Fiction", hot:true, buzz:"#3 on Bookishelf's 2027 most-wanted ranking"},
   {title:"In One Brief Moment All Eternity", author:"Elif Shafak", date:"2027-01-12", cat:"Fiction"},
   {title:"The Gentleman Bastard Sequence #4", author:"Scott Lynch", date:"2027-01-13", cat:"Fantasy", note:"Title not yet confirmed in my sources. Long-awaited fourth book."},
-  {title:"The Voice of the Wretched", author:"Kester Grant", date:"2027-01-14", cat:"Fantasy"},
+  {title:"The Voice of the Wretched", author:"Kester Grant", date:"2027-01-14", cat:"Fantasy", note:"Another list gives Dec 2, 2027, so the date is uncertain."},
   {title:"The Jewel of Sugar Hill", author:"Fiona Davis", date:"2027-01-26", cat:"Historical Fiction", note:"Book club pick list."},
-  {title:"Merciful is the Dark", author:"Sophie Clark", date:"2027-01-26", cat:"Young Adult"},
+  {title:"Merciful is the Dark", author:"Sophie Clark", date:"2027-01-26", cat:"Young Adult", note:"Another list gives March 23, 2027, so the date is uncertain."},
 
   /* ---- February 2027 ---- */
   {title:"The Golden Silhouette", author:"Sara Hashem", date:"2027-02-02", cat:"Fantasy"},
@@ -114,4 +114,25 @@ const watchlist = [
   {title:"Fae & Alchemy, Book 3", author:"Callie Hart", date:"2027-09-07", cat:"Romantasy", note:"Title TBA."},
   {title:"Mirror Mirror", author:"Jim Butcher", date:"2027", cat:"Fantasy", series:"Dresden Files #19", note:"Date TBA, estimated 2027."},
   {title:"Outlander #10", author:"Diana Gabaldon", date:"2027", cat:"Historical Fiction", series:"Outlander #10", note:"Title and date TBA."},
+
+  /* ---- 2027, other genres (added from a genre-by-genre sweep) ---- */
+  {title:"Better Every Day", author:"Arnold Schwarzenegger", date:"2027-01-12", cat:"Nonfiction", note:"An action plan for a full life."},
+  {title:"Malice", author:"Jonathan Kellerman", date:"2027-02-02", cat:"Mystery & Thriller", series:"Alex Delaware #42"},
+  {title:"King of Masks", author:"Petra Lord", date:"2027-02-09", cat:"Young Adult", series:"Queen of Faces #2"},
+  {title:"Dark Union", author:"Mark Greaney", date:"2027-02-16", cat:"Mystery & Thriller", series:"Gray Man #16"},
+  {title:"The Moth Reborn", author:"Samantha Shannon", date:"2027-02-25", cat:"Fantasy", series:"The Bone Season #6", note:"Fantasy and sci-fi crossover.", buzz:"Bookishelf's most-wanted early 2027 list"},
+  {title:"And by the Way", author:"Barbra Streisand", date:"2027-03-30", cat:"Memoir & Biography", note:"Date from Bookishelf's list, so double-check."},
+  {title:"Modern Classic", author:"Emily Henry", date:"2027-04-06", cat:"Romance", hot:true, note:"A straightforward romance, reportedly inspired by The Holiday. Henry won Romance in 2025.", buzz:"Date confirmed by multiple sources"},
+  {title:"Where Are the Wise", author:"C. S. Harris", date:"2027-04-06", cat:"Historical Fiction", series:"Sebastian St. Cyr #22", note:"Historical mystery."},
+  {title:"What Do I Know: A Guide to Living", author:"Rob Lowe", date:"2027-04-06", cat:"Memoir & Biography"},
+  {title:"Omega Authority", author:"Brad Taylor", date:"2027-04-20", cat:"Mystery & Thriller", series:"Pike Logan"},
+  {title:"The Return Trip Is Shorter", author:"Anne Tyler", date:"2027-04-27", cat:"Fiction", note:"New Anne Tyler novel."},
+  {title:"Long Lost Love", author:"Beatriz Williams", date:"2027-06-01", cat:"Historical Fiction"},
+  {title:"Gabriel Allon #27", author:"Daniel Silva", date:"2027-07-15", cat:"Mystery & Thriller", series:"Gabriel Allon #27", note:"Title not announced in my sources."},
+  {title:"Well, That Could Have Gone Better", author:"Jodi Taylor", date:"2027-08-12", cat:"Science Fiction", series:"Chronicles of St. Mary's #15"},
+  {title:"Untitled Colleen Hoover novel", author:"Colleen Hoover", date:"2027-10-05", cat:"Mystery & Thriller", note:"Publisher lists it as a new psychological suspense. Date is provisional."},
+  {title:"Sweet Chaos", author:"Tracy Wolff", date:"2027-11-02", cat:"Young Adult", series:"The Calder Academy #2"},
+  {title:"Red God", author:"Pierce Brown", date:"2027", cat:"Science Fiction", hot:true, series:"Red Rising #7", note:"Listed for 2027 but the date is only an estimate."},
+  {title:"Kingsbridge Book 6", author:"Ken Follett", date:"2027", cat:"Historical Fiction", note:"Listed as an estimate for 2027. Title not announced."},
+  {title:"Untitled memoir", author:"Tara Westover", date:"2027", cat:"Memoir & Biography", note:"Book Riot reports a new Westover memoir is coming in 2027. No date or title yet."},
 ];
