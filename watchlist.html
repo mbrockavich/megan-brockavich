@@ -63,7 +63,7 @@
   .day.has .hol{ text-shadow:0 1px 4px rgba(0,0,0,.8); }
   .day:active.has{ transform:scale(.97); }
   .day .cover{ position:absolute; inset:0; }
-  .cover img{ position:absolute; inset:0; width:100%; height:100%; object-fit:cover; }
+  .cover img, .cv img{ position:absolute; inset:0; width:100%; height:100%; max-width:100%; object-fit:cover; display:block; }
   .ph{ position:absolute; inset:0; display:flex; flex-direction:column; justify-content:flex-end; padding:5px 4px; }
   .ph .t{ font-family:'Fraunces',serif; font-weight:700; font-size:8.5px; line-height:1.1; color:#fff; text-shadow:0 1px 5px rgba(0,0,0,.4); }
   .ph .a{ display:none; }
@@ -100,7 +100,7 @@
   html.locked body{ position:fixed; left:0; right:0; width:100%; overflow:hidden; }
   .sheet{ width:100%; max-width:560px; background:var(--bg2); border:1px solid var(--line); border-radius:22px 22px 0 0;
     padding:0 20px calc(28px + env(safe-area-inset-bottom)); max-height:calc(100vh - 110px); max-height:calc(100dvh - 70px);
-    overflow-y:auto; -webkit-overflow-scrolling:touch; overscroll-behavior:contain; touch-action:pan-y; margin-bottom:0; }
+    overflow-y:auto; overflow-x:hidden; -webkit-overflow-scrolling:touch; overscroll-behavior:contain; touch-action:pan-y; margin-bottom:0; }
   @media (min-width:700px){ .veil{ align-items:center; } .sheet{ border-radius:22px; max-height:85vh; } }
   .shead{ position:sticky; top:0; z-index:2; display:flex; align-items:center; justify-content:space-between; gap:12px;
     background:var(--bg2); padding:18px 0 12px; margin-bottom:6px; border-bottom:1px solid var(--line); }
@@ -110,7 +110,8 @@
   .sbook{ padding:14px 0; border-top:1px solid var(--line); }
   .sbook:first-of-type{ border-top:none; padding-top:0; }
   .top{ display:flex; gap:14px; }
-  .mini{ flex:0 0 92px; }
+  .mini{ flex:0 0 92px; width:92px; min-width:0; }
+  .top > div:last-child{ min-width:0; }
   .mini .cv{ position:relative; aspect-ratio:2/3; border-radius:6px 9px 9px 6px; overflow:hidden; box-shadow:0 8px 18px rgba(0,0,0,.5); }
   .mini .ph .t{ font-size:12px; } .mini .ph{ padding:8px; }
   .sheet h3{ font-family:'Fraunces',serif; font-size:21px; line-height:1.15; margin:0 0 4px; }
@@ -202,6 +203,8 @@ function srcList(b){const l=[];
 function isbn10(i13){ if(!/^978\d{10}$/.test(i13))return null; const d=i13.slice(3,12); let sum=0;
   for(let k=0;k<9;k++)sum+=(10-k)*+d[k]; const c=(11-sum%11)%11; return d+(c===10?"X":c); }
 function nextSrc(img){const l=JSON.parse(img.dataset.srcs||"[]");const i=+img.dataset.i+1;if(i<l.length){img.dataset.i=i;img.src=l[i];}else img.remove();}
+const norm=x=>String(x||"").toLowerCase().replace(/[^a-z0-9]/g,"");
+const sameTitle=(a,b)=>{a=norm(a);b=norm(b);return a&&b&&(a.includes(b.slice(0,14))||b.includes(a.slice(0,14)));};
 const coverLog={google:{ok:0,miss:0,err:{}},apple:{ok:0,miss:0,err:{}},openlib:{ok:0,miss:0,err:{}},img:"testing..."};
 const logErr=(src,e,status)=>{const k=status?("HTTP "+status):String(e&&e.message||e);coverLog[src].err[k]=(coverLog[src].err[k]||0)+1;renderDiag();};
 async function lookup(b){
@@ -209,7 +212,7 @@ async function lookup(b){
   const t=b.title.replace(/[:&].*$/,"").replace(/\(.*?\)/g,"").trim();
   try{
     const r=await fetch("https://www.googleapis.com/books/v1/volumes?maxResults=6&q="+encodeURIComponent(`intitle:${t} inauthor:${last}`));
-    if(r.ok){const j=await r.json();const v=(j.items||[]).find(x=>x.volumeInfo&&x.volumeInfo.imageLinks);
+    if(r.ok){const j=await r.json();const v=(j.items||[]).find(x=>x.volumeInfo&&x.volumeInfo.imageLinks&&sameTitle(x.volumeInfo.title,t));
       if(v){coverLog.google.ok++;const u=(v.volumeInfo.imageLinks.thumbnail||v.volumeInfo.imageLinks.smallThumbnail).replace("http://","https://").replace("&edge=curl","");return u+"&zoom=2";}
       coverLog.google.miss++;
     }else logErr("google",0,r.status);
@@ -218,14 +221,14 @@ async function lookup(b){
     const r=await fetch("https://itunes.apple.com/search?"+new URLSearchParams({term:t+" "+b.author,media:"ebook",limit:"8"}));
     if(r.ok){
       const j=await r.json(), w=t.toLowerCase();
-      const hit=(j.results||[]).find(x=>x.artworkUrl100&&(x.trackName||"").toLowerCase().includes(w.slice(0,18))&&(x.artistName||"").toLowerCase().includes(last.toLowerCase()));
+      const hit=(j.results||[]).find(x=>x.artworkUrl100&&sameTitle(x.trackName,t)&&(x.artistName||"").toLowerCase().includes(last.toLowerCase()));
       if(hit){coverLog.apple.ok++;return hit.artworkUrl100.replace(/\/\d+x\d+bb/,"/600x600bb");}
       coverLog.apple.miss++;
     }else logErr("apple",0,r.status);
   }catch(e){logErr("apple",e);}
   try{
-    const r=await fetch("https://openlibrary.org/search.json?"+new URLSearchParams({title:t,author:b.author,limit:"5",fields:"cover_i"}));
-    if(r.ok){const d=((await r.json()).docs||[]).find(x=>x.cover_i);if(d){coverLog.openlib.ok++;return `https://covers.openlibrary.org/b/id/${d.cover_i}-L.jpg`;}coverLog.openlib.miss++;}
+    const r=await fetch("https://openlibrary.org/search.json?"+new URLSearchParams({title:t,author:b.author,limit:"5",fields:"cover_i,title"}));
+    if(r.ok){const d=((await r.json()).docs||[]).find(x=>x.cover_i&&sameTitle(x.title,t));if(d){coverLog.openlib.ok++;return `https://covers.openlibrary.org/b/id/${d.cover_i}-L.jpg`;}coverLog.openlib.miss++;}
     else logErr("openlib",0,r.status);
   }catch(e){logErr("openlib",e);}
   return null;
