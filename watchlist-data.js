@@ -8,9 +8,7 @@
      4. add a `buzz` note to anything that's blowing up (Goodreads adds,
         big reviews, BookTok, etc.).
    The page splits "Out now" vs "Coming up" by TODAY's date automatically,
-   so books move columns on their own as release dates pass. Books you've
-   logged in reading-data.js are checked off automatically (title match).
-
+   so books move columns on their own as release dates pass. 
    Each entry:
      title, author           : required
      date                    : "YYYY-MM-DD" (exact) or "YYYY-MM" (month only)
@@ -20,6 +18,13 @@
      note                    : one line on why it's worth watching
      buzz                    : optional, evidence of hype (shown as a flame tag)
      hot                     : true = lead pick (shown first, gets a ★)
+     cover                   : optional image URL. If left off, the page looks
+                               the book up on Open Library by title + author in
+                               the browser and falls back to a designed
+                               placeholder (unannounced covers won't be found).
+                               Add a URL here once a real cover is revealed.
+
+   This page is standalone: it only reads this file, not reading-data.js.
 
    DATES ARE FROM PREVIEW LISTS and often shift. Re-check before relying
    on any of them. Entries with only a month are marked "date TBC".

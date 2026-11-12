@@ -7,7 +7,14 @@ description: Monthly refresh of Megan's Choice Awards Watchlist (watchlist.html 
 
 The page is `watchlist.html`; **all content lives in `watchlist-data.js`**. Never
 hand-edit the HTML for a refresh. The page splits "Out now" vs "Coming up" from
-today's date by itself, and checks off books logged in `reading-data.js`.
+today's date by itself.
+
+**The page is deliberately standalone** (own dark design, "The Ballot Watch").
+Megan does not want it tied to the rest of the site: don't make it read
+`reading-data.js`, and don't add nav links to the other pages. Covers: the page
+looks books up on Open Library in the browser and falls back to a placeholder.
+When a real cover is revealed or the lookup misses, set `cover:` to an image URL
+on that entry.
 
 ## Goal
 Help Megan keep up in 2027 with books that could be nominated for the Goodreads
@@ -31,7 +38,7 @@ then fix `windowStart`/`windowEnd` in `WATCHLIST_META`.
    - Set `lastRefreshed` to today (YYYY-MM-DD).
    - Add new books. Keep it to ones with real signal: big authors, Goodreads
      "most added", award-winning authors, strong early reviews, series she reads
-     (check `SERIES` in `reading-data.js`). Aim for quality over volume.
+     (you may peek at `SERIES` in `reading-data.js` for ideas, read-only). Aim for quality over volume.
    - Fix any release dates that moved. Use `YYYY-MM-DD` only when the date is
      confirmed; otherwise `YYYY-MM` or `YYYY`.
    - Add or update `buzz` for books that are blowing up, and `hot: true` for
