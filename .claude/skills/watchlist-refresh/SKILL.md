@@ -126,11 +126,16 @@ Scott Westerfeld, James Dashner, Lev Grossman, Veronica Roth.
   Goodreads Choice list, not her reading history. The calendar covers the 2026
   award year (Nov 12 2025 to Nov 10 2026) and the 2027 one that follows. `read:true`
   only checks off books that are already on that list.
-- 2026 award-year content is the Choice nominees plus big releases, each with its
-  real release day. As of Nov 13, 2026 only the Romance and Romantasy nominee lists
-  were readable (from shereadsromancebooks.com's 2026 Choice pages). The other
-  categories need www.goodreads.com (blocked) or another source. Pull the rest when
-  access allows, from `goodreads.com/choiceawards/best-books-2026`.
+- The 2026 award-year content is **all 300 opening-round Goodreads Choice nominees**
+  (15 categories, ~270 unique books) pulled on Nov 13, 2026 from
+  `https://www.goodreads.com/choiceawards/best-books-2026` and its
+  `readers-favorite-<category>-books-2026` pages, with release days, direct
+  Goodreads links and covers (all from Goodreads: the nominee page has the
+  title, author, cover and book URL; each book's page has "First published <date>").
+  Use `curl` (the WebFetch tool can't resolve these hosts). The first request to a
+  book page sometimes returns empty, so retry. Next year, redo this for the 2027
+  nominees (opening round starts around Nov 10). Books in several categories are
+  merged into one entry; Debut Novel and Audiobook nominees keep their other category.
 - Release days: Bookishelf's month pages (`bookishelf.com/published/<year>/<month>/`)
   list every reviewed book with its day, and shereadsromancebooks.com's monthly
   and "new romance/romantasy books <year>" pages give days for romance. Use `curl`
