@@ -116,6 +116,19 @@ J.K. Rowling, Suzanne Collins, Madeline Miller (short story *Mestra* only),
 Stephanie Garber (only a paperback edition), Kate Stewart, Liv Zander,
 Scott Westerfeld, James Dashner, Lev Grossman, Veronica Roth.
 
+## What Fresh Ink can do now (so you don't break it)
+- The calendar runs from the earliest entry (Jan 2025) to the end of the award year.
+  Past months show books that are already out; entries with no known day sit in a
+  "Released in <month>, exact day not recorded" row.
+- Controls at the top: genre buttons, a From/To month range, and All / Unread / Read.
+  Nonfiction and memoir share one genre button. Read/unread comes only from `read:true`.
+- Backfill: Megan's 2025 and 2026 reads were copied in from `reading-data.js` once
+  with `read:true`, plus the 2025 Goodreads Choice winners and a few 2026 best-of
+  picks. When she finishes a book that is on the watchlist, set `read:true`. When a
+  past book is missing, add it (use a real `YYYY-MM-DD` only if you are sure).
+- Backfill is a starter set, not the full history. Extend it on request or during
+  a refresh using best-of lists for 2025 and 2026.
+
 ## Checking books off
 There is no filtering and no per-browser "want list" (Megan didn't want anything
 that only works in one browser). When she says she read a watchlist book, set

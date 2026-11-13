@@ -18,7 +18,9 @@
      note                    : one line on why it's worth watching
      buzz                    : optional, evidence of hype (shown as a flame tag)
      hot                     : true = lead pick (shown first, gets a ★)
-     read                    : true once Megan has read it. Shows a green check
+     read                    : true once Megan has read it. (Her 2025+ reads were
+                               copied in once from reading-data.js; this page stays
+                               standalone and does not read that file.) Shows a green check
                                and dims the cover. Set by hand (ask Claude), so it
                                looks the same in every browser.
      goodreads               : optional direct Goodreads book URL. If left off, the
@@ -146,4 +148,67 @@ const watchlist = [
   {title:"The End Times: Volume One", author:"Stephen King & Benjamin Percy", date:"2027", cat:"Horror", note:"Their serial novella expanded into a full-length hardcover from Bad Hand Books. Preorders are open and it's expected early 2027, with no exact date yet."},
   {title:"The Beautiful Place", author:"Matt Dinniman", date:"2027", cat:"Science Fiction", hot:true, series:"Dungeon Crawler Carl #9", note:"No date yet. Dinniman said at Comic-Con that it doesn't have one, and 2027 is only an estimate. It may be released as two books."},
   {title:"Crowns of Nyaxia, Book 6", author:"Carissa Broadbent", date:"2027", cat:"Romantasy", series:"Crowns of Nyaxia #6", note:"The final main-series novel. Title and date aren't announced, and 2027 is only a placeholder."},
+
+  /* ---- Past releases you have read (2025 to now), marked read ---- */
+  {title:"Sunrise on the Reaping", author:"Suzanne Collins", date:"2025-03-18", cat:"Young Adult", read:true, cover:"https://covers.openlibrary.org/b/isbn/1546171460-L.jpg", buzz:"2025 Choice Awards winner: YA Fantasy & Sci-Fi"},
+  {title:"Roots of Darkness", author:"Demi Winters", date:"2025-06", cat:"Fantasy", read:true, cover:"https://covers.openlibrary.org/b/id/15151850-L.jpg"},
+  {title:"Dawn of the North", author:"Demi Winters", date:"2026-02", cat:"Fantasy", read:true, cover:"https://covers.openlibrary.org/b/id/15215659-L.jpg"},
+  {title:"Just For the Cameras", author:"Meghan Quinn", date:"2026-02", cat:"Romance", read:true, cover:"https://covers.openlibrary.org/b/id/15170471-L.jpg"},
+  {title:"Dear Debbie", author:"Freida McFadden", date:"2026-01", cat:"Mystery & Thriller", read:true, cover:"https://covers.openlibrary.org/b/id/15171146-L.jpg"},
+  {title:"Cleopatra", author:"Saara El-Arifi", date:"2025", cat:"Historical Fiction", read:true, cover:"https://m.media-amazon.com/images/I/61SqZSwLTvL.jpg"},
+  {title:"The Book Witch", author:"Meg Shaffer", date:"2026", cat:"Fantasy", read:true, cover:"https://covers.openlibrary.org/b/id/15208007-L.jpg"},
+  {title:"Katabasis", author:"R.F. Kuang", date:"2025-08-26", cat:"Fantasy", read:true, cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1743527525i/210191773.jpg"},
+  {title:"The Dinner Party", author:"Freida McFadden", date:"2026", cat:"Mystery & Thriller", read:true, cover:"https://covers.openlibrary.org/b/id/15235011-L.jpg"},
+  {title:"Crown Me Dead", author:"Liv Zander", date:"2026-04", cat:"Fantasy", read:true, cover:"https://covers.openlibrary.org/b/id/15226806-L.jpg"},
+  {title:"Crown Me Yours", author:"Liv Zander", date:"2026-04", cat:"Fantasy", read:true, cover:"https://covers.openlibrary.org/b/id/15228557-L.jpg"},
+  {title:"My Husband's Wife", author:"Alice Feeney", date:"2026-01", cat:"Mystery & Thriller", read:true, cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1747668611i/231127462.jpg"},
+  {title:"107 Days", author:"Kamala Harris", date:"2025-09-23", cat:"Memoir & Biography", read:true, cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1753912443i/232466984.jpg"},
+  {title:"And Now, Back to You", author:"B.K. Borison", date:"2026-02", cat:"Romance", read:true, cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1748482477i/217513554.jpg"},
+  {title:"Dungeon Crawler Carl, Vol. 1 (Graphic Novel)", author:"Matt Dinniman", date:"2026", cat:"Graphic Novel", read:true, cover:"https://covers.openlibrary.org/b/isbn/9781638493655-L.jpg"},
+  {title:"Dear Monica Lewinsky: A Novel", author:"Julia Langbein", date:"2026", cat:"Fiction", read:true, cover:"https://covers.openlibrary.org/b/isbn/9780385551502-L.jpg"},
+  {title:"This Inevitable Ruin", author:"Matt Dinniman", date:"2025-09", cat:"Science Fiction", read:true, cover:"https://covers.openlibrary.org/b/isbn/9798217190041-L.jpg"},
+  {title:"Actually, Nevermind", author:"Taylor Tomlinson", date:"2026-09", cat:"Memoir & Biography", read:true, cover:"actually-nevermind/actually-nevermind-cover.jpg"},
+  {title:"Threshing Day", author:"Rebecca Yarros", date:"2026-09", cat:"Fantasy", read:true, cover:"threshing-day/threshing-day-cover.jpg"},
+  {title:"Poems & Prayers", author:"Matthew McConaughey", date:"2025-09", cat:"Nonfiction", read:true, cover:"https://covers.openlibrary.org/b/isbn/9781984862105-L.jpg"},
+  {title:"A Court of Splintered Harmony", author:"Sarah J. Maas", date:"2026-10", cat:"Fantasy", read:true, cover:"https://covers.openlibrary.org/b/isbn/9781639739134-L.jpg"},
+  {title:"The Road of Bones", author:"Demi Winters", date:"2025", cat:"Fantasy", read:true, cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1704736755i/205044632.jpg"},
+  {title:"Kingdom of Claw", author:"Demi Winters", date:"2025", cat:"Fantasy", read:true, cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1706976049i/207041696.jpg"},
+  {title:"Fearless", author:"Lauren Roberts", date:"2025", cat:"Young Adult", read:true, cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1730330746i/214151222.jpg"},
+  {title:"First-Time Caller", author:"B.K. Borison", date:"2025", cat:"Romance", read:true, cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1718283728i/213243908.jpg"},
+  {title:"Onyx Storm", author:"Rebecca Yarros", date:"2025-01-21", cat:"Fantasy", read:true, cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1720446381i/209668781.jpg", buzz:"2025 Choice Awards winner: Romantasy"},
+  {title:"Artificial Truth", author:"Jung-Myung Lee", date:"2025-12", cat:"Science Fiction", read:true, cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1752494069i/231470374.jpg"},
+  {title:"BookMail: A Meta Horror Novel", author:"Jason R. Davis", date:"2025-05", cat:"Horror", read:true, cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1746988324i/230237670._SX300_.jpg"},
+  {title:"Brimstone", author:"Callie Hart", date:"2025-11", cat:"Fantasy", read:true, cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1742991443i/222139748.jpg"},
+  {title:"Broken Country", author:"Clare Leslie Hall", date:"2025-03", cat:"Fiction", read:true, cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1741267777i/214151202._SX300_.jpg"},
+  {title:"Death Row", author:"Freida McFadden", date:"2025-06", cat:"Mystery & Thriller", read:true, cover:"https://covers.openlibrary.org/b/id/15103391-L.jpg"},
+  {title:"Enchantra", author:"Kaylie Smith", date:"2025-04", cat:"Fantasy", read:true, cover:"https://covers.openlibrary.org/b/id/15115281-L.jpg"},
+  {title:"Everything Is Tuberculosis: The History and Persistence of Our Deadliest Infection", author:"John Green", date:"2025-03", cat:"Nonfiction", read:true, cover:"https://covers.openlibrary.org/b/id/14853332-L.jpg", buzz:"2025 Choice Awards winner: Nonfiction"},
+  {title:"False Note", author:"David Lagercrantz", date:"2025", cat:"Mystery & Thriller", read:true, cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1743721804i/230847688.jpg"},
+  {title:"Good Neighbors", author:"Chad Zunker", date:"2025-06", cat:"Mystery & Thriller", read:true, cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1743804321i/230847753.jpg"},
+  {title:"Nobody's Girl: A Memoir of Surviving Abuse and Fighting for Justice", author:"Virginia Roberts Giuffre", date:"2025-10", cat:"Memoir & Biography", read:true, cover:"https://covers.openlibrary.org/b/id/15134796-L.jpg"},
+  {title:"The Bewitching", author:"Silvia Moreno-Garcia", date:"2025", cat:"Horror", read:true, cover:"https://covers.openlibrary.org/b/id/15101938-L.jpg"},
+  {title:"The Ex-Wives Club", author:"Sally Hepworth", date:"2025-06", cat:"Mystery & Thriller", read:true, cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1743720683i/230847692.jpg"},
+  {title:"The Extra", author:"Annie Neugebauer", date:"2026", cat:"Mystery & Thriller", read:true, cover:"https://covers.openlibrary.org/b/id/15235147-L.jpg"},
+  {title:"The Fallen & the Kiss of Dusk", author:"Carissa Broadbent", date:"2025", cat:"Fantasy", read:true, cover:"https://is1-ssl.mzstatic.com/image/thumb/Publication211/v4/61/ce/bb/61cebbd6-2633-e9f1-48d6-5fe42d373d53/1064406042.jpg/600x600bb.jpg"},
+  {title:"The Skydivers", author:"Chris Bohjalian", date:"2025-06", cat:"Mystery & Thriller", read:true, cover:"https://m.media-amazon.com/images/I/71b6bPBE1+L._AC_AIweblab1378949,T2_FMavif_SF688,436_PQ60_.jpg"},
+  {title:"The Strength of the Few", author:"James Islington", date:"2025-11", cat:"Fantasy", read:true, cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1764516601i/244610613.jpg"},
+
+  /* ---- 2025 Goodreads Choice winners and standout books you haven't marked read ---- */
+  {title:"Great Big Beautiful Life", author:"Emily Henry", date:"2025-04-22", cat:"Romance", buzz:"2025 Choice Awards winner: Romance"},
+  {title:"Atmosphere", author:"Taylor Jenkins Reid", date:"2025-06-03", cat:"Historical Fiction", buzz:"2025 Choice Awards winner: Historical Fiction"},
+  {title:"Bury Our Bones in the Midnight Soil", author:"V.E. Schwab", date:"2025-08-05", cat:"Fantasy", buzz:"2025 Choice Awards winner: Fantasy"},
+  {title:"My Friends", author:"Fredrik Backman", date:"2025", cat:"Fiction", buzz:"2025 Choice Awards winner: Fiction"},
+  {title:"The Compound", author:"Aisling Rawle", date:"2025", cat:"Science Fiction", buzz:"2025 Choice Awards winner: Science Fiction"},
+  {title:"Not Quite Dead Yet", author:"Holly Jackson", date:"2025", cat:"Mystery & Thriller", buzz:"2025 Choice Awards winner: Mystery & Thriller"},
+  {title:"Book of Lives", author:"Margaret Atwood", date:"2025", cat:"Memoir & Biography", buzz:"On Kirkus's best memoirs of 2025"},
+  {title:"One Day, Everyone Will Have Always Been Against This", author:"Omar El Akkad", date:"2025", cat:"Nonfiction", buzz:"NYT bestseller and National Book Award nonfiction longlist"},
+  {title:"A Marriage at Sea", author:"Sophie Elmhirst", date:"2025", cat:"Nonfiction", buzz:"On several best-nonfiction-of-2025 lists"},
+  {title:"We Survived the Night", author:"Julian Brave NoiseCat", date:"2025", cat:"Memoir & Biography", buzz:"On several best-nonfiction-of-2025 lists"},
+  {title:"Kin", author:"Tayari Jones", date:"2026", cat:"Fiction", buzz:"Amazon editors' top pick of 2026 so far"},
+  {title:"The Keeper", author:"Tana French", date:"2026", cat:"Mystery & Thriller", buzz:"On best-of-2026-so-far lists"},
+  {title:"Mad Mabel", author:"Sally Hepworth", date:"2026", cat:"Mystery & Thriller", buzz:"On best-of-2026-so-far lists"},
+  {title:"Yesteryear", author:"Caro Claire Burke", date:"2026", cat:"Fiction", buzz:"Standout fiction of 2026 so far"},
+  {title:"Transcription", author:"Ben Lerner", date:"2026", cat:"Fiction", buzz:"Standout fiction of 2026 so far"},
+  {title:"The Red Winter", author:"Cameron Sullivan", date:"2026", cat:"Fantasy", buzz:"On Book Riot's best SF/F of 2026 so far"},
+  {title:"Fear and Fury", author:"Heather Ann Thompson", date:"2026", cat:"Nonfiction", buzz:"A must-read nonfiction pick of 2026 so far"},
 ];
