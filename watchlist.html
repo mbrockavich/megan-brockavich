@@ -71,8 +71,8 @@
   .mosaic{ position:absolute; inset:0; display:grid; grid-template-columns:1fr 1fr; grid-auto-rows:1fr; gap:1px; }
   .tile{ position:relative !important; inset:auto !important; overflow:hidden; }
   .tile .ph .t{ display:none; }
-  .more{ position:absolute; right:3px; bottom:3px; z-index:4; background:var(--gold); color:#2a1d05; font-size:10px; font-weight:800;
-    border-radius:999px; padding:1px 6px; box-shadow:0 2px 6px rgba(0,0,0,.5); }
+  .more{ position:absolute; left:50%; transform:translateX(-50%); bottom:3px; z-index:4; background:var(--gold); color:#2a1d05; font-size:9.5px; font-weight:800; white-space:nowrap;
+    border-radius:999px; padding:2px 7px; box-shadow:0 2px 6px rgba(0,0,0,.5); }
   .day.has.multi .hol{ bottom:auto; top:3px; left:auto; right:4px; width:auto; }
   .chk{ position:absolute; left:3px; bottom:3px; z-index:4; width:17px; height:17px; border-radius:50%; background:var(--mint); color:#06251c;
     font-size:11px; font-weight:800; display:flex; align-items:center; justify-content:center; box-shadow:0 2px 6px rgba(0,0,0,.5); }
@@ -143,7 +143,7 @@
     <p class="sub" id="sub"></p>
     <div class="meter" id="meter"></div>
   </header>
-  <div class="legend"><span>🏆 award year starts / ends</span><span>✓ read</span><span>dashed edge = still on the 2026 ballot</span><span>+2 = more books that day</span></div>
+  <div class="legend"><span>🏆 award year starts / ends</span><span>✓ read</span><span>dashed edge = still on the 2026 ballot</span><span>"5 books" = how many release that day</span></div>
   <div id="cal"></div>
   <div id="tba"></div>
   <footer id="foot"></footer>
@@ -287,7 +287,7 @@ function dayCell(y,m,d){
     const art=bs.length===1?bookMini(b0)
       :`<div class="mosaic">${bs.slice(0,4).map(b=>`<div class="cover tile" data-bk="${esc(key(b))}">${coverInner(b)}</div>`).join("")}</div>`;
     return `<div class="${cls.join(" ")}" data-day="${id}"><span class="n">${d}</span>${art}${pre?'<span class="ballot26"></span>':''}
-      ${emoji?`<span class="hol">${emoji}</span>`:""}${bs.length>4?`<span class="more">+${bs.length-4}</span>`:""}${bs.every(b=>b.read)?'<span class="chk">✓</span>':""}</div>`;
+      ${emoji?`<span class="hol">${emoji}</span>`:""}${bs.length>1?`<span class="more">${bs.length} books</span>`:""}${bs.every(b=>b.read)?'<span class="chk">✓</span>':""}</div>`;
   }
   return `<div class="${cls.join(" ")}" ${hol||edge?`data-day="${id}"`:""}><span class="n">${d}</span>${emoji?`<span class="hol">${emoji}</span>`:""}</div>`;
 }
