@@ -1,9 +1,9 @@
 ---
 name: watchlist-refresh
-description: Monthly refresh of Megan's Choice Awards Watchlist (watchlist.html / watchlist-data.js), the page that tracks upcoming and recently released books that could land on the Goodreads Choice Awards ballot. Use when Megan says "refresh the watchlist", "update the watchlist", "monthly book update", or asks what new books she should be watching, or adds/removes a book from it.
+description: Monthly refresh of Megan's "Fresh Ink" new-releases calendar (watchlist.html / watchlist-data.js), the page that tracks upcoming and recently released books that could land on the Goodreads Choice Awards ballot. Use when Megan says "refresh the watchlist", "refresh Fresh Ink", "update the watchlist", "monthly book update", or asks what new books she should be watching, or adds/removes a book from it.
 ---
 
-# Refreshing the Choice Awards Watchlist
+# Refreshing Fresh Ink (the new-releases watchlist)
 
 The page is `watchlist.html`; **all content lives in `watchlist-data.js`**. Never
 hand-edit the HTML for a refresh. The page is a long scrolling month-by-month calendar: covers sit on their
@@ -12,7 +12,7 @@ dates go in a "date TBC" row under that month, year-only dates go at the very
 bottom. Holidays (with emoji) are computed in `watchlist.html`; add more there if
 she asks. Months extend automatically to cover every entry and the award window.
 
-**The page is deliberately standalone** (own dark design, "The Ballot Watch").
+**The page is deliberately standalone** (own dark design, "Fresh Ink").
 Megan does not want it tied to the rest of the site: don't make it read
 `reading-data.js`, and don't add nav links to the other pages. Covers: the page
 looks books up on Open Library in the browser and falls back to a placeholder.
@@ -20,6 +20,9 @@ When a real cover is revealed or the lookup misses, set `cover:` to an image URL
 on that entry.
 
 ## Goal
+The page is named **Fresh Ink** (Megan chose it so it isn't tied to Goodreads). It tracks new
+and upcoming books worth reading, with extra attention on award contenders.
+
 Help Megan keep up in 2027 with books that could be nominated for the Goodreads
 Choice Awards (voting opens each November). Eligibility window assumed to be
 Nov 11 of one year through Nov 10 of the next (2026 rules were Nov 12 2025 to

@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>The Ballot Watch</title>
+<title>Fresh Ink</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="theme-color" content="#120f24">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🏆</text></svg>">
@@ -139,7 +139,7 @@
   <a class="back" href="library.html">← library</a>
   <header>
     <div class="kicker" id="kicker"></div>
-    <h1>The Ballot <em>Watch</em></h1>
+    <h1>Fresh <em>Ink</em></h1>
     <p class="sub" id="sub"></p>
     <div class="meter" id="meter"></div>
   </header>
@@ -356,8 +356,8 @@ function scrollToday(smooth){
 document.getElementById("todayBtn").addEventListener("click",()=>scrollToday(true));
 
 const inWin=items.filter(b=>b.date>=winStart||!b.p.exact), readN=inWin.filter(b=>b.read).length;
-document.getElementById("kicker").textContent=`${winStart.slice(0,4)} to ${winEnd.slice(0,4)} award year`;
-document.getElementById("sub").textContent=`A calendar of books that could land on the ${winEnd.slice(0,4)} Goodreads Choice Awards ballot, on the day they come out. Tap a day for details.`;
+document.getElementById("kicker").textContent="new & upcoming reads";
+document.getElementById("sub").textContent=`New and upcoming books worth watching, on the day they come out. Includes the ones with real award buzz. Tap a day for details.`;
 document.getElementById("meter").innerHTML=`<span class="chip"><b>${readN}</b>of ${inWin.length} read</span><span class="chip"><b>${items.filter(b=>!b.p.exact||b.date>todayISO).length}</b>still to come</span>`;
 document.getElementById("foot").innerHTML=`Last refreshed ${fmt(WATCHLIST_META.lastRefreshed)}.<br>Release dates come from preview lists and often shift.`;
 renderCal(); scrollToday(false); probeImages(); findCovers();
