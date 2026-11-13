@@ -90,6 +90,17 @@
   .tb.read .cv{ filter:saturate(.5) brightness(.6); }
   .tb .chk{ left:auto; right:3px; top:3px; bottom:auto; }
   .tba{ margin-top:46px; }
+  .none{ color:var(--soft); font-style:italic; padding:34px 0; text-align:center; }
+  .bar{ position:sticky; top:0; z-index:30; margin:6px -14px 0; padding:10px 14px; background:rgba(18,15,36,.9); backdrop-filter:blur(10px); border-bottom:1px solid var(--line); }
+  @media (min-width:600px){ .bar{ margin:6px -20px 0; padding:10px 20px; } }
+  .pills{ display:flex; gap:7px; overflow-x:auto; scrollbar-width:none; -webkit-overflow-scrolling:touch; }
+  .pills::-webkit-scrollbar{ display:none; }
+  .pill{ flex:0 0 auto; font:inherit; font-size:12.5px; font-weight:600; padding:8px 14px; border-radius:999px; cursor:pointer;
+    background:transparent; color:var(--soft); border:1px solid var(--line); white-space:nowrap; }
+  .pill:hover{ color:var(--ink); border-color:var(--gold2); }
+  .pill.on{ background:var(--gold); color:#2a1d05; border-color:var(--gold); }
+  .pill .n{ opacity:.6; margin-left:5px; font-size:11px; }
+  .month{ scroll-margin-top:64px; }
 
   /* ---- sheet ---- */
   /* Sheet sizing uses dvh so it fits the *visible* screen (iOS browser toolbars make plain vh too tall),
@@ -144,6 +155,7 @@
     <div class="meter" id="meter"></div>
   </header>
   <div class="legend"><span>🏆 award year starts / ends</span><span>✓ read</span><span>dashed edge = still on the 2026 ballot</span><span>"5 books" = how many release that day</span></div>
+  <div class="bar" id="bar"><div class="pills" id="genres"></div></div>
   <div id="cal"></div>
   <div id="tba"></div>
   <footer id="foot"></footer>
@@ -263,14 +275,21 @@ async function findCovers(){
 }
 
 /* ---- calendar ---- */
-const byDay={}, byMonthTBC={}, tba=[];
-items.forEach(b=>{
-  if(b.p.exact)(byDay[b.date]=byDay[b.date]||[]).push(b);
-  else if(b.p.m)(byMonthTBC[`${b.p.y}-${b.p.m}`]=byMonthTBC[`${b.p.y}-${b.p.m}`]||[]).push(b);
-  else tba.push(b);
-});
+/* Genre picker: nonfiction and memoir are one choice; everything else is its own. */
+const grp=b=>(b.cat==="Nonfiction"||b.cat==="Memoir & Biography")?"Nonfiction & Memoir":b.cat;
+let genre="All", shown=items, byDay={}, byMonthTBC={}, tba=[];
+function applyFilter(){
+  shown=genre==="All"?items:items.filter(b=>grp(b)===genre);
+  byDay={};byMonthTBC={};tba=[];
+  shown.forEach(b=>{
+    if(b.p.exact)(byDay[b.date]=byDay[b.date]||[]).push(b);
+    else if(b.p.m)(byMonthTBC[`${b.p.y}-${b.p.m}`]=byMonthTBC[`${b.p.y}-${b.p.m}`]||[]).push(b);
+    else tba.push(b);
+  });
+}
 function monthRange(){
-  const all=items.filter(b=>b.p.m).map(b=>b.p.y*12+b.p.m-1);
+  const all=shown.filter(b=>b.p.m).map(b=>b.p.y*12+b.p.m-1);
+  if(genre!=="All")return [...new Set(all)].sort((a,b)=>a-b).map(i=>[Math.floor(i/12),i%12+1]);   /* only months that have something */
   const s=pd(winStart), e=pd(winEnd);
   const lo=Math.min(s.y*12+s.m-1,...all,now.getFullYear()*12+now.getMonth()), hi=Math.max(e.y*12+e.m-1,...all);
   const out=[];for(let i=lo;i<=hi;i++)out.push([Math.floor(i/12),i%12+1]);return out;
@@ -296,7 +315,7 @@ function renderCal(){
   let h="";
   monthRange().forEach(([y,m])=>{
     const first=new Date(y,m-1,1).getDay(), n=new Date(y,m,0).getDate();
-    const cnt=items.filter(b=>b.p.y===y&&b.p.m===m).length;
+    const cnt=shown.filter(b=>b.p.y===y&&b.p.m===m).length;
     h+=`<section class="month" id="m-${y}-${m}"><div class="mhead"><div class="mname">${MONTH_FULL[m-1]} <em>${y}</em></div><div class="mcount">${cnt?cnt+(cnt===1?" release":" releases"):""}</div></div>
       <div class="dow">${DOW.map(x=>`<div>${x}</div>`).join("")}</div><div class="days">`;
     for(let i=0;i<first;i++)h+=`<div class="day blank"></div>`;
@@ -305,9 +324,27 @@ function renderCal(){
     const t=byMonthTBC[`${y}-${m}`]; if(t)h+=`<div class="tbc"><h4>🗓️ Sometime in ${MONTH_FULL[m-1]}, date TBC</h4><div class="tbcrow">${tbRow(t)}</div></div>`;
     h+=`</section>`;
   });
+  if(!h&&!tba.length)h=`<div class="none">No ${esc(genre)} books on the list yet.</div>`;
   document.getElementById("cal").innerHTML=h;
   document.getElementById("tba").innerHTML=tba.length?`<section class="tba"><div class="tbc"><h4>✨ ${tba[0].p.y}, date to be announced</h4><div class="tbcrow">${tbRow(tba)}</div></div></section>`:"";
 }
+
+function renderGenres(){
+  const order=[...CATS.map(c=>grp({cat:c}))].filter((g,i,a)=>a.indexOf(g)===i).filter(g=>items.some(b=>grp(b)===g));
+  document.getElementById("genres").innerHTML=["All",...order].map(g=>{
+    const n=g==="All"?items.length:items.filter(b=>grp(b)===g).length;
+    return `<button class="pill ${genre===g?"on":""}" data-genre="${esc(g)}">${esc(g)}<span class="n">${n}</span></button>`;}).join("");
+}
+function renderMeter(){
+  const inWin=shown.filter(b=>b.date>=winStart||!b.p.exact), readN=inWin.filter(b=>b.read).length;
+  document.getElementById("meter").innerHTML=`<span class="chip"><b>${readN}</b>of ${inWin.length} read</span><span class="chip"><b>${shown.filter(b=>!b.p.exact||b.date>todayISO).length}</b>still to come</span>`;
+}
+function setGenre(g){
+  genre=g; applyFilter(); renderGenres(); renderMeter(); renderCal();
+  if(g==="All")scrollToday(false); else document.getElementById("bar").scrollIntoView({block:"start"});
+  findCovers();
+}
+document.getElementById("genres").addEventListener("click",e=>{const b=e.target.closest("[data-genre]");if(b)setGenre(b.dataset.genre);});
 
 /* ---- sheet ---- */
 const fmt=s=>{const p=pd(s);return `${DOW[new Date(p.y,p.m-1,p.d).getDay()]}, ${MONTH_FULL[p.m-1]} ${p.d}, ${p.y}`;};
@@ -355,12 +392,10 @@ function scrollToday(smooth){
 }
 document.getElementById("todayBtn").addEventListener("click",()=>scrollToday(true));
 
-const inWin=items.filter(b=>b.date>=winStart||!b.p.exact), readN=inWin.filter(b=>b.read).length;
 document.getElementById("kicker").textContent="new & upcoming reads";
-document.getElementById("sub").textContent=`New and upcoming books worth watching, on the day they come out. Includes the ones with real award buzz. Tap a day for details.`;
-document.getElementById("meter").innerHTML=`<span class="chip"><b>${readN}</b>of ${inWin.length} read</span><span class="chip"><b>${items.filter(b=>!b.p.exact||b.date>todayISO).length}</b>still to come</span>`;
+document.getElementById("sub").textContent=`New and upcoming books worth watching, on the day they come out. Includes the ones with real award buzz. Pick a genre, or tap a day for details.`;
 document.getElementById("foot").innerHTML=`Last refreshed ${fmt(WATCHLIST_META.lastRefreshed)}.<br>Release dates come from preview lists and often shift.`;
-renderCal(); scrollToday(false); probeImages(); findCovers();
+applyFilter(); renderGenres(); renderMeter(); renderCal(); scrollToday(false); probeImages(); findCovers();
 </script>
 </body>
 </html>
