@@ -136,6 +136,8 @@ Scott Westerfeld, James Dashner, Lev Grossman, Veronica Roth.
   book page sometimes returns empty, so retry. Next year, redo this for the 2027
   nominees (opening round starts around Nov 10). Books in several categories are
   merged into one entry; Debut Novel and Audiobook nominees keep their other category.
+  Drop audiobook-only nominees for old books (Goodreads gives their original date, e.g.
+  Harry Potter 2007): they aren't new releases and they stretch the calendar back for years.
 - Release days: Bookishelf's month pages (`bookishelf.com/published/<year>/<month>/`)
   list every reviewed book with its day, and shereadsromancebooks.com's monthly
   and "new romance/romantasy books <year>" pages give days for romance. Use `curl`
