@@ -22,8 +22,10 @@
     --gold:#f0c060; --gold2:#c9922e; --rose:#ff7a9c; --mint:#7fe0c3;
   }
   *{ box-sizing:border-box; }
-  html{ overflow-x:hidden; scroll-behavior:smooth; }
-  body{ margin:0; font-family:'Manrope',sans-serif; color:var(--ink); overflow-x:hidden;
+  /* overflow-x:clip (not hidden) keeps the page from scrolling sideways WITHOUT turning html/body into scroll
+     containers, which is what stopped the filter bar from sticking. */
+  html{ overflow-x:hidden; overflow-x:clip; scroll-behavior:smooth; }
+  body{ margin:0; font-family:'Manrope',sans-serif; color:var(--ink); overflow-x:hidden; overflow-x:clip;
     background:
       radial-gradient(900px 500px at 85% -10%, rgba(240,192,96,.16), transparent 60%),
       radial-gradient(700px 500px at -10% 10%, rgba(255,122,156,.12), transparent 60%),
@@ -457,7 +459,7 @@ if("serviceWorker" in navigator){
   navigator.serviceWorker.addEventListener("message",e=>{
     if(!e.data||e.data.type!=="fresh-ink-updated"||document.getElementById("toast"))return;
     const t=document.createElement("div"); t.className="toast"; t.id="toast";
-    t.innerHTML='New books added <button>Refresh</button>'; document.body.appendChild(t);
+    t.innerHTML='Fresh Ink updated <button>Refresh</button>'; document.body.appendChild(t);
     t.querySelector("button").onclick=()=>location.reload();
   });
 }

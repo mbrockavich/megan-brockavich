@@ -151,7 +151,7 @@ Scott Westerfeld, James Dashner, Lev Grossman, Veronica Roth.
 Files: `manifest.webmanifest`, `sw.js` (both at the site root) and `fresh-ink/` (icons).
 - Installed on her phone it opens full-screen and works offline. The service worker
   (`sw.js`) serves the page and `watchlist-data.js` from cache and refreshes them in the
-  background. When the data file changes, the open app shows a "New books added" toast
+  background. When the data file changes, the open app shows a "Fresh Ink updated" toast
   with a Refresh button. So a normal refresh (edit `watchlist-data.js`, push) needs no
   extra steps. Do NOT hand-bump anything for data changes.
 - If you add a new file the app must work offline, add it to `SHELL` in `sw.js` and bump
