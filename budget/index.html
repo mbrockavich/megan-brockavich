@@ -247,6 +247,7 @@
 <script>
 /* ===== settings ===== */
 const APP_NAME = 'Can we afford it?';
+const BUILD = '2026-11-14-v13';   // bump on every release; open copies reload themselves
 const API = 'https://afford-it.brockavichmegan.workers.dev';
 
 const DEMO = new URLSearchParams(location.search).has('demo');
@@ -456,7 +457,17 @@ async function refresh() {
   try { state = await api('GET', '/data'); store.set('cache', state); render(); }
   catch (err) { if (session) toast(state ? 'Offline, showing last numbers' : err.message); }
 }
-document.addEventListener('visibilitychange', () => { if (!document.hidden && session) refresh(); });
+document.addEventListener('visibilitychange', () => { if (!document.hidden) { checkForUpdate(); if (session) refresh(); } });
+// Self-update: if a newer version of this page is live, reload into it (unless an answer is on screen).
+async function checkForUpdate() {
+  if (DEMO) return;
+  try {
+    const t = await fetch(location.pathname + '?v=' + Date.now(), { cache: 'no-store' }).then(r => r.text());
+    const m = t.match(/const BUILD = '([^']+)'/);
+    if (m && m[1] !== BUILD) { if ($('answer').innerHTML.trim()) { toast('Update ready. It will load next time.'); } else { location.reload(); } }
+  } catch {}
+}
+setInterval(checkForUpdate, 5 * 60e3); setTimeout(checkForUpdate, 3000);
 
 $('appNameLogin').textContent = APP_NAME; document.title = APP_NAME;
 if (DEMO) { $('demoFlag').classList.remove('hidden'); session = session || { token: 'demo', who: 'megan' }; }
