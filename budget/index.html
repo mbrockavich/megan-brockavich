@@ -194,6 +194,7 @@
       <div class="card" id="askForm">
         <div class="field"><span class="label">What is it?</span><input id="q-item" placeholder="A new hammer, concert tickets…" autocomplete="off" /></div>
         <div class="field" style="margin-top:12px"><span class="label">Price</span><div class="price"><span>$</span><input id="q-price" inputmode="decimal" placeholder="0" class="num" /></div></div>
+        <div class="field" style="margin-top:12px"><span class="label">Link <span style="text-transform:none;letter-spacing:0;font-weight:500">(optional)</span></span><input id="q-link" type="url" inputmode="url" placeholder="Paste a link to the item" autocomplete="off" /></div>
         <div class="field" style="margin-top:12px"><span class="label">Which budget?</span>
           <div class="seg" id="askBudget"><button data-who="personal" class="on" id="personalBtn">My personal budget</button><button data-who="household">Household</button></div></div>
         <button class="btn" id="askBtn" style="margin-top:16px">Ask</button>
@@ -333,13 +334,13 @@ function renderLater() {
   const list = state.checkBacks || [];
   const due = list.filter(c => c.due && c.due <= todayISO()).length;
   $('laterBadge').textContent = due; $('laterBadge').classList.toggle('hidden', !due);
-  $('later').innerHTML = list.length ? list.map(c => `<li data-id="${esc(c.id)}"><div><div class="t">${esc(c.title.replace(/^Revisit:\s*/, ''))}</div><div class="d">${c.due && c.due <= todayISO() ? '<b style="color:var(--wait)">Check back now</b>' : 'Check back ' + nice(c.due)}</div></div><div style="display:flex;gap:6px"><button class="btn small ghost" data-act="reask">Ask again</button><button class="btn small plain" data-act="remove">Remove</button></div></li>`).join('') : '<li class="empty" style="display:block">Nothing waiting. Anything you put off shows up here.</li>';
+  $('later').innerHTML = list.length ? list.map(c => `<li data-id="${esc(c.id)}"><div><div class="t">${esc(c.title.replace(/^Revisit:\s*/, ''))}${(c.notes || '').match(/https?:\/\/\S+/) ? ` <a href="${esc(c.notes.match(/https?:\/\/\S+/)[0])}" target="_blank" rel="noopener">↗</a>` : ''}</div><div class="d">${c.due && c.due <= todayISO() ? '<b style="color:var(--wait)">Check back now</b>' : 'Check back ' + nice(c.due)}</div></div><div style="display:flex;gap:6px"><button class="btn small ghost" data-act="reask">Ask again</button><button class="btn small plain" data-act="remove">Remove</button></div></li>`).join('') : '<li class="empty" style="display:block">Nothing waiting. Anything you put off shows up here.</li>';
 }
 $('later').addEventListener('click', async e => {
   const b = e.target.closest('button'); if (!b) return; const li = b.closest('li'); const c = (state.checkBacks || []).find(x => x.id === li.dataset.id); if (!c) return;
   if (b.dataset.act === 'reask') {
     const m = c.title.replace(/^Revisit:\s*/, '').match(/^(.*?)\s*\(\$([\d.,]+)\)\s*$/);
-    $('q-item').value = m ? m[1] : c.title.replace(/^Revisit:\s*/, ''); $('q-price').value = m ? m[2].replace(/,/g, '') : '';
+    $('q-item').value = m ? m[1] : c.title.replace(/^Revisit:\s*/, ''); $('q-price').value = m ? m[2].replace(/,/g, '') : ''; $('q-link').value = ((c.notes || '').match(/https?:\/\/\S+/) || [''])[0];
     go('ask'); return;
   }
   if (b.dataset.act === 'remove') {
@@ -350,7 +351,7 @@ $('later').addEventListener('click', async e => {
 
 function renderHistory() {
   const h = state.history || [];
-  $('history').innerHTML = h.length ? h.map(x => { const a = x.answer || {}; return `<li class="v-${esc(a.verdict)}"><div style="display:flex;gap:10px;align-items:flex-start"><span class="dot" style="margin-top:6px"></span><div><div class="t">${esc(x.item)} <span class="num" style="color:var(--sub);font-weight:500">${money(x.price)}</span></div><div class="d">${esc(VERDICT[a.verdict] || '')} · ${esc(a.bucket || '')} · ${x.who === 'dustin' ? 'Dustin' : 'Megan'} · ${nice(x.at)}</div><div class="d" style="margin-top:3px">${esc(a.reason || '')}</div></div></div></li>`; }).join('') : '<li class="empty" style="display:block">No questions yet.</li>';
+  $('history').innerHTML = h.length ? h.map(x => { const a = x.answer || {}; return `<li class="v-${esc(a.verdict)}"><div style="display:flex;gap:10px;align-items:flex-start"><span class="dot" style="margin-top:6px"></span><div><div class="t">${x.link ? `<a href="${esc(x.link)}" target="_blank" rel="noopener" style="color:inherit">${esc(x.item)} ↗</a>` : esc(x.item)} <span class="num" style="color:var(--sub);font-weight:500">${money(x.price)}</span></div><div class="d">${esc(VERDICT[a.verdict] || '')} · ${esc(a.bucket || '')} · ${x.who === 'dustin' ? 'Dustin' : 'Megan'} · ${nice(x.at)}</div><div class="d" style="margin-top:3px">${esc(a.reason || '')}</div></div></div></li>`; }).join('') : '<li class="empty" style="display:block">No questions yet.</li>';
 }
 
 const SETTING_LABELS = { chase_buffer: 'Chase buffer', monthly_target: 'Monthly target', monthly_max: 'Monthly max', daily_target: 'Daily target', megan_budget: 'Megan Budget', dustin_budget: 'Dustin Budget', jordynn_budget: 'Jordynn Budget', apple_card_min_available: 'Apple Card min available', savings_phase: 'Savings phase', savings_milestone: 'Savings milestone', savings_target_date: 'Savings target date', savings_ok_by: 'Savings OK by' };
@@ -384,7 +385,8 @@ let lastQ = null;
 async function doAsk(context) {
   const item = $('q-item').value.trim(); const price = parseFloat(($('q-price').value || '').replace(/[$,]/g, ''));
   if (!item || !(price > 0)) { toast('Add what it is and the price'); return; }
-  lastQ = { item, price, budget: askBudget.get(), who: session && session.who, context: context || '' };
+  const link = ($('q-link').value || '').trim();
+  lastQ = { item, price, link, budget: askBudget.get(), who: session && session.who, context: context || '' };
   $('askBtn').disabled = true;
   $('answer').innerHTML = `<div class="card thinking"><div class="spin"></div>Checking the numbers…</div>`;
   try { showAnswer(await api('POST', '/ask', lastQ)); }
@@ -398,23 +400,28 @@ function showAnswer(a) {
     return;
   }
   const facts = (a.numbers || []).map(n => `<div class="fact"><div class="k">${esc(n.label)}</div><div class="v num">${esc(n.value)}</div></div>`).join('');
-  const remind = a.verdict === 'not_yet' && a.check_back_date;
+  const remind = a.verdict && a.verdict !== 'yes';
+  const nextMonth1 = (() => { const d = new Date(); return new Date(d.getFullYear(), d.getMonth() + 1, 1).toLocaleDateString('en-CA'); })();
+  const npDate = state && state.snapshot && state.snapshot.next_payday && state.snapshot.next_payday.date;
+  const waitDate = a.check_back_date || (npDate && npDate > todayISO() ? npDate : nextMonth1);
   $('answer').innerHTML = `<div class="card answer v-${esc(a.verdict)}">
     <span class="verdict">${esc(VERDICT[a.verdict] || a.verdict)}</span>
     <h3>${esc(a.headline)}</h3>
     <div class="sub" style="font-size:15px;color:var(--ink)">${esc(a.reason)}</div>
     ${facts ? `<div class="facts">${facts}</div>` : ''}
     <div><span class="tag">${esc(a.bucket)}${a.category ? ' · ' + esc(a.category) : ''}</span>${a.card ? `<span class="tag">💳 ${esc(a.card)}</span>` : ''}</div>
-    ${remind ? `<div class="sub" style="margin-top:12px">Check back <b>${nice(a.check_back_date)}</b>${a.check_back_why ? ': ' + esc(a.check_back_why) : ''}</div><button class="btn" id="remindBtn" style="margin-top:12px">Remind us ${nice(a.check_back_date)}</button>` : ''}
+    ${remind ? `<div class="sub" style="margin-top:12px">${a.check_back_date ? `Check back <b>${nice(a.check_back_date)}</b>${a.check_back_why ? ': ' + esc(a.check_back_why) : ''}` : 'Want to wait on it?'}</div>
+      <div class="row" style="margin-top:10px;gap:8px"><div class="field" style="flex:1"><input type="date" id="waitDate" value="${esc(waitDate)}" min="${todayISO()}" /></div></div>
+      <button class="btn" id="remindBtn" style="margin-top:10px">Wait, and add to Todoist</button>` : ''}
     <div class="faint" style="margin-top:12px">Based on numbers from ${state && state.snapshot && state.snapshot.updated_at ? asOf(state.snapshot.updated_at) : 'the last update'}</div>
     <button class="btn plain" id="againBtn" style="margin-top:6px">Ask about something else</button>
   </div>`;
   if (remind) $('remindBtn').onclick = async () => {
     $('remindBtn').disabled = true;
-    try { await api('POST', '/remind', { item: lastQ.item, price: lastQ.price, who: lastQ.who, reason: a.reason, why: a.check_back_why, date: a.check_back_date }); $('remindBtn').textContent = 'Added to Later ✓'; toast('Added to Todoist'); refresh(); }
+    const d = $('waitDate').value || waitDate; try { await api('POST', '/remind', { item: lastQ.item, price: lastQ.price, link: lastQ.link, who: lastQ.who, reason: a.reason, why: a.check_back_why, date: d }); $('remindBtn').textContent = `Waiting until ${nice(d)} ✓`; toast('Added to Todoist'); refresh(); }
     catch (err) { toast(err.message); $('remindBtn').disabled = false; }
   };
-  $('againBtn').onclick = () => { $('q-item').value = ''; $('q-price').value = ''; $('answer').innerHTML = ''; $('q-item').focus(); };
+  $('againBtn').onclick = () => { $('q-item').value = ''; $('q-price').value = ''; $('q-link').value = ''; $('answer').innerHTML = ''; $('q-item').focus(); };
   if (!DEMO) refresh();
   else { state.history = [{ at: new Date().toISOString(), who: lastQ.who, item: lastQ.item, price: lastQ.price, answer: a }, ...(state.history || [])]; renderHistory(); }
 }
@@ -460,7 +467,7 @@ async function demoApi(method, path, data) {
   await new Promise(r => setTimeout(r, path === '/ask' ? 900 : 150));
   if (path === '/login') return { token: 'demo', who: 'megan' };
   if (path === '/data') return state && state._demo ? state : DEMO_DATA();
-  if (path === '/remind') { state.checkBacks = [...(state.checkBacks || []), { id: 'd' + Date.now(), title: `Revisit: ${data.item} ($${data.price})`, due: data.date }]; return { ok: true }; }
+  if (path === '/remind') { state.checkBacks = [...(state.checkBacks || []), { id: 'd' + Date.now(), title: `Revisit: ${data.item} ($${data.price})`, notes: data.link ? 'Link: ' + data.link : '', due: data.date }]; return { ok: true }; }
   if (path === '/done') return { ok: true };
   if (path === '/rules') { if (data.editPin !== '0000') throw new Error('Edit PIN didn\'t match. (Demo PIN is 0000.)'); return { ok: true, rules: { ...data.rules, updated_at: new Date().toISOString(), updated_by: 'Megan (app)' } }; }
   if (path === '/ask') {
