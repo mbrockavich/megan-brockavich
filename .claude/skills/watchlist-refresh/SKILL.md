@@ -159,8 +159,12 @@ Files: `manifest.webmanifest`, `sw.js` (both at the site root) and `fresh-ink/` 
   only when their host allows CORS (opaque responses are deliberately never stored).
 - `sw.js` only touches Fresh Ink's own files, fonts and cover images. It ignores the rest
   of the site, so don't widen it.
-- Megan chose: installable + offline only. She did not want a list view, tab bar, voting
-  helper or tap-to-mark (she'll tell you what she's read).
+- Megan chose: installable + offline. She did not want a list view, tab bar or voting helper.
+  Read marks still come from you (`read:true`). Later (Nov 14, 2026) she DID ask for an in-app
+  **"Not for me"** button, saved on her phone only (localStorage key `fresh-ink-notforme-v1`,
+  keyed by `title|author`). Hidden books drop out of the calendar and counts, and the 🙅 N
+  button (next to All/Unread/Read) shows them so she can put them back. It doesn't sync, and
+  you can't see her marks. If you rename a book's title or author, its mark is lost.
 - To test: serve a copy of the files from a temp dir with `python3 -m http.server`
   (service workers need http://localhost) and use Playwright's `setOffline`.
 

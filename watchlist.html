@@ -162,6 +162,10 @@
   .gr{ display:block; margin-top:12px; text-align:center; text-decoration:none; font-weight:700; font-size:13.5px; padding:11px; border-radius:12px;
     border:1px solid var(--gold2); color:var(--gold); background:rgba(240,192,96,.08); }
   .gr:hover{ background:rgba(240,192,96,.16); }
+  .nfm{ display:block; width:100%; margin-top:8px; font:inherit; font-weight:700; font-size:13.5px; padding:11px; border-radius:12px; cursor:pointer;
+    border:1px solid var(--line); background:rgba(255,255,255,.04); color:var(--soft); }
+  .nfm.on{ border-color:var(--mint); color:var(--mint); background:rgba(127,224,195,.08); }
+  .sbook.skipped .top, .sbook.skipped p, .sbook.skipped .tags{ opacity:.45; }
   .btn{ width:100%; margin-top:16px; font:inherit; font-weight:700; font-size:14px; padding:12px; border-radius:12px; cursor:pointer; border:1px solid var(--gold); background:var(--gold); color:#2a1d05; }
 
   .install{ text-align:center; margin:22px 0 0; }
@@ -197,7 +201,7 @@
     <p class="sub" id="sub"></p>
     <div class="meter" id="meter"></div>
   </header>
-  <div class="legend"><span>🏆 award year starts / ends</span><span>✓ read</span><span>dashed edge = still on the 2026 ballot</span><span>"5 books" = how many release that day</span></div>
+  <div class="legend"><span>🏆 award year starts / ends</span><span>✓ read</span><span>dashed edge = still on the 2026 ballot</span><span>"5 books" = how many release that day</span><span>🙅 = books you hid</span></div>
   <div id="cal"></div>
   <div id="tba"></div>
   <footer id="foot"></footer>
@@ -217,6 +221,10 @@ const esc=s=>String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"
 const lsGet=(k,d)=>{try{const v=localStorage.getItem(k);return v==null?d:JSON.parse(v);}catch(e){return d;}};
 const lsSet=(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v));}catch(e){}};
 const key=b=>b.title+"|"+b.author;
+/* "Not for me": books Megan hides by tapping. Saved in this app/browser only (her choice). */
+const SKIP_KEY="fresh-ink-notforme-v1";
+let skipped=new Set(lsGet(SKIP_KEY,[]));
+const isSkipped=b=>skipped.has(key(b));
 const iso=(y,m,d)=>`${y}-${String(m).padStart(2,"0")}-${String(d).padStart(2,"0")}`;
 function pd(str){const p=String(str).split("-").map(Number);
   if(p.length===3)return{y:p[0],m:p[1],d:p[2],exact:true};
@@ -334,7 +342,7 @@ const isPopular=b=>{ if(b.ratings==null)return true;
 const inRange=b=>{const i=mIdx(b); return i!=null?(i>=rFrom&&i<=rTo):(b.p.y>=Math.floor(rFrom/12)&&b.p.y<=Math.floor(rTo/12));};
 const isPastItem=b=>b.p.exact?b.date<=todayISO:(b.p.m?mIdx(b)<nowIdx:b.p.y<now.getFullYear());
 function applyFilter(){
-  shown=items.filter(b=>(!popular||isPopular(b))&&(genre==="All"||grp(b)===genre)&&(readF==="all"||(readF==="read")===!!b.read)&&inRange(b));
+  shown=items.filter(b=>(readF==="skip"?isSkipped(b):(!isSkipped(b)&&(!popular||isPopular(b))&&(readF==="all"||(readF==="read")===!!b.read)))&&(genre==="All"||grp(b)===genre)&&inRange(b));
   byDay={};byMonthTBC={};tba=[];
   shown.forEach(b=>{
     if(b.p.exact)(byDay[b.date]=byDay[b.date]||[]).push(b);
@@ -387,8 +395,8 @@ function renderCal(){
 
 function renderGenres(){
   const order=[...CATS.map(c=>grp({cat:c}))].filter((g,i,a)=>a.indexOf(g)===i).filter(g=>items.some(b=>grp(b)===g));
-  const pool=items.filter(b=>!popular||isPopular(b));
-  const hidden=items.length-pool.length;
+  const pool=items.filter(b=>readF==="skip"?isSkipped(b):(!isSkipped(b)&&(!popular||isPopular(b))));
+  const hidden=readF==="skip"?0:items.filter(b=>!isSkipped(b)).length-pool.length;
   document.getElementById("genres").innerHTML=`<button class="pill tog ${popular?"on":""}" data-pop="1" title="${popular?"Showing popular books only. Tap to show everything.":"Tap to hide books with few ratings."}">🔥 Popular${popular&&hidden?`<span class="n">${hidden} hidden</span>`:""}</button>`+["All",...order].map(g=>{
     const n=g==="All"?pool.length:pool.filter(b=>grp(b)===g).length;
     return `<button class="pill ${genre===g?"on":""}" data-genre="${esc(g)}">${esc(g)}<span class="n">${n}</span></button>`;}).join("");
@@ -396,12 +404,14 @@ function renderGenres(){
 function renderMeter(){
   const readN=shown.filter(b=>b.read).length;
   document.getElementById("hcount").textContent=`${shown.length} books`;
-  document.getElementById("meter").innerHTML=`<span class="chip"><b>${shown.length}</b>books showing</span><span class="chip"><b>${readN}</b>read</span><span class="chip"><b>${shown.filter(b=>!isPastItem(b)).length}</b>still to come</span>`;
+  document.getElementById("meter").innerHTML=`<span class="chip"><b>${shown.length}</b>books showing</span><span class="chip"><b>${readN}</b>read</span><span class="chip"><b>${shown.filter(b=>!isPastItem(b)).length}</b>still to come</span>`+(skipped.size&&readF!=="skip"?`<span class="chip"><b>${skipped.size}</b>not for me (tap 🙅 to see)</span>`:"");
 }
 function renderTools(){
   const opts=sel=>{let h="";for(let i=SPAN_LO;i<=SPAN_HI;i++)h+=`<option value="${i}" ${i===sel?"selected":""}>${MONTHS[i%12]} ${Math.floor(i/12)}</option>`;return h;};
   document.getElementById("rFrom").innerHTML=opts(rFrom); document.getElementById("rTo").innerHTML=opts(rTo);
-  document.getElementById("reads").innerHTML=[["all","All"],["unread","Unread"],["read","Read"]].map(([k,l])=>`<button class="pill ${readF===k?"on":""}" data-read="${k}">${l}</button>`).join("");
+  const segs=[["all","All"],["unread","Unread"],["read","Read"]];
+  if(skipped.size||readF==="skip")segs.push(["skip","🙅 "+skipped.size]);
+  document.getElementById("reads").innerHTML=segs.map(([k,l])=>`<button class="pill ${readF===k?"on":""}" data-read="${k}">${l}</button>`).join("");
 }
 const barH=()=>document.getElementById("bar").offsetHeight;
 function setBarVar(){document.documentElement.style.setProperty("--barh",barH()+"px");}
@@ -427,13 +437,16 @@ document.getElementById("genres").addEventListener("click",e=>{
 const fmt=s=>{const p=pd(s);return `${DOW[new Date(p.y,p.m-1,p.d).getDay()]}, ${MONTH_FULL[p.m-1]} ${p.d}, ${p.y}`;};
 /* Direct link if the entry has `goodreads`, otherwise a Goodreads search for title + author. */
 const grUrl=b=>b.goodreads||("https://www.goodreads.com/search?q="+encodeURIComponent(b.title.replace(/\s*\(.*?\)/g,"")+" "+b.author));
+const NFM_OFF="🙅 Not for me (hide it)", NFM_ON="↩ Put it back on my calendar";
 function bookBlock(b){
   const when=b.p.exact?(b.date<=todayISO?"Out now":"Releases "+MONTH_FULL[b.p.m-1]+" "+b.p.d):b.p.m?(isPastItem(b)?`Released ${MONTH_FULL[b.p.m-1]} ${b.p.y}`:`${MONTH_FULL[b.p.m-1]} ${b.p.y}, date TBC`):(isPastItem(b)?`Released in ${b.p.y}`:`${b.p.y}, date TBA`);
-  return `<div class="sbook"><div class="top"><div class="mini"><div class="cv" data-bk="${esc(key(b))}">${coverInner(b)}</div></div>
+  const sk=isSkipped(b);
+  return `<div class="sbook ${sk?"skipped":""}"><div class="top"><div class="mini"><div class="cv" data-bk="${esc(key(b))}">${coverInner(b)}</div></div>
     <div><h3>${esc(b.title)}</h3><div class="by">${esc(b.author)}</div>
     <div class="tags"><span class="tag g">${esc(b.cat)}</span>${b.series?`<span class="tag">${esc(b.series)}</span>`:""}${b.read?'<span class="tag m">✓ Read</span>':""}${b.ratings!=null?`<span class="tag">★ ${b.stars?b.stars.toFixed(2)+" · ":""}${b.ratings>=1e6?(b.ratings/1e6).toFixed(1)+"M":b.ratings>=1000?Math.round(b.ratings/1000)+"K":b.ratings} ratings</span>`:""}<span class="tag">${when}</span></div></div></div>
     ${b.buzz?`<div class="tags"><span class="tag b">🔥 ${esc(b.buzz)}</span></div>`:""}${b.note?`<p>${esc(b.note)}</p>`:""}
-    <a class="gr" href="${esc(grUrl(b))}" target="_blank" rel="noopener">View on Goodreads ↗</a></div>`;
+    <a class="gr" href="${esc(grUrl(b))}" target="_blank" rel="noopener">View on Goodreads ↗</a>
+    <button class="nfm ${sk?"on":""}" data-skip="${esc(key(b))}">${sk?NFM_ON:NFM_OFF}</button></div>`;
 }
 function openSheet(head,html){
   const sh=document.getElementById("sheet");
@@ -451,7 +464,14 @@ const closeSheet=()=>{
     window.scrollTo({top:lockY,behavior:"instant"});     /* back to exactly where she was */
   }
 };
+function rerender(){ applyFilter(); renderGenres(); renderMeter(); renderCal(); renderTools(); setBarVar(); findCovers(); }
 document.addEventListener("click",e=>{
+  const sb=e.target.closest("[data-skip]");
+  if(sb){ const k=sb.dataset.skip; skipped.has(k)?skipped.delete(k):skipped.add(k); lsSet(SKIP_KEY,[...skipped]);
+    const on=skipped.has(k); sb.classList.toggle("on",on); sb.textContent=on?NFM_ON:NFM_OFF;
+    const blk=sb.closest(".sbook"); if(blk)blk.classList.toggle("skipped",on);
+    if(!skipped.size&&readF==="skip")readF="all";
+    rerender(); return; }
   if(e.target.closest("[data-close]")||e.target.id==="veil"){closeSheet();return;}
   const dc=e.target.closest("[data-day]");
   if(dc){const id=dc.dataset.day,p=pd(id),bs=byDay[id]||[],hol=holidays(p.y)[id];
