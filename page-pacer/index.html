@@ -266,7 +266,7 @@
     <div class="pace-grid">
       <div class="pace-box now">
         <div class="n" id="paceToday">0</div>
-        <div class="t">pages/day starting today</div>
+        <div class="t" id="paceTodayT">more pages today to stay on pace</div>
         <div class="s" id="paceTodaySub"></div>
       </div>
       <div class="pace-box tmr">
@@ -469,7 +469,7 @@
       var need = Math.ceil(rs / left);
       var tmrDays = left > 1 ? left - 1 : 7;
       perBook[b.id] = { need: need, read: Math.min(readOf(b), need), tmr: rn ? Math.ceil(rn / tmrDays) : 0 };
-      todayNeed += need; todayRead += Math.min(readOf(b), need); remStart += rs; remNow += rn;
+      todayNeed += need; todayRead += readOf(b); remStart += rs; remNow += rn;
     });
     var tmrDays = left > 1 ? left - 1 : 7;
     var tmr = 0; rows.forEach(function (b) { tmr += perBook[b.id].tmr; });
@@ -525,7 +525,7 @@
     var p = pace();
     $("daysLeft").textContent = p.left === 1 ? "last day of the week" : plural(p.left, "day") + " left incl. today";
     if (!p.count) {
-      $("paceToday").textContent = "–"; $("paceTmr").textContent = "–";
+      $("paceToday").textContent = "–"; $("paceTmr").textContent = "–"; $("paceTodayT").textContent = "more pages today to stay on pace";
       $("paceTodaySub").textContent = "No books in this week's plan yet.";
       $("paceTmrT").textContent = "pages/day from tomorrow"; $("paceTmrSub").textContent = "";
       $("paceNote").textContent = "";
@@ -535,9 +535,10 @@
       $("paceTmrSub").textContent = "Time to pick your next read.";
       $("paceNote").textContent = "";
     } else {
-      $("paceToday").textContent = p.todayNeed;
       var leftToday = Math.max(0, p.todayNeed - p.todayRead);
-      $("paceTodaySub").textContent = leftToday ? "You've done " + p.todayRead + " — " + leftToday + " more today keeps you on track." : "Today's share is done! ✓ Anything extra makes tomorrow lighter.";
+      $("paceToday").textContent = leftToday ? leftToday : "✓";
+      $("paceTodayT").textContent = leftToday ? "more pages today to stay on pace" : "on pace for today!";
+      $("paceTodaySub").textContent = "Today's share: " + p.todayNeed + " · you've read " + p.todayRead + (leftToday ? "" : ". Extra pages make tomorrow lighter.");
       $("paceTmr").textContent = p.tmr;
       if (p.left > 1) {
         $("paceTmrT").textContent = "pages/day from tomorrow";
