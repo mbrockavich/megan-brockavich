@@ -99,8 +99,10 @@
   .tb .chk{ left:auto; right:3px; top:3px; bottom:auto; }
   .tba{ margin-top:46px; }
   .none{ color:var(--soft); font-style:italic; padding:34px 0; text-align:center; }
-  .bar{ position:sticky; top:0; z-index:30; margin:0 -14px 0; padding:calc(14px + env(safe-area-inset-top)) 14px 12px; background:rgba(18,15,36,.9); backdrop-filter:blur(10px); border-bottom:1px solid var(--line); }
-  @media (min-width:600px){ .bar{ margin:0 -20px 0; padding:calc(14px + env(safe-area-inset-top)) 20px 12px; } }
+  /* Extra breathing room under the phone's status bar / Dynamic Island, and a soft shadow so the calendar
+     reads as sliding under the bar instead of being chopped off. */
+  .bar{ position:sticky; top:0; z-index:30; margin:0 -14px 0; padding:calc(26px + env(safe-area-inset-top)) 14px 14px; background:rgba(18,15,36,.96); backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px); border-bottom:1px solid var(--line); box-shadow:0 10px 24px rgba(0,0,0,.45); }
+  @media (min-width:600px){ .bar{ margin:0 -20px 0; padding:calc(26px + env(safe-area-inset-top)) 20px 14px; } }
   .hdr{ display:flex; align-items:center; gap:10px; margin-bottom:12px; }
   .hback{ font-size:30px; line-height:1; color:var(--soft); text-decoration:none; padding:0 6px 4px 0; }
   .hback:hover{ color:var(--gold); }
