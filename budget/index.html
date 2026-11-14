@@ -406,6 +406,7 @@ function showAnswer(a) {
   const waitDate = a.check_back_date || (npDate && npDate > todayISO() ? npDate : nextMonth1);
   $('answer').innerHTML = `<div class="card answer v-${esc(a.verdict)}">
     <span class="verdict">${esc(VERDICT[a.verdict] || a.verdict)}</span>
+    ${a.matched_planned && a.matched_planned.name ? `<div class="tag" style="margin:10px 0 0;background:var(--wait-bg);color:var(--wait)">📌 Already planned: ${esc(a.matched_planned.name)}${a.matched_planned.date ? ' · ' + nice(a.matched_planned.date) : ''}${a.matched_planned.amount ? ' · ' + money(a.matched_planned.amount) : ''}</div>` : ''}
     <h3>${esc(a.headline)}</h3>
     <div class="sub" style="font-size:15px;color:var(--ink)">${esc(a.reason)}</div>
     ${facts ? `<div class="facts">${facts}</div>` : ''}
@@ -472,6 +473,7 @@ async function demoApi(method, path, data) {
   if (path === '/rules') { if (data.editPin !== '0000') throw new Error('Edit PIN didn\'t match. (Demo PIN is 0000.)'); return { ok: true, rules: { ...data.rules, updated_at: new Date().toISOString(), updated_by: 'Megan (app)' } }; }
   if (path === '/ask') {
     const it = data.item.toLowerCase(), p = data.price, ctx = (data.context || '').toLowerCase();
+    if (/nail/.test(it)) return { needs_clarification: false, verdict: 'yes', bucket: 'Household', category: 'Personal care', matched_planned: { name: 'Nails', date: '2026-11-15', amount: 100 }, headline: 'Already planned for tomorrow. Go ahead.', reason: `Nails on 11/15 for $100 is already in Upcoming Spends, so it is already counted in your $122/day. ${p > 100 ? money(p - 100) + ' over the plan comes out of the pace.' : 'Nothing new to take out.'}`, numbers: [{ label: 'Planned', value: '$100' }, { label: 'New money', value: money(Math.max(0, p - 100)) }], card: 'Apple Card' };
     if (data.budget === 'household') return { needs_clarification: false, verdict: 'yes', bucket: 'Household', category: 'Household', headline: 'Yes, from the household budget.', reason: `${money(p)} fits: the month is at $1,925 of the $4,000 target.`, numbers: [{ label: 'Month after', value: money(1925 + p) }, { label: 'Target', value: '$4,000' }], card: 'Capital One' };
     const who = data.who === 'dustin' ? 'Dustin' : 'Megan', left = data.who === 'dustin' ? 89 : 157.5;
     if (p <= left * 0.6) return { needs_clarification: false, verdict: 'yes', bucket: who + ' Budget', category: 'Fun Money', headline: `Yes, from your ${who} Budget.`, reason: `You have ${money(left, true)} left this month, so ${money(p)} leaves ${money(left - p, true)}.`, numbers: [{ label: 'Left now', value: money(left, true) }, { label: 'Left after', value: money(left - p, true) }], card: data.who === 'dustin' ? 'Capital One' : 'Apple Card' };
