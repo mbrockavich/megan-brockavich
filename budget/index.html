@@ -121,6 +121,11 @@
   .err { color: var(--no); font-size: 14px; min-height: 18px; }
   .toast { position: fixed; left: 50%; bottom: calc(env(safe-area-inset-bottom) + 86px); transform: translateX(-50%) translateY(20px); background: var(--ink); color: var(--bg); padding: 10px 16px; border-radius: 12px; font-size: 14px; font-weight: 600; opacity: 0; transition: .25s; pointer-events: none; z-index: 20; max-width: 90vw; }
   .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+  .asof { display: flex; align-items: center; gap: 10px; border-radius: 14px; padding: 12px 14px; font-size: 14px; font-weight: 600; background: var(--yes-bg); color: var(--yes); }
+  .asof .dot { background: currentColor; }
+  .asof.aging { background: var(--tight-bg); color: var(--tight); }
+  .asof.stale { background: var(--no-bg); color: var(--no); }
+  .asof small { display: block; font-weight: 500; opacity: .85; font-size: 12px; margin-top: 1px; }
   .demo-flag { background: var(--tight-bg); color: var(--tight); font-size: 12px; font-weight: 650; text-align: center; padding: 6px; border-radius: 10px; }
   .empty { text-align: center; color: var(--sub); padding: 26px 10px; }
   ol.rules { margin: 6px 0 0; padding-left: 20px; } ol.rules li { margin: 8px 0; }
@@ -157,6 +162,7 @@
 
     <!-- HOME -->
     <section class="view on" id="v-home">
+      <div class="asof" id="asof"><span class="dot"></span><div><div id="asof-main">Loading numbers…</div><small id="asof-sub"></small></div></div>
       <div class="card hero">
         <div class="label">Free in Chase</div>
         <div class="big num" id="h-free">$0</div>
@@ -226,7 +232,7 @@
       <div class="card" id="rulesView">
         <div class="row"><div class="label">Our rules</div><button class="btn small ghost" id="editRules">Edit</button></div>
         <ol class="rules" id="rulesList"></ol>
-        <div class="faint" id="rulesUpdated" style="margin-top:8px"></div>
+        <div class="asof" id="rulesUpdated" style="margin-top:12px"></div>
       </div>
       <div class="card hidden" id="rulesEdit">
         <div class="label">Edit rules</div>
@@ -269,6 +275,7 @@ const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': 
 const todayISO = () => new Date().toLocaleDateString('en-CA');
 const nice = iso => { if (!iso) return ''; const d = new Date(iso.length === 10 ? iso + 'T12:00:00' : iso); return d.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' }); };
 const ago = iso => { const m = Math.round((Date.now() - new Date(iso)) / 60000); if (m < 2) return 'just now'; if (m < 60) return m + ' min ago'; const h = Math.round(m / 60); if (h < 24) return h + 'h ago'; const d = Math.round(h / 24); return d === 1 ? 'yesterday' : d + ' days ago'; };
+const asOf = iso => { const d = new Date(iso); return d.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' }) + ' at ' + d.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' }); };
 const pct = (a, b) => b ? Math.max(0, Math.min(100, a / b * 100)) : 0;
 function toast(msg) { const t = $('toast'); t.textContent = msg; t.classList.add('show'); clearTimeout(t._h); t._h = setTimeout(() => t.classList.remove('show'), 2400); }
 function seg(id, onPick) {
@@ -298,6 +305,12 @@ function render() {
   if (!state) return;
   const s = state.snapshot || {}, r = (state.rules && state.rules.settings) || {};
   $('updated').textContent = s.updated_at ? 'Updated ' + ago(s.updated_at) : 'No numbers yet';
+  if (s.updated_at) {
+    const hrs = (Date.now() - new Date(s.updated_at)) / 3600e3;
+    $('asof').className = 'asof' + (hrs > 72 ? ' stale' : hrs > 36 ? ' aging' : '');
+    $('asof-main').textContent = 'Numbers last updated ' + asOf(s.updated_at);
+    $('asof-sub').textContent = hrs > 72 ? `That's ${ago(s.updated_at)}. Run the daily budget before trusting these.` : hrs > 36 ? `${ago(s.updated_at)}. A daily budget run will refresh them.` : `${ago(s.updated_at)}, from the daily budget run`;
+  } else { $('asof').className = 'asof stale'; $('asof-main').textContent = 'No numbers yet'; $('asof-sub').textContent = 'The next daily budget run will fill these in.'; }
   $('whoami').textContent = session ? (session.who === 'dustin' ? 'Dustin' : 'Megan') : '';
 
   const buffer = (s.chase && s.chase.buffer) ?? r.chase_buffer ?? 2000;
@@ -372,7 +385,7 @@ const SETTING_LABELS = { chase_buffer: 'Chase buffer', monthly_target: 'Monthly 
 function renderRules() {
   const r = state.rules || {};
   $('rulesList').innerHTML = (r.rules || []).map(x => `<li>${esc(x)}</li>`).join('') || '<li class="sub">No rules yet.</li>';
-  $('rulesUpdated').textContent = r.updated_at ? `Last changed ${nice(r.updated_at)}${r.updated_by ? ' by ' + r.updated_by : ''}` : '';
+  $('rulesUpdated').textContent = r.updated_at ? `Rules last changed ${asOf(r.updated_at)}${r.updated_by ? ' by ' + r.updated_by : ''}` : '';
   $('editRules').classList.toggle('hidden', !!session && session.who === 'dustin' && !session.sharedPin);
 }
 $('editRules').onclick = () => {
@@ -419,6 +432,7 @@ function showAnswer(a) {
     ${facts ? `<div class="facts">${facts}</div>` : ''}
     <div><span class="tag">${esc(a.bucket)}${a.category ? ' · ' + esc(a.category) : ''}</span>${a.card ? `<span class="tag">💳 ${esc(a.card)}</span>` : ''}</div>
     ${remind ? `<div class="sub" style="margin-top:12px">Check back <b>${nice(a.check_back_date)}</b>${a.check_back_why ? ': ' + esc(a.check_back_why) : ''}</div><button class="btn" id="remindBtn" style="margin-top:12px">Remind us ${nice(a.check_back_date)}</button>` : ''}
+    <div class="faint" style="margin-top:12px">Based on numbers from ${state && state.snapshot && state.snapshot.updated_at ? asOf(state.snapshot.updated_at) : 'the last update'}</div>
     <button class="btn plain" id="againBtn" style="margin-top:6px">Ask about something else</button>
   </div>`;
   if (remind) $('remindBtn').onclick = async () => {
