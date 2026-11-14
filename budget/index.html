@@ -195,10 +195,7 @@
         <ul class="list" id="bills"></ul>
       </div>
 
-      <div class="grid2">
-        <div class="card mini"><div class="label">Savings</div><div class="val num" id="sv-cur">$0</div><div class="of" id="sv-of"></div><div class="bar"><i id="sv-bar"></i></div></div>
-        <div class="card mini"><div class="label">Christmas</div><div class="val num" id="xm-used">$0</div><div class="of" id="xm-of"></div><div class="bar" id="xm-barwrap"><i id="xm-bar"></i></div></div>
-      </div>
+      <div class="card mini"><div class="row"><div class="label">Savings</div><div class="faint" id="sv-of"></div></div><div class="val num" id="sv-cur">$0</div><div class="bar"><i id="sv-bar"></i></div></div>
 
       <button class="btn" data-go="ask">Can I buy something?</button>
       <div class="faint" style="text-align:center">Budgeting math from our own rules. Never moves money.</div>
@@ -349,11 +346,6 @@ function render() {
   const sv = s.savings || {};
   $('sv-cur').textContent = money(sv.current); $('sv-of').textContent = `${sv.phase || r.savings_phase || ''}: ${money(sv.milestone ?? r.savings_milestone)} goal`;
   $('sv-bar').style.width = pct(sv.current, sv.milestone) + '%';
-  const xm = s.christmas || {};
-  $('xm-used').textContent = money(xm.used); $('xm-of').textContent = `of ${money(xm.cap ?? r.christmas_cap)} cap`;
-  $('xm-bar').style.width = pct(xm.used, xm.cap) + '%';
-  $('xm-barwrap').className = 'bar' + (xm.used > xm.cap ? ' over' : xm.used > xm.cap * .85 ? ' warn' : '');
-
   renderLater(); renderHistory(); renderRules();
 }
 
@@ -381,7 +373,7 @@ function renderHistory() {
   $('history').innerHTML = h.length ? h.map(x => { const a = x.answer || {}; return `<li class="v-${esc(a.verdict)}"><div style="display:flex;gap:10px;align-items:flex-start"><span class="dot" style="margin-top:6px"></span><div><div class="t">${esc(x.item)} <span class="num" style="color:var(--sub);font-weight:500">${money(x.price)}</span></div><div class="d">${esc(VERDICT[a.verdict] || '')} · ${esc(a.bucket || '')} · ${x.who === 'dustin' ? 'Dustin' : 'Megan'} · ${nice(x.at)}</div><div class="d" style="margin-top:3px">${esc(a.reason || '')}</div></div></div></li>`; }).join('') : '<li class="empty" style="display:block">No questions yet.</li>';
 }
 
-const SETTING_LABELS = { chase_buffer: 'Chase buffer', monthly_target: 'Monthly target', monthly_max: 'Monthly max', daily_target: 'Daily target', megan_budget: 'Megan Budget', dustin_budget: 'Dustin Budget', jordynn_budget: 'Jordynn Budget', christmas_cap: 'Christmas cap', apple_card_min_available: 'Apple Card min available', savings_phase: 'Savings phase', savings_milestone: 'Savings milestone', savings_target_date: 'Savings target date', savings_ok_by: 'Savings OK by' };
+const SETTING_LABELS = { chase_buffer: 'Chase buffer', monthly_target: 'Monthly target', monthly_max: 'Monthly max', daily_target: 'Daily target', megan_budget: 'Megan Budget', dustin_budget: 'Dustin Budget', jordynn_budget: 'Jordynn Budget', apple_card_min_available: 'Apple Card min available', savings_phase: 'Savings phase', savings_milestone: 'Savings milestone', savings_target_date: 'Savings target date', savings_ok_by: 'Savings OK by' };
 function renderRules() {
   const r = state.rules || {};
   $('rulesList').innerHTML = (r.rules || []).map(x => `<li>${esc(x)}</li>`).join('') || '<li class="sub">No rules yet.</li>';
@@ -506,9 +498,9 @@ function DEMO_DATA() {
       personal: { megan: { budget: 300, spent: 142.5, left: 157.5 }, dustin: { budget: 300, spent: 211, left: 89 } },
       month: { label: 'November 2026', spent_outside_bills: 1925.4, target: 4000, max: 5000, days_left: 17, daily_target_remaining: 122.03 },
       upcoming_bills: [{ name: 'Car insurance', amount: 186, due: '2026-11-18' }, { name: 'Internet', amount: 79.99, due: '2026-11-20' }],
-      next_payday: { date: '2026-11-20', who: 'Dustin' }, savings: { phase: 'Cash first', current: 9850, milestone: 15000 }, christmas: { cap: 1600, used: 640 } },
-    rules: { settings: { chase_buffer: 2000, monthly_target: 4000, monthly_max: 5000, megan_budget: 300, dustin_budget: 300, christmas_cap: 1600, apple_card_min_available: 500, savings_phase: 'Cash first', savings_milestone: 15000 },
-      rules: ['Keep $2,000 in Chase checking as the buffer. Never count it as spendable.', 'Wants never come out of savings.', 'Monthly spending outside bills: target $4,000, max $5,000.', 'Megan Budget and Dustin Budget are $300/month each.', 'Christmas 2026 cap is about $1,600.', 'If Apple Card available credit is under about $500, big purchases wait.'], updated_at: '2026-11-14T22:30:00Z', updated_by: 'Claude' },
+      next_payday: { date: '2026-11-20', who: 'Dustin' }, savings: { phase: 'Cash first', current: 9850, milestone: 15000 } },
+    rules: { settings: { chase_buffer: 2000, monthly_target: 4000, monthly_max: 5000, megan_budget: 300, dustin_budget: 300, apple_card_min_available: 500, savings_phase: 'Cash first', savings_milestone: 15000 },
+      rules: ['Keep $2,000 in Chase checking as the buffer. Never count it as spendable.', 'Wants never come out of savings.', 'Monthly spending outside bills: target $4,000, max $5,000.', 'Megan Budget and Dustin Budget are $300/month each.', 'If Apple Card available credit is under about $500, big purchases wait.'], updated_at: '2026-11-14T22:30:00Z', updated_by: 'Claude' },
     history: [{ at: '2026-11-13T19:00:00Z', who: 'megan', item: 'Tarot deck', price: 32, answer: { verdict: 'yes', bucket: 'Megan Budget', reason: '$157.50 left, so $32 leaves $125.50.' } }],
     checkBacks: [{ id: 'c1', title: 'Revisit: Saddle pad ($85)', due: '2026-11-30' }] };
 }
