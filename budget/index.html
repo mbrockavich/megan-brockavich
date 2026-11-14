@@ -180,14 +180,6 @@
       </div>
 
       <div class="card">
-        <div class="row"><div class="label">Apple Card</div><div class="faint" id="ac-rule"></div></div>
-        <div class="grid2" style="margin-top:8px">
-          <div class="mini"><div class="of">Balance</div><div class="val num" id="ac-bal">$0</div></div>
-          <div class="mini"><div class="of">Available</div><div class="val num" id="ac-av">$0</div></div>
-        </div>
-      </div>
-
-      <div class="card">
         <div class="row"><div class="label">Bills before next payday</div><div class="faint" id="bills-total"></div></div>
         <ul class="list" id="bills"></ul>
       </div>
@@ -329,11 +321,6 @@ function render() {
   $('mo-barwrap').className = 'bar' + (mo.spent_outside_bills > (mo.max ?? 5000) ? ' over' : mo.spent_outside_bills > mo.target ? ' warn' : '');
   $('mo-days').textContent = mo.days_left != null ? `${mo.days_left} days left` : '';
   $('mo-daily').textContent = mo.daily_target_remaining != null ? `About ${money(mo.daily_target_remaining)} a day for the rest of ${mo.label ? mo.label.split(' ')[0] : 'the month'}. Max is ${money(mo.max ?? r.monthly_max)}.` : '';
-
-  const ac = s.apple_card || {};
-  $('ac-bal').textContent = money(ac.balance); $('ac-av').textContent = money(ac.available);
-  const minAv = r.apple_card_min_available ?? 500;
-  $('ac-rule').textContent = ac.available != null && ac.available < minAv ? 'Big buys wait' : `Big buys OK over ${money(minAv)}`;
 
   const bills = s.upcoming_bills || [];
   $('bills').innerHTML = bills.length ? bills.map(b => `<li><div><div class="t">${esc(b.name)}</div><div class="d">${nice(b.due)}</div></div><div class="num t">${money(b.amount, true)}</div></li>`).join('') : '<li><span class="sub">Nothing due before payday</span></li>';
