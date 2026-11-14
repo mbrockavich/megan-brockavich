@@ -161,22 +161,16 @@
     <section class="view on" id="v-home">
       <div class="asof" id="asof"><span class="dot"></span><div><div id="asof-main">Loading numbers…</div><small id="asof-sub"></small></div></div>
       <div class="card hero">
-        <div class="label">Free in Chase</div>
-        <div class="big num" id="h-free">$0</div>
-        <div class="sub" id="h-free-sub">above the $2,000 buffer</div>
+        <div class="label">Left to spend this month</div>
+        <div class="big num" id="h-left">$0</div>
+        <div class="sub" id="h-left-sub"></div>
+        <div class="bar" style="background:rgba(255,255,255,.22)"><i id="h-bar" style="background:#fff"></i></div>
         <div class="pillrow" id="h-pills"></div>
       </div>
 
       <div class="grid2">
         <div class="card mini"><div class="label">Megan Budget</div><div class="val num" id="m-left">$0</div><div class="of" id="m-of"></div><div class="bar"><i id="m-bar"></i></div></div>
         <div class="card mini"><div class="label">Dustin Budget</div><div class="val num" id="d-left">$0</div><div class="of" id="d-of"></div><div class="bar"><i id="d-bar"></i></div></div>
-      </div>
-
-      <div class="card">
-        <div class="row"><div class="label" id="mo-label">Spent this month (outside bills)</div><div class="faint" id="mo-days"></div></div>
-        <div class="row" style="margin-top:6px"><div class="big num" style="font-size:30px" id="mo-spent">$0</div><div class="sub num" id="mo-target"></div></div>
-        <div class="bar" id="mo-barwrap"><i id="mo-bar"></i></div>
-        <div class="sub" style="margin-top:10px" id="mo-daily"></div>
       </div>
 
       <div class="card">
@@ -298,29 +292,23 @@ function render() {
   } else { $('asof').className = 'asof stale'; $('asof-main').textContent = 'No numbers yet'; $('asof-sub').textContent = 'The next daily budget run will fill these in.'; }
   $('whoami').textContent = session ? (session.who === 'dustin' ? 'Dustin' : 'Megan') : '';
 
-  const buffer = (s.chase && s.chase.buffer) ?? r.chase_buffer ?? 2000;
-  $('h-free').textContent = money(s.chase && s.chase.available_above_buffer);
-  $('h-free-sub').textContent = `above the ${money(buffer)} buffer`;
+  const mo = s.month || {};
+  const target = mo.target ?? r.monthly_target ?? 4000;
+  const left = mo.left_to_spend ?? (mo.spent_outside_bills != null ? target - mo.spent_outside_bills : null);
+  $('h-left').textContent = money(left);
+  $('h-left-sub').textContent = mo.spent_outside_bills != null ? `spent ${money(mo.spent_outside_bills)} of ${money(target)} (max ${money(mo.max ?? r.monthly_max ?? 5000)})` : `in the Spending Plan${mo.label ? ' for ' + mo.label.split(' ')[0] : ''}`;
+  $('h-bar').style.width = (left != null ? pct(left, target) : 0) + '%';
   const np = s.next_payday;
   const pills = [];
+  if (mo.daily_target_remaining != null) pills.push(`${money(mo.daily_target_remaining)}/day`);
+  if (mo.days_left != null) pills.push(`${mo.days_left} days left`);
   if (np) pills.push(`Next payday ${nice(np.date)}${np.who ? ' · ' + np.who : ''}`);
-  if (s.month && s.month.daily_target_remaining != null) pills.push(`${money(s.month.daily_target_remaining)}/day left`);
   $('h-pills').innerHTML = pills.map(p => `<span class="pill">${esc(p)}</span>`).join('');
 
   const person = (k, el) => { const p = (s.personal || {})[k] || {}; const left = p.left ?? (p.budget - p.spent);
     $(el + '-left').textContent = money(left); $(el + '-of').textContent = `left of ${money(p.budget)}`;
     $(el + '-bar').style.width = pct(left, p.budget) + '%'; };
   person('megan', 'm'); person('dustin', 'd');
-
-  const mo = s.month || {};
-  const hasSpent = mo.spent_outside_bills != null;
-  $('mo-label').textContent = hasSpent ? 'Spent this month (outside bills)' : 'Left to spend this month';
-  $('mo-spent').textContent = money(hasSpent ? mo.spent_outside_bills : mo.left_to_spend);
-  $('mo-target').textContent = hasSpent ? `of ${money(mo.target ?? r.monthly_target)} target` : 'Spending Plan';
-  $('mo-bar').style.width = (hasSpent ? pct(mo.spent_outside_bills, mo.target) : 100 - pct(mo.left_to_spend, mo.target)) + '%';
-  $('mo-barwrap').className = 'bar' + (mo.spent_outside_bills > (mo.max ?? 5000) ? ' over' : mo.spent_outside_bills > mo.target ? ' warn' : '');
-  $('mo-days').textContent = mo.days_left != null ? `${mo.days_left} days left` : '';
-  $('mo-daily').textContent = mo.daily_target_remaining != null ? `About ${money(mo.daily_target_remaining)} a day for the rest of ${mo.label ? mo.label.split(' ')[0] : 'the month'}. Max is ${money(mo.max ?? r.monthly_max)}.` : '';
 
   const bills = s.upcoming_bills || [];
   $('bills').innerHTML = bills.length ? bills.map(b => `<li><div><div class="t">${esc(b.name)}</div><div class="d">${nice(b.due)}</div></div><div class="num t">${money(b.amount, true)}</div></li>`).join('') : '<li><span class="sub">Nothing due before payday</span></li>';
@@ -478,7 +466,7 @@ function DEMO_DATA() {
   return { _demo: true,
     snapshot: { updated_at: new Date(Date.now() - 4 * 3600e3).toISOString(), chase: { balance: 3412.18, buffer: 2000, available_above_buffer: 1412.18 }, apple_card: { balance: 1840.22, available: 1159.78 },
       personal: { megan: { budget: 300, spent: 142.5, left: 157.5 }, dustin: { budget: 300, spent: 211, left: 89 } },
-      month: { label: 'November 2026', spent_outside_bills: 1925.4, target: 4000, max: 5000, days_left: 17, daily_target_remaining: 122.03 },
+      month: { label: 'November 2026', left_to_spend: 2074.6, spent_outside_bills: null, target: 4000, max: 5000, days_left: 17, daily_target_remaining: 122.03 },
       upcoming_bills: [{ name: 'Car insurance', amount: 186, due: '2026-11-18' }, { name: 'Internet', amount: 79.99, due: '2026-11-20' }],
       next_payday: { date: '2026-11-20', who: 'Dustin' }, savings: { phase: 'Cash first', current: 9850, milestone: 15000 } },
     rules: { settings: { chase_buffer: 2000, monthly_target: 4000, monthly_max: 5000, megan_budget: 300, dustin_budget: 300, apple_card_min_available: 500, savings_phase: 'Cash first', savings_milestone: 15000 },
