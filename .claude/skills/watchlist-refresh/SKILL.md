@@ -147,6 +147,23 @@ Scott Westerfeld, James Dashner, Lev Grossman, Veronica Roth.
 - Month-only or year-only dates are fine when the day is unknown, but Megan wants
   days, so look harder before settling for a month.
 
+## Fresh Ink is an installable app (PWA)
+Files: `manifest.webmanifest`, `sw.js` (both at the site root) and `fresh-ink/` (icons).
+- Installed on her phone it opens full-screen and works offline. The service worker
+  (`sw.js`) serves the page and `watchlist-data.js` from cache and refreshes them in the
+  background. When the data file changes, the open app shows a "New books added" toast
+  with a Refresh button. So a normal refresh (edit `watchlist-data.js`, push) needs no
+  extra steps. Do NOT hand-bump anything for data changes.
+- If you add a new file the app must work offline, add it to `SHELL` in `sw.js` and bump
+  `SHELL_CACHE` (e.g. `fresh-ink-shell-v2`). Cover images and fonts are cached at runtime
+  only when their host allows CORS (opaque responses are deliberately never stored).
+- `sw.js` only touches Fresh Ink's own files, fonts and cover images. It ignores the rest
+  of the site, so don't widen it.
+- Megan chose: installable + offline only. She did not want a list view, tab bar, voting
+  helper or tap-to-mark (she'll tell you what she's read).
+- To test: serve a copy of the files from a temp dir with `python3 -m http.server`
+  (service workers need http://localhost) and use Playwright's `setOffline`.
+
 ## Checking books off
 There is no filtering and no per-browser "want list" (Megan didn't want anything
 that only works in one browser). When she says she read a watchlist book, set
