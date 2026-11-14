@@ -164,6 +164,15 @@ Files: `manifest.webmanifest`, `sw.js` (both at the site root) and `fresh-ink/` 
 - To test: serve a copy of the files from a temp dir with `python3 -m http.server`
   (service workers need http://localhost) and use Playwright's `setOffline`.
 
+## Updates reaching her phone
+GitHub Pages caches files for ~10 minutes, and an installed app opens its saved copy first. So
+`sw.js` revalidates with `cache:'no-cache'`, the page shows a "Fresh Ink updated / Refresh" notice
+when a new version arrives or a new service worker takes over, and the footer has a
+**↻ Check for updates** button that clears the saved copy and reloads. If she says she still sees
+the old version after a push: tell her to open the app, scroll to the bottom and tap
+"Check for updates" (or close and reopen the app, or remove and re-add it from the browser). Bump
+`SHELL_CACHE` in `sw.js` only when a change must reach every phone immediately.
+
 ## Layout
 The top of the page is one frozen bar (`#bar`, sticky): a header row (back arrow to the
 library, app icon, "Fresh Ink", live book count, **Today** button), then the Popular/genre

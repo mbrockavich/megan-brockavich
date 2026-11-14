@@ -199,6 +199,7 @@
   <div id="cal"></div>
   <div id="tba"></div>
   <footer id="foot"></footer>
+  <div class="install"><button class="pill" id="updateBtn">↻ Check for updates</button></div>
   <div class="install" id="installWrap" hidden><button class="pill" id="installBtn">📲 Install Fresh Ink as an app</button></div>
   <details class="diag"><summary>Cover diagnostics</summary><pre id="diag">...</pre></details>
 </div>
@@ -472,15 +473,27 @@ document.getElementById("foot").innerHTML=`Last refreshed ${fmt(WATCHLIST_META.l
 setBarVar(); applyFilter(); renderGenres(); renderMeter(); renderCal(); renderTools(); setBarVar(); scrollToday(false); probeImages(); findCovers();
 
 /* ---- app bits: works offline, installable, tells you when new books were added ---- */
-if("serviceWorker" in navigator){
-  window.addEventListener("load",()=>{ navigator.serviceWorker.register("sw.js").catch(()=>{}); });
-  navigator.serviceWorker.addEventListener("message",e=>{
-    if(!e.data||e.data.type!=="fresh-ink-updated"||document.getElementById("toast"))return;
-    const t=document.createElement("div"); t.className="toast"; t.id="toast";
-    t.innerHTML='Fresh Ink updated <button>Refresh</button>'; document.body.appendChild(t);
-    t.querySelector("button").onclick=()=>location.reload();
-  });
+function showToast(msg){
+  if(document.getElementById("toast"))return;
+  const t=document.createElement("div"); t.className="toast"; t.id="toast";
+  t.innerHTML=msg+' <button>Refresh</button>'; document.body.appendChild(t);
+  t.querySelector("button").onclick=()=>location.reload();
 }
+if("serviceWorker" in navigator){
+  const hadController=!!navigator.serviceWorker.controller;
+  window.addEventListener("load",()=>{ navigator.serviceWorker.register("sw.js").catch(()=>{}); });
+  navigator.serviceWorker.addEventListener("message",e=>{ if(e.data&&e.data.type==="fresh-ink-updated")showToast("Fresh Ink updated"); });
+  navigator.serviceWorker.addEventListener("controllerchange",()=>{ if(hadController)showToast("Fresh Ink updated"); });
+}
+async function forceUpdate(btn){
+  btn.textContent="Updating..."; btn.disabled=true;
+  try{
+    const reg=await navigator.serviceWorker.getRegistration(); if(reg)await reg.update();
+    for(const k of await caches.keys()) if(k.startsWith("fresh-ink-shell"))await caches.delete(k);
+  }catch(e){}
+  location.reload();
+}
+document.getElementById("updateBtn").addEventListener("click",e=>forceUpdate(e.currentTarget));
 const standalone=window.matchMedia("(display-mode: standalone)").matches||navigator.standalone===true;
 let installEvt=null;
 window.addEventListener("beforeinstallprompt",e=>{e.preventDefault();installEvt=e;});

@@ -3,7 +3,7 @@
      cache and quietly refreshed in the background, and the page is told when new data arrives.
    - Book covers and fonts are cached the first time they load, so they also show offline.
    - It ignores every other page on the site (library, trackers, etc.). */
-const SHELL_CACHE = 'fresh-ink-shell-v1';
+const SHELL_CACHE = 'fresh-ink-shell-v2';   // bumped so every phone drops its old saved copy once
 const RUNTIME_CACHE = 'fresh-ink-runtime-v1';
 const MAX_RUNTIME = 600;
 const SHELL = ['watchlist.html', 'watchlist-data.js', 'manifest.webmanifest',
@@ -39,7 +39,9 @@ async function staleWhileRevalidate(req, url) {
   const key = url.origin + url.pathname;            // ignore ?query strings
   const cached = await cache.match(key);
   const cachedForCompare = cached ? cached.clone() : null;   // clone BEFORE the original is handed to the page
-  const network = fetch(req.mode === 'navigate' ? key : req).then(async res => {
+  // 'no-cache' = always ask the server if the file changed. Without it GitHub Pages' 10-minute browser cache
+  // can hide an update for a while.
+  const network = fetch(req.mode === 'navigate' ? key : req.url, { cache: 'no-cache' }).then(async res => {
     if (res && res.ok) {
       if (cachedForCompare) {
         const [a, b] = await Promise.all([cachedForCompare.text(), res.clone().text()]);
