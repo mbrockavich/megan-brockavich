@@ -247,7 +247,7 @@
 <script>
 /* ===== settings ===== */
 const APP_NAME = 'Can we afford it?';
-const BUILD = '2026-11-14-v13';   // bump on every release; open copies reload themselves
+const BUILD = '2026-11-14-v14';   // bump on every release; open copies reload themselves
 const API = 'https://afford-it.brockavichmegan.workers.dev';
 
 const DEMO = new URLSearchParams(location.search).has('demo');
@@ -302,14 +302,20 @@ function render() {
 
   const mo = s.month || {};
   const target = mo.target ?? r.monthly_target ?? 4000;
-  const left = mo.left_to_spend ?? (mo.spent_outside_bills != null ? target - mo.spent_outside_bills : null);
+  const rawLeft = mo.left_to_spend ?? (mo.spent_outside_bills != null ? target - mo.spent_outside_bills : null);
+  const now = new Date(), monthEndISO = new Date(now.getFullYear(), now.getMonth() + 1, 0).toLocaleDateString('en-CA');
+  const daysLeftNow = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate() - now.getDate() + 1;
+  const plannedThisMonth = (s.upcoming_spends || []).filter(u => u.date >= todayISO() && u.date <= monthEndISO).reduce((a, u) => a + (+u.amount || 0), 0);
+  const left = rawLeft != null ? rawLeft - plannedThisMonth : null;
+  const perDay = left != null ? left / daysLeftNow : null;
+  const goal = r.daily_target ?? 130;
   $('h-left').textContent = money(left);
-  $('h-left-sub').textContent = mo.spent_outside_bills != null ? `spent ${money(mo.spent_outside_bills)} of ${money(target)} (max ${money(mo.max ?? r.monthly_max ?? 5000)})` : `in the Spending Plan${mo.label ? ' for ' + mo.label.split(' ')[0] : ''}`;
+  $('h-left-sub').textContent = rawLeft == null ? '' : plannedThisMonth ? `after ${money(plannedThisMonth)} already planned (${money(rawLeft)} in the Spending Plan)` : `in the Spending Plan${mo.label ? ' for ' + mo.label.split(' ')[0] : ''}`;
   $('h-bar').style.width = (left != null ? pct(left, target) : 0) + '%';
   const np = s.next_payday;
   const pills = [];
-  if (mo.daily_target_remaining != null) pills.push(`${money(mo.daily_target_remaining)}/day`);
-  if (mo.days_left != null) pills.push(`${mo.days_left} days left`);
+  if (perDay != null) pills.push(`${money(perDay)}/day${perDay < goal ? ' · under ' + money(goal) + ' goal' : ''}`);
+  pills.push(`${daysLeftNow} days left`);
   if (np) pills.push(`Next payday ${nice(np.date)}${np.who ? ' · ' + np.who : ''}`);
   $('h-pills').innerHTML = pills.map(p => `<span class="pill">${esc(p)}</span>`).join('');
 
