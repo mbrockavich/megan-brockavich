@@ -143,9 +143,6 @@
     <h1 id="appNameLogin">Can we afford it?</h1>
     <div class="sub">Our budget, live. Ask before you buy.</div>
   </div>
-  <div class="field"><span class="label">Who's this?</span>
-    <div class="seg" id="loginWho"><button data-who="megan" class="on">Megan</button><button data-who="dustin">Dustin</button></div>
-  </div>
   <div class="field pin"><span class="label">PIN</span><input id="pin" type="password" inputmode="numeric" autocomplete="current-password" maxlength="12" /></div>
   <div class="err" id="loginErr"></div>
   <button class="btn" id="loginBtn">Unlock</button>
@@ -206,8 +203,8 @@
       <div class="card" id="askForm">
         <div class="field"><span class="label">What is it?</span><input id="q-item" placeholder="A new hammer, concert tickets…" autocomplete="off" /></div>
         <div class="field" style="margin-top:12px"><span class="label">Price</span><div class="price"><span>$</span><input id="q-price" inputmode="decimal" placeholder="0" class="num" /></div></div>
-        <div class="field" style="margin-top:12px"><span class="label">Who's asking?</span>
-          <div class="seg" id="askWho"><button data-who="megan" class="on">Megan</button><button data-who="dustin">Dustin</button></div></div>
+        <div class="field" style="margin-top:12px"><span class="label">Which budget?</span>
+          <div class="seg" id="askBudget"><button data-who="personal" class="on" id="personalBtn">My personal budget</button><button data-who="household">Household</button></div></div>
         <button class="btn" id="askBtn" style="margin-top:16px">Ask</button>
       </div>
       <div id="answer"></div>
@@ -295,8 +292,7 @@ async function api(method, path, data) {
 
 /* ===== state + render ===== */
 let state = store.get('cache') || null;
-const loginWho = seg('loginWho');
-const askWho = seg('askWho');
+const askBudget = seg('askBudget');
 
 function render() {
   if (!state) return;
@@ -402,7 +398,7 @@ let lastQ = null;
 async function doAsk(context) {
   const item = $('q-item').value.trim(); const price = parseFloat(($('q-price').value || '').replace(/[$,]/g, ''));
   if (!item || !(price > 0)) { toast('Add what it is and the price'); return; }
-  lastQ = { item, price, who: askWho.get(), context: context || '' };
+  lastQ = { item, price, budget: askBudget.get(), who: session && session.who, context: context || '' };
   $('askBtn').disabled = true;
   $('answer').innerHTML = `<div class="card thinking"><div class="spin"></div>Checking the numbers…</div>`;
   try { showAnswer(await api('POST', '/ask', lastQ)); }
@@ -451,12 +447,12 @@ document.querySelectorAll('[data-go]').forEach(b => b.addEventListener('click', 
 
 /* ===== login / boot ===== */
 function showLogin() { $('app').classList.add('hidden'); $('login').classList.remove('hidden'); setTimeout(() => $('pin').focus(), 50); }
-function showApp() { $('login').classList.add('hidden'); $('app').classList.remove('hidden'); askWho.set(session.who); }
+function showApp() { $('login').classList.add('hidden'); $('app').classList.remove('hidden'); $('personalBtn').textContent = (session.who === 'dustin' ? 'Dustin' : 'Megan') + ' Budget'; }
 function logout() { session = null; state = null; store.del('session'); store.del('cache'); showLogin(); }
 $('logout').onclick = logout;
 $('loginBtn').onclick = async () => {
   $('loginErr').textContent = ''; $('loginBtn').disabled = true;
-  try { const j = await api('POST', '/login', { pin: $('pin').value, who: loginWho.get() }); session = { token: j.token, who: j.who, sharedPin: j.sharedPin }; store.set('session', session); $('pin').value = ''; showApp(); await refresh(); }
+  try { const j = await api('POST', '/login', { pin: $('pin').value }); session = { token: j.token, who: j.who, sharedPin: j.sharedPin }; store.set('session', session); $('pin').value = ''; showApp(); await refresh(); }
   catch (err) { $('loginErr').textContent = err.message; }
   $('loginBtn').disabled = false;
 };
@@ -476,15 +472,14 @@ if ('serviceWorker' in navigator && !DEMO) navigator.serviceWorker.register('sw.
 /* ===== demo mode (?demo): sample numbers, canned answers, nothing leaves the phone ===== */
 async function demoApi(method, path, data) {
   await new Promise(r => setTimeout(r, path === '/ask' ? 900 : 150));
-  if (path === '/login') return { token: 'demo', who: data.who };
+  if (path === '/login') return { token: 'demo', who: 'megan' };
   if (path === '/data') return state && state._demo ? state : DEMO_DATA();
   if (path === '/remind') { state.checkBacks = [...(state.checkBacks || []), { id: 'd' + Date.now(), title: `Revisit: ${data.item} ($${data.price})`, due: data.date }]; return { ok: true }; }
   if (path === '/done') return { ok: true };
   if (path === '/rules') { if (data.editPin !== '0000') throw new Error('Edit PIN didn\'t match. (Demo PIN is 0000.)'); return { ok: true, rules: { ...data.rules, updated_at: new Date().toISOString(), updated_by: 'Megan (app)' } }; }
   if (path === '/ask') {
     const it = data.item.toLowerCase(), p = data.price, ctx = (data.context || '').toLowerCase();
-    if (data.who === 'dustin' && /hammer|drill|saw|tool|wrench/.test(it) && !ctx) return { needs_clarification: true, clarifying_question: 'Is this for work or personal?', clarifying_options: ['For work', 'Personal'] };
-    if (ctx.includes('work')) return { needs_clarification: false, verdict: 'yes', bucket: 'Household', category: 'Work Equipment', headline: 'Yes, from the household budget.', reason: `Work tools come from the overall budget, not Dustin's. ${money(p)} fits: the month is at $1,925 of $4,000.`, numbers: [{ label: 'Month after', value: money(1925 + p) }, { label: 'Target', value: '$4,000' }], card: 'Capital One' };
+    if (data.budget === 'household') return { needs_clarification: false, verdict: 'yes', bucket: 'Household', category: 'Household', headline: 'Yes, from the household budget.', reason: `${money(p)} fits: the month is at $1,925 of the $4,000 target.`, numbers: [{ label: 'Month after', value: money(1925 + p) }, { label: 'Target', value: '$4,000' }], card: 'Capital One' };
     const who = data.who === 'dustin' ? 'Dustin' : 'Megan', left = data.who === 'dustin' ? 89 : 157.5;
     if (p <= left * 0.6) return { needs_clarification: false, verdict: 'yes', bucket: who + ' Budget', category: 'Fun Money', headline: `Yes, from your ${who} Budget.`, reason: `You have ${money(left, true)} left this month, so ${money(p)} leaves ${money(left - p, true)}.`, numbers: [{ label: 'Left now', value: money(left, true) }, { label: 'Left after', value: money(left - p, true) }], card: data.who === 'dustin' ? 'Capital One' : 'Apple Card' };
     if (p <= left) return { needs_clarification: false, verdict: 'tight', bucket: who + ' Budget', category: 'Fun Money', headline: 'Yes, but it uses most of what is left.', reason: `${money(p)} fits in the ${money(left, true)} left, but only ${money(left - p, true)} remains until December.`, numbers: [{ label: 'Left now', value: money(left, true) }, { label: 'Left after', value: money(left - p, true) }], card: data.who === 'dustin' ? 'Capital One' : 'Apple Card' };
