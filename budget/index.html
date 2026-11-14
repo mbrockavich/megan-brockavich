@@ -107,7 +107,7 @@
 
   /* tab bar */
   nav.tabs { position: fixed; left: 0; right: 0; bottom: 0; z-index: 10; background: color-mix(in srgb, var(--card) 92%, transparent); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
-    border-top: 1px solid var(--line); display: grid; grid-template-columns: repeat(5, 1fr); padding: 6px 4px calc(env(safe-area-inset-bottom) + 6px); }
+    border-top: 1px solid var(--line); display: grid; grid-template-columns: repeat(4, 1fr); padding: 6px 4px calc(env(safe-area-inset-bottom) + 6px); }
   nav.tabs button { border: none; background: none; display: flex; flex-direction: column; align-items: center; gap: 3px; font-size: 11px; font-weight: 600; color: var(--faint); padding: 4px 0; position: relative; }
   nav.tabs button svg { width: 25px; height: 25px; }
   nav.tabs button.on { color: var(--brand); }
@@ -208,11 +208,6 @@
       <div class="faint" style="text-align:center">These also live in the Todoist project 💸 Purchases to revisit.</div>
     </section>
 
-    <!-- HISTORY -->
-    <section class="view" id="v-history">
-      <div class="card"><div class="label">Recent questions</div><ul class="list" id="history"></ul></div>
-    </section>
-
     <!-- RULES -->
     <section class="view" id="v-rules">
       <div class="card" id="goalsView"><div class="label">Our goals</div><ul class="list" id="goalsList"></ul></div>
@@ -238,7 +233,6 @@
     <button data-go="home" class="on"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/></svg>Today</button>
     <button data-go="ask"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M9.3 9.2a2.8 2.8 0 0 1 5.4 1c0 1.9-2.7 2.4-2.7 4"/><path d="M12 17.5h.01"/></svg>Ask</button>
     <button data-go="later"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="5" width="17" height="15.5" rx="2.5"/><path d="M3.5 10h17M8 3v4M16 3v4"/></svg>Later<span class="badge hidden" id="laterBadge"></span></button>
-    <button data-go="history"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 12a8.5 8.5 0 1 0 2.6-6.1L3.5 8.5"/><path d="M3.5 3.5v5h5M12 7.5V12l3 2"/></svg>History</button>
     <button data-go="rules"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M8 6h12M8 12h12M8 18h12"/><path d="M4 6h.01M4 12h.01M4 18h.01"/></svg>Rules</button>
   </nav>
 </div>
@@ -247,7 +241,7 @@
 <script>
 /* ===== settings ===== */
 const APP_NAME = 'Can we afford it?';
-const BUILD = '2026-11-14-v14';   // bump on every release; open copies reload themselves
+const BUILD = '2026-11-14-v15';   // bump on every release; open copies reload themselves
 const API = 'https://afford-it.brockavichmegan.workers.dev';
 
 const DEMO = new URLSearchParams(location.search).has('demo');
@@ -334,7 +328,7 @@ function render() {
   const sv = s.savings || {};
   $('sv-cur').textContent = money(sv.current); $('sv-of').textContent = `${sv.phase || r.savings_phase || ''}: ${money(sv.milestone ?? r.savings_milestone)} goal`;
   $('sv-bar').style.width = pct(sv.current, sv.milestone) + '%';
-  renderLater(); renderHistory(); renderRules();
+  renderLater(); renderRules();
 }
 
 function renderLater() {
@@ -356,7 +350,7 @@ $('later').addEventListener('click', async e => {
   }
 });
 
-function renderHistory() {
+function renderHistory() { return;
   const h = state.history || [];
   $('history').innerHTML = h.length ? h.map(x => { const a = x.answer || {}; return `<li class="v-${esc(a.verdict)}"><div style="display:flex;gap:10px;align-items:flex-start"><span class="dot" style="margin-top:6px"></span><div><div class="t">${x.link ? `<a href="${esc(x.link)}" target="_blank" rel="noopener" style="color:inherit">${esc(x.item)} ↗</a>` : esc(x.item)} <span class="num" style="color:var(--sub);font-weight:500">${money(x.price)}</span></div><div class="d">${esc(VERDICT[a.verdict] || '')} · ${esc(a.bucket || '')} · ${x.who === 'dustin' ? 'Dustin' : 'Megan'} · ${nice(x.at)}</div><div class="d" style="margin-top:3px">${esc(a.reason || '')}</div></div></div></li>`; }).join('') : '<li class="empty" style="display:block">No questions yet.</li>';
 }
@@ -431,13 +425,13 @@ function showAnswer(a) {
   };
   $('againBtn').onclick = () => { $('q-item').value = ''; $('q-price').value = ''; $('q-link').value = ''; $('answer').innerHTML = ''; $('q-item').focus(); };
   if (!DEMO) refresh();
-  else { state.history = [{ at: new Date().toISOString(), who: lastQ.who, item: lastQ.item, price: lastQ.price, answer: a }, ...(state.history || [])]; renderHistory(); }
+
 }
 $('askBtn').onclick = () => doAsk();
 $('q-price').addEventListener('keydown', e => { if (e.key === 'Enter') doAsk(); });
 
 /* ===== navigation ===== */
-const TITLES = { home: 'Today', ask: 'Can I buy this?', later: 'Later', history: 'History', rules: 'Rules' };
+const TITLES = { home: 'Today', ask: 'Can I buy this?', later: 'Later', rules: 'Rules' };
 function go(v) {
   document.querySelectorAll('section.view').forEach(s => s.classList.toggle('on', s.id === 'v-' + v));
   document.querySelectorAll('nav.tabs button').forEach(b => b.classList.toggle('on', b.dataset.go === v));
