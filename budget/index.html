@@ -209,6 +209,7 @@
 
     <!-- RULES -->
     <section class="view" id="v-rules">
+      <div class="card" id="goalsView"><div class="label">Our goals</div><ul class="list" id="goalsList"></ul></div>
       <div class="card" id="rulesView">
         <div class="row"><div class="label">Our rules</div><button class="btn small ghost" id="editRules">Edit</button></div>
         <ol class="rules" id="rulesList"></ol>
@@ -347,6 +348,8 @@ function renderHistory() {
 const SETTING_LABELS = { chase_buffer: 'Chase buffer', monthly_target: 'Monthly target', monthly_max: 'Monthly max', daily_target: 'Daily target', megan_budget: 'Megan Budget', dustin_budget: 'Dustin Budget', jordynn_budget: 'Jordynn Budget', apple_card_min_available: 'Apple Card min available', savings_phase: 'Savings phase', savings_milestone: 'Savings milestone', savings_target_date: 'Savings target date', savings_ok_by: 'Savings OK by' };
 function renderRules() {
   const r = state.rules || {};
+  $('goalsList').innerHTML = (r.goals || []).map(g => `<li><span>${esc(g)}</span></li>`).join('');
+  $('goalsView').classList.toggle('hidden', !(r.goals || []).length);
   $('rulesList').innerHTML = (r.rules || []).map(x => `<li>${esc(x)}</li>`).join('') || '<li class="sub">No rules yet.</li>';
   $('rulesUpdated').textContent = r.updated_at ? `Rules last changed ${asOf(r.updated_at)}${r.updated_by ? ' by ' + r.updated_by : ''}` : '';
   $('editRules').classList.toggle('hidden', !!session && session.who === 'dustin' && !session.sharedPin);
