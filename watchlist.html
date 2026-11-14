@@ -307,11 +307,16 @@ const mIdx=b=>b.p.m?b.p.y*12+b.p.m-1:null;
 const nowIdx=now.getFullYear()*12+now.getMonth();
 const SPAN_LO=Math.min(...items.filter(b=>b.p.m).map(mIdx),pd(winStart).y*12+pd(winStart).m-1,nowIdx);
 const SPAN_HI=Math.max(...items.filter(b=>b.p.m).map(mIdx),pd(winEnd).y*12+pd(winEnd).m-1);
-let genre="All", readF="all", rFrom=SPAN_LO, rTo=SPAN_HI, shown=items, byDay={}, byMonthTBC={}, tba=[];
+let genre="All", readF="all", popular=true, rFrom=SPAN_LO, rTo=SPAN_HI, shown=items, byDay={}, byMonthTBC={}, tba=[];
+/* "Popular": enough Goodreads ratings to be a real contender. New releases get a lower bar
+   because they haven't had time to collect ratings. Books with no ratings data are never hidden. */
+const isPopular=b=>{ if(b.ratings==null)return true;
+  const days=b.p.exact?(Date.parse(todayISO)-Date.parse(b.date))/864e5:(b.p.m?(nowIdx-mIdx(b))*30:9999);
+  return b.ratings>=(days<120?3000:20000); };
 const inRange=b=>{const i=mIdx(b); return i!=null?(i>=rFrom&&i<=rTo):(b.p.y>=Math.floor(rFrom/12)&&b.p.y<=Math.floor(rTo/12));};
 const isPastItem=b=>b.p.exact?b.date<=todayISO:(b.p.m?mIdx(b)<nowIdx:b.p.y<now.getFullYear());
 function applyFilter(){
-  shown=items.filter(b=>(genre==="All"||grp(b)===genre)&&(readF==="all"||(readF==="read")===!!b.read)&&inRange(b));
+  shown=items.filter(b=>(!popular||isPopular(b))&&(genre==="All"||grp(b)===genre)&&(readF==="all"||(readF==="read")===!!b.read)&&inRange(b));
   byDay={};byMonthTBC={};tba=[];
   shown.forEach(b=>{
     if(b.p.exact)(byDay[b.date]=byDay[b.date]||[]).push(b);
@@ -364,8 +369,10 @@ function renderCal(){
 
 function renderGenres(){
   const order=[...CATS.map(c=>grp({cat:c}))].filter((g,i,a)=>a.indexOf(g)===i).filter(g=>items.some(b=>grp(b)===g));
-  document.getElementById("genres").innerHTML=["All",...order].map(g=>{
-    const n=g==="All"?items.length:items.filter(b=>grp(b)===g).length;
+  const pool=items.filter(b=>!popular||isPopular(b));
+  const hidden=items.length-pool.length;
+  document.getElementById("genres").innerHTML=`<button class="pill tog ${popular?"on":""}" data-pop="1" title="${popular?"Showing popular books only. Tap to show everything.":"Tap to hide books with few ratings."}">🔥 Popular${popular&&hidden?`<span class="n">${hidden} hidden</span>`:""}</button>`+["All",...order].map(g=>{
+    const n=g==="All"?pool.length:pool.filter(b=>grp(b)===g).length;
     return `<button class="pill ${genre===g?"on":""}" data-genre="${esc(g)}">${esc(g)}<span class="n">${n}</span></button>`;}).join("");
 }
 function renderMeter(){
@@ -389,7 +396,9 @@ document.getElementById("reads").addEventListener("click",e=>{const b=e.target.c
 function setGenre(g){
   genre=g; refresh();
 }
-document.getElementById("genres").addEventListener("click",e=>{const b=e.target.closest("[data-genre]");if(b)setGenre(b.dataset.genre);});
+document.getElementById("genres").addEventListener("click",e=>{
+  if(e.target.closest("[data-pop]")){popular=!popular;refresh();return;}
+  const b=e.target.closest("[data-genre]");if(b)setGenre(b.dataset.genre);});
 
 /* ---- sheet ---- */
 const fmt=s=>{const p=pd(s);return `${DOW[new Date(p.y,p.m-1,p.d).getDay()]}, ${MONTH_FULL[p.m-1]} ${p.d}, ${p.y}`;};
@@ -399,7 +408,7 @@ function bookBlock(b){
   const when=b.p.exact?(b.date<=todayISO?"Out now":"Releases "+MONTH_FULL[b.p.m-1]+" "+b.p.d):b.p.m?(isPastItem(b)?`Released ${MONTH_FULL[b.p.m-1]} ${b.p.y}`:`${MONTH_FULL[b.p.m-1]} ${b.p.y}, date TBC`):(isPastItem(b)?`Released in ${b.p.y}`:`${b.p.y}, date TBA`);
   return `<div class="sbook"><div class="top"><div class="mini"><div class="cv" data-bk="${esc(key(b))}">${coverInner(b)}</div></div>
     <div><h3>${esc(b.title)}</h3><div class="by">${esc(b.author)}</div>
-    <div class="tags"><span class="tag g">${esc(b.cat)}</span>${b.series?`<span class="tag">${esc(b.series)}</span>`:""}${b.read?'<span class="tag m">✓ Read</span>':""}<span class="tag">${when}</span></div></div></div>
+    <div class="tags"><span class="tag g">${esc(b.cat)}</span>${b.series?`<span class="tag">${esc(b.series)}</span>`:""}${b.read?'<span class="tag m">✓ Read</span>':""}${b.ratings!=null?`<span class="tag">★ ${b.stars?b.stars.toFixed(2)+" · ":""}${b.ratings>=1e6?(b.ratings/1e6).toFixed(1)+"M":b.ratings>=1000?Math.round(b.ratings/1000)+"K":b.ratings} ratings</span>`:""}<span class="tag">${when}</span></div></div></div>
     ${b.buzz?`<div class="tags"><span class="tag b">🔥 ${esc(b.buzz)}</span></div>`:""}${b.note?`<p>${esc(b.note)}</p>`:""}
     <a class="gr" href="${esc(grUrl(b))}" target="_blank" rel="noopener">View on Goodreads ↗</a></div>`;
 }

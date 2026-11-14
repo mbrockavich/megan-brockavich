@@ -164,6 +164,22 @@ Files: `manifest.webmanifest`, `sw.js` (both at the site root) and `fresh-ink/` 
 - To test: serve a copy of the files from a temp dir with `python3 -m http.server`
   (service workers need http://localhost) and use Playwright's `setOffline`.
 
+## Popular filter and NYT tag
+- Megan felt too many obscure books showed up, so Fresh Ink has a **🔥 Popular** toggle
+  (on by default, one tap to show everything). It hides books whose Goodreads rating count
+  is under 20,000 (under 3,000 if released in the last ~4 months, since new books haven't
+  collected ratings yet). Books with no `ratings` value are never hidden (upcoming books,
+  non-nominees).
+- Each entry with a Goodreads link carries `ratings` (count) and `stars` (average), read from
+  `"ratingsCount"` / `"averageRating"` in the book page's HTML. Refresh them monthly with
+  `curl` (4 at a time) and patch the entries. When you add new books from Goodreads, add
+  their `ratings`/`stars` too.
+- **NYT bestseller tag: not built yet.** She asked for a small "NYT bestseller" tag. This
+  session could not reach NYT (www.nytimes.com, api.nytimes.com and Wikipedia are blocked,
+  and the request to allow www.nytimes.com was rejected by the environments service on
+  Nov 14, 2026). NYT lists also only show books after release, so they help as a tag, not
+  as the source. If access is allowed later, add a `nyt:true` field and a tag in the sheet.
+
 ## Checking books off
 There is no filtering and no per-browser "want list" (Megan didn't want anything
 that only works in one browser). When she says she read a watchlist book, set
