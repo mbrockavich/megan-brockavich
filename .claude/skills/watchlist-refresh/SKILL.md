@@ -164,6 +164,14 @@ Files: `manifest.webmanifest`, `sw.js` (both at the site root) and `fresh-ink/` 
 - To test: serve a copy of the files from a temp dir with `python3 -m http.server`
   (service workers need http://localhost) and use Playwright's `setOffline`.
 
+## Layout
+The top of the page is one frozen bar (`#bar`, sticky): a header row (back arrow to the
+library, app icon, "Fresh Ink", live book count, **Today** button), then the Popular/genre
+buttons, then the From/To month range and All/Unread/Read. The calendar scrolls under it.
+The big title was removed from the hero so it isn't repeated. Keep `overflow-x:clip` (not
+`hidden`) on `html`/`body`, otherwise `position:sticky` silently stops working. The bar's
+height is measured into `--barh` so month jumps stop below it.
+
 ## Popular filter and NYT tag
 - Megan felt too many obscure books showed up, so Fresh Ink has a **🔥 Popular** toggle
   (on by default, one tap to show everything). It hides books whose Goodreads rating count
