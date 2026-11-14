@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Can we afford it?</title>
+<meta name="robots" content="noindex, nofollow" />
+<link rel="manifest" href="manifest.json" />
+<meta name="theme-color" content="#0f7a5c" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="default" />
+<meta name="apple-mobile-web-app-title" content="Afford It" />
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png" />
+<link rel="icon" href="icons/icon-192.png" />
+<style>
+  :root {
+    --bg: #f3f5f4; --card: #ffffff; --ink: #14201b; --sub: #5d6b65; --faint: #95a39d; --line: #e3e8e6;
+    --brand: #0f7a5c; --brand-soft: #e2f3ec; --brand-ink: #0a5a44;
+    --yes: #12895f; --yes-bg: #e3f5ec; --tight: #b7791f; --tight-bg: #fdf3df; --wait: #3b6fd4; --wait-bg: #e6eefc; --no: #c2413b; --no-bg: #fbe7e5;
+    --shadow: 0 1px 2px rgba(20,32,27,.05), 0 6px 18px rgba(20,32,27,.06);
+    --radius: 18px;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #0d1311; --card: #172019; --ink: #eef3f0; --sub: #a3b1ab; --faint: #6e7d77; --line: #26322d;
+      --brand: #35c08f; --brand-soft: #173a2e; --brand-ink: #7fe0bb;
+      --yes: #46cc93; --yes-bg: #173a2e; --tight: #e8b25a; --tight-bg: #3a2e17; --wait: #7ea6f2; --wait-bg: #1b2a45; --no: #f07d75; --no-bg: #43201e;
+      --shadow: none;
+    }
+  }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body { margin: 0; background: var(--bg); color: var(--ink); }
+  body { font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, sans-serif; font-size: 16px; line-height: 1.4; min-height: 100dvh; }
+  button, input, textarea { font: inherit; color: inherit; }
+  .num { font-variant-numeric: tabular-nums; }
+  .hidden { display: none !important; }
+
+  /* layout */
+  header.top { position: sticky; top: 0; z-index: 5; background: color-mix(in srgb, var(--bg) 88%, transparent); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
+    padding: calc(env(safe-area-inset-top) + 12px) 20px 10px; display: flex; align-items: flex-end; justify-content: space-between; }
+  header.top h1 { font-size: 28px; font-weight: 750; letter-spacing: -0.02em; margin: 0; }
+  header.top .meta { font-size: 12px; color: var(--sub); text-align: right; }
+  main { padding: 4px 16px calc(env(safe-area-inset-bottom) + 96px); max-width: 560px; margin: 0 auto; }
+  section.view { display: none; flex-direction: column; gap: 14px; }
+  section.view.on { display: flex; }
+
+  .card { background: var(--card); border-radius: var(--radius); box-shadow: var(--shadow); padding: 16px; }
+  .label { font-size: 12px; font-weight: 600; letter-spacing: .04em; text-transform: uppercase; color: var(--sub); }
+  .big { font-size: 40px; font-weight: 750; letter-spacing: -0.02em; line-height: 1.1; }
+  .row { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+  .sub { color: var(--sub); font-size: 14px; }
+  .faint { color: var(--faint); font-size: 13px; }
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  .mini .val { font-size: 22px; font-weight: 700; margin-top: 2px; letter-spacing: -0.01em; }
+  .mini .of { font-size: 12px; color: var(--sub); margin-top: 2px; }
+
+  .bar { height: 8px; border-radius: 99px; background: var(--line); overflow: hidden; margin-top: 10px; }
+  .bar > i { display: block; height: 100%; border-radius: 99px; background: var(--brand); transition: width .5s ease; }
+  .bar.warn > i { background: var(--tight); } .bar.over > i { background: var(--no); }
+
+  .hero { background: linear-gradient(145deg, #0f7a5c, #13946f); color: #fff; box-shadow: 0 10px 30px rgba(15,122,92,.28); }
+  .hero .label { color: rgba(255,255,255,.78); }
+  .hero .sub { color: rgba(255,255,255,.85); }
+  .hero .pillrow { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
+  .hero .pill { background: rgba(255,255,255,.16); border-radius: 99px; padding: 6px 10px; font-size: 13px; }
+
+  ul.list { list-style: none; margin: 8px 0 0; padding: 0; }
+  ul.list li { display: flex; justify-content: space-between; align-items: center; gap: 10px; padding: 11px 0; border-top: 1px solid var(--line); }
+  ul.list li:first-child { border-top: none; }
+  .list .t { font-weight: 550; } .list .d { font-size: 13px; color: var(--sub); }
+
+  /* buttons + inputs */
+  .btn { appearance: none; border: none; border-radius: 14px; padding: 14px 16px; font-weight: 650; font-size: 16px; background: var(--brand); color: #fff; width: 100%; cursor: pointer; }
+  .btn:active { transform: scale(.985); }
+  .btn.ghost { background: var(--brand-soft); color: var(--brand-ink); }
+  .btn.plain { background: transparent; color: var(--sub); font-weight: 550; }
+  .btn.small { width: auto; white-space: nowrap; padding: 8px 12px; font-size: 14px; border-radius: 10px; }
+  .btn[disabled] { opacity: .55; }
+  .field { display: flex; flex-direction: column; gap: 6px; }
+  .field input, .field textarea { border: 1.5px solid var(--line); background: var(--bg); border-radius: 12px; padding: 13px 14px; font-size: 17px; outline: none; width: 100%; }
+  .field input:focus, .field textarea:focus { border-color: var(--brand); }
+  .price { position: relative; } .price span { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: var(--sub); font-size: 17px; }
+  .price input { padding-left: 28px; }
+  .seg { display: grid; grid-template-columns: 1fr 1fr; background: var(--bg); border: 1.5px solid var(--line); border-radius: 12px; padding: 3px; }
+  .seg button { border: none; background: transparent; padding: 10px; border-radius: 9px; font-weight: 600; color: var(--sub); }
+  .seg button.on { background: var(--card); color: var(--ink); box-shadow: var(--shadow); }
+  .chips { display: flex; flex-wrap: wrap; gap: 8px; }
+  .chip { border: 1.5px solid var(--line); background: var(--card); border-radius: 99px; padding: 9px 14px; font-weight: 600; font-size: 15px; }
+
+  /* answer */
+  .answer { border-left: 6px solid var(--brand); }
+  .verdict { display: inline-flex; align-items: center; gap: 6px; font-weight: 750; font-size: 13px; letter-spacing: .05em; text-transform: uppercase; padding: 5px 10px; border-radius: 99px; }
+  .v-yes { --vc: var(--yes); --vb: var(--yes-bg); } .v-tight { --vc: var(--tight); --vb: var(--tight-bg); }
+  .v-not_yet { --vc: var(--wait); --vb: var(--wait-bg); } .v-no { --vc: var(--no); --vb: var(--no-bg); }
+  .answer.v-yes, .answer.v-tight, .answer.v-not_yet, .answer.v-no { border-left-color: var(--vc); }
+  .verdict { color: var(--vc, var(--brand)); background: var(--vb, var(--brand-soft)); }
+  .answer h3 { font-size: 21px; margin: 10px 0 4px; letter-spacing: -0.01em; }
+  .facts { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 10px; margin-top: 12px; }
+  .fact { background: var(--bg); border-radius: 12px; padding: 10px 12px; }
+  .fact .k { font-size: 12px; color: var(--sub); } .fact .v { font-weight: 700; font-size: 17px; margin-top: 2px; }
+  .tag { display: inline-block; font-size: 13px; font-weight: 600; background: var(--bg); padding: 4px 9px; border-radius: 8px; color: var(--sub); margin: 10px 6px 0 0; }
+  .dot { width: 10px; height: 10px; border-radius: 50%; background: var(--vc, var(--faint)); flex: none; }
+  .thinking { display: flex; align-items: center; gap: 10px; color: var(--sub); }
+  .spin { width: 18px; height: 18px; border: 2.5px solid var(--line); border-top-color: var(--brand); border-radius: 50%; animation: spin .8s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* tab bar */
+  nav.tabs { position: fixed; left: 0; right: 0; bottom: 0; z-index: 10; background: color-mix(in srgb, var(--card) 92%, transparent); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+    border-top: 1px solid var(--line); display: grid; grid-template-columns: repeat(5, 1fr); padding: 6px 4px calc(env(safe-area-inset-bottom) + 6px); }
+  nav.tabs button { border: none; background: none; display: flex; flex-direction: column; align-items: center; gap: 3px; font-size: 11px; font-weight: 600; color: var(--faint); padding: 4px 0; position: relative; }
+  nav.tabs button svg { width: 25px; height: 25px; }
+  nav.tabs button.on { color: var(--brand); }
+  .badge { position: absolute; top: 0; left: 55%; background: var(--no); color: #fff; font-size: 10px; font-weight: 700; border-radius: 99px; min-width: 16px; height: 16px; padding: 0 4px; display: flex; align-items: center; justify-content: center; }
+
+  /* login */
+  #login { min-height: 100dvh; display: flex; flex-direction: column; justify-content: center; padding: 24px; max-width: 420px; margin: 0 auto; gap: 18px; }
+  #login .logo { width: 72px; height: 72px; border-radius: 20px; }
+  #login h1 { font-size: 30px; margin: 0; letter-spacing: -0.02em; }
+  .pin input { letter-spacing: .5em; text-align: center; font-size: 26px; }
+  .err { color: var(--no); font-size: 14px; min-height: 18px; }
+  .toast { position: fixed; left: 50%; bottom: calc(env(safe-area-inset-bottom) + 86px); transform: translateX(-50%) translateY(20px); background: var(--ink); color: var(--bg); padding: 10px 16px; border-radius: 12px; font-size: 14px; font-weight: 600; opacity: 0; transition: .25s; pointer-events: none; z-index: 20; max-width: 90vw; }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+  .demo-flag { background: var(--tight-bg); color: var(--tight); font-size: 12px; font-weight: 650; text-align: center; padding: 6px; border-radius: 10px; }
+  .empty { text-align: center; color: var(--sub); padding: 26px 10px; }
+  ol.rules { margin: 6px 0 0; padding-left: 20px; } ol.rules li { margin: 8px 0; }
+  .setgrid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; }
+  .setgrid .field input { font-size: 15px; padding: 10px 12px; }
+  .setgrid label { font-size: 12px; color: var(--sub); }
+</style>
+</head>
+<body>
+
+<!-- ============ LOGIN ============ -->
+<div id="login" class="hidden">
+  <img class="logo" src="icons/icon-192.png" alt="" />
+  <div>
+    <h1 id="appNameLogin">Can we afford it?</h1>
+    <div class="sub">Our budget, live. Ask before you buy.</div>
+  </div>
+  <div class="field"><span class="label">Who's this?</span>
+    <div class="seg" id="loginWho"><button data-who="megan" class="on">Megan</button><button data-who="dustin">Dustin</button></div>
+  </div>
+  <div class="field pin"><span class="label">PIN</span><input id="pin" type="password" inputmode="numeric" autocomplete="current-password" maxlength="12" /></div>
+  <div class="err" id="loginErr"></div>
+  <button class="btn" id="loginBtn">Unlock</button>
+</div>
+
+<!-- ============ APP ============ -->
+<div id="app" class="hidden">
+  <header class="top">
+    <h1 id="title">Today</h1>
+    <div class="meta"><div id="updated">&nbsp;</div><div id="whoami"></div></div>
+  </header>
+  <main>
+    <div id="demoFlag" class="demo-flag hidden">Demo mode: sample numbers, pretend answers</div>
+
+    <!-- HOME -->
+    <section class="view on" id="v-home">
+      <div class="card hero">
+        <div class="label">Free in Chase</div>
+        <div class="big num" id="h-free">$0</div>
+        <div class="sub" id="h-free-sub">above the $2,000 buffer</div>
+        <div class="pillrow" id="h-pills"></div>
+      </div>
+
+      <div class="grid2">
+        <div class="card mini"><div class="label">Megan Budget</div><div class="val num" id="m-left">$0</div><div class="of" id="m-of"></div><div class="bar"><i id="m-bar"></i></div></div>
+        <div class="card mini"><div class="label">Dustin Budget</div><div class="val num" id="d-left">$0</div><div class="of" id="d-of"></div><div class="bar"><i id="d-bar"></i></div></div>
+      </div>
+
+      <div class="card">
+        <div class="row"><div class="label" id="mo-label">Spent this month (outside bills)</div><div class="faint" id="mo-days"></div></div>
+        <div class="row" style="margin-top:6px"><div class="big num" style="font-size:30px" id="mo-spent">$0</div><div class="sub num" id="mo-target"></div></div>
+        <div class="bar" id="mo-barwrap"><i id="mo-bar"></i></div>
+        <div class="sub" style="margin-top:10px" id="mo-daily"></div>
+      </div>
+
+      <div class="card">
+        <div class="row"><div class="label">Apple Card</div><div class="faint" id="ac-rule"></div></div>
+        <div class="grid2" style="margin-top:8px">
+          <div class="mini"><div class="of">Balance</div><div class="val num" id="ac-bal">$0</div></div>
+          <div class="mini"><div class="of">Available</div><div class="val num" id="ac-av">$0</div></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="row"><div class="label">Bills before next payday</div><div class="faint" id="bills-total"></div></div>
+        <ul class="list" id="bills"></ul>
+      </div>
+
+      <div class="grid2">
+        <div class="card mini"><div class="label">Savings</div><div class="val num" id="sv-cur">$0</div><div class="of" id="sv-of"></div><div class="bar"><i id="sv-bar"></i></div></div>
+        <div class="card mini"><div class="label">Christmas</div><div class="val num" id="xm-used">$0</div><div class="of" id="xm-of"></div><div class="bar" id="xm-barwrap"><i id="xm-bar"></i></div></div>
+      </div>
+
+      <button class="btn" data-go="ask">Can I buy something?</button>
+      <div class="faint" style="text-align:center">Budgeting math from our own rules. Never moves money.</div>
+    </section>
+
+    <!-- ASK -->
+    <section class="view" id="v-ask">
+      <div class="card" id="askForm">
+        <div class="field"><span class="label">What is it?</span><input id="q-item" placeholder="A new hammer, concert tickets…" autocomplete="off" /></div>
+        <div class="field" style="margin-top:12px"><span class="label">Price</span><div class="price"><span>$</span><input id="q-price" inputmode="decimal" placeholder="0" class="num" /></div></div>
+        <div class="field" style="margin-top:12px"><span class="label">Who's asking?</span>
+          <div class="seg" id="askWho"><button data-who="megan" class="on">Megan</button><button data-who="dustin">Dustin</button></div></div>
+        <button class="btn" id="askBtn" style="margin-top:16px">Ask</button>
+      </div>
+      <div id="answer"></div>
+    </section>
+
+    <!-- LATER -->
+    <section class="view" id="v-later">
+      <div class="card"><div class="label">Purchases to revisit</div><ul class="list" id="later"></ul></div>
+      <div class="faint" style="text-align:center">These also live in the Todoist project 💸 Purchases to revisit.</div>
+    </section>
+
+    <!-- HISTORY -->
+    <section class="view" id="v-history">
+      <div class="card"><div class="label">Recent questions</div><ul class="list" id="history"></ul></div>
+    </section>
+
+    <!-- RULES -->
+    <section class="view" id="v-rules">
+      <div class="card" id="rulesView">
+        <div class="row"><div class="label">Our rules</div><button class="btn small ghost" id="editRules">Edit</button></div>
+        <ol class="rules" id="rulesList"></ol>
+        <div class="faint" id="rulesUpdated" style="margin-top:8px"></div>
+      </div>
+      <div class="card hidden" id="rulesEdit">
+        <div class="label">Edit rules</div>
+        <div class="setgrid" id="setgrid"></div>
+        <div class="field" style="margin-top:12px"><span class="label">Rules, one per line</span><textarea id="rulesText" rows="12"></textarea></div>
+        <div class="field" style="margin-top:12px"><span class="label">Edit PIN</span><input id="editPin" type="password" inputmode="numeric" /></div>
+        <div class="err" id="rulesErr"></div>
+        <button class="btn" id="saveRules">Save for both of us</button>
+        <button class="btn plain" id="cancelRules">Cancel</button>
+      </div>
+      <button class="btn plain" id="logout">Log out on this phone</button>
+    </section>
+  </main>
+
+  <nav class="tabs">
+    <button data-go="home" class="on"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/></svg>Today</button>
+    <button data-go="ask"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M9.3 9.2a2.8 2.8 0 0 1 5.4 1c0 1.9-2.7 2.4-2.7 4"/><path d="M12 17.5h.01"/></svg>Ask</button>
+    <button data-go="later"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="5" width="17" height="15.5" rx="2.5"/><path d="M3.5 10h17M8 3v4M16 3v4"/></svg>Later<span class="badge hidden" id="laterBadge"></span></button>
+    <button data-go="history"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 12a8.5 8.5 0 1 0 2.6-6.1L3.5 8.5"/><path d="M3.5 3.5v5h5M12 7.5V12l3 2"/></svg>History</button>
+    <button data-go="rules"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M8 6h12M8 12h12M8 18h12"/><path d="M4 6h.01M4 12h.01M4 18h.01"/></svg>Rules</button>
+  </nav>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+/* ===== settings ===== */
+const APP_NAME = 'Can we afford it?';
+const API = 'https://afford-it.brockavichmegan.workers.dev';
+
+const DEMO = new URLSearchParams(location.search).has('demo');
+/* ===== tiny helpers ===== */
+const $ = id => document.getElementById(id);
+const store = {
+  get(k) { try { return JSON.parse(localStorage.getItem('cwai:' + k)); } catch { return null; } },
+  set(k, v) { if (DEMO) return; try { localStorage.setItem('cwai:' + k, JSON.stringify(v)); } catch {} },
+  del(k) { try { localStorage.removeItem('cwai:' + k); } catch {} },
+};
+const money = (n, cents) => n == null || isNaN(n) ? '–' : (n < 0 ? '-$' : '$') + Math.abs(n).toLocaleString('en-US', { minimumFractionDigits: cents ? 2 : 0, maximumFractionDigits: cents ? 2 : 0 });
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const todayISO = () => new Date().toLocaleDateString('en-CA');
+const nice = iso => { if (!iso) return ''; const d = new Date(iso.length === 10 ? iso + 'T12:00:00' : iso); return d.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' }); };
+const ago = iso => { const m = Math.round((Date.now() - new Date(iso)) / 60000); if (m < 2) return 'just now'; if (m < 60) return m + ' min ago'; const h = Math.round(m / 60); if (h < 24) return h + 'h ago'; const d = Math.round(h / 24); return d === 1 ? 'yesterday' : d + ' days ago'; };
+const pct = (a, b) => b ? Math.max(0, Math.min(100, a / b * 100)) : 0;
+function toast(msg) { const t = $('toast'); t.textContent = msg; t.classList.add('show'); clearTimeout(t._h); t._h = setTimeout(() => t.classList.remove('show'), 2400); }
+function seg(id, onPick) {
+  const el = $(id);
+  el.addEventListener('click', e => { const b = e.target.closest('button'); if (!b) return; el.querySelectorAll('button').forEach(x => x.classList.toggle('on', x === b)); onPick && onPick(b.dataset.who); });
+  return { get: () => el.querySelector('.on').dataset.who, set: w => el.querySelectorAll('button').forEach(x => x.classList.toggle('on', x.dataset.who === w)) };
+}
+const VERDICT = { yes: 'Yes', tight: 'Yes, but tight', not_yet: 'Not yet', no: 'No' };
+
+/* ===== API (real or demo) ===== */
+let session = store.get('session');   // { token, who }
+async function api(method, path, data) {
+  if (DEMO) return demoApi(method, path, data);
+  const res = await fetch(API + path, { method, headers: { 'Content-Type': 'application/json', ...(session ? { Authorization: 'Bearer ' + session.token } : {}) }, body: data ? JSON.stringify(data) : undefined });
+  const j = await res.json().catch(() => ({}));
+  if (res.status === 401 && path !== '/login') { logout(); throw new Error('Please log in again.'); }
+  if (!res.ok) throw new Error(j.error || 'Something went wrong.');
+  return j;
+}
+
+/* ===== state + render ===== */
+let state = store.get('cache') || null;
+const loginWho = seg('loginWho');
+const askWho = seg('askWho');
+
+function render() {
+  if (!state) return;
+  const s = state.snapshot || {}, r = (state.rules && state.rules.settings) || {};
+  $('updated').textContent = s.updated_at ? 'Updated ' + ago(s.updated_at) : 'No numbers yet';
+  $('whoami').textContent = session ? (session.who === 'dustin' ? 'Dustin' : 'Megan') : '';
+
+  const buffer = (s.chase && s.chase.buffer) ?? r.chase_buffer ?? 2000;
+  $('h-free').textContent = money(s.chase && s.chase.available_above_buffer);
+  $('h-free-sub').textContent = `above the ${money(buffer)} buffer`;
+  const np = s.next_payday;
+  const pills = [];
+  if (np) pills.push(`Next payday ${nice(np.date)}${np.who ? ' · ' + np.who : ''}`);
+  if (s.month && s.month.daily_target_remaining != null) pills.push(`${money(s.month.daily_target_remaining)}/day left`);
+  $('h-pills').innerHTML = pills.map(p => `<span class="pill">${esc(p)}</span>`).join('');
+
+  const person = (k, el) => { const p = (s.personal || {})[k] || {}; const left = p.left ?? (p.budget - p.spent);
+    $(el + '-left').textContent = money(left); $(el + '-of').textContent = `left of ${money(p.budget)}`;
+    $(el + '-bar').style.width = pct(left, p.budget) + '%'; };
+  person('megan', 'm'); person('dustin', 'd');
+
+  const mo = s.month || {};
+  const hasSpent = mo.spent_outside_bills != null;
+  $('mo-label').textContent = hasSpent ? 'Spent this month (outside bills)' : 'Left to spend this month';
+  $('mo-spent').textContent = money(hasSpent ? mo.spent_outside_bills : mo.left_to_spend);
+  $('mo-target').textContent = hasSpent ? `of ${money(mo.target ?? r.monthly_target)} target` : 'Spending Plan';
+  $('mo-bar').style.width = (hasSpent ? pct(mo.spent_outside_bills, mo.target) : 100 - pct(mo.left_to_spend, mo.target)) + '%';
+  $('mo-barwrap').className = 'bar' + (mo.spent_outside_bills > (mo.max ?? 5000) ? ' over' : mo.spent_outside_bills > mo.target ? ' warn' : '');
+  $('mo-days').textContent = mo.days_left != null ? `${mo.days_left} days left` : '';
+  $('mo-daily').textContent = mo.daily_target_remaining != null ? `About ${money(mo.daily_target_remaining)} a day for the rest of ${mo.label ? mo.label.split(' ')[0] : 'the month'}. Max is ${money(mo.max ?? r.monthly_max)}.` : '';
+
+  const ac = s.apple_card || {};
+  $('ac-bal').textContent = money(ac.balance); $('ac-av').textContent = money(ac.available);
+  const minAv = r.apple_card_min_available ?? 500;
+  $('ac-rule').textContent = ac.available != null && ac.available < minAv ? 'Big buys wait' : `Big buys OK over ${money(minAv)}`;
+
+  const bills = s.upcoming_bills || [];
+  $('bills').innerHTML = bills.length ? bills.map(b => `<li><div><div class="t">${esc(b.name)}</div><div class="d">${nice(b.due)}</div></div><div class="num t">${money(b.amount, true)}</div></li>`).join('') : '<li><span class="sub">Nothing due before payday</span></li>';
+  $('bills-total').textContent = bills.length ? money(bills.reduce((a, b) => a + (+b.amount || 0), 0), true) + ' total' : '';
+
+  const sv = s.savings || {};
+  $('sv-cur').textContent = money(sv.current); $('sv-of').textContent = `${sv.phase || r.savings_phase || ''}: ${money(sv.milestone ?? r.savings_milestone)} goal`;
+  $('sv-bar').style.width = pct(sv.current, sv.milestone) + '%';
+  const xm = s.christmas || {};
+  $('xm-used').textContent = money(xm.used); $('xm-of').textContent = `of ${money(xm.cap ?? r.christmas_cap)} cap`;
+  $('xm-bar').style.width = pct(xm.used, xm.cap) + '%';
+  $('xm-barwrap').className = 'bar' + (xm.used > xm.cap ? ' over' : xm.used > xm.cap * .85 ? ' warn' : '');
+
+  renderLater(); renderHistory(); renderRules();
+}
+
+function renderLater() {
+  const list = state.checkBacks || [];
+  const due = list.filter(c => c.due && c.due <= todayISO()).length;
+  $('laterBadge').textContent = due; $('laterBadge').classList.toggle('hidden', !due);
+  $('later').innerHTML = list.length ? list.map(c => `<li data-id="${esc(c.id)}"><div><div class="t">${esc(c.title.replace(/^Revisit:\s*/, ''))}</div><div class="d">${c.due && c.due <= todayISO() ? '<b style="color:var(--wait)">Check back now</b>' : 'Check back ' + nice(c.due)}</div></div><div style="display:flex;gap:6px"><button class="btn small ghost" data-act="reask">Ask again</button><button class="btn small plain" data-act="remove">Remove</button></div></li>`).join('') : '<li class="empty" style="display:block">Nothing waiting. Anything you put off shows up here.</li>';
+}
+$('later').addEventListener('click', async e => {
+  const b = e.target.closest('button'); if (!b) return; const li = b.closest('li'); const c = (state.checkBacks || []).find(x => x.id === li.dataset.id); if (!c) return;
+  if (b.dataset.act === 'reask') {
+    const m = c.title.replace(/^Revisit:\s*/, '').match(/^(.*?)\s*\(\$([\d.,]+)\)\s*$/);
+    $('q-item').value = m ? m[1] : c.title.replace(/^Revisit:\s*/, ''); $('q-price').value = m ? m[2].replace(/,/g, '') : '';
+    go('ask'); return;
+  }
+  if (b.dataset.act === 'remove') {
+    if (b.dataset.sure !== '1') { b.dataset.sure = '1'; b.textContent = 'Tap to confirm'; return; }
+    try { await api('POST', '/done', { id: c.id }); state.checkBacks = state.checkBacks.filter(x => x.id !== c.id); store.set('cache', state); renderLater(); toast('Removed'); } catch (err) { toast(err.message); }
+  }
+});
+
+function renderHistory() {
+  const h = state.history || [];
+  $('history').innerHTML = h.length ? h.map(x => { const a = x.answer || {}; return `<li class="v-${esc(a.verdict)}"><div style="display:flex;gap:10px;align-items:flex-start"><span class="dot" style="margin-top:6px"></span><div><div class="t">${esc(x.item)} <span class="num" style="color:var(--sub);font-weight:500">${money(x.price)}</span></div><div class="d">${esc(VERDICT[a.verdict] || '')} · ${esc(a.bucket || '')} · ${x.who === 'dustin' ? 'Dustin' : 'Megan'} · ${nice(x.at)}</div><div class="d" style="margin-top:3px">${esc(a.reason || '')}</div></div></div></li>`; }).join('') : '<li class="empty" style="display:block">No questions yet.</li>';
+}
+
+const SETTING_LABELS = { chase_buffer: 'Chase buffer', monthly_target: 'Monthly target', monthly_max: 'Monthly max', daily_target: 'Daily target', megan_budget: 'Megan Budget', dustin_budget: 'Dustin Budget', jordynn_budget: 'Jordynn Budget', christmas_cap: 'Christmas cap', apple_card_min_available: 'Apple Card min available', savings_phase: 'Savings phase', savings_milestone: 'Savings milestone', savings_target_date: 'Savings target date', savings_ok_by: 'Savings OK by' };
+function renderRules() {
+  const r = state.rules || {};
+  $('rulesList').innerHTML = (r.rules || []).map(x => `<li>${esc(x)}</li>`).join('') || '<li class="sub">No rules yet.</li>';
+  $('rulesUpdated').textContent = r.updated_at ? `Last changed ${nice(r.updated_at)}${r.updated_by ? ' by ' + r.updated_by : ''}` : '';
+  $('editRules').classList.toggle('hidden', !!session && session.who === 'dustin' && !session.sharedPin);
+}
+$('editRules').onclick = () => {
+  const r = state.rules || {}; const st = r.settings || {};
+  $('setgrid').innerHTML = Object.keys(st).map(k => `<div class="field"><label for="set-${k}">${esc(SETTING_LABELS[k] || k)}</label><input id="set-${k}" data-k="${k}" data-num="${typeof st[k] === 'number'}" value="${esc(st[k])}" ${typeof st[k] === 'number' ? 'inputmode="decimal"' : ''} /></div>`).join('');
+  $('rulesText').value = (r.rules || []).join('\n');
+  $('rulesErr').textContent = ''; $('editPin').value = '';
+  $('rulesView').classList.add('hidden'); $('rulesEdit').classList.remove('hidden');
+};
+$('cancelRules').onclick = () => { $('rulesEdit').classList.add('hidden'); $('rulesView').classList.remove('hidden'); };
+$('saveRules').onclick = async () => {
+  const settings = {}; document.querySelectorAll('#setgrid input').forEach(i => { settings[i.dataset.k] = i.dataset.num === 'true' ? Number(i.value) : i.value.trim(); });
+  const rules = { ...state.rules, settings, rules: $('rulesText').value.split('\n').map(s => s.trim()).filter(Boolean) };
+  $('saveRules').disabled = true;
+  try { const j = await api('PUT', '/rules', { editPin: $('editPin').value, rules }); state.rules = j.rules; store.set('cache', state); $('cancelRules').onclick(); renderRules(); toast('Saved. Dustin sees it too.'); }
+  catch (err) { $('rulesErr').textContent = err.message; }
+  $('saveRules').disabled = false;
+};
+
+/* ===== asking ===== */
+let lastQ = null;
+async function doAsk(context) {
+  const item = $('q-item').value.trim(); const price = parseFloat(($('q-price').value || '').replace(/[$,]/g, ''));
+  if (!item || !(price > 0)) { toast('Add what it is and the price'); return; }
+  lastQ = { item, price, who: askWho.get(), context: context || '' };
+  $('askBtn').disabled = true;
+  $('answer').innerHTML = `<div class="card thinking"><div class="spin"></div>Checking the numbers…</div>`;
+  try { showAnswer(await api('POST', '/ask', lastQ)); }
+  catch (err) { $('answer').innerHTML = `<div class="card"><div class="err">${esc(err.message)}</div></div>`; }
+  $('askBtn').disabled = false;
+}
+function showAnswer(a) {
+  if (a.needs_clarification) {
+    $('answer').innerHTML = `<div class="card"><div class="label">Quick question</div><h3 style="margin:8px 0 12px;font-size:19px">${esc(a.clarifying_question)}</h3><div class="chips">${(a.clarifying_options || []).map(o => `<button class="chip" data-ctx="${esc(o)}">${esc(o)}</button>`).join('')}</div></div>`;
+    $('answer').querySelectorAll('[data-ctx]').forEach(b => b.onclick = () => doAsk(`${a.clarifying_question} ${b.dataset.ctx}`));
+    return;
+  }
+  const facts = (a.numbers || []).map(n => `<div class="fact"><div class="k">${esc(n.label)}</div><div class="v num">${esc(n.value)}</div></div>`).join('');
+  const remind = a.verdict === 'not_yet' && a.check_back_date;
+  $('answer').innerHTML = `<div class="card answer v-${esc(a.verdict)}">
+    <span class="verdict">${esc(VERDICT[a.verdict] || a.verdict)}</span>
+    <h3>${esc(a.headline)}</h3>
+    <div class="sub" style="font-size:15px;color:var(--ink)">${esc(a.reason)}</div>
+    ${facts ? `<div class="facts">${facts}</div>` : ''}
+    <div><span class="tag">${esc(a.bucket)}${a.category ? ' · ' + esc(a.category) : ''}</span>${a.card ? `<span class="tag">💳 ${esc(a.card)}</span>` : ''}</div>
+    ${remind ? `<div class="sub" style="margin-top:12px">Check back <b>${nice(a.check_back_date)}</b>${a.check_back_why ? ': ' + esc(a.check_back_why) : ''}</div><button class="btn" id="remindBtn" style="margin-top:12px">Remind us ${nice(a.check_back_date)}</button>` : ''}
+    <button class="btn plain" id="againBtn" style="margin-top:6px">Ask about something else</button>
+  </div>`;
+  if (remind) $('remindBtn').onclick = async () => {
+    $('remindBtn').disabled = true;
+    try { await api('POST', '/remind', { item: lastQ.item, price: lastQ.price, who: lastQ.who, reason: a.reason, why: a.check_back_why, date: a.check_back_date }); $('remindBtn').textContent = 'Added to Later ✓'; toast('Added to Todoist'); refresh(); }
+    catch (err) { toast(err.message); $('remindBtn').disabled = false; }
+  };
+  $('againBtn').onclick = () => { $('q-item').value = ''; $('q-price').value = ''; $('answer').innerHTML = ''; $('q-item').focus(); };
+  if (!DEMO) refresh();
+  else { state.history = [{ at: new Date().toISOString(), who: lastQ.who, item: lastQ.item, price: lastQ.price, answer: a }, ...(state.history || [])]; renderHistory(); }
+}
+$('askBtn').onclick = () => doAsk();
+$('q-price').addEventListener('keydown', e => { if (e.key === 'Enter') doAsk(); });
+
+/* ===== navigation ===== */
+const TITLES = { home: 'Today', ask: 'Can I buy this?', later: 'Later', history: 'History', rules: 'Rules' };
+function go(v) {
+  document.querySelectorAll('section.view').forEach(s => s.classList.toggle('on', s.id === 'v-' + v));
+  document.querySelectorAll('nav.tabs button').forEach(b => b.classList.toggle('on', b.dataset.go === v));
+  $('title').textContent = TITLES[v]; window.scrollTo(0, 0);
+  if (v === 'ask' && !$('q-item').value) setTimeout(() => $('q-item').focus(), 50);
+}
+document.querySelectorAll('[data-go]').forEach(b => b.addEventListener('click', () => go(b.dataset.go)));
+
+/* ===== login / boot ===== */
+function showLogin() { $('app').classList.add('hidden'); $('login').classList.remove('hidden'); setTimeout(() => $('pin').focus(), 50); }
+function showApp() { $('login').classList.add('hidden'); $('app').classList.remove('hidden'); askWho.set(session.who); }
+function logout() { session = null; state = null; store.del('session'); store.del('cache'); showLogin(); }
+$('logout').onclick = logout;
+$('loginBtn').onclick = async () => {
+  $('loginErr').textContent = ''; $('loginBtn').disabled = true;
+  try { const j = await api('POST', '/login', { pin: $('pin').value, who: loginWho.get() }); session = { token: j.token, who: j.who, sharedPin: j.sharedPin }; store.set('session', session); $('pin').value = ''; showApp(); await refresh(); }
+  catch (err) { $('loginErr').textContent = err.message; }
+  $('loginBtn').disabled = false;
+};
+$('pin').addEventListener('keydown', e => { if (e.key === 'Enter') $('loginBtn').click(); });
+
+async function refresh() {
+  try { state = await api('GET', '/data'); store.set('cache', state); render(); }
+  catch (err) { if (session) toast(state ? 'Offline, showing last numbers' : err.message); }
+}
+document.addEventListener('visibilitychange', () => { if (!document.hidden && session) refresh(); });
+
+$('appNameLogin').textContent = APP_NAME; document.title = APP_NAME;
+if (DEMO) { $('demoFlag').classList.remove('hidden'); session = session || { token: 'demo', who: 'megan' }; }
+if (session) { showApp(); render(); refresh(); } else showLogin();
+if ('serviceWorker' in navigator && !DEMO) navigator.serviceWorker.register('sw.js').catch(() => {});
+
+/* ===== demo mode (?demo): sample numbers, canned answers, nothing leaves the phone ===== */
+async function demoApi(method, path, data) {
+  await new Promise(r => setTimeout(r, path === '/ask' ? 900 : 150));
+  if (path === '/login') return { token: 'demo', who: data.who };
+  if (path === '/data') return state && state._demo ? state : DEMO_DATA();
+  if (path === '/remind') { state.checkBacks = [...(state.checkBacks || []), { id: 'd' + Date.now(), title: `Revisit: ${data.item} ($${data.price})`, due: data.date }]; return { ok: true }; }
+  if (path === '/done') return { ok: true };
+  if (path === '/rules') { if (data.editPin !== '0000') throw new Error('Edit PIN didn\'t match. (Demo PIN is 0000.)'); return { ok: true, rules: { ...data.rules, updated_at: new Date().toISOString(), updated_by: 'Megan (app)' } }; }
+  if (path === '/ask') {
+    const it = data.item.toLowerCase(), p = data.price, ctx = (data.context || '').toLowerCase();
+    if (data.who === 'dustin' && /hammer|drill|saw|tool|wrench/.test(it) && !ctx) return { needs_clarification: true, clarifying_question: 'Is this for work or personal?', clarifying_options: ['For work', 'Personal'] };
+    if (ctx.includes('work')) return { needs_clarification: false, verdict: 'yes', bucket: 'Household', category: 'Work Equipment', headline: 'Yes, from the household budget.', reason: `Work tools come from the overall budget, not Dustin's. ${money(p)} fits: the month is at $1,925 of $4,000.`, numbers: [{ label: 'Month after', value: money(1925 + p) }, { label: 'Target', value: '$4,000' }], card: 'Capital One' };
+    const who = data.who === 'dustin' ? 'Dustin' : 'Megan', left = data.who === 'dustin' ? 89 : 157.5;
+    if (p <= left * 0.6) return { needs_clarification: false, verdict: 'yes', bucket: who + ' Budget', category: 'Fun Money', headline: `Yes, from your ${who} Budget.`, reason: `You have ${money(left, true)} left this month, so ${money(p)} leaves ${money(left - p, true)}.`, numbers: [{ label: 'Left now', value: money(left, true) }, { label: 'Left after', value: money(left - p, true) }], card: data.who === 'dustin' ? 'Capital One' : 'Apple Card' };
+    if (p <= left) return { needs_clarification: false, verdict: 'tight', bucket: who + ' Budget', category: 'Fun Money', headline: 'Yes, but it uses most of what is left.', reason: `${money(p)} fits in the ${money(left, true)} left, but only ${money(left - p, true)} remains until December.`, numbers: [{ label: 'Left now', value: money(left, true) }, { label: 'Left after', value: money(left - p, true) }], card: data.who === 'dustin' ? 'Capital One' : 'Apple Card' };
+    return { needs_clarification: false, verdict: 'not_yet', bucket: who + ' Budget', category: 'Fun Money', headline: 'Not yet. Wait for December.', reason: `${money(p)} is more than the ${money(left, true)} left in your ${who} Budget. It resets December 1 with ${money(300)}.`, numbers: [{ label: 'Left now', value: money(left, true) }, { label: 'Short by', value: money(p - left, true) }], card: data.who === 'dustin' ? 'Capital One' : 'Apple Card', check_back_date: '2026-12-01', check_back_why: 'personal budgets reset' };
+  }
+  return {};
+}
+function DEMO_DATA() {
+  return { _demo: true,
+    snapshot: { updated_at: new Date(Date.now() - 4 * 3600e3).toISOString(), chase: { balance: 3412.18, buffer: 2000, available_above_buffer: 1412.18 }, apple_card: { balance: 1840.22, available: 1159.78 },
+      personal: { megan: { budget: 300, spent: 142.5, left: 157.5 }, dustin: { budget: 300, spent: 211, left: 89 } },
+      month: { label: 'November 2026', spent_outside_bills: 1925.4, target: 4000, max: 5000, days_left: 17, daily_target_remaining: 122.03 },
+      upcoming_bills: [{ name: 'Car insurance', amount: 186, due: '2026-11-18' }, { name: 'Internet', amount: 79.99, due: '2026-11-20' }],
+      next_payday: { date: '2026-11-20', who: 'Dustin' }, savings: { phase: 'Cash first', current: 9850, milestone: 15000 }, christmas: { cap: 1600, used: 640 } },
+    rules: { settings: { chase_buffer: 2000, monthly_target: 4000, monthly_max: 5000, megan_budget: 300, dustin_budget: 300, christmas_cap: 1600, apple_card_min_available: 500, savings_phase: 'Cash first', savings_milestone: 15000 },
+      rules: ['Keep $2,000 in Chase checking as the buffer. Never count it as spendable.', 'Wants never come out of savings.', 'Monthly spending outside bills: target $4,000, max $5,000.', 'Megan Budget and Dustin Budget are $300/month each.', 'Christmas 2026 cap is about $1,600.', 'If Apple Card available credit is under about $500, big purchases wait.'], updated_at: '2026-11-14T22:30:00Z', updated_by: 'Claude' },
+    history: [{ at: '2026-11-13T19:00:00Z', who: 'megan', item: 'Tarot deck', price: 32, answer: { verdict: 'yes', bucket: 'Megan Budget', reason: '$157.50 left, so $32 leaves $125.50.' } }],
+    checkBacks: [{ id: 'c1', title: 'Revisit: Saddle pad ($85)', due: '2026-11-30' }] };
+}
+</script>
+</body>
+</html>
