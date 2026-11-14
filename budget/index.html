@@ -400,10 +400,10 @@ function showAnswer(a) {
     return;
   }
   const facts = (a.numbers || []).map(n => `<div class="fact"><div class="k">${esc(n.label)}</div><div class="v num">${esc(n.value)}</div></div>`).join('');
-  const remind = a.verdict && a.verdict !== 'yes';
+  const remind = !!a.verdict;
   const nextMonth1 = (() => { const d = new Date(); return new Date(d.getFullYear(), d.getMonth() + 1, 1).toLocaleDateString('en-CA'); })();
   const npDate = state && state.snapshot && state.snapshot.next_payday && state.snapshot.next_payday.date;
-  const waitDate = a.check_back_date || (npDate && npDate > todayISO() ? npDate : nextMonth1);
+  const waitDate = (a.check_back_date && a.check_back_date > todayISO()) ? a.check_back_date : (npDate && npDate > todayISO() ? npDate : nextMonth1);
   $('answer').innerHTML = `<div class="card answer v-${esc(a.verdict)}">
     <span class="verdict">${esc(VERDICT[a.verdict] || a.verdict)}</span>
     ${a.matched_planned && a.matched_planned.name ? `<div class="tag" style="margin:10px 0 0;background:var(--wait-bg);color:var(--wait)">📌 Already planned: ${esc(a.matched_planned.name)}${a.matched_planned.date ? ' · ' + nice(a.matched_planned.date) : ''}${a.matched_planned.amount ? ' · ' + money(a.matched_planned.amount) : ''}</div>` : ''}
@@ -411,9 +411,9 @@ function showAnswer(a) {
     <div class="sub" style="font-size:15px;color:var(--ink)">${esc(a.reason)}</div>
     ${facts ? `<div class="facts">${facts}</div>` : ''}
     <div><span class="tag">${esc(a.bucket)}${a.category ? ' · ' + esc(a.category) : ''}</span>${a.card ? `<span class="tag">💳 ${esc(a.card)}</span>` : ''}</div>
-    ${remind ? `<div class="sub" style="margin-top:12px">${a.check_back_date ? `Check back <b>${nice(a.check_back_date)}</b>${a.check_back_why ? ': ' + esc(a.check_back_why) : ''}` : 'Want to wait on it?'}</div>
+    ${remind ? `<div class="sub" style="margin-top:12px"><b>${a.verdict === 'yes' ? 'Or wait for a better time' : 'Wait for a better time'}</b>: recommended <b>${nice(waitDate)}</b>${a.check_back_why ? '. ' + esc(a.check_back_why) : ''}</div>
       <div class="row" style="margin-top:10px;gap:8px"><div class="field" style="flex:1"><input type="date" id="waitDate" value="${esc(waitDate)}" min="${todayISO()}" /></div></div>
-      <button class="btn" id="remindBtn" style="margin-top:10px">Wait, and add to Todoist</button>` : ''}
+      <button class="btn ${a.verdict === 'yes' ? 'ghost' : ''}" id="remindBtn" style="margin-top:10px">Wait, and add to Todoist</button>` : ''}
     <div class="faint" style="margin-top:12px">Based on numbers from ${state && state.snapshot && state.snapshot.updated_at ? asOf(state.snapshot.updated_at) : 'the last update'}</div>
     <button class="btn plain" id="againBtn" style="margin-top:6px">Ask about something else</button>
   </div>`;
