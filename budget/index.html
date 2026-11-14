@@ -174,6 +174,11 @@
       </div>
 
       <div class="card">
+        <div class="row"><div class="label">Coming up (planned)</div><div class="faint" id="up-total"></div></div>
+        <ul class="list" id="upcoming"></ul>
+      </div>
+
+      <div class="card">
         <div class="row"><div class="label">Bills before next payday</div><div class="faint" id="bills-total"></div></div>
         <ul class="list" id="bills"></ul>
       </div>
@@ -311,6 +316,9 @@ function render() {
     $(el + '-bar').style.width = pct(left, p.budget) + '%'; };
   person('megan', 'm'); person('dustin', 'd');
 
+  const ups = (s.upcoming_spends || []).filter(u => !u.date || u.date >= todayISO()).sort((a, b) => String(a.date).localeCompare(String(b.date)));
+  $('upcoming').innerHTML = ups.length ? ups.map(u => `<li><div><div class="t">${esc(u.name)}</div><div class="d">${nice(u.date)}${u.budget ? ' · ' + esc(u.budget) : ''}</div></div><div class="num t">${money(u.amount, true)}</div></li>`).join('') : '<li><span class="sub">Nothing planned. Add things to Upcoming Spends in Notion.</span></li>';
+  $('up-total').textContent = ups.length ? money(ups.reduce((a, u) => a + (+u.amount || 0), 0), true) + ' total' : '';
   const bills = s.upcoming_bills || [];
   $('bills').innerHTML = bills.length ? bills.map(b => `<li><div><div class="t">${esc(b.name)}</div><div class="d">${nice(b.due)}</div></div><div class="num t">${money(b.amount, true)}</div></li>`).join('') : '<li><span class="sub">Nothing due before payday</span></li>';
   $('bills-total').textContent = bills.length ? money(bills.reduce((a, b) => a + (+b.amount || 0), 0), true) + ' total' : '';
@@ -471,7 +479,7 @@ function DEMO_DATA() {
       personal: { megan: { budget: 300, spent: 142.5, left: 157.5 }, dustin: { budget: 300, spent: 211, left: 89 } },
       month: { label: 'November 2026', left_to_spend: 2074.6, spent_outside_bills: null, target: 4000, max: 5000, days_left: 17, daily_target_remaining: 122.03 },
       upcoming_bills: [{ name: 'Car insurance', amount: 186, due: '2026-11-18' }, { name: 'Internet', amount: 79.99, due: '2026-11-20' }],
-      next_payday: { date: '2026-11-20', who: 'Dustin' }, savings: { phase: 'Cash first', current: 9850, milestone: 15000 } },
+      next_payday: { date: '2026-11-20', who: 'Dustin' }, upcoming_spends: [{ name: 'iPhone Duo order', amount: 370, date: '2026-11-30', budget: 'Household' }], savings: { phase: 'Cash first', current: 9850, milestone: 15000 } },
     rules: { settings: { chase_buffer: 2000, monthly_target: 4000, monthly_max: 5000, megan_budget: 300, dustin_budget: 300, apple_card_min_available: 500, savings_phase: 'Cash first', savings_milestone: 15000 },
       rules: ['Keep $2,000 in Chase checking as the buffer. Never count it as spendable.', 'Wants never come out of savings.', 'Monthly spending outside bills: target $4,000, max $5,000.', 'Megan Budget and Dustin Budget are $300/month each.', 'If Apple Card available credit is under about $500, big purchases wait.'], updated_at: '2026-11-14T22:30:00Z', updated_by: 'Claude' },
     history: [{ at: '2026-11-13T19:00:00Z', who: 'megan', item: 'Tarot deck', price: 32, answer: { verdict: 'yes', bucket: 'Megan Budget', reason: '$157.50 left, so $32 leaves $125.50.' } }],
