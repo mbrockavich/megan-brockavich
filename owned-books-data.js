@@ -101,6 +101,7 @@ const OWNED_BOOKS = {
     {title:"Carl's Doomsday Scenario", author:"Matt Dinniman", cover:"https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1719949673i/212393364._SY180_.jpg"},
     {title:"Lore Olympus: Volume One", author:"Rachel Smythe", cover:"https://covers.openlibrary.org/b/isbn/9780593160299-L.jpg"},
     {title:"Lore Olympus: Volume Two", author:"Rachel Smythe", cover:"https://covers.openlibrary.org/b/isbn/9780593160305-L.jpg"},
+    {title:"Lore Olympus: Volume Three", author:"Rachel Smythe", cover:"https://covers.openlibrary.org/b/isbn/9780593160312-L.jpg"},
     {title:"Red Rising", author:"Pierce Brown", cover:"https://covers.openlibrary.org/b/isbn/9780345539786-L.jpg"},
     {title:"Golden Son", author:"Pierce Brown", cover:"https://covers.openlibrary.org/b/id/8454351-L.jpg"},
     {title:"Morning Star", author:"Pierce Brown", cover:"https://covers.openlibrary.org/b/id/8566174-L.jpg"},
