@@ -64,6 +64,11 @@
   .hero .sub { color: rgba(255,255,255,.85); }
   .hero .pillrow { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
   .hero .pill { background: rgba(255,255,255,.16); border-radius: 99px; padding: 6px 10px; font-size: 13px; }
+  .hero .pill.pace { display: block; width: 100%; border-radius: 16px; padding: 12px 14px; font-size: 15px; color: #0b3d2a; background: #fff; }
+  .hero .pill.pace b { font-size: 24px; letter-spacing: -.5px; }
+  .hero .pill.pace small { display: block; font-size: 13px; margin-top: 2px; font-weight: 600; }
+  .hero .pill.pace.warn { background: #ffe3a3; color: #5a3b00; }
+  .hero .pill.pace.ok { background: #c8f5dc; color: #0b3d2a; }
 
   ul.list { list-style: none; margin: 8px 0 0; padding: 0; }
   ul.list li { display: flex; justify-content: space-between; align-items: center; gap: 10px; padding: 11px 0; border-top: 1px solid var(--line); }
@@ -243,7 +248,7 @@
 <script>
 /* ===== settings ===== */
 const APP_NAME = 'Can we afford it?';
-const BUILD = '2026-11-14-v16';   // bump on every release; open copies reload themselves
+const BUILD = '2026-11-14-v17';   // bump on every release; open copies reload themselves
 const API = 'https://afford-it.brockavichmegan.workers.dev';
 
 const DEMO = new URLSearchParams(location.search).has('demo');
@@ -310,10 +315,14 @@ function render() {
   $('h-bar').style.width = (left != null ? pct(left, target) : 0) + '%';
   const np = s.next_payday;
   const pills = [];
-  if (perDay != null) pills.push(`${money(perDay)}/day${perDay < goal ? ' · under ' + money(goal) + ' goal' : ''}`);
+  let paceHTML = '';
+  if (perDay != null) {
+    const over = perDay < goal;
+    paceHTML = `<span class="pill pace ${over ? 'warn' : 'ok'}"><b>${money(perDay)}/day</b> left to spend<small>${over ? 'Overspent: ' + money(goal - perDay) + '/day below the ' + money(goal) + ' goal' : 'On track: ' + money(perDay - goal) + '/day above the ' + money(goal) + ' goal'}</small></span>`;
+  }
   pills.push(`${daysLeftNow} days left`);
   if (np) pills.push(`Next payday ${nice(np.date)}${np.who ? ' · ' + np.who : ''}`);
-  $('h-pills').innerHTML = pills.map(p => `<span class="pill">${esc(p)}</span>`).join('');
+  $('h-pills').innerHTML = paceHTML + pills.map(p => `<span class="pill">${esc(p)}</span>`).join('');
 
   const person = (k, el) => { const p = (s.personal || {})[k] || {}; const left = p.left ?? (p.budget - p.spent);
     $(el + '-left').textContent = money(left); $(el + '-of').textContent = `left of ${money(p.budget)}`;
