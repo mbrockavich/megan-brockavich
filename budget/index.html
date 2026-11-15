@@ -258,7 +258,7 @@
 <script>
 /* ===== settings ===== */
 const APP_NAME = 'Can we afford it?';
-const BUILD = '2026-11-14-v27';   // bump on every release; open copies reload themselves
+const BUILD = '2026-11-14-v28';   // bump on every release; open copies reload themselves
 const API = 'https://afford-it.brockavichmegan.workers.dev';
 
 const DEMO = new URLSearchParams(location.search).has('demo');
@@ -340,7 +340,8 @@ function render() {
     $(el + '-bar').style.width = pct(left, p.budget) + '%'; };
   person('megan', 'm'); person('dustin', 'd');
 
-  const ups = (s.upcoming_spends || []).filter(u => !u.date || u.date >= todayISO()).sort((a, b) => String(a.date).localeCompare(String(b.date)));
+  const in30 = new Date(Date.now() + 30 * 86400000).toLocaleDateString('en-CA');
+  const ups = (s.upcoming_spends || []).filter(u => !u.date || (u.date >= todayISO() && u.date <= in30)).sort((a, b) => String(a.date).localeCompare(String(b.date)));
   $('upcoming').innerHTML = ups.length ? ups.map(u => `<li><div><div class="t">${esc(u.name)}</div><div class="d">${nice(u.date)}${u.budget ? ' · ' + esc(u.budget) : ''}</div></div><div class="num t">${money(u.amount, true)}</div></li>`).join('') : '<li><span class="sub">Nothing planned. Add things to Upcoming Spends in Notion.</span></li>';
   $('up-total').textContent = ups.length ? money(ups.reduce((a, u) => a + (+u.amount || 0), 0), true) + ' total' : '';
   const bills = s.upcoming_bills || [];
