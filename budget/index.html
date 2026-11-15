@@ -181,6 +181,17 @@
         <div class="pillrow" id="h-pills"></div>
       </div>
 
+      <div class="card mini" id="chkCard">
+        <div class="row"><div class="label">Checking balance</div><div class="faint" id="chk-note"></div></div>
+        <div class="val num" id="chk-total">$0</div>
+        <ul class="list" id="chk-list" style="margin-top:6px"></ul>
+      </div>
+
+      <details class="card mini goals" id="creditCard">
+        <summary><div class="row"><div class="label">Available credit</div><div class="faint" id="cr-note"></div></div><div class="val num" id="cr-total">TBD</div><div class="of">Tap to see each card</div></summary>
+        <ul class="list" id="cr-list" style="margin-top:10px"></ul>
+      </details>
+
       <details class="card mini goals" id="goalsCard">
         <summary><div class="row"><div class="label">Current goal</div><div class="faint" id="sv-of"></div></div><div class="val num" id="sv-cur">$0</div><div class="bar"><i id="sv-bar"></i></div><div class="of">Tap to see all our goals</div></summary>
         <ol class="goalrank" id="goalRank"></ol>
@@ -258,7 +269,7 @@
 <script>
 /* ===== settings ===== */
 const APP_NAME = 'Can we afford it?';
-const BUILD = '2026-11-14-v28';   // bump on every release; open copies reload themselves
+const BUILD = '2026-11-14-v29';   // bump on every release; open copies reload themselves
 const API = 'https://afford-it.brockavichmegan.workers.dev';
 
 const DEMO = new URLSearchParams(location.search).has('demo');
@@ -381,6 +392,19 @@ function render() {
     { t: `Every day: about ${money(goal)}/day outside bills, never over ${money(st.monthly_max ?? 5000)}/month`, d: 'Ongoing', s: dailyStatus }
   ].filter(Boolean);
   $('goalRank').innerHTML = items.map(g => `<li class="${g.cur ? 'cur' : ''}"><div>${esc(g.t)}${g.cur ? ' <span class="faint">(current)</span>' : ''}</div>${g.d ? `<div class="gdate">${esc(g.d)}</div>` : ''}${g.s ? `<div class="gstat">${g.s}</div>` : ''}</li>`).join('');
+  const ch = s.chase || {}, gf = s.greenfi || {};
+  const chkRows = [];
+  if (ch.balance != null) chkRows.push(`<li><div><div class="t">Chase checking</div>${ch.available_above_buffer != null ? `<div class="d">${money(ch.available_above_buffer, true)} above the ${money(ch.buffer ?? 2000)} buffer</div>` : ''}</div><div class="num t">${money(ch.balance, true)}</div></li>`);
+  if (gf.checking != null) chkRows.push(`<li><div><div class="t">GreenFi checking</div></div><div class="num t">${money(gf.checking, true)}</div></li>`);
+  $('chk-total').textContent = money((ch.balance || 0) + (gf.checking || 0), true);
+  $('chk-list').innerHTML = chkRows.join('');
+  $('chk-note').textContent = ch.balance != null ? 'Includes pending items' : '';
+  const cards = (s.credit && s.credit.cards) || [];
+  const known = cards.filter(c => c.available != null);
+  $('cr-total').textContent = known.length ? money(known.reduce((a, c) => a + (+c.available || 0), 0), true) + (known.length < cards.length ? '+' : '') : 'TBD';
+  $('cr-note').textContent = !known.length ? 'Fills in at the next budget run' : known.length < cards.length ? (cards.length - known.length) + ' card' + (cards.length - known.length > 1 ? 's' : '') + ' TBD' : '';
+  $('cr-list').innerHTML = cards.length ? cards.map(c => `<li><div><div class="t">${esc(c.name)}</div>${c.limit != null && c.available != null ? `<div class="d">${money(c.limit)} limit · ${Math.round((1 - c.available / c.limit) * 100)}% used</div>` : ''}</div><div class="num t" ${c.available == null ? 'style="color:var(--faint)"' : ''}>${c.available != null ? money(c.available, true) : 'TBD'}</div></li>`).join('') : '<li class="empty" style="display:block">No cards listed yet.</li>';
+  $('creditCard').classList.toggle('hidden', !cards.length);
   renderLater(); renderRules();
 }
 
@@ -568,7 +592,7 @@ function DEMO_DATA() {
       personal: { megan: { budget: 300, spent: 142.5, left: 157.5 }, dustin: { budget: 300, spent: 211, left: 89 } },
       month: { label: 'November 2026', left_to_spend: 2074.6, spent_outside_bills: null, target: 4000, max: 5000, days_left: 17, daily_target_remaining: 122.03 },
       upcoming_bills: [{ name: 'Car insurance', amount: 186, due: '2026-11-18' }, { name: 'Internet', amount: 79.99, due: '2026-11-20' }],
-      next_payday: { date: '2026-11-20', who: 'Dustin' }, upcoming_spends: [{ name: 'iPhone Duo order', amount: 370, date: '2026-11-30', budget: 'Household' }], savings: { phase: 'Cash first', current: 9850, milestone: 15000 } },
+      next_payday: { date: '2026-11-20', who: 'Dustin' }, upcoming_spends: [{ name: 'iPhone Duo order', amount: 370, date: '2026-11-30', budget: 'Household' }], savings: { phase: 'Cash first', current: 9850, milestone: 15000 }, greenfi: { checking: 461.17, savings: 1510.74 }, credit: { cards: [{ name: 'Apple Card', available: null, limit: null }, { name: "Megan's Capital One", available: null, limit: null }, { name: "Dustin's Capital One", available: null, limit: null }] } },
     rules: { settings: { chase_buffer: 2000, monthly_target: 4000, monthly_max: 5000, megan_budget: 300, dustin_budget: 300, apple_card_min_available: 500, savings_phase: 'Cash first', savings_milestone: 15000 },
       rules: ['Keep $2,000 in Chase checking as the buffer. Never count it as spendable.', 'Wants never come out of savings.', 'Monthly spending outside bills: target $4,000, max $5,000.', 'Megan Budget and Dustin Budget are $300/month each.', 'If Apple Card available credit is under about $500, big purchases wait.'], updated_at: '2026-11-14T22:30:00Z', updated_by: 'Claude' },
     history: [{ at: '2026-11-13T19:00:00Z', who: 'megan', item: 'Tarot deck', price: 32, answer: { verdict: 'yes', bucket: 'Megan Budget', reason: '$157.50 left, so $32 leaves $125.50.' } }],
