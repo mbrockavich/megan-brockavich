@@ -258,7 +258,7 @@
 <script>
 /* ===== settings ===== */
 const APP_NAME = 'Can we afford it?';
-const BUILD = '2026-11-14-v22';   // bump on every release; open copies reload themselves
+const BUILD = '2026-11-14-v23';   // bump on every release; open copies reload themselves
 const API = 'https://afford-it.brockavichmegan.workers.dev';
 
 const DEMO = new URLSearchParams(location.search).has('demo');
@@ -371,11 +371,13 @@ function render() {
   }
   const paceNow = perDay != null ? perDay : null;
   const dailyStatus = paceNow == null ? '' : paceNow < goal ? badge('bad', 'Over pace') + ` Only ${money(paceNow)}/day left this month vs ${money(goal)}` : badge('ok', 'On track') + ` ${money(paceNow)}/day left vs ${money(goal)}`;
+  const phaseNow = (st.savings_phase || r.savings_phase || 'Cash first');
   const items = [
-    { t: `Cash first: build savings to ${money(ms)} (now ${money(sv.current)})`, d: savDeadline, s: savStatus, cur: true },
-    { t: `Daily spending goal: about ${money(goal)}/day outside bills, never over ${money(st.monthly_max ?? 5000)}/month`, d: 'Every day', s: dailyStatus },
-    { t: 'Main goal: a lower-pressure job without the household going backward', d: 'Hoping for ' + (st.job_goal_label || r.job_goal_label || 'end of 2027'), s: badge('warn', 'Depends on the savings goal') + ' Savings first, then the next milestone' },
-    ms < 25000 ? { t: 'Next milestone: $25,000 in savings', d: 'Hoping for ' + (st.savings_next_label || 'summer 2027'), s: '' } : null
+    { t: `Phase 1, Cash first: build savings to ${money(ms)} (now ${money(sv.current)}). Minimums on all debt.`, d: savDeadline, s: savStatus, cur: true },
+    { t: 'Phase 2, Split mode ($15,000 to $25,000): about half of extra money to savings, half to debt', d: 'Hoping for ' + (st.savings_next_label || 'summer 2027'), s: '' },
+    { t: 'Phase 3, Debt mode ($25,000+, or once a job feels secure): everything extra to debt, highest rate first', d: 'After phase 2', s: '' },
+    { t: 'Phase 4, Job switch ready: $25k+ savings, lean budget hit 3 months in a row, card balances trending down', d: 'Hoping for ' + (st.job_goal_label || r.job_goal_label || 'end of 2027'), s: badge('warn', 'Depends on phases 1 to 3') },
+    { t: `Every day: about ${money(goal)}/day outside bills, never over ${money(st.monthly_max ?? 5000)}/month`, d: 'Ongoing', s: dailyStatus }
   ].filter(Boolean);
   $('goalRank').innerHTML = items.map(g => `<li class="${g.cur ? 'cur' : ''}"><div>${esc(g.t)}${g.cur ? ' <span class="faint">(current)</span>' : ''}</div>${g.d ? `<div class="gdate">${esc(g.d)}</div>` : ''}${g.s ? `<div class="gstat">${g.s}</div>` : ''}</li>`).join('');
   renderLater(); renderRules();
