@@ -68,6 +68,8 @@
   ul.list { list-style: none; margin: 8px 0 0; padding: 0; }
   ul.list li { display: flex; justify-content: space-between; align-items: center; gap: 10px; padding: 11px 0; border-top: 1px solid var(--line); }
   ul.list li:first-child { border-top: none; }
+  .thumb { width: 52px; height: 52px; border-radius: 12px; flex: none; background: var(--line); display: grid; place-items: center; font-size: 26px; overflow: hidden; }
+  .thumb img { width: 100%; height: 100%; object-fit: cover; }
   .list .t { font-weight: 550; } .list .d { font-size: 13px; color: var(--sub); }
 
   /* buttons + inputs */
@@ -241,7 +243,7 @@
 <script>
 /* ===== settings ===== */
 const APP_NAME = 'Can we afford it?';
-const BUILD = '2026-11-14-v15';   // bump on every release; open copies reload themselves
+const BUILD = '2026-11-14-v16';   // bump on every release; open copies reload themselves
 const API = 'https://afford-it.brockavichmegan.workers.dev';
 
 const DEMO = new URLSearchParams(location.search).has('demo');
@@ -331,11 +333,27 @@ function render() {
   renderLater(); renderRules();
 }
 
+function emojiFor(title) {
+  const t = title.toLowerCase();
+  const map = [[/console|playstation|xbox|switch|nintendo|game/,'🎮'],[/phone|iphone|ipad|tablet|duo/,'📱'],[/laptop|computer|macbook|monitor|keyboard|mouse/,'💻'],[/tv|television|speaker|headphone|airpod/,'🎧'],[/shoe|boot|sneaker/,'👟'],[/dress|shirt|jacket|coat|sweater|jeans|pants|clothes|bag|purse/,'👗'],[/book|kindle/,'📚'],[/candle|decor|rug|lamp|pillow|curtain|frame|vase/,'🕯️'],[/couch|sofa|chair|table|desk|bed|shelf/,'🛋️'],[/vacuum|blender|air fryer|mixer|coffee|kitchen|pan|pot/,'🍳'],[/tesla|car|tire|truck/,'🚗'],[/horse|saddle|bridle|barn/,'🐴'],[/dog|cat|pet|vet/,'🐾'],[/tool|drill|saw|garden|plant/,'🛠️'],[/ticket|concert|movie|trip|flight|hotel/,'🎟️'],[/gift|birthday|christmas/,'🎁'],[/makeup|skin|hair|nail|botox|spa/,'💅']];
+  for (const [re, e] of map) if (re.test(t)) return e;
+  return '🛍️';
+}
+const thumbCache = (() => { try { return JSON.parse(localStorage.getItem('thumbs') || '{}'); } catch { return {}; } })();
+function loadThumbs() {
+  document.querySelectorAll('#later .thumb[data-link]').forEach(async el => {
+    const link = el.dataset.link; if (!link) return;
+    const show = src => { if (!src) return; const im = new Image(); im.alt = ''; im.onload = () => { el.textContent = ''; el.appendChild(im); }; im.src = src; };
+    if (link in thumbCache) return show(thumbCache[link]);
+    try { const r = await api('GET', '/preview?url=' + encodeURIComponent(link)); thumbCache[link] = r.image || null; try { localStorage.setItem('thumbs', JSON.stringify(thumbCache)); } catch {} show(r.image); } catch {}
+  });
+}
 function renderLater() {
   const list = state.checkBacks || [];
   const due = list.filter(c => c.due && c.due <= todayISO()).length;
   $('laterBadge').textContent = due; $('laterBadge').classList.toggle('hidden', !due);
-  $('later').innerHTML = list.length ? list.map(c => `<li data-id="${esc(c.id)}"><div><div class="t">${esc(c.title.replace(/^Revisit:\s*/, ''))}${(c.notes || '').match(/https?:\/\/\S+/) ? ` <a href="${esc(c.notes.match(/https?:\/\/\S+/)[0])}" target="_blank" rel="noopener">↗</a>` : ''}</div><div class="d">${c.due && c.due <= todayISO() ? '<b style="color:var(--wait)">Check back now</b>' : 'Check back ' + nice(c.due)}</div></div><div style="display:flex;gap:6px"><button class="btn small ghost" data-act="reask">Ask again</button><button class="btn small plain" data-act="remove">Remove</button></div></li>`).join('') : '<li class="empty" style="display:block">Nothing waiting. Anything you put off shows up here.</li>';
+  $('later').innerHTML = list.length ? list.map(c => `<li data-id="${esc(c.id)}"><div class="thumb" data-link="${esc(((c.notes || '').match(/https?:\/\/\S+/) || [''])[0])}">${emojiFor(c.title)}</div><div style="flex:1;min-width:0"><div class="t">${esc(c.title.replace(/^Revisit:\s*/, ''))}${(c.notes || '').match(/https?:\/\/\S+/) ? ` <a href="${esc(c.notes.match(/https?:\/\/\S+/)[0])}" target="_blank" rel="noopener">↗</a>` : ''}</div><div class="d">${c.due && c.due <= todayISO() ? '<b style="color:var(--wait)">Check back now</b>' : 'Check back ' + nice(c.due)}</div></div><div style="display:flex;gap:6px"><button class="btn small ghost" data-act="reask">Ask again</button><button class="btn small plain" data-act="remove">Remove</button></div></li>`).join('') : '<li class="empty" style="display:block">Nothing waiting. Anything you put off shows up here.</li>';
+  loadThumbs();
 }
 $('later').addEventListener('click', async e => {
   const b = e.target.closest('button'); if (!b) return; const li = b.closest('li'); const c = (state.checkBacks || []).find(x => x.id === li.dataset.id); if (!c) return;
