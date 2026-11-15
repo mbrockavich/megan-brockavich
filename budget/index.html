@@ -57,6 +57,20 @@
   .goalrank { margin: 12px 0 0; padding: 12px 0 0 20px; border-top: 1px solid var(--line); font-size: 14px; line-height: 1.4; } .goalrank li { margin: 0 0 8px; } .goalrank li.cur { font-weight: 650; }
   .gdate { font-size: 12.5px; color: var(--sub); font-weight: 500; margin-top: 2px; } .gstat { font-size: 13px; font-weight: 500; margin-top: 3px; }
   .gbadge { display: inline-block; font-size: 11.5px; font-weight: 700; padding: 2px 8px; border-radius: 99px; margin-right: 4px; } .gbadge.ok { background: #c8f5dc; color: #0b5a38; } .gbadge.warn { background: #ffe3a3; color: #5a3b00; } .gbadge.bad { background: #ffc9c4; color: #7a1410; }
+  .xbadge { border: none; background: #e8f7ee; color: #14633f; border-radius: 99px; padding: 6px 12px; font-size: 13px; font-weight: 700; margin-left: 10px; margin-right: auto; display: flex; align-items: center; gap: 5px; cursor: pointer; }
+  .xbadge .xtree { display: inline-block; animation: sway 3s ease-in-out infinite; transform-origin: bottom center; }
+  @keyframes sway { 0%,100% { transform: rotate(-6deg); } 50% { transform: rotate(6deg); } }
+  @media (prefers-reduced-motion: reduce) { .xbadge .xtree { animation: none; } }
+  .xhero { text-align: center; background: linear-gradient(160deg, #14633f, #0b3d2a); color: #fff; border: none; }
+  .xhero .big { font-size: 34px; font-weight: 800; letter-spacing: -.02em; } .xhero .sub { color: #fff; opacity: .85; font-size: 13px; margin-top: 2px; }
+  .xhero .xfacts { display: flex; justify-content: space-around; gap: 8px; margin-top: 14px; padding-top: 12px; border-top: 1px solid rgba(255,255,255,.2); }
+  .xhero .xfacts div { font-size: 12px; opacity: .9; } .xhero .xfacts b { display: block; font-size: 18px; opacity: 1; }
+  details.xp { padding: 0; } details.xp > summary { list-style: none; cursor: pointer; padding: 14px 16px; } details.xp > summary::-webkit-details-marker { display: none; }
+  details.xp .xbody { padding: 0 16px 14px; border-top: 1px solid var(--line); }
+  .xp .xrow { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; } .xp .xname { font-weight: 650; } .xp .xamt { font-weight: 700; }
+  .xp .xsub { font-size: 12.5px; color: var(--sub); margin-top: 2px; } .xp .xover { color: #c0392b; font-weight: 650; }
+  .xp ul.xtx { list-style: none; margin: 10px 0 0; padding: 0; } .xp ul.xtx li { display: flex; justify-content: space-between; gap: 8px; padding: 6px 0; font-size: 14px; border-top: 1px solid var(--line); } .xp ul.xtx li:first-child { border-top: none; }
+  .xp .xedit .price { min-width: 0; } .xp .xedit { display: flex; gap: 8px; margin-top: 12px; align-items: center; } .xp .xedit .price { flex: 1; }
   .mini .of { font-size: 12px; color: var(--sub); margin-top: 2px; }
 
   .bar { height: 8px; border-radius: 99px; background: var(--line); overflow: hidden; margin-top: 10px; }
@@ -120,7 +134,7 @@
 
   /* tab bar */
   nav.tabs { position: fixed; left: 0; right: 0; bottom: 0; z-index: 10; background: color-mix(in srgb, var(--card) 92%, transparent); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
-    border-top: 1px solid var(--line); display: grid; grid-template-columns: repeat(4, 1fr); padding: 6px 4px calc(env(safe-area-inset-bottom) + 6px); }
+    border-top: 1px solid var(--line); display: grid; grid-template-columns: repeat(5, 1fr); padding: 6px 4px calc(env(safe-area-inset-bottom) + 6px); }
   nav.tabs button { border: none; background: none; display: flex; flex-direction: column; align-items: center; gap: 3px; font-size: 11px; font-weight: 600; color: var(--faint); padding: 4px 0; position: relative; }
   nav.tabs button svg { width: 25px; height: 25px; }
   nav.tabs button.on { color: var(--brand); }
@@ -165,6 +179,7 @@
 <div id="app" class="hidden">
   <header class="top">
     <h1 id="title">Today</h1>
+    <button class="xbadge hidden" id="xbadge" data-go="xmas" aria-label="Open Christmas"><span class="xtree">🎄</span><span id="xdays"></span></button>
     <div class="meta"><div id="updated">&nbsp;</div><div id="whoami"></div></div>
   </header>
   <main>
@@ -225,6 +240,20 @@
       <div class="faint" style="text-align:center">These also live in the Todoist project 💸 Purchases to revisit.</div>
     </section>
 
+    <!-- CHRISTMAS -->
+    <section class="view" id="v-xmas">
+      <div class="card xhero" id="xhero"></div>
+      <div id="xlist"></div>
+      <div class="card" id="xadd">
+        <div class="label">Add someone</div>
+        <div class="field" style="margin-top:10px"><input id="x-name" placeholder="Name" autocomplete="off" /></div>
+        <div class="field" style="margin-top:10px"><div class="price"><span>$</span><input id="x-budget" inputmode="decimal" placeholder="Estimated budget" class="num" /></div></div>
+        <button class="btn" id="x-addbtn" style="margin-top:14px">Add to the list</button>
+        <div class="faint" style="margin-top:10px">Purchases show up under a name when they are tagged with that name in Simplifi. Claude refreshes them during each budget run.</div>
+      </div>
+      <div class="asof" id="xsync" style="text-align:center"></div>
+    </section>
+
     <!-- RULES -->
     <section class="view" id="v-rules">
       <div class="card" id="goalsView"><div class="label">Our goals</div><ul class="list" id="goalsList"></ul></div>
@@ -250,6 +279,7 @@
     <button data-go="home" class="on"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/></svg>Today</button>
     <button data-go="ask"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M9.3 9.2a2.8 2.8 0 0 1 5.4 1c0 1.9-2.7 2.4-2.7 4"/><path d="M12 17.5h.01"/></svg>Ask</button>
     <button data-go="later"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="5" width="17" height="15.5" rx="2.5"/><path d="M3.5 10h17M8 3v4M16 3v4"/></svg>Later<span class="badge hidden" id="laterBadge"></span></button>
+    <button data-go="xmas"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 7 10h3l-4 6h4l-3 4h12l-3-4h4l-4-6h3z"/><path d="M12 20v2"/></svg>Christmas</button>
     <button data-go="rules"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M8 6h12M8 12h12M8 18h12"/><path d="M4 6h.01M4 12h.01M4 18h.01"/></svg>Rules</button>
   </nav>
 </div>
@@ -258,7 +288,7 @@
 <script>
 /* ===== settings ===== */
 const APP_NAME = 'Can we afford it?';
-const BUILD = '2026-11-14-v23';   // bump on every release; open copies reload themselves
+const BUILD = '2026-11-14-v26';   // bump on every release; open copies reload themselves
 const API = 'https://afford-it.brockavichmegan.workers.dev';
 
 const DEMO = new URLSearchParams(location.search).has('demo');
@@ -380,7 +410,7 @@ function render() {
     { t: `Every day: about ${money(goal)}/day outside bills, never over ${money(st.monthly_max ?? 5000)}/month`, d: 'Ongoing', s: dailyStatus }
   ].filter(Boolean);
   $('goalRank').innerHTML = items.map(g => `<li class="${g.cur ? 'cur' : ''}"><div>${esc(g.t)}${g.cur ? ' <span class="faint">(current)</span>' : ''}</div>${g.d ? `<div class="gdate">${esc(g.d)}</div>` : ''}${g.s ? `<div class="gstat">${g.s}</div>` : ''}</li>`).join('');
-  renderLater(); renderRules();
+  renderLater(); renderRules(); renderXmas();
 }
 
 function emojiFor(title) {
@@ -499,7 +529,7 @@ $('askBtn').onclick = () => doAsk();
 $('q-price').addEventListener('keydown', e => { if (e.key === 'Enter') doAsk(); });
 
 /* ===== navigation ===== */
-const TITLES = { home: 'Today', ask: 'Can I buy this?', later: 'Later', rules: 'Rules' };
+const TITLES = { home: 'Today', ask: 'Can I buy this?', later: 'Later', xmas: 'Christmas', rules: 'Rules' };
 function go(v) {
   document.querySelectorAll('section.view').forEach(s => s.classList.toggle('on', s.id === 'v-' + v));
   document.querySelectorAll('nav.tabs button').forEach(b => b.classList.toggle('on', b.dataset.go === v));
@@ -507,6 +537,87 @@ function go(v) {
   if (v === 'ask' && !$('q-item').value) setTimeout(() => $('q-item').focus(), 50);
 }
 document.querySelectorAll('[data-go]').forEach(b => b.addEventListener('click', () => go(b.dataset.go)));
+
+/* ===== Christmas ===== */
+function xmasDaysLeft() {
+  const n = new Date(); const t = new Date(n.getFullYear(), 11, 25);
+  const d = Math.round((t - new Date(n.getFullYear(), n.getMonth(), n.getDate())) / 86400000);
+  return d;
+}
+function renderXmasBadge() {
+  const d = xmasDaysLeft(), b = $('xbadge');
+  if (d < -1) { b.classList.add('hidden'); return; }
+  b.classList.remove('hidden');
+  $('xdays').textContent = d > 1 ? d + ' days' : d === 1 ? 'Tomorrow!' : d === 0 ? 'Today!' : 'Merry Christmas';
+}
+function xmasModel() {
+  const c = (state && state.christmas) || { people: [], transactions: [] };
+  const people = (c.people || []).map(p => ({ ...p, key: (p.tag || p.name).toLowerCase().trim(), tx: [] }));
+  const byKey = {}; people.forEach(p => { byKey[p.key] = p; });
+  const loose = [];
+  (c.transactions || []).forEach(t => {
+    const k = (t.tag || '').toLowerCase().trim();
+    if (k && byKey[k]) byKey[k].tx.push(t);
+    else if (k) { const np = { id: 'tag:' + k, name: t.tag, tag: t.tag, budget: 0, notes: '', tx: [t], key: k, auto: true }; byKey[k] = np; people.push(np); }
+    else loose.push(t);
+  });
+  return { c, people, loose };
+}
+const sumTx = a => a.reduce((x, t) => x + (+t.amount || 0), 0);
+function renderXmas() {
+  renderXmasBadge();
+  const { c, people, loose } = xmasModel();
+  const spent = sumTx(people.flatMap(p => p.tx)) + sumTx(loose);
+  const budget = people.reduce((a, p) => a + (+p.budget || 0), 0);
+  const toBuy = people.reduce((a, p) => a + Math.max(0, (+p.budget || 0) - sumTx(p.tx)), 0);
+  const d = xmasDaysLeft();
+  $('xhero').innerHTML = `<div class="big">${d > 1 ? '🎄 ' + d + ' days' : d === 1 ? '🎄 Tomorrow!' : d === 0 ? '🎄 Merry Christmas!' : '🎁 Merry Christmas'}</div><div class="sub">${d > 0 ? 'until Christmas' : ''}</div>
+    <div class="xfacts"><div><b>${money(spent)}</b>spent so far</div><div><b>${money(budget)}</b>budgeted</div><div><b>${money(toBuy)}</b>still to buy</div></div>`;
+  const card = p => {
+    const sp = sumTx(p.tx), b = +p.budget || 0, over = b > 0 && sp > b, left = b - sp;
+    const pctv = b > 0 ? Math.min(100, sp / b * 100) : (sp > 0 ? 100 : 0);
+    const status = b === 0 ? (sp > 0 ? 'No budget set yet' : 'No budget yet') : over ? `<span class="xover">${money(sp - b)} over</span>` : sp >= b ? 'All done' : `${money(left)} left`;
+    const id = esc(p.id);
+    return `<details class="card xp" data-id="${id}"><summary><div class="xrow"><span class="xname">${esc(p.name)}</span><span class="xamt">${money(sp)}${b ? ' <span class="faint">of ' + money(b) + '</span>' : ''}</span></div>
+      <div class="bar" style="margin-top:8px"><i style="width:${pctv}%;${over ? 'background:#c0392b' : ''}"></i></div><div class="xsub">${status}${p.tx.length ? ' · ' + p.tx.length + ' purchase' + (p.tx.length > 1 ? 's' : '') : ''}${p.notes ? ' · ' + esc(p.notes) : ''}</div></summary>
+      <div class="xbody">${p.tx.length ? '<ul class="xtx">' + p.tx.map(t => `<li><span>${esc(t.merchant || t.note || 'Purchase')}<span class="faint"> ${t.date ? nice(t.date) : ''}</span></span><b>${money(+t.amount, true)}</b></li>`).join('') + '</ul>' : '<div class="faint" style="margin-top:12px">Nothing bought yet.</div>'}
+      <div class="field" style="margin-top:12px"><span class="label">Budget</span><div class="price"><span>$</span><input class="num" inputmode="decimal" data-f="budget" value="${b || ''}" placeholder="0" /></div></div>
+      <div class="field" style="margin-top:10px"><span class="label">Idea or note</span><input data-f="notes" value="${esc(p.notes || '')}" placeholder="Gift idea, size, where to buy" /></div>
+      <div class="xedit"><button class="btn small" data-xact="save">Save</button><button class="btn small plain" data-xact="remove">Remove from list</button></div></div></details>`;
+  };
+  const looseCard = loose.length ? `<details class="card xp"><summary><div class="xrow"><span class="xname">Not tagged to anyone</span><span class="xamt">${money(sumTx(loose))}</span></div><div class="xsub">${loose.length} purchase${loose.length > 1 ? 's' : ''} without a name tag in Simplifi</div></summary><div class="xbody"><ul class="xtx">${loose.map(t => `<li><span>${esc(t.merchant || 'Purchase')}<span class="faint"> ${t.date ? nice(t.date) : ''}</span></span><b>${money(+t.amount, true)}</b></li>`).join('')}</ul></div></details>` : '';
+  const sorted = people.slice().sort((a, b) => (sumTx(b.tx) > 0) - (sumTx(a.tx) > 0) || a.name.localeCompare(b.name));
+  $('xlist').innerHTML = sorted.map(card).join('') + looseCard || '<div class="card faint">Nobody on the list yet. Add someone below.</div>';
+  $('xsync').textContent = c.synced_at ? 'Purchases last refreshed ' + asOf(c.synced_at) : 'Purchases refresh during each budget run.';
+}
+async function saveXmas(people) {
+  try {
+    const j = await api('PUT', '/christmas', { people: people.map(p => ({ id: p.id.startsWith('tag:') ? '' : p.id, name: p.name, tag: p.tag || '', budget: p.budget, notes: p.notes || '' })) });
+    state.christmas = { ...(state.christmas || {}), ...j.christmas }; store.set('cache', state); renderXmas(); toast('Saved');
+  } catch (err) { toast(err.message); }
+}
+$('xlist').addEventListener('click', e => {
+  const btn = e.target.closest('[data-xact]'); if (!btn) return;
+  const card = btn.closest('details'), id = card.dataset.id;
+  const { people } = xmasModel();
+  const saved = ((state.christmas && state.christmas.people) || []).map(p => ({ ...p }));
+  if (btn.dataset.xact === 'remove') { saveXmas(saved.filter(p => p.id !== id)); return; }
+  const budget = Math.max(0, parseFloat(card.querySelector('[data-f=budget]').value) || 0), notes = card.querySelector('[data-f=notes]').value.trim();
+  const me = people.find(p => p.id === id); if (!me) return;
+  const idx = saved.findIndex(p => p.id === id);
+  if (idx >= 0) saved[idx] = { ...saved[idx], budget, notes };
+  else saved.push({ id: me.id, name: me.name, tag: me.tag, budget, notes });
+  saveXmas(saved);
+});
+$('x-addbtn').addEventListener('click', () => {
+  const name = $('x-name').value.trim(), budget = Math.max(0, parseFloat($('x-budget').value) || 0);
+  if (!name) { toast('Add a name first'); return; }
+  const saved = ((state.christmas && state.christmas.people) || []).map(p => ({ ...p }));
+  if (saved.some(p => p.name.toLowerCase() === name.toLowerCase())) { toast('They are already on the list'); return; }
+  saved.push({ id: 'p' + Date.now().toString(36), name, tag: '', budget, notes: '' });
+  $('x-name').value = ''; $('x-budget').value = '';
+  saveXmas(saved);
+});
 
 /* ===== login / boot ===== */
 function showLogin() { $('app').classList.add('hidden'); $('login').classList.remove('hidden'); setTimeout(() => $('pin').focus(), 50); }
@@ -549,6 +660,7 @@ async function demoApi(method, path, data) {
   if (path === '/data') return state && state._demo ? state : DEMO_DATA();
   if (path === '/remind') { state.checkBacks = [...(state.checkBacks || []), { id: 'd' + Date.now(), title: `Revisit: ${data.item} ($${data.price})`, notes: data.link ? 'Link: ' + data.link : '', due: data.date }]; return { ok: true }; }
   if (path === '/done') return { ok: true };
+  if (path === '/christmas') return { ok: true, christmas: { ...(state.christmas || {}), people: data.people.map(p => ({ ...p, id: p.id || 'p' + Math.random().toString(36).slice(2, 8) })) } };
   if (path === '/rules') { if (data.editPin !== '0000') throw new Error('Edit PIN didn\'t match. (Demo PIN is 0000.)'); return { ok: true, rules: { ...data.rules, updated_at: new Date().toISOString(), updated_by: 'Megan (app)' } }; }
   if (path === '/ask') {
     const it = data.item.toLowerCase(), p = data.price, ctx = (data.context || '').toLowerCase();
@@ -571,7 +683,8 @@ function DEMO_DATA() {
     rules: { settings: { chase_buffer: 2000, monthly_target: 4000, monthly_max: 5000, megan_budget: 300, dustin_budget: 300, apple_card_min_available: 500, savings_phase: 'Cash first', savings_milestone: 15000 },
       rules: ['Keep $2,000 in Chase checking as the buffer. Never count it as spendable.', 'Wants never come out of savings.', 'Monthly spending outside bills: target $4,000, max $5,000.', 'Megan Budget and Dustin Budget are $300/month each.', 'If Apple Card available credit is under about $500, big purchases wait.'], updated_at: '2026-11-14T22:30:00Z', updated_by: 'Claude' },
     history: [{ at: '2026-11-13T19:00:00Z', who: 'megan', item: 'Tarot deck', price: 32, answer: { verdict: 'yes', bucket: 'Megan Budget', reason: '$157.50 left, so $32 leaves $125.50.' } }],
-    checkBacks: [{ id: 'c1', title: 'Revisit: Saddle pad ($85)', due: '2026-11-30' }] };
+    checkBacks: [{ id: 'c1', title: 'Revisit: Saddle pad ($85)', due: '2026-11-30' }],
+    christmas: { people: [{ id: 'a1', name: 'Mom', tag: 'Mom', budget: 100, notes: '' }, { id: 'a2', name: 'Dustin', tag: 'Dustin', budget: 150, notes: 'new boots?' }], transactions: [{ date: '2026-11-03', merchant: 'Amazon', amount: 42.5, tag: 'Mom' }, { date: '2026-11-08', merchant: 'Etsy', amount: 64, tag: 'Dustin' }, { date: '2026-11-09', merchant: 'Target', amount: 23, tag: '' }], synced_at: new Date().toISOString() } };
 }
 </script>
 </body>
