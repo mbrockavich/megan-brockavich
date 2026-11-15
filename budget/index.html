@@ -177,6 +177,8 @@
         <div class="pillrow" id="h-pills"></div>
       </div>
 
+      <div class="card mini"><div class="row"><div class="label">Savings</div><div class="faint" id="sv-of"></div></div><div class="val num" id="sv-cur">$0</div><div class="bar"><i id="sv-bar"></i></div></div>
+
       <div class="grid2">
         <div class="card mini"><div class="label">Megan Budget</div><div class="val num" id="m-left">$0</div><div class="of" id="m-of"></div><div class="bar"><i id="m-bar"></i></div></div>
         <div class="card mini"><div class="label">Dustin Budget</div><div class="val num" id="d-left">$0</div><div class="of" id="d-of"></div><div class="bar"><i id="d-bar"></i></div></div>
@@ -192,7 +194,6 @@
         <ul class="list" id="bills"></ul>
       </div>
 
-      <div class="card mini"><div class="row"><div class="label">Savings</div><div class="faint" id="sv-of"></div></div><div class="val num" id="sv-cur">$0</div><div class="bar"><i id="sv-bar"></i></div></div>
 
       <button class="btn" data-go="ask">Can I buy something?</button>
       <div class="faint" style="text-align:center">Budgeting math from our own rules. Never moves money.</div>
@@ -250,7 +251,7 @@
 <script>
 /* ===== settings ===== */
 const APP_NAME = 'Can we afford it?';
-const BUILD = '2026-11-14-v19';   // bump on every release; open copies reload themselves
+const BUILD = '2026-11-14-v20';   // bump on every release; open copies reload themselves
 const API = 'https://afford-it.brockavichmegan.workers.dev';
 
 const DEMO = new URLSearchParams(location.search).has('demo');
