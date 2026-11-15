@@ -55,6 +55,8 @@
   .mini .val { font-size: 22px; font-weight: 700; margin-top: 2px; letter-spacing: -0.01em; }
   details.goals summary { list-style: none; cursor: pointer; } details.goals summary::-webkit-details-marker { display: none; }
   .goalrank { margin: 12px 0 0; padding: 12px 0 0 20px; border-top: 1px solid var(--line); font-size: 14px; line-height: 1.4; } .goalrank li { margin: 0 0 8px; } .goalrank li.cur { font-weight: 650; }
+  .gdate { font-size: 12.5px; color: var(--sub); font-weight: 500; margin-top: 2px; } .gstat { font-size: 13px; font-weight: 500; margin-top: 3px; }
+  .gbadge { display: inline-block; font-size: 11.5px; font-weight: 700; padding: 2px 8px; border-radius: 99px; margin-right: 4px; } .gbadge.ok { background: #c8f5dc; color: #0b5a38; } .gbadge.warn { background: #ffe3a3; color: #5a3b00; } .gbadge.bad { background: #ffc9c4; color: #7a1410; }
   .mini .of { font-size: 12px; color: var(--sub); margin-top: 2px; }
 
   .bar { height: 8px; border-radius: 99px; background: var(--line); overflow: hidden; margin-top: 10px; }
@@ -256,7 +258,7 @@
 <script>
 /* ===== settings ===== */
 const APP_NAME = 'Can we afford it?';
-const BUILD = '2026-11-14-v21';   // bump on every release; open copies reload themselves
+const BUILD = '2026-11-14-v22';   // bump on every release; open copies reload themselves
 const API = 'https://afford-it.brockavichmegan.workers.dev';
 
 const DEMO = new URLSearchParams(location.search).has('demo');
@@ -348,12 +350,34 @@ function render() {
   const sv = s.savings || {};
   $('sv-cur').textContent = money(sv.current); $('sv-of').textContent = `${sv.phase || r.savings_phase || ''}: ${money(sv.milestone ?? r.savings_milestone)} goal`;
   $('sv-bar').style.width = pct(sv.current, sv.milestone) + '%';
-  const gl = (r.goals || []).slice();
-  const ms = sv.milestone ?? r.savings_milestone;
-  const savingsLine = `Cash first: build savings to ${money(ms)} (now ${money(sv.current)})`;
-  const others = gl.filter(g => !/cash first|\$15/i.test(g));
-  const items = [savingsLine, ...others, ms < 25000 ? 'Next milestone after that: $25,000 in savings' : null].filter(Boolean);
-  $('goalRank').innerHTML = items.map((g, i) => `<li class="${i === 0 ? 'cur' : ''}">${esc(g)}${i === 0 ? ' <span class="faint">(current)</span>' : ''}</li>`).join('');
+  const st = r.settings || r;
+  const dayMs = 86400000, nowD = new Date();
+  const dTo = iso => Math.max(1, Math.round((new Date(iso + 'T12:00:00') - nowD) / dayMs));
+  const niceD = iso => new Date(iso + 'T12:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+  const ms = sv.milestone ?? r.savings_milestone ?? st.savings_milestone;
+  const gTarget = st.savings_target_date || r.savings_target_date, gOk = st.savings_ok_by || r.savings_ok_by;
+  const bAmt = st.savings_baseline_amount ?? r.savings_baseline_amount, bDate = st.savings_baseline_date || r.savings_baseline_date;
+  const badge = (cls, t) => `<span class="gbadge ${cls}">${t}</span>`;
+  let savStatus = '', savDeadline = gTarget ? `Hoping for ${niceD(gTarget)}${gOk ? ', OK by ' + niceD(gOk) : ''}` : '';
+  if (gTarget && sv.current != null && ms) {
+    const need = Math.max(0, ms - sv.current), moNeed = need / (dTo(gTarget) / 30.4), moNeedOk = gOk ? need / (dTo(gOk) / 30.4) : null;
+    let moPace = null;
+    if (bAmt != null && bDate) { const dd = Math.max(1, (nowD - new Date(bDate + 'T12:00:00')) / dayMs); moPace = (sv.current - bAmt) / dd * 30.4; }
+    if (need <= 0) savStatus = badge('ok', 'Reached');
+    else if (moPace == null) savStatus = badge('warn', `Needs about ${money(moNeed)}/month`);
+    else if (moPace >= moNeed) savStatus = badge('ok', 'On track') + ` Saving about ${money(moPace)}/month, need ${money(moNeed)}`;
+    else if (moNeedOk != null && moPace >= moNeedOk) savStatus = badge('warn', 'Close') + ` Saving about ${money(moPace)}/month, need ${money(moNeed)} for ${niceD(gTarget)} or ${money(moNeedOk)} for ${niceD(gOk)}`;
+    else savStatus = badge('bad', 'Behind') + ` Saving about ${money(moPace)}/month so far. Need about ${money(moNeed)}/month for ${niceD(gTarget)}${moNeedOk != null ? ' (' + money(moNeedOk) + ' for ' + niceD(gOk) + ')' : ''}`;
+  }
+  const paceNow = perDay != null ? perDay : null;
+  const dailyStatus = paceNow == null ? '' : paceNow < goal ? badge('bad', 'Over pace') + ` Only ${money(paceNow)}/day left this month vs ${money(goal)}` : badge('ok', 'On track') + ` ${money(paceNow)}/day left vs ${money(goal)}`;
+  const items = [
+    { t: `Cash first: build savings to ${money(ms)} (now ${money(sv.current)})`, d: savDeadline, s: savStatus, cur: true },
+    { t: `Daily spending goal: about ${money(goal)}/day outside bills, never over ${money(st.monthly_max ?? 5000)}/month`, d: 'Every day', s: dailyStatus },
+    { t: 'Main goal: a lower-pressure job without the household going backward', d: 'Hoping for ' + (st.job_goal_label || r.job_goal_label || 'end of 2027'), s: badge('warn', 'Depends on the savings goal') + ' Savings first, then the next milestone' },
+    ms < 25000 ? { t: 'Next milestone: $25,000 in savings', d: 'Hoping for ' + (st.savings_next_label || 'summer 2027'), s: '' } : null
+  ].filter(Boolean);
+  $('goalRank').innerHTML = items.map(g => `<li class="${g.cur ? 'cur' : ''}"><div>${esc(g.t)}${g.cur ? ' <span class="faint">(current)</span>' : ''}</div>${g.d ? `<div class="gdate">${esc(g.d)}</div>` : ''}${g.s ? `<div class="gstat">${g.s}</div>` : ''}</li>`).join('');
   renderLater(); renderRules();
 }
 
