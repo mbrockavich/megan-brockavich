@@ -248,7 +248,7 @@
 <script>
 /* ===== settings ===== */
 const APP_NAME = 'Can we afford it?';
-const BUILD = '2026-11-14-v17';   // bump on every release; open copies reload themselves
+const BUILD = '2026-11-14-v18';   // bump on every release; open copies reload themselves
 const API = 'https://afford-it.brockavichmegan.workers.dev';
 
 const DEMO = new URLSearchParams(location.search).has('demo');
@@ -318,7 +318,7 @@ function render() {
   let paceHTML = '';
   if (perDay != null) {
     const over = perDay < goal;
-    paceHTML = `<span class="pill pace ${over ? 'warn' : 'ok'}"><b>${money(perDay)}/day</b> left to spend<small>${over ? 'Overspent: ' + money(goal - perDay) + '/day below the ' + money(goal) + ' goal' : 'On track: ' + money(perDay - goal) + '/day above the ' + money(goal) + ' goal'}</small></span>`;
+    paceHTML = `<span class="pill pace ${over ? 'warn' : 'ok'}"><b>${money(perDay)}/day</b> left to spend<small>${over ? 'Over the ' + money(goal) + '/day goal: overspent, ' + money(goal - perDay) + '/day short' : 'Within the ' + money(goal) + '/day goal: ' + money(perDay - goal) + '/day to spare'}</small></span>`;
   }
   pills.push(`${daysLeftNow} days left`);
   if (np) pills.push(`Next payday ${nice(np.date)}${np.who ? ' · ' + np.who : ''}`);
