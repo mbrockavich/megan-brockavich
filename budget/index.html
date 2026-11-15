@@ -53,6 +53,8 @@
   .faint { color: var(--faint); font-size: 13px; }
   .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
   .mini .val { font-size: 22px; font-weight: 700; margin-top: 2px; letter-spacing: -0.01em; }
+  details.goals summary { list-style: none; cursor: pointer; } details.goals summary::-webkit-details-marker { display: none; }
+  .goalrank { margin: 12px 0 0; padding: 12px 0 0 20px; border-top: 1px solid var(--line); font-size: 14px; line-height: 1.4; } .goalrank li { margin: 0 0 8px; } .goalrank li.cur { font-weight: 650; }
   .mini .of { font-size: 12px; color: var(--sub); margin-top: 2px; }
 
   .bar { height: 8px; border-radius: 99px; background: var(--line); overflow: hidden; margin-top: 10px; }
@@ -177,7 +179,10 @@
         <div class="pillrow" id="h-pills"></div>
       </div>
 
-      <div class="card mini"><div class="row"><div class="label">Savings</div><div class="faint" id="sv-of"></div></div><div class="val num" id="sv-cur">$0</div><div class="bar"><i id="sv-bar"></i></div></div>
+      <details class="card mini goals" id="goalsCard">
+        <summary><div class="row"><div class="label">Current goal</div><div class="faint" id="sv-of"></div></div><div class="val num" id="sv-cur">$0</div><div class="bar"><i id="sv-bar"></i></div><div class="of">Tap to see all our goals</div></summary>
+        <ol class="goalrank" id="goalRank"></ol>
+      </details>
 
       <div class="grid2">
         <div class="card mini"><div class="label">Megan Budget</div><div class="val num" id="m-left">$0</div><div class="of" id="m-of"></div><div class="bar"><i id="m-bar"></i></div></div>
@@ -251,7 +256,7 @@
 <script>
 /* ===== settings ===== */
 const APP_NAME = 'Can we afford it?';
-const BUILD = '2026-11-14-v20';   // bump on every release; open copies reload themselves
+const BUILD = '2026-11-14-v21';   // bump on every release; open copies reload themselves
 const API = 'https://afford-it.brockavichmegan.workers.dev';
 
 const DEMO = new URLSearchParams(location.search).has('demo');
@@ -343,6 +348,12 @@ function render() {
   const sv = s.savings || {};
   $('sv-cur').textContent = money(sv.current); $('sv-of').textContent = `${sv.phase || r.savings_phase || ''}: ${money(sv.milestone ?? r.savings_milestone)} goal`;
   $('sv-bar').style.width = pct(sv.current, sv.milestone) + '%';
+  const gl = (r.goals || []).slice();
+  const ms = sv.milestone ?? r.savings_milestone;
+  const savingsLine = `Cash first: build savings to ${money(ms)} (now ${money(sv.current)})`;
+  const others = gl.filter(g => !/cash first|\$15/i.test(g));
+  const items = [savingsLine, ...others, ms < 25000 ? 'Next milestone after that: $25,000 in savings' : null].filter(Boolean);
+  $('goalRank').innerHTML = items.map((g, i) => `<li class="${i === 0 ? 'cur' : ''}">${esc(g)}${i === 0 ? ' <span class="faint">(current)</span>' : ''}</li>`).join('');
   renderLater(); renderRules();
 }
 
