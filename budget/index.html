@@ -181,11 +181,10 @@
         <div class="pillrow" id="h-pills"></div>
       </div>
 
-      <div class="card mini" id="chkCard">
-        <div class="row"><div class="label">Checking balance</div><div class="faint" id="chk-note"></div></div>
-        <div class="val num" id="chk-total">$0</div>
-        <ul class="list" id="chk-list" style="margin-top:6px"></ul>
-      </div>
+      <details class="card mini goals" id="chkCard">
+        <summary><div class="row"><div class="label">Checking balance</div><div class="faint" id="chk-note"></div></div><div class="val num" id="chk-total">$0</div><div class="of">Tap to see each account</div></summary>
+        <ul class="list" id="chk-list" style="margin-top:10px"></ul>
+      </details>
 
       <details class="card mini goals" id="creditCard">
         <summary><div class="row"><div class="label">Available credit</div><div class="faint" id="cr-note"></div></div><div class="val num" id="cr-total">TBD</div><div class="of">Tap to see each card</div></summary>
@@ -269,7 +268,7 @@
 <script>
 /* ===== settings ===== */
 const APP_NAME = 'Can we afford it?';
-const BUILD = '2026-11-14-v29';   // bump on every release; open copies reload themselves
+const BUILD = '2026-11-14-v30';   // bump on every release; open copies reload themselves
 const API = 'https://afford-it.brockavichmegan.workers.dev';
 
 const DEMO = new URLSearchParams(location.search).has('demo');
