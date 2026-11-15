@@ -288,7 +288,7 @@
 <script>
 /* ===== settings ===== */
 const APP_NAME = 'Can we afford it?';
-const BUILD = '2026-11-14-v26';   // bump on every release; open copies reload themselves
+const BUILD = '2026-11-14-v27';   // bump on every release; open copies reload themselves
 const API = 'https://afford-it.brockavichmegan.workers.dev';
 
 const DEMO = new URLSearchParams(location.search).has('demo');
@@ -642,7 +642,7 @@ async function checkForUpdate() {
   if (DEMO) return;
   try {
     const t = await fetch(location.pathname + '?v=' + Date.now(), { cache: 'no-store' }).then(r => r.text());
-    const m = t.match(/const BUILD = '([^']+)'/);
+    const m = t.match(/const BUILD = '2026-11-14-v27']+)'/);
     if (m && m[1] !== BUILD) { if ($('answer').innerHTML.trim()) { toast('Update ready. It will load next time.'); } else { location.reload(); } }
   } catch {}
 }
