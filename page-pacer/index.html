@@ -182,6 +182,8 @@
   .upload { position: relative; overflow: hidden; display: inline-block; }
   .upload input { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
 
+  /* stop iOS double-tap-to-zoom when tapping buttons quickly (e.g. + / − twice) */
+  html, button, input, select, label, .book, .mini { touch-action: manipulation; }
   .page-big { display: flex; align-items: center; gap: 10px; }
   .page-big input { font-family: 'Fredoka'; font-size: 2rem; text-align: center; padding: 8px; }
   .step { flex: none; width: 52px; height: 56px; border-radius: 16px; border: none; background: var(--blush); color: var(--rose-deep);
@@ -282,7 +284,7 @@
   <div id="books"></div>
 
   <div id="finishedWrap" hidden>
-    <div class="section-h"><h3>Finished 🎀</h3></div>
+    <div class="section-h"><h3>Finished this week 🎀</h3></div>
     <div class="shelf" id="finished"></div>
   </div>
 </div>
@@ -553,7 +555,10 @@
 
     // books
     var reading = state.books.filter(function (b) { return !isDone(b); });
-    var done = state.books.filter(isDone).sort(function (a, b) { return (b.finishedOn || "").localeCompare(a.finishedOn || ""); });
+    var done = state.books.filter(isDone);
+    var thisWeek = keyOf(weekStart(now));
+    var doneThisWeek = done.filter(function (b) { return b.finishedOn && b.finishedOn >= thisWeek; })
+      .sort(function (a, b) { return (b.finishedOn || "").localeCompare(a.finishedOn || ""); });
     if (!reading.length) {
       $("books").innerHTML = '<div class="card empty"><div class="e">🌷📖</div><p>' + (done.length ? "All caught up! Add your next book." : "Your stack is empty.<br>Tap <b>Add a book</b> to start pacing.") + "</p></div>";
     } else {
@@ -575,8 +580,8 @@
           '<div class="chips">' + chips + "</div></div></div>";
       }).join("");
     }
-    $("finishedWrap").hidden = !done.length;
-    $("finished").innerHTML = done.map(function (b) {
+    $("finishedWrap").hidden = !doneThisWeek.length;
+    $("finished").innerHTML = doneThisWeek.map(function (b) {
       return '<div class="mini" data-id="' + b.id + '">' + coverHTML(b) + "<small>" + esc(b.title) + "</small></div>";
     }).join("");
   }
