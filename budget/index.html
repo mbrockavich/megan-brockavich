@@ -268,7 +268,7 @@
 <script>
 /* ===== settings ===== */
 const APP_NAME = 'Can we afford it?';
-const BUILD = '2026-11-14-v30';   // bump on every release; open copies reload themselves
+const BUILD = '2026-11-16-v31';   // bump on every release; open copies reload themselves
 const API = 'https://afford-it.brockavichmegan.workers.dev';
 
 const DEMO = new URLSearchParams(location.search).has('demo');
@@ -331,16 +331,21 @@ function render() {
   const perDay = left != null ? left / daysLeftNow : null;
   const goal = r.daily_target ?? 130;
   $('h-left').textContent = money(left);
-  $('h-left-sub').textContent = rawLeft == null ? '' : plannedThisMonth ? `after ${money(plannedThisMonth)} already planned (${money(rawLeft)} in the Spending Plan)` : `in the Spending Plan${mo.label ? ' for ' + mo.label.split(' ')[0] : ''}`;
-  $('h-bar').style.width = (left != null ? pct(left, target) : 0) + '%';
+  $('h-left-sub').textContent = rawLeft == null ? '' : `real money after bills and savings${plannedThisMonth ? `, minus ${money(plannedThisMonth)} already planned (${money(rawLeft)} in the Spending Plan)` : ''}`;
+  $('h-bar').style.width = (left != null && rawLeft ? pct(left, rawLeft) : 0) + '%';
+  const maxM = mo.max ?? r.monthly_max ?? 5000;
+  const spentM = mo.spent_outside_bills != null ? +mo.spent_outside_bills : null;
   const np = s.next_payday;
   const pills = [];
   let paceHTML = '';
   if (perDay != null) {
-    const over = perDay < goal;
-    const exp = `<div class="paceinfo">How this works: <b>${money(rawLeft)}</b> is left in your Spending Plan this month${plannedThisMonth ? `, minus <b>${money(plannedThisMonth)}</b> already planned (appointments, events, orders)` : ''}. That leaves <b>${money(left)}</b> across <b>${daysLeftNow}</b> days, which is <b>${money(perDay)}</b> a day.<br><br>Your goal is <b>${money(goal)}</b> a day. ${over ? `Because we are already over pace this month, you can only spend ${money(perDay)} a day to stay inside the monthly target. That is ${money(goal - perDay)} a day less than the goal, so it is tight until the month resets.` : `You are inside the goal with ${money(perDay - goal)} a day to spare.`}<br><br>Spending Plan numbers come from Simplifi and are refreshed with each budget run.</div>`;
-    paceHTML = `<details class="pill pace ${over ? 'warn' : 'ok'}"><summary><b>${money(perDay)}/day</b> left to spend<small>${over ? 'Over the ' + money(goal) + '/day goal' : 'Within the ' + money(goal) + '/day goal'} · tap for details</small></summary>${exp}</details>`;
+    const short = left < 0;
+    const overGoal = spentM != null && spentM > target;
+    const goalLine = spentM == null ? `The goal is about <b>${money(goal)}</b> a day (${money(target)} a month outside bills). It is a pace marker, not a limit.` : `Spending outside bills so far this month is <b>${money(spentM)}</b>. The goal is <b>${money(target)}</b> (max ${money(maxM)}). ${overGoal ? `That is <b>${money(spentM - target)}</b> over the goal, so go easy, but the money above is still really there.` : `That is <b>${money(target - spentM)}</b> under the goal.`} The goal is a pace marker, not a limit.`;
+    const exp = `<div class="paceinfo">How this works: <b>${money(rawLeft)}</b> is left in your Spending Plan this month. That is income minus bills and the savings goal, so it is real money.${plannedThisMonth ? ` Minus <b>${money(plannedThisMonth)}</b> already planned (appointments, events, orders), that leaves <b>${money(left)}</b>` : ` That leaves <b>${money(left)}</b>`} across <b>${daysLeftNow}</b> days, which is <b>${money(perDay)}</b> a day.<br><br>${goalLine}<br><br>Whatever is left at the end of the month can go to the payday savings transfer. Spending Plan numbers come from Simplifi and are refreshed with each budget run.</div>`;
+    paceHTML = `<details class="pill pace ${short ? 'warn' : 'ok'}"><summary><b>${money(perDay)}/day</b> available<small>${short ? 'Planned spends are more than what is left' : 'Real money for the rest of the month'} · tap for details</small></summary>${exp}</details>`;
   }
+  if (spentM != null) pills.push(spentM > maxM ? `${money(spentM)} spent · over the ${money(maxM)} max` : spentM > target ? `${money(spentM)} spent · ${money(spentM - target)} over the ${money(target)} goal` : `${money(spentM)} of the ${money(target)} goal`);
   pills.push(`${daysLeftNow} days left`);
   if (np) pills.push(`Next payday ${nice(np.date)}${np.who ? ' · ' + np.who : ''}`);
   $('h-pills').innerHTML = paceHTML + pills.map(p => `<span class="pill">${esc(p)}</span>`).join('');
@@ -381,7 +386,8 @@ function render() {
     else savStatus = badge('bad', 'Behind') + ` Saving about ${money(moPace)}/month so far. Need about ${money(moNeed)}/month for ${niceD(gTarget)}${moNeedOk != null ? ' (' + money(moNeedOk) + ' for ' + niceD(gOk) + ')' : ''}`;
   }
   const paceNow = perDay != null ? perDay : null;
-  const dailyStatus = paceNow == null ? '' : paceNow < goal ? badge('bad', 'Over pace') + ` Only ${money(paceNow)}/day left this month vs ${money(goal)}` : badge('ok', 'On track') + ` ${money(paceNow)}/day left vs ${money(goal)}`;
+  const tgtM = st.monthly_target ?? target, maxG = st.monthly_max ?? maxM;
+  const dailyStatus = spentM == null ? (paceNow == null ? '' : badge('ok', 'Pace') + ` ${money(paceNow)}/day available`) : spentM > maxG ? badge('bad', 'Over max') + ` ${money(spentM)} spent this month vs the ${money(maxG)} max` : spentM > tgtM ? badge('warn', 'Over goal') + ` ${money(spentM)} spent this month vs the ${money(tgtM)} goal` : badge('ok', 'On track') + ` ${money(spentM)} of ${money(tgtM)} so far`;
   const phaseNow = (st.savings_phase || r.savings_phase || 'Cash first');
   const items = [
     { t: `Phase 1, Cash first: build savings to ${money(ms)} (now ${money(sv.current)}). Minimums on all debt.`, d: savDeadline, s: savStatus, cur: true },
