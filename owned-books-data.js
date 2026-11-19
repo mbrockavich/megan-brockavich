@@ -208,6 +208,7 @@ const OWNED_BOOKS = {
     {title:"A Parade of Horribles", author:"Matt Dinniman"},
     {title:"Cryptid Club", author:"Sarah Andersen", cover:"https://covers.openlibrary.org/b/isbn/9781524875541-L.jpg"},
     {title:"If You Tell: A True Story of Murder, Family Secrets, and the Unbreakable Bond of Sisterhood", author:"Gregg Olsen", cover:"https://covers.openlibrary.org/b/isbn/9781542005234-L.jpg"},
+    {title:"The Gift", author:"Freida McFadden", cover:"https://covers.openlibrary.org/b/isbn/9781464249655-L.jpg"},
   ],
 };
 
