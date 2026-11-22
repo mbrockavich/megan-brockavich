@@ -43,6 +43,7 @@ const OWNED_BOOKS = {
     {title:"Misquoting Jesus: The Story Behind Who Changed the Bible and Why", author:"Bart D. Ehrman", cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1407109431i/51364.jpg"},
     {title:"Save the Cat! Writes a Novel", author:"Jessica Brody", cover:"https://covers.openlibrary.org/b/isbn/9780399579745-L.jpg"},
     {title:"Son of a Witch", author:"Gregory Maguire", cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1370992595i/13521.jpg"},
+    {title:"A Lion Among Men", author:"Gregory Maguire", cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1370992593i/3124249.jpg"},
   ],
   audible: [
     {title:"A Pair of Aces", author:"Marie Benedict & Victoria Christopher Murray", cover:"https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1761147126l/242002398._SX318_.jpg"},
@@ -134,6 +135,7 @@ const OWNED_BOOKS = {
     {title:"Fairy Tale", author:"Stephen King", cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1647789287i/60177373.jpg"},
     {title:"Tress of the Emerald Sea", author:"Brandon Sanderson", cover:"https://covers.openlibrary.org/b/id/13143232-L.jpg"},
     {title:"Wicked", author:"Gregory Maguire", cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1437733293i/37442.jpg"},
+    {title:"A Lion Among Men", author:"Gregory Maguire", cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1370992593i/3124249.jpg"},
     {title:"Fourth Wing", author:"Rebecca Yarros", cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1761312598i/61431922.jpg"},
     {title:"Iron Flame", author:"Rebecca Yarros", cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1706724269i/90202302.jpg"},
     {title:"Quicksilver", author:"Callie Hart", cover:"https://covers.openlibrary.org/b/id/15227615-L.jpg"},
