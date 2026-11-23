@@ -1,0 +1,30 @@
+{
+  "name": "Megan",
+  "short_name": "Megan",
+  "id": "../index.html",
+  "start_url": "../index.html",
+  "scope": "../",
+  "display": "standalone",
+  "background_color": "#0a0d18",
+  "theme_color": "#0a0d18",
+  "icons": [
+    {
+      "src": "home-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "home-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "home-maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}
