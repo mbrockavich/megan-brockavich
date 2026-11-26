@@ -218,6 +218,14 @@
     .flicker { animation: none; }
   }
 </style>
+<script>
+  /* The installed Library app starts on Every Book I've Read. Older home-screen icons
+     still open this page, so send them there. Links here (from the moon page) keep the shelf. */
+  const launchedFromIcon = !document.referrer;   // a link from another page always has one
+  if (launchedFromIcon && (window.navigator.standalone || window.matchMedia('(display-mode: standalone)').matches)) {
+    location.replace('all-books.html');
+  }
+</script>
 <script src="library-tabbar.js" data-theme="night"></script>
 </head>
 <body>

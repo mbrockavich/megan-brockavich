@@ -9,8 +9,6 @@
   const theme = me.dataset.theme || 'paper';
 
   const TABS = [
-    { href: 'library.html', label: 'Shelf',
-      icon: '<path d="M4 20h16M6 20V6M10 20V4M14 20V8M18 20l-2.6-11.5"/>' },
     { href: 'all-books.html', label: 'Books',
       icon: '<path d="M4 5.5C6.5 4 9.5 4 12 6c2.5-2 5.5-2 8-.5V19c-2.5-1.5-5.5-1.5-8 .5-2.5-2-5.5-2-8-.5z"/><path d="M12 6v13.5"/>' },
     { href: 'series-tracker.html', label: 'Series',
@@ -64,7 +62,7 @@
   document.head.appendChild(style);
 
   function build() {
-    const here = location.pathname.split('/').pop() || 'library.html';
+    const here = location.pathname.split('/').pop() || 'all-books.html';
     const nav = document.createElement('nav');
     nav.className = 'lib-tabbar';
     nav.setAttribute('aria-label', 'Library');

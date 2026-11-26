@@ -2,7 +2,7 @@
   "name": "Megan's Library",
   "short_name": "Library",
   "id": "../library.html",
-  "start_url": "../library.html",
+  "start_url": "../all-books.html",
   "scope": "../",
   "display": "standalone",
   "background_color": "#0a0d18",
