@@ -106,6 +106,7 @@ const OWNED_BOOKS = {
     {title:"Lore Olympus: Volume Two", author:"Rachel Smythe", cover:"https://covers.openlibrary.org/b/isbn/9780593160305-L.jpg"},
     {title:"Lore Olympus: Volume Three", author:"Rachel Smythe", cover:"https://covers.openlibrary.org/b/isbn/9780593160312-L.jpg"},
     {title:"Lore Olympus: Volume Four", author:"Rachel Smythe", cover:"https://covers.openlibrary.org/b/isbn/9780593599044-L.jpg"},
+    {title:"Lore Olympus: Volume Five", author:"Rachel Smythe", cover:"https://covers.openlibrary.org/b/isbn/9780593599068-L.jpg"},
     {title:"Red Rising", author:"Pierce Brown", cover:"https://covers.openlibrary.org/b/isbn/9780345539786-L.jpg"},
     {title:"Golden Son", author:"Pierce Brown", cover:"https://covers.openlibrary.org/b/id/8454351-L.jpg"},
     {title:"Morning Star", author:"Pierce Brown", cover:"https://covers.openlibrary.org/b/id/8566174-L.jpg"},
