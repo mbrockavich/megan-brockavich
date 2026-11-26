@@ -2,13 +2,13 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>The Count of Monte Cristo — Reading Sentence</title>
 <link rel="manifest" href="../app-icons/library.webmanifest">
 <link rel="apple-touch-icon" href="../app-icons/library-180.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Library">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>⚔️</text></svg>">
 <style>
@@ -46,7 +46,7 @@ body {
     radial-gradient(circle at 80% 70%, rgba(255,255,255,0.015), transparent 45%),
     repeating-linear-gradient(0deg, var(--dungeon-mid) 0px, var(--dungeon-mid) 2px, var(--dungeon) 2px, var(--dungeon) 42px);
   min-height: 100vh;
-  padding: 36px 16px 80px;
+  padding: calc(36px + env(safe-area-inset-top)) 16px 80px;
 }
 
 .page {
@@ -781,6 +781,7 @@ button.ghost:hover { color: var(--wax); border-color: var(--wax); }
 }
 
 </style>
+<script src="../library-tabbar.js" data-theme="parchment"></script>
 </head>
 <body>
 

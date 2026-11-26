@@ -2,13 +2,13 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>Megan's Library</title>
 <link rel="manifest" href="app-icons/library.webmanifest">
 <link rel="apple-touch-icon" href="app-icons/library-180.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Library">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🌙</text></svg>">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -184,7 +184,7 @@
     position: relative;
     z-index: 1;
     text-align: center;
-    padding: 16px 24px 0;
+    padding: calc(16px + env(safe-area-inset-top)) 24px 0;
   }
 
   nav a {
@@ -218,6 +218,7 @@
     .flicker { animation: none; }
   }
 </style>
+<script src="library-tabbar.js" data-theme="night"></script>
 </head>
 <body>
 

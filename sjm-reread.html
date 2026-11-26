@@ -7,7 +7,7 @@
 <link rel="apple-touch-icon" href="app-icons/library-180.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Library">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="theme-color" content="#e0558a">
@@ -50,8 +50,8 @@
   @media (max-width:760px){ .sparkle{ display:none; } }
   @media (prefers-reduced-motion: reduce){ .sparkle{ animation:none; } }
 
-  .page{ position:relative; z-index:1; max-width:900px; margin:0 auto; padding:44px 20px 0; }
-  @media (max-width:560px){ .page{ padding:30px 14px 0; } }
+  .page{ position:relative; z-index:1; max-width:900px; margin:0 auto; padding:calc(44px + env(safe-area-inset-top)) 20px 0; }
+  @media (max-width:560px){ .page{ padding:calc(24px + env(safe-area-inset-top)) 14px 0; } }
 
   header{ text-align:center; margin-bottom:26px; }
   .eyebrow{ font-family:'Caveat', cursive; font-size:22px; color:var(--pink-deep); transform:rotate(-2deg); display:inline-block; margin-bottom:2px; }
@@ -117,7 +117,7 @@
 
   /* jump nav */
   .jump{ position:sticky; top:0; z-index:20; display:flex; justify-content:center; gap:10px; flex-wrap:wrap;
-    padding:12px; margin:0 -20px 26px; background:rgba(255,242,247,0.92); backdrop-filter:blur(6px); border-bottom:1.5px solid var(--line); }
+    padding:calc(12px + env(safe-area-inset-top)) 12px 12px; margin:0 -20px 26px; background:rgba(255,242,247,0.92); backdrop-filter:blur(6px); border-bottom:1.5px solid var(--line); }
   .jump a{ text-decoration:none; font-family:'Quicksand',sans-serif; font-weight:700; font-size:13.5px;
     padding:7px 16px; border-radius:20px; background:#fff; border:1.5px solid var(--pink); color:var(--rose-text); }
   .jump a:hover{ background:var(--track); }
@@ -174,6 +174,7 @@
   footer{ text-align:center; padding:24px; font-size:12px; letter-spacing:0.1em; text-transform:uppercase; color:var(--muted); }
   footer a{ color:var(--pink-deep); text-decoration:none; border-bottom:1px solid var(--line); }
 </style>
+<script src="library-tabbar.js" data-theme="blush"></script>
 </head>
 <body>
 
