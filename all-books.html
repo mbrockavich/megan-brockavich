@@ -409,9 +409,16 @@
   .modal-overlay{
     display:none; position:fixed; inset:0; z-index:500;
     background: rgba(36,32,24,0.45); align-items:flex-start; justify-content:center;
-    padding: 60px 20px; overflow-y:auto;
+    padding: calc(60px + env(safe-area-inset-top)) 20px calc(60px + env(safe-area-inset-bottom));
+    overflow-y:auto; overscroll-behavior: contain; -webkit-overflow-scrolling: touch;
   }
   .modal-overlay.open{ display:flex; }
+  /* solid strip behind the iPhone status bar so scrolled content never slides under the clock */
+  .modal-overlay::before{
+    content:""; position:fixed; top:0; left:0; right:0; height: env(safe-area-inset-top);
+    background: rgba(36,32,24,0.92); z-index:3; pointer-events:none;
+  }
+  html.modal-open, html.modal-open body{ overflow:hidden; }
   #bookModalOverlay{ z-index:600; }
   .modal-panel{
     background: var(--surface); color: var(--ink); border-radius: 12px;
@@ -464,8 +471,14 @@
   }
 
   @media (max-width: 560px){
-    .modal-overlay{ padding: 16px 12px calc(16px + env(safe-area-inset-bottom)); align-items:flex-start; }
+    .modal-overlay{ padding: calc(16px + env(safe-area-inset-top)) 12px calc(16px + env(safe-area-inset-bottom)); align-items:flex-start; }
     .modal-panel{ padding: 24px 18px 26px; border-radius:10px; }
+    /* keep the close button reachable while scrolling a long series */
+    .modal-overlay .modal-close{
+      position:fixed; top: calc(26px + env(safe-area-inset-top)); right: 22px; z-index:4;
+      box-shadow: 0 2px 8px rgba(36,32,24,0.2);
+    }
+    .series-modal-head{ padding-right: 44px; }
     .series-modal-panel{ max-width:none; }
     .series-book-grid{ grid-template-columns: repeat(auto-fill, minmax(90px, 1fr)); gap: 14px; }
     .modal-close{ top:10px; right:10px; width:38px; height:38px; font-size:14px; }
@@ -1526,12 +1539,17 @@ function openBookModal(b, eyebrow){
   modalNote2.style.display = b.note ? "block" : "none";
   modalCover.innerHTML = `<span style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;padding:10px;font-size:12px;text-align:center;color:var(--ink-soft);">${b.title}</span>${b.cover ? `<img src="${b.cover}" alt="Cover of ${b.title}" loading="lazy" onerror="this.remove()">` : ""}`;
   modalOverlay.classList.add("open");
-  modalClose.focus();
+  syncModalScrollLock();
+  modalClose.focus({ preventScroll: true });
 }
-function closeBookModal(){ modalOverlay.classList.remove("open"); }
+/* stop the page behind a modal from scrolling while any modal is open */
+function syncModalScrollLock(){
+  document.documentElement.classList.toggle("modal-open", !!document.querySelector(".modal-overlay.open"));
+}
+function closeBookModal(){ modalOverlay.classList.remove("open"); syncModalScrollLock(); }
 modalClose.addEventListener("click", closeBookModal);
 modalOverlay.addEventListener("click", (e) => { if(e.target === modalOverlay) closeBookModal(); });
-document.addEventListener("keydown", (e) => { if(e.key === "Escape" && modalOverlay.classList.contains("open")) closeBookModal(); });
+document.addEventListener("keydown", (e) => { if(e.key === "Escape" && modalOverlay.classList.contains("open")){ e.preventDefault(); closeBookModal(); } });
 
 /* ---------------- series-expanded modal ---------------- */
 const seriesModalOverlay = document.getElementById("seriesModalOverlay");
@@ -1612,13 +1630,15 @@ function openSeriesModal(entry, rank){
   seriesModalSub.textContent = `${entry.author} · ${entry.books.length} of ${allBooks.length} book${allBooks.length===1?"":"s"} read${avg != null ? ` · ${formatRating(avg)}` : ""}`;
   seriesModalGrid.innerHTML = seriesBookGridHTML(allBooks, entry.best);
   wireSeriesBookGrid(seriesModalGrid);
+  seriesModalOverlay.scrollTop = 0;
   seriesModalOverlay.classList.add("open");
-  seriesModalClose.focus();
+  syncModalScrollLock();
+  seriesModalClose.focus({ preventScroll: true });
 }
-function closeSeriesModal(){ seriesModalOverlay.classList.remove("open"); }
+function closeSeriesModal(){ seriesModalOverlay.classList.remove("open"); syncModalScrollLock(); }
 seriesModalClose.addEventListener("click", closeSeriesModal);
 seriesModalOverlay.addEventListener("click", (e) => { if(e.target === seriesModalOverlay) closeSeriesModal(); });
-document.addEventListener("keydown", (e) => { if(e.key === "Escape" && seriesModalOverlay.classList.contains("open")) closeSeriesModal(); });
+document.addEventListener("keydown", (e) => { if(e.key === "Escape" && seriesModalOverlay.classList.contains("open") && !e.defaultPrevented) closeSeriesModal(); });
 </script>
 
 </body>
