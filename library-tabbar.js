@@ -1,9 +1,8 @@
 /* Megan's Library: the shared app frame.
    Load it in <head> on every Library page:
      <script src="library-tabbar.js" data-theme="paper"></script>
-   (use "../library-tabbar.js" from a sub-folder).
    It adds the bottom tab bar, room for it at the bottom of the page, and a soft fade
-   between pages. Themes: night, paper, plum, blush, parchment. */
+   between pages. Themes: night, paper, plum. */
 (function () {
   const me = document.currentScript;
   const base = new URL('.', me.src);                 // site root, wherever the page lives
@@ -26,8 +25,6 @@
     night:     { bg: 'rgba(10,13,24,0.82)',   line: 'rgba(139,144,168,0.18)', fg: '#7d829b', on: '#e2bf83' },
     paper:     { bg: 'rgba(247,244,239,0.86)', line: '#e4ddd2',               fg: '#8f8778', on: '#b5502f' },
     plum:      { bg: 'rgba(51,25,44,0.86)',    line: 'rgba(217,164,192,0.22)', fg: '#c49ab2', on: '#fdf1f5' },
-    blush:     { bg: 'rgba(255,242,247,0.86)', line: 'rgba(194,59,116,0.18)',  fg: '#b07f98', on: '#c23b74' },
-    parchment: { bg: 'rgba(23,20,15,0.86)',    line: '#3A342A',               fg: '#a8987a', on: '#ECE1C6' },
   };
   const t = THEMES[theme] || THEMES.paper;
 
