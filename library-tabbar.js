@@ -11,7 +11,7 @@
   const TABS = [
     { href: 'all-books.html', label: 'Books',
       icon: '<path d="M4 5.5C6.5 4 9.5 4 12 6c2.5-2 5.5-2 8-.5V19c-2.5-1.5-5.5-1.5-8 .5-2.5-2-5.5-2-8-.5z"/><path d="M12 6v13.5"/>' },
-    { href: 'series-tracker.html', label: 'Series',
+    { href: 'all-books.html?view=series', label: 'Series',
       icon: '<rect x="4" y="4" width="7" height="7" rx="1.5"/><rect x="13" y="4" width="7" height="7" rx="1.5"/><rect x="4" y="13" width="7" height="7" rx="1.5"/><rect x="13" y="13" width="7" height="7" rx="1.5"/>' },
     { href: '2026-reading-stats.html', label: 'Stats',
       icon: '<path d="M5 20V12M10 20V6M15 20v-9M20 20V9"/>' },
@@ -68,7 +68,12 @@
     nav.setAttribute('aria-label', 'Library');
     nav.innerHTML = '<div class="lib-tabbar-inner">' + TABS.map(tab => {
       const url = new URL(tab.href, base).href;
-      const current = location.href.split(/[?#]/)[0] === url || (here === tab.href && location.href.startsWith(base.href));
+      // Books and Series are the same page: ?view=series (or an old #series link) is the Series tab
+      const seriesView = new URLSearchParams(location.search).get('view') === 'series' || location.hash === '#series';
+      const [tabPage, tabQuery] = tab.href.split('?');
+      const samePage = location.href.split(/[?#]/)[0] === new URL(tabPage, base).href ||
+        (here === tabPage && location.href.startsWith(base.href));
+      const current = samePage && (tabQuery === 'view=series') === (tabPage === 'all-books.html' && seriesView);
       return `<a class="lib-tab" href="${url}"${current ? ' aria-current="page"' : ''}>` +
         `<svg viewBox="0 0 24 24" aria-hidden="true">${tab.icon}</svg><span>${tab.label}</span></a>`;
     }).join('') + '</div>';

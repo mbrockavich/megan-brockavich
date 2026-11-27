@@ -533,7 +533,7 @@
 
   <header>
     <div class="eyebrow">"Books are a uniquely portable magic." · Stephen King</div>
-    <h1>Everything I've Read</h1>
+    <h1 id="heroTitle">Everything I've Read</h1>
     <p id="heroSub">Loading the shelves...</p>
   </header>
 
@@ -593,9 +593,9 @@
   <!-- MASTER CATALOG -->
   <section class="block">
     <div class="section-head">
-      <div class="label">The Master List</div>
-      <h2>Every Book, All Time</h2>
-      <p>2026 reads and everything before it, in one place. Add a book to your 2026 list and it shows up here automatically.</p>
+      <div class="label" id="listLabel">The Master List</div>
+      <h2 id="listTitle">Every Book, All Time</h2>
+      <p id="listSub">2026 reads and everything before it, in one place. Add a book to your 2026 list and it shows up here automatically.</p>
     </div>
     <div class="catalog-count" id="shelfCount"></div>
     <div class="master-grid" id="shelfGrid"></div>
@@ -792,14 +792,13 @@ const statsStrip = document.getElementById("statsStrip");
 function renderStats(){
   if(activeGenre === "Series"){
     const seriesScope = SERIES.filter(seriesMatchesFormat);
-    const completed = seriesScope.filter(s => seriesIsCaughtUp(s) && s.status === "complete").length;
-    const caughtUp = seriesScope.filter(s => seriesIsCaughtUp(s) && s.status !== "complete").length;
-    const inProgress = seriesScope.length - completed - caughtUp;
+    const count = cls => seriesScope.filter(s => seriesStatus(s).cls === cls).length;
     const stats = [
       {v: seriesScope.length, l: "Total Series"},
-      {v: inProgress, l: "In Progress"},
-      {v: caughtUp, l: "Caught Up"},
-      {v: completed, l: "Completed"}
+      {v: count("progress"), l: "In Progress"},
+      {v: count("caughtup"), l: "Caught Up"},
+      {v: count("complete"), l: "Completed"},
+      {v: count("dnf"), l: "DNF"}
     ];
     statsStrip.innerHTML = "";
     stats.forEach(s => {
@@ -855,6 +854,21 @@ function renderStats(){
 /* ---------------- filter state ---------------- */
 let activeGenre = "All";
 let activeFormat = "All";
+let activeStatus = "All";   // Series tab only: progress / caughtup / complete / dnf
+
+/* The Series tab is this same page opened as all-books.html?view=series
+   (old #series links and series-tracker.html land here too). It shows one
+   stacked card per series, and the "Show" dropdown filters by status. */
+const SERIES_VIEW = new URLSearchParams(location.search).get("view") === "series" || location.hash === "#series";
+if(SERIES_VIEW){
+  document.title = "Series Tracker · Megan's Library";
+  document.getElementById("heroTitle").textContent = "Series Tracker";
+  document.getElementById("heroSub").textContent = "Where I am in every series, and what's coming next.";
+  document.getElementById("listLabel").textContent = "Every Series";
+  document.getElementById("listTitle").textContent = "Series, All Time";
+  document.getElementById("listSub").textContent = "Every series I've started, in progress first. Tap one to see the books.";
+  document.getElementById("searchInput").placeholder = "Search by series or author...";
+}
 let searchTerm = "";
 
 /* The genre pill can also be one of the computed filters: "All" (no genre
@@ -887,7 +901,7 @@ window.addEventListener("resize", refreshScrollFades);
 
 /* ---------------- genre filter (dropdown) ---------------- */
 const genreSelect = document.getElementById("genreSelect");
-genreSelect.addEventListener("change", (e) => selectFilter(e.target.value));
+genreSelect.addEventListener("change", (e) => SERIES_VIEW ? selectStatus(e.target.value) : selectFilter(e.target.value));
 /* phone: filters fold behind a button next to search */
 const filterBar = document.querySelector(".filter-bar");
 const filterToggle = document.getElementById("filterToggle");
@@ -897,9 +911,14 @@ filterToggle.addEventListener("click", () => {
   filterToggle.setAttribute("aria-expanded", open);
 });
 function updateFilterCount(){
-  const n = (activeGenre !== "All") + (activeFormat !== "All");
+  const n = (SERIES_VIEW ? activeStatus !== "All" : activeGenre !== "All") + (activeFormat !== "All");
   filterCount.hidden = !n;
   filterCount.textContent = n;
+}
+
+function selectStatus(value){
+  activeStatus = value;
+  renderPills(); renderShelf(); updateFilterCount();
 }
 
 function selectFilter(value){
@@ -948,8 +967,16 @@ function renderFormatPills(){
 }
 function renderPills(){
   genreSelect.innerHTML = "";
+  if(SERIES_VIEW){
+    const counts = {};
+    SERIES.forEach(s => { const c = seriesStatus(s).cls; counts[c] = (counts[c] || 0) + 1; });
+    addOption(genreSelect, "All", `All Series (${SERIES.length})`, activeStatus === "All");
+    [["progress","📖 In Progress"],["caughtup","⏳ Caught Up"],["complete","✅ Complete"],["dnf","🚫 DNF"]].forEach(([cls, label]) => {
+      if(counts[cls]) addOption(genreSelect, cls, `${label} (${counts[cls]})`, activeStatus === cls);
+    });
+    return;
+  }
   addOption(genreSelect, "All", `All (${ALL_BOOKS.length})`, activeGenre === "All");
-  addOption(genreSelect, "Series", `📚 Series (${SERIES.length})`, activeGenre === "Series");
   if(spicyCount > 0){
     addOption(genreSelect, "Spicy", `🌶️ Spicy (${spicyCount})`, activeGenre === "Spicy");
   }
@@ -968,8 +995,8 @@ try{ savedGenre = localStorage.getItem("activeGenre"); }catch(e){}
 let savedFormat = null;
 try{ savedFormat = localStorage.getItem("activeFormat"); }catch(e){}
 const hashSlug = location.hash.replace("#", "");
-if(hashSlug === "series") activeGenre = "Series";
-else if(savedGenre) activeGenre = savedGenre;
+if(SERIES_VIEW) activeGenre = "Series";
+else if(savedGenre && savedGenre !== "Series") activeGenre = savedGenre;
 if(FORMAT_INFO[hashSlug]) activeFormat = hashSlug;
 else if(savedFormat) activeFormat = savedFormat;
 try{
@@ -1070,7 +1097,8 @@ const SERIES_STATUS_RANK = {progress: 0, caughtup: 1, complete: 2, dnf: 3};
 
 function renderSeriesGrid(){
   const term = searchTerm;
-  const matching = SERIES.filter(s => seriesMatchesFormat(s) && (!term ||
+  const matching = SERIES.filter(s => seriesMatchesFormat(s) &&
+    (activeStatus === "All" || seriesStatus(s).cls === activeStatus) && (!term ||
     s.name.toLowerCase().includes(term) ||
     s.author.toLowerCase().includes(term))
   ).sort((a, b) => {

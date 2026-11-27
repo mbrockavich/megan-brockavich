@@ -1,6 +1,6 @@
 /* =========================================================================
-   Shared reading data, used by 2026-reading-stats.html, series-tracker.html,
-   and all-books.html. Edit here once and every page stays in sync. Add a
+   Shared reading data, used by 2026-reading-stats.html and
+   all-books.html (Books and Series tabs). Edit here once and every page stays in sync. Add a
    book to `books` (or `pastReads`) and it flows into the all-time library,
    the 2026 stats page, and any series tracker automatically.
 
@@ -457,7 +457,7 @@ const RATING_LEGEND = [
    Entries here are just {title}, plus optional `cover` (a preview image
    for an unread book), `comingSoon:true` or `comingSoon:"Month YYYY"` (not
    released yet), or `pubDate:"Month YYYY"` (already released, you just
-   haven't read it — shown on the series pop-up and series-tracker.html so
+   haven't read it — shown on the series pop-up and the Series tab so
    you can see how old a book you're behind on actually is). Only add
    `pubDate` when you actually know it; it's fine to leave off.
    `status` reflects whether the AUTHOR is done writing the series, not
@@ -465,7 +465,7 @@ const RATING_LEGEND = [
    "ongoing" = more entries are announced or expected.
    `dnf: true` is a manual flag for a series you've decided not to continue
    (most likely won't read more of it). Shows a "DNF" status on
-   series-tracker.html with its own filter, sorts to the bottom, and its
+   the Series tab with its own filter, sorts to the bottom, and its
    unread books no longer count toward "Books To Go". Remove it to undo. */
 const SERIES = [
   {
