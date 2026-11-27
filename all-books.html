@@ -420,6 +420,18 @@
   @media (max-width: 480px){
     .shelf-subgroup-heading{ font-size: 10px; padding: 7px 12px; }
   }
+  /* Owned tab on phones: four across, shorter cards */
+  @media (max-width: 480px){
+    body.owned-view .master-grid{ grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px 8px; }
+    body.owned-view .master-cover{ margin-bottom: 5px; font-size: 9px; padding: 4px; overflow-wrap: anywhere; }
+    body.owned-view .master-title{ font-size: 11px; line-height: 1.25;
+      display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+    body.owned-view .master-author{ font-size: 9.5px; margin-top: 1px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    body.owned-view .master-pubyear{ display: none; }
+    body.owned-view .master-rating{ font-size: 11.5px; margin-top: 2px; }
+    body.owned-view .master-formats{ font-size: 10px; margin-top: 1px; }
+    body.owned-view .shelf-subgroup-heading{ margin-top: 20px; }
+  }
   .master-card{ text-align:left; cursor:pointer; }
   .master-card:focus-visible{ outline:2px solid var(--accent); outline-offset:3px; border-radius:4px; }
   .master-cover{
@@ -971,6 +983,7 @@ if(OWNED_VIEW){
   const unreadOwned = OWNED_LIST.filter(o => !o.read).length;
   document.getElementById("heroSub").textContent = `${OWNED_LIST.length} books on my shelves, ${unreadOwned} not read yet.`;
   document.getElementById("searchInput").placeholder = "Search what I own...";
+  document.body.classList.add("owned-view");
   document.getElementById("listLabel").textContent = "My Shelves";
   document.getElementById("listTitle").textContent = "Every Book I Own";
   document.getElementById("listSub").textContent = "Kindle, Audible, physical and Kindle+, not read yet first. Tap one for details.";
