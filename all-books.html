@@ -432,7 +432,6 @@
     body.owned-view .master-author{ font-size: 9.5px; margin-top: 1px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     body.owned-view .master-pubyear{ display: none; }
     body.owned-view .master-rating{ font-size: 11.5px; margin-top: 2px; }
-    body.owned-view .master-formats{ font-size: 10px; margin-top: 1px; }
     body.owned-view .shelf-subgroup-heading{ margin-top: 20px; }
   }
   .master-card{ text-align:left; cursor:pointer; }
@@ -550,7 +549,6 @@
   .modal-club2 .club-head{ font-weight:600; }
   .modal-club2 .club-sub{ color: var(--ink-soft); }
   .modal-club2 .club-note{ font-style: italic; color: var(--ink-soft); margin-top: 4px; }
-  .master-formats{ font-size: 11px; margin-top: 2px; letter-spacing: 0.08em; }
   .master-unread{ font-size: 10px; font-weight:600; letter-spacing:.04em; text-transform:uppercase; color: var(--ink-faint); margin-top: 3px; }
 
   footer.page-foot{
@@ -991,7 +989,7 @@ if(OWNED_VIEW){
   document.body.classList.add("owned-view");
   document.getElementById("listLabel").textContent = "My Shelves";
   document.getElementById("listTitle").textContent = "Every Book I Own";
-  document.getElementById("listSub").textContent = "Kindle, Audible, physical and Kindle+, not read yet first. Tap one for details.";
+  document.getElementById("listSub").textContent = "Grouped by format. A book I own in two formats shows up in both.";
 }
 if(FAV_VIEW){
   document.title = "Favorites · Megan's Library";
@@ -1390,19 +1388,20 @@ function renderOwnedGrid(){
   shelfCount.textContent = `Showing ${matches.length} of ${OWNED_LIST.length} owned books`;
   shelfGrid.innerHTML = "";
   noResults.style.display = matches.length ? "none" : "block";
-  const groups = [["📖", "Not read yet", matches.filter(o => !o.read)], ["✅", "Read", matches.filter(o => o.read)]];
+  // one section per format; a book owned in two formats shows in both
+  const groups = ["kindle","audible","physical","kindleUnlimited"].filter(fmt => activeFormat === "All" || fmt === activeFormat).map(fmt =>
+    [FORMAT_INFO[fmt].emoji, FORMAT_INFO[fmt].label, matches.filter(o => o.formats.includes(fmt))]);
   groups.forEach(([emoji, label, list], i) => {
     if(!list.length) return;
     list.sort((a, b) => a.book.title.localeCompare(b.book.title));
     const heading = document.createElement("div");
     heading.className = "shelf-subgroup-heading";
-    heading.style.setProperty("--banner-color", SUBGROUP_COLORS[i]);
+    heading.style.setProperty("--banner-color", SUBGROUP_COLORS[i % SUBGROUP_COLORS.length]);
     heading.innerHTML = `<span class="sub-emoji">${emoji}</span><span>${label}</span><span class="sub-count">· ${list.length}</span>`;
     shelfGrid.appendChild(heading);
     list.forEach(o => {
       const card = buildMasterCard({kind: "book", book: o.book, eyebrow: o.read ? null : "Not read yet"});
-      card.insertAdjacentHTML("beforeend",
-        `<div class="master-formats" title="${o.formats.map(f => FORMAT_INFO[f].label).join(", ")}">${o.formats.map(f => FORMAT_INFO[f].emoji).join(" ")}</div>`);
+      if(!o.read) card.insertAdjacentHTML("beforeend", `<div class="master-unread">Not read yet</div>`);
       shelfGrid.appendChild(card);
     });
   });
