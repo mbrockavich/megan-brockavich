@@ -84,7 +84,9 @@
   .page.page-body{ padding-top: 0; }
   body.fav-view .filter-bar, body.fav-view #statsStrip, body.fav-view #catalogSection,
   body.fav-view .top-gap{ display:none; }
-  body.fav-view .rating-card{ margin: 0 0 16px; }
+  body.fav-view header{ margin-bottom: 12px; }
+  body.fav-view .rating-card{ margin: 0 0 8px; }
+  body.fav-view .rating-card-heading{ padding: 11px 16px; }
   @media (max-width: 560px){
     header{ margin-bottom: 18px; }
     header .eyebrow{ font-size: 12px; margin-bottom: 6px; }
@@ -275,7 +277,10 @@
   .fav-meta .stars{ color: var(--star); font-size: 13px; letter-spacing: .03em; }
   .fav-empty{ padding: 22px 18px; font-size: 13.5px; color: var(--ink-soft); text-align:center; }
   @media (max-width: 560px){
-    .fav-tabs{ margin: 0 -16px 14px; padding: 10px 16px; }
+    .fav-tabs{ margin: 0 -16px 10px; padding: 8px 16px; gap: 6px; }
+    .fav-chip{ padding: 6px 11px; font-size: 12.5px; }
+    .fav-list-head{ margin-bottom: 8px; }
+    .fav-list-head h2{ font-size: 17px; }
     .fav-row{ padding: 10px 12px; gap: 12px; }
     .fav-thumb{ flex-basis: 46px; }
   }
