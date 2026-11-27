@@ -274,8 +274,9 @@
   .fav-kicker{ font-size: 10px; font-weight:700; letter-spacing:.06em; text-transform:uppercase; color: var(--accent); }
   .fav-name{ font-size: 14.5px; font-weight:600; line-height:1.3; }
   .fav-by{ font-size: 12px; color: var(--ink-soft); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-  .fav-meta{ font-size: 12px; color: var(--ink-soft); display:flex; align-items:center; gap: 6px; margin-top: 1px; }
+  .fav-meta{ font-size: 12px; color: var(--ink-soft); display:flex; flex-wrap:wrap; align-items:center; gap: 0 5px; margin-top: 1px; }
   .fav-meta .stars{ color: var(--star); font-size: 13px; letter-spacing: .03em; }
+  .fav-date{ font-size: 11.5px; color: var(--ink-faint); }
   .fav-empty{ padding: 22px 18px; font-size: 13.5px; color: var(--ink-soft); text-align:center; }
   @media (max-width: 560px){
     .fav-tabs{ margin: 0 -16px 10px; padding: 8px 16px; gap: 6px; }
@@ -289,6 +290,7 @@
     .fav-by, .fav-meta{ font-size: 11.5px; }
     .fav-meta{ margin-top: 0; }
     .fav-meta .stars{ font-size: 12px; }
+    .fav-date{ font-size: 11px; }
     .fav-rank{ flex-basis: 20px; font-size: 15px; }
   }
   .fav-stack-wrap{ position:relative; margin-bottom: 10px; transition: transform 0.15s ease; }
@@ -1588,6 +1590,18 @@ function shortFavTitle(title){
    4+ star series). Each chip shows a ranked list; tap a row for details. */
 const favoritesSection = document.getElementById("favoritesSection");
 
+/* When it was read: this year's books have an exact finish date, older
+   ones only a month. A series uses its most recently read book. */
+function favReadDate(entry){
+  const pool = entry.kind === "series" ? entry.books : [entry.book];
+  const latest = pool.filter(b => b.dateLabel !== "Undated").sort((a, b) => b.sortTime - a.sortTime)[0];
+  if(!latest) return "";
+  const exact = latest.source === "2026" && books.find(x => x.title === latest.title);
+  return exact
+    ? parseLocalDate(exact.dateFinished).toLocaleDateString("en-US", {month: "short", day: "numeric", year: "numeric"})
+    : latest.dateLabel;
+}
+
 function favRowHTML(entry, {rank, kicker}){
   const isSeries = entry.kind === "series";
   const lead = isSeries ? entry.books[0] : entry.book;
@@ -1606,7 +1620,7 @@ function favRowHTML(entry, {rank, kicker}){
       ${kicker ? `<span class="fav-kicker">${kicker}</span>` : ""}
       <span class="fav-name">${name}</span>
       <span class="fav-by">${by}</span>
-      <span class="fav-meta"><span class="stars">${starRatingHTML(entry.avg)}</span>${isSeries ? `<span>· ${entry.books.length} book${entry.books.length === 1 ? "" : "s"}</span>` : ""}</span>
+      <span class="fav-meta"><span class="stars">${starRatingHTML(entry.avg)}</span>${isSeries ? `<span>· ${entry.books.length} book${entry.books.length === 1 ? "" : "s"}</span>` : ""}${favReadDate(entry) ? `<span class="fav-date">· ${isSeries ? "Last read" : "Read"} ${favReadDate(entry)}</span>` : ""}</span>
     </span>`;
 }
 
