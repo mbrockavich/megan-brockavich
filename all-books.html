@@ -1048,7 +1048,7 @@ function addOption(select, value, label, active){
   select.appendChild(opt);
 }
 function renderFormatPills(){
-  if(!hasOwnedLookup){ document.getElementById("formatField").style.display = "none"; return; }
+  if(!hasOwnedLookup || !OWNED_VIEW){ document.getElementById("formatField").style.display = "none"; return; }
   formatSelect.innerHTML = "";
   addOption(formatSelect, "All", "All Formats", activeFormat === "All");
   ["kindle","audible","physical","kindleUnlimited"].forEach(fmt => {
@@ -1101,8 +1101,13 @@ if(SERIES_VIEW) activeGenre = "Series";
 else if(OWNED_VIEW) activeGenre = "All";
 else if(showParam === "club") activeGenre = "Book Club";
 else if(savedGenre && savedGenre !== "Series") activeGenre = savedGenre;
-if(FORMAT_INFO[hashSlug]) activeFormat = hashSlug;
-else if(savedFormat) activeFormat = savedFormat;
+// The format filter only lives on the Owned tab now. Old #kindle-style
+// links to the Books tab land there instead.
+if(!OWNED_VIEW && FORMAT_INFO[hashSlug]) location.replace("all-books.html?view=owned#" + hashSlug);
+if(OWNED_VIEW){
+  if(FORMAT_INFO[hashSlug]) activeFormat = hashSlug;
+  else if(savedFormat) activeFormat = savedFormat;
+}
 try{
   const saved = JSON.parse(localStorage.getItem("sorts"));
   if(Array.isArray(saved) && saved.length === 2 && saved.every(x =>
