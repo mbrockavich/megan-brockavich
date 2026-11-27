@@ -518,6 +518,14 @@
   .owned-pill.u{ background:#6b7aa1; }
   .modal-note2{ font-size:12.5px; font-style:italic; color:var(--ink-soft); line-height:1.5; border-left:2px solid var(--accent); padding-left:10px; text-align:left; white-space:pre-line; }
 
+  .modal-club2{ margin-top: 12px; padding: 10px 12px; border-radius: 8px; background: var(--surface-alt);
+    font-size: 12.5px; line-height: 1.5; color: var(--ink); text-align:left; width:100%; }
+  .modal-club2 .club-head{ font-weight:600; }
+  .modal-club2 .club-sub{ color: var(--ink-soft); }
+  .modal-club2 .club-note{ font-style: italic; color: var(--ink-soft); margin-top: 4px; }
+  .master-formats{ font-size: 11px; margin-top: 2px; letter-spacing: 0.08em; }
+  .master-unread{ font-size: 10px; font-weight:600; letter-spacing:.04em; text-transform:uppercase; color: var(--ink-faint); margin-top: 3px; }
+
   footer.page-foot{
     text-align:center; font-size: 11.5px;
     color: var(--ink-faint); margin-top: 10px; padding: 0 20px;
@@ -631,6 +639,7 @@
     <div class="modal-meta2" id="modalMeta2"></div>
     <div class="modal-owned2" id="modalOwned2"></div>
     <div class="modal-note2" id="modalNote2"></div>
+    <div class="modal-club2" id="modalClub2"></div>
   </div>
 </div>
 
@@ -651,6 +660,7 @@
 
 <script src="reading-data.js"></script>
 <script src="owned-books-data.js"></script>
+<script src="book-club-data.js"></script>
 <script>
 /* books, pastReads, SERIES, findRead, formatRating come from reading-data.js */
 
@@ -822,6 +832,39 @@ function renderStats(){
     return;
   }
 
+  if(OWNED_VIEW){
+    const unread = OWNED_LIST.filter(o => !o.read).length;
+    const fmtCount = fmt => OWNED_LIST.filter(o => o.formats.includes(fmt)).length;
+    const stats = [
+      {v: OWNED_LIST.length, l: "Books Owned"},
+      {v: unread, l: "Not Read Yet"},
+      ...["kindle","audible","physical","kindleUnlimited"].map(fmt => ({v: fmtCount(fmt), l: `${FORMAT_INFO[fmt].emoji} ${FORMAT_INFO[fmt].label}`}))
+    ];
+    statsStrip.innerHTML = stats.map(s => `<div class="stat"><div class="v">${s.v}</div><div class="l">${s.l}</div></div>`).join("");
+    return;
+  }
+  if(activeGenre === "Book Club"){
+    const meetups = typeof BOOK_CLUB !== "undefined" ? BOOK_CLUB : [];
+    const rated = ALL_BOOKS.filter(b => CLUB_BY_TITLE.has(b.title) && b.rating != null);
+    const avg = rated.length ? rated.reduce((sum, b) => sum + b.rating, 0) / rated.length : null;
+    const tally = key => {
+      const counts = {};
+      meetups.forEach(e => { const v = key(e); if(v) counts[v] = (counts[v] || 0) + 1; });
+      return Object.entries(counts).sort((a, b) => b[1] - a[1])[0];
+    };
+    const spot = tally(e => e.location);
+    const picker = tally(e => e.pick && e.pick.replace(/'s pick$/i, "").trim());
+    const stats = [
+      {v: meetups.length, l: "Meetups"},
+      {v: avg != null ? formatRating(avg) : "—", l: "My Average"},
+      spot && spot[1] > 1
+        ? {v: spot[0], l: `Most Visited · ${spot[1]}×`, isTitle: true}
+        : {v: new Set(meetups.map(e => e.location).filter(Boolean)).size, l: "Spots Visited"},
+      {v: picker ? picker[0] : "—", l: picker ? `Most Picks · ${picker[1]}` : "Most Picks"}
+    ];
+    statsStrip.innerHTML = stats.map(s => `<div class="stat${s.isTitle ? " stat-wide" : ""}"><div class="v${s.isTitle ? " v-title" : ""}">${s.v}</div><div class="l">${s.l}</div></div>`).join("");
+    return;
+  }
   const scoped = ALL_BOOKS.filter(b => {
     const genreMatch = matchesGenreFilter(b);
     const formatMatch = activeFormat === "All" || (hasOwnedLookup && findOwnedFormats(b.title).includes(activeFormat));
@@ -863,10 +906,42 @@ function renderStats(){
   });
 }
 
+/* ---------------- book club ----------------
+   "Book Club" is a filter on the Books tab (it replaced the old Club page).
+   Meetup details from book-club-data.js show in each book's pop-up. */
+const CLUB_MONTHS = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+const CLUB_BY_TITLE = new Map();
+(typeof BOOK_CLUB !== "undefined" ? BOOK_CLUB : []).forEach(e => {
+  if(!CLUB_BY_TITLE.has(e.title)) CLUB_BY_TITLE.set(e.title, []);
+  CLUB_BY_TITLE.get(e.title).push(e);
+});
+const clubCount = ALL_BOOKS.filter(b => CLUB_BY_TITLE.has(b.title)).length;
+
+/* ---------------- owned books ----------------
+   One entry per title across every format, using the read copy from
+   reading-data.js when there is one (for its rating, genres and notes). */
+const OWNED_LIST = (() => {
+  if(typeof OWNED_BOOKS === "undefined") return [];
+  const byTitle = new Map();
+  ["kindle","audible","physical","kindleUnlimited"].forEach(fmt => (OWNED_BOOKS[fmt] || []).forEach(o => {
+    if(!byTitle.has(o.title)) byTitle.set(o.title, {owned: o, formats: []});
+    const entry = byTitle.get(o.title);
+    entry.formats.push(fmt);
+    if(!entry.owned.cover && o.cover) entry.owned = {...entry.owned, cover: o.cover};
+    if(!entry.owned.author && o.author) entry.owned = {...entry.owned, author: o.author};
+  }));
+  return Array.from(byTitle.values()).map(({owned, formats}) => {
+    const read = ALL_BOOKS_BY_TITLE.get(owned.title);
+    const book = read || {title: owned.title, author: owned.author || "Unknown", cover: owned.cover || null,
+      genres: [], rating: null, dateLabel: "Undated"};
+    return {book, formats, read: !!read};
+  });
+})();
+
 /* ---------------- filter state ---------------- */
 let activeGenre = "All";
 let activeFormat = "All";
-let activeStatus = "All";   // Series tab only: progress / caughtup / complete / dnf
+let activeStatus = "All";   // Series tab: progress / caughtup / complete / dnf. Owned tab: unread / read
 
 /* The Series tab is this same page opened as all-books.html?view=series
    (old #series links and series-tracker.html land here too). It shows one
@@ -875,6 +950,19 @@ const SERIES_VIEW = new URLSearchParams(location.search).get("view") === "series
 /* The Favorites tab is all-books.html?view=favorites: ranked favorites per
    genre (and for series), instead of the browse shelf. */
 const FAV_VIEW = new URLSearchParams(location.search).get("view") === "favorites";
+/* The Owned tab is all-books.html?view=owned: every book in owned-books-data.js,
+   read or not. The "Show" dropdown picks All / Not read yet / Read. */
+const OWNED_VIEW = new URLSearchParams(location.search).get("view") === "owned";
+if(OWNED_VIEW){
+  document.title = "Owned · Megan's Library";
+  document.getElementById("heroTitle").textContent = "Owned";
+  const unreadOwned = OWNED_LIST.filter(o => !o.read).length;
+  document.getElementById("heroSub").textContent = `${OWNED_LIST.length} books on my shelves, ${unreadOwned} not read yet.`;
+  document.getElementById("searchInput").placeholder = "Search what I own...";
+  document.getElementById("listLabel").textContent = "My Shelves";
+  document.getElementById("listTitle").textContent = "Every Book I Own";
+  document.getElementById("listSub").textContent = "Kindle, Audible, physical and Kindle+, not read yet first. Tap one for details.";
+}
 if(FAV_VIEW){
   document.title = "Favorites · Megan's Library";
   document.getElementById("heroTitle").textContent = "Favorites";
@@ -898,12 +986,13 @@ let searchTerm = "";
 function matchesGenreFilter(b){
   if(activeGenre === "All") return true;
   if(activeGenre === "Spicy") return !!b.spicy;
+  if(activeGenre === "Book Club") return CLUB_BY_TITLE.has(b.title);
   return b.genres.includes(activeGenre);
 }
 
 /* ---------------- genre filter (dropdown) ---------------- */
 const genreSelect = document.getElementById("genreSelect");
-genreSelect.addEventListener("change", (e) => SERIES_VIEW ? selectStatus(e.target.value) : selectFilter(e.target.value));
+genreSelect.addEventListener("change", (e) => (SERIES_VIEW || OWNED_VIEW) ? selectStatus(e.target.value) : selectFilter(e.target.value));
 /* phone: filters fold behind a button next to search */
 const filterBar = document.querySelector(".filter-bar");
 const filterToggle = document.getElementById("filterToggle");
@@ -913,7 +1002,7 @@ filterToggle.addEventListener("click", () => {
   filterToggle.setAttribute("aria-expanded", open);
 });
 function updateFilterCount(){
-  const n = (SERIES_VIEW ? activeStatus !== "All" : activeGenre !== "All") + (activeFormat !== "All");
+  const n = ((SERIES_VIEW || OWNED_VIEW) ? activeStatus !== "All" : activeGenre !== "All") + (activeFormat !== "All");
   filterCount.hidden = !n;
   filterCount.textContent = n;
 }
@@ -978,7 +1067,17 @@ function renderPills(){
     });
     return;
   }
+  if(OWNED_VIEW){
+    const unread = OWNED_LIST.filter(o => !o.read).length;
+    addOption(genreSelect, "All", `All Owned (${OWNED_LIST.length})`, activeStatus === "All");
+    addOption(genreSelect, "unread", `📖 Not read yet (${unread})`, activeStatus === "unread");
+    addOption(genreSelect, "read", `✅ Read (${OWNED_LIST.length - unread})`, activeStatus === "read");
+    return;
+  }
   addOption(genreSelect, "All", `All (${ALL_BOOKS.length})`, activeGenre === "All");
+  if(clubCount > 0){
+    addOption(genreSelect, "Book Club", `☕ Book Club (${clubCount})`, activeGenre === "Book Club");
+  }
   if(spicyCount > 0){
     addOption(genreSelect, "Spicy", `🌶️ Spicy (${spicyCount})`, activeGenre === "Spicy");
   }
@@ -997,7 +1096,10 @@ try{ savedGenre = localStorage.getItem("activeGenre"); }catch(e){}
 let savedFormat = null;
 try{ savedFormat = localStorage.getItem("activeFormat"); }catch(e){}
 const hashSlug = location.hash.replace("#", "");
+const showParam = new URLSearchParams(location.search).get("show");
 if(SERIES_VIEW) activeGenre = "Series";
+else if(OWNED_VIEW) activeGenre = "All";
+else if(showParam === "club") activeGenre = "Book Club";
 else if(savedGenre && savedGenre !== "Series") activeGenre = savedGenre;
 if(FORMAT_INFO[hashSlug]) activeFormat = hashSlug;
 else if(savedFormat) activeFormat = savedFormat;
@@ -1161,10 +1263,14 @@ function renderSeriesGrid(){
 }
 
 function renderShelf(){
-  const hideSort = activeGenre === "Series";
+  const hideSort = activeGenre === "Series" || OWNED_VIEW;
   document.querySelectorAll(".sort-field").forEach(f => { f.style.display = hideSort ? "none" : ""; });
   if(activeGenre === "Series"){
     renderSeriesGrid();
+    return;
+  }
+  if(OWNED_VIEW){
+    renderOwnedGrid();
     return;
   }
 
@@ -1181,7 +1287,7 @@ function renderShelf(){
   // The Spicy filter lists each flagged book on its own so the 🌶️ books
   // are all visible — series stacks would hide non-spicy siblings and only
   // show the top cover.
-  const collapseSeries = activeGenre !== "Spicy";
+  const collapseSeries = activeGenre !== "Spicy" && activeGenre !== "Book Club";
 
   // collapse every book that belongs to a series (2+ books read) into one
   // stacked card, in the order its first-appearing book was sorted
@@ -1216,7 +1322,7 @@ function renderShelf(){
   // get grouped into labeled sections instead of one flat grid, mirroring
   // the 2026 stats page's genre pop-up. Only kicks in for a specific genre,
   // not "All" (mixing subgenres across every genre wouldn't mean anything).
-  const showSubgroups = activeGenre !== "All" && activeGenre !== "Spicy" && filtered.some(b => b.subgenre);
+  const showSubgroups = activeGenre !== "All" && activeGenre !== "Spicy" && activeGenre !== "Book Club" && filtered.some(b => b.subgenre);
 
   if(showSubgroups){
     const bySubgenre = {};
@@ -1239,6 +1345,32 @@ function renderShelf(){
   } else {
     items.forEach(item => shelfGrid.appendChild(buildMasterCard(item)));
   }
+}
+
+function renderOwnedGrid(){
+  const matches = OWNED_LIST.filter(o =>
+    (activeStatus === "All" || (activeStatus === "read") === o.read) &&
+    (activeFormat === "All" || o.formats.includes(activeFormat)) &&
+    (!searchTerm || o.book.title.toLowerCase().includes(searchTerm) || o.book.author.toLowerCase().includes(searchTerm)));
+  shelfCount.textContent = `Showing ${matches.length} of ${OWNED_LIST.length} owned books`;
+  shelfGrid.innerHTML = "";
+  noResults.style.display = matches.length ? "none" : "block";
+  const groups = [["📖", "Not read yet", matches.filter(o => !o.read)], ["✅", "Read", matches.filter(o => o.read)]];
+  groups.forEach(([emoji, label, list], i) => {
+    if(!list.length) return;
+    list.sort((a, b) => a.book.title.localeCompare(b.book.title));
+    const heading = document.createElement("div");
+    heading.className = "shelf-subgroup-heading";
+    heading.style.setProperty("--banner-color", SUBGROUP_COLORS[i]);
+    heading.innerHTML = `<span class="sub-emoji">${emoji}</span><span>${label}</span><span class="sub-count">· ${list.length}</span>`;
+    shelfGrid.appendChild(heading);
+    list.forEach(o => {
+      const card = buildMasterCard({kind: "book", book: o.book, eyebrow: o.read ? null : "Not read yet"});
+      card.insertAdjacentHTML("beforeend",
+        `<div class="master-formats" title="${o.formats.map(f => FORMAT_INFO[f].label).join(", ")}">${o.formats.map(f => FORMAT_INFO[f].emoji).join(" ")}</div>`);
+      shelfGrid.appendChild(card);
+    });
+  });
 }
 
 function buildMasterCard(item){
@@ -1272,7 +1404,7 @@ function buildMasterCard(item){
       card.addEventListener("keydown", (e) => { if(e.key === "Enter" || e.key === " "){ e.preventDefault(); open(); } });
     } else {
       card.setAttribute("aria-label", `View details for ${b.title}`);
-      const open = () => openBookModal(b);
+      const open = () => openBookModal(b, item.eyebrow);
       card.addEventListener("click", open);
       card.addEventListener("keydown", (e) => { if(e.key === "Enter" || e.key === " "){ e.preventDefault(); open(); } });
     }
@@ -1508,6 +1640,7 @@ const modalGenres2 = document.getElementById("modalGenres2");
 const modalMeta2 = document.getElementById("modalMeta2");
 const modalOwned2 = document.getElementById("modalOwned2");
 const modalNote2 = document.getElementById("modalNote2");
+const modalClub2 = document.getElementById("modalClub2");
 const modalClose = document.getElementById("modalClose");
 
 const OWNED_PILL_INFO = {
@@ -1540,6 +1673,13 @@ function openBookModal(b, eyebrow){
   modalOwned2.style.display = ownedFormats.length ? "flex" : "none";
   modalNote2.textContent = b.note || "";
   modalNote2.style.display = b.note ? "block" : "none";
+  const club = CLUB_BY_TITLE.get(b.title) || [];
+  const esc = t => String(t).replace(/&/g, "&amp;").replace(/</g, "&lt;");
+  modalClub2.innerHTML = club.map(e => `
+    <div class="club-head">☕ Book club · ${CLUB_MONTHS[e.month - 1]} ${e.year}</div>
+    <div class="club-sub">${[e.location ? `📍 ${esc(e.location)}` : "", e.pick ? esc(e.pick) : ""].filter(Boolean).join(" · ")}</div>
+    ${e.note ? `<div class="club-note">${esc(e.note)}</div>` : ""}`).join("");
+  modalClub2.style.display = club.length ? "block" : "none";
   modalCover.innerHTML = `<span style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;padding:10px;font-size:12px;text-align:center;color:var(--ink-soft);">${b.title}</span>${b.cover ? `<img src="${b.cover}" alt="Cover of ${b.title}" loading="lazy" onerror="this.remove()">` : ""}`;
   modalOverlay.classList.add("open");
   syncModalScrollLock();

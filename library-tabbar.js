@@ -18,8 +18,8 @@
       icon: '<path d="M12 20s-7.5-4.6-7.5-10.2A4.3 4.3 0 0 1 12 7.2a4.3 4.3 0 0 1 7.5 2.6C19.5 15.4 12 20 12 20z"/>' },
     { href: '2026-reading-stats.html', label: 'Stats',
       icon: '<path d="M5 20V12M10 20V6M15 20v-9M20 20V9"/>' },
-    { href: 'book-club.html', label: 'Club',
-      icon: '<path d="M7 3h10l-1 6a4 4 0 0 1-8 0z"/><path d="M12 13v7M8.5 20h7"/>' },
+    { href: 'all-books.html?view=owned', label: 'Owned',
+      icon: '<rect x="4" y="4" width="4" height="15" rx="1"/><rect x="9.5" y="6" width="4" height="13" rx="1"/><path d="M15.2 7.3l3.3-.9 2.9 11.8-3.3.9z"/><path d="M3 21h18"/>' },
   ];
 
   const THEMES = {

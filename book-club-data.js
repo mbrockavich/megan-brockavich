@@ -1,5 +1,5 @@
 /* =========================================================================
-   Brunch Book Club history, used by book-club.html. One entry per month you
+   Brunch Book Club history, used by the Book Club filter on all-books.html. One entry per month you
    met, newest first or oldest first — the page sorts it either way, so just
    add entries wherever's convenient.
 
