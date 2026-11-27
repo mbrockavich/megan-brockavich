@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>2026 Reading Record</title>
+<title>Stats · Megan's Library</title>
 <link rel="manifest" href="app-icons/library.webmanifest">
 <link rel="apple-touch-icon" href="app-icons/library-180.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -10,925 +10,596 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Library">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#f7f4ef">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📊</text></svg>">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Space+Mono:wght@400;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
+  /* Same paper look as the Books, Series, Favorites and Owned tabs */
   :root{
-    --wood: #6b3a52;
-    --wood-dark: #4a2740;
-    --wood-darker: #33192c;
-    --card: #fdf1f5;
-    --card-shadow: #f0d3de;
-    --ink: #5c3a4a;
-    --ink-soft: #a67a92;
-    --stamp: #e2789a;
-    --brass: #d9a4c0;
-    --sage: #a8d5ba;
-    --slate-blue: #b8c4e8;
-    --plum: #c9a0c9;
+    --bg: #f7f4ef;
+    --surface: #ffffff;
+    --surface-alt: #f0eae0;
+    --border: #e4ddd2;
+    --border-strong: #d9d2c4;
+    --ink: #242018;
+    --ink-soft: #6b6455;
+    --ink-faint: #a39a89;
+    --accent: #b5502f;
+    --accent-soft: rgba(181,80,47,0.09);
+    --star: #c8963f;
+    --sage: #6f8f63;
+    --slate: #6b7aa1;
   }
-
   *{ box-sizing:border-box; }
-
+  html{ overflow-x:hidden; }
+  html.modal-open, html.modal-open body{ overflow:hidden; }
   body{
-    margin:0;
-    background:
-      radial-gradient(1px 1px at 8% 12%, rgba(255,235,242,0.6), transparent),
-      radial-gradient(1px 1px at 22% 68%, rgba(255,235,242,0.45), transparent),
-      radial-gradient(1px 1px at 38% 24%, rgba(255,235,242,0.55), transparent),
-      radial-gradient(1.5px 1.5px at 54% 82%, rgba(255,235,242,0.45), transparent),
-      radial-gradient(1px 1px at 68% 14%, rgba(255,235,242,0.5), transparent),
-      radial-gradient(1.5px 1.5px at 79% 55%, rgba(255,235,242,0.55), transparent),
-      radial-gradient(1px 1px at 91% 30%, rgba(255,235,242,0.45), transparent),
-      radial-gradient(1px 1px at 12% 88%, rgba(255,235,242,0.4), transparent),
-      radial-gradient(1px 1px at 63% 92%, rgba(255,235,242,0.4), transparent),
-      radial-gradient(1.5px 1.5px at 88% 78%, rgba(255,235,242,0.45), transparent),
-      radial-gradient(ellipse at top, var(--wood) 0%, var(--wood-dark) 65%, var(--wood-darker) 100%);
-    background-attachment:fixed;
-    background-size: cover;
-    font-family:'Inter', sans-serif;
-    color: var(--card);
-    padding: calc(48px + env(safe-area-inset-top)) 20px 80px;
+    margin:0; background: var(--bg); color: var(--ink);
+    font-family:'Inter', sans-serif; overflow-x:hidden; -webkit-tap-highlight-color: transparent;
+  }
+  .page{ max-width: 900px; margin: 0 auto; padding: calc(36px + env(safe-area-inset-top)) 20px 0; }
+  .page.page-body{ padding-top: 0; }
+
+  header{ text-align:center; margin-bottom: 14px; }
+  header h1{ font-weight:700; letter-spacing:-0.01em; font-size: clamp(27px, 4.4vw, 42px); margin: 0 0 4px; }
+  header p{ font-size: 13.5px; color: var(--ink-soft); margin: 0; }
+
+  .card{ background: var(--surface); border: 1px solid var(--border); border-radius: 10px; }
+
+  /* year picker: sticky chips, same as the Favorites genre chips */
+  .year-tabs{
+    position: sticky; top: env(safe-area-inset-top); z-index: 40;
+    display:flex; gap: 7px; overflow-x:auto; scrollbar-width:none; -webkit-overflow-scrolling: touch;
+    padding: 10px 20px; margin-bottom: 16px;
+    background: rgba(247,244,239,0.92); -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px);
+    border-bottom: 1px solid var(--border);
+  }
+  .year-tabs-inner{ display:flex; gap:7px; max-width: 860px; margin: 0 auto; width:100%; }
+  .year-tabs::-webkit-scrollbar{ display:none; }
+  .year-chip{
+    flex: 0 0 auto; font: 600 13.5px 'Inter', sans-serif; padding: 7px 15px; border-radius: 20px;
+    border: 1px solid var(--border-strong); background: var(--surface); color: var(--ink-soft);
+    cursor:pointer; -webkit-tap-highlight-color: transparent; font-variant-numeric: tabular-nums;
+  }
+  .year-chip .n{ font-weight:500; opacity:.6; font-size: 11.5px; margin-left: 3px; }
+  .year-chip[aria-pressed="true"]{ background: var(--accent); border-color: var(--accent); color:#fff; }
+  .year-chip:focus-visible{ outline:2px solid var(--accent); outline-offset:2px; }
+
+  .section-label{
+    font-size: 11.5px; font-weight:600; text-transform: uppercase; letter-spacing: .08em;
+    color: var(--accent); margin: 0 2px 8px;
+  }
+  .block{ margin-bottom: 22px; }
+
+  /* goal card */
+  .goal-card{ padding: 18px 18px 16px; }
+  .goal-top{ display:flex; align-items:baseline; justify-content:space-between; gap: 12px; }
+  .goal-num{ font-size: 38px; font-weight:700; letter-spacing:-0.02em; line-height:1; }
+  .goal-num small{ font-size: 18px; font-weight:500; color: var(--ink-faint); margin-left: 2px; }
+  .goal-badge{ font-size: 12px; font-weight:600; color: var(--sage); background: rgba(111,143,99,0.12);
+    padding: 5px 10px; border-radius: 20px; white-space:nowrap; }
+  .goal-badge.behind{ color: var(--accent); background: var(--accent-soft); }
+  .goal-caption{ font-size: 12.5px; color: var(--ink-soft); margin-top: 6px; }
+  .bar{ height: 8px; border-radius: 8px; background: var(--surface-alt); overflow:hidden; margin-top: 12px; }
+  .bar > div{ height:100%; border-radius: 8px; background: var(--accent); }
+  .stretch{ margin-top: 14px; padding-top: 12px; border-top: 1px dashed var(--border-strong); }
+  .stretch-row{ display:flex; justify-content:space-between; font-size: 12.5px; color: var(--ink-soft); }
+  .stretch-row b{ color: var(--ink); font-weight:600; }
+  .stretch .bar{ height: 6px; margin-top: 8px; }
+  .stretch .bar > div{ background: var(--star); }
+
+  /* swipeable stat cards, same as the Books tab */
+  .stats-strip{ display:flex; gap: 8px; overflow-x:auto; scrollbar-width:none; -webkit-overflow-scrolling: touch;
+    margin: 0 -20px; padding: 0 20px; scroll-snap-type: x proximity; scroll-padding-inline: 20px; }
+  .stats-strip::-webkit-scrollbar{ display:none; }
+  .stat{ flex: 0 0 auto; max-width: 210px; scroll-snap-align:start; background: var(--surface);
+    border: 1px solid var(--border); border-radius: 10px; padding: 10px 14px; }
+  .stat .v{ font-size: 18px; font-weight:700; line-height:1.2; }
+  .stat .v.small{ font-size: 13px; font-weight:600; line-height:1.3; }
+  .stat .l{ font-size: 10px; text-transform: uppercase; letter-spacing:.05em; color: var(--ink-soft); margin-top: 2px; white-space:nowrap; }
+
+  /* months: 12 tiles, tap one to see that month's books */
+  .months{ display:grid; grid-template-columns: repeat(6, minmax(0,1fr)); gap: 6px; padding: 12px; }
+  .month{
+    border: 1px solid var(--border); border-radius: 8px; background: var(--surface);
+    padding: 8px 2px 7px; text-align:center; font-family:'Inter',sans-serif; color: var(--ink);
+    position:relative; overflow:hidden;
+  }
+  button.month{ cursor:pointer; -webkit-tap-highlight-color: transparent; }
+  button.month:active{ transform: scale(.96); }
+  button.month:focus-visible{ outline:2px solid var(--accent); outline-offset:1px; }
+  .month .c{ font-size: 18px; font-weight:700; line-height:1.1; position:relative; }
+  .month .m{ font-size: 10.5px; color: var(--ink-soft); margin-top: 2px; position:relative; }
+  .month .fill{ position:absolute; left:0; right:0; bottom:0; background: var(--accent-soft); }
+  .month.best{ border-color: var(--accent); }
+  .month.best .c{ color: var(--accent); }
+  .month.empty .c{ color: var(--border-strong); }
+  .month.future{ border-style: dashed; background: transparent; }
+  .month.future .c{ color: transparent; }
+  .months-foot{ font-size: 11.5px; color: var(--ink-faint); padding: 0 14px 12px; }
+
+  /* pages per month */
+  .bars{ padding: 12px 14px; }
+  .bar-row{ display:grid; grid-template-columns: 30px 1fr 48px; align-items:center; gap: 8px; padding: 3px 0; }
+  .bar-row .ml{ font-size: 11px; color: var(--ink-soft); }
+  .bar-row .track{ height: 10px; border-radius: 6px; background: var(--surface-alt); overflow:hidden; }
+  .bar-row .track > div{ height:100%; border-radius: 6px; background: var(--slate); }
+  .bar-row .bv{ font-size: 11px; color: var(--ink-soft); text-align:right; font-variant-numeric: tabular-nums; }
+
+  /* genres */
+  .genre-list{ list-style:none; margin:0; padding: 4px 0; }
+  .genre-row{
+    width:100%; display:grid; grid-template-columns: minmax(0, 1fr) 90px 26px; align-items:center; gap: 10px;
+    padding: 9px 14px; background:none; border:0; border-bottom: 1px solid var(--border);
+    font-family:'Inter',sans-serif; color: var(--ink); text-align:left; cursor:pointer; -webkit-tap-highlight-color: transparent;
+  }
+  .genre-list li:last-child .genre-row{ border-bottom:0; }
+  .genre-row:active{ background: var(--surface-alt); }
+  .genre-row:focus-visible{ outline:2px solid var(--accent); outline-offset:-2px; border-radius:10px; }
+  .genre-row .gn{ font-size: 13.5px; font-weight:500; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .genre-row .gt{ height: 8px; border-radius: 6px; background: var(--surface-alt); overflow:hidden; }
+  .genre-row .gt > div{ height:100%; border-radius: 6px; background: var(--sage); }
+  .genre-row .gc{ font-size: 13px; font-weight:600; text-align:right; font-variant-numeric: tabular-nums; }
+  .genre-sub{ font-size: 10.5px; font-weight:600; text-transform:uppercase; letter-spacing:.06em; color: var(--ink-faint);
+    padding: 10px 14px 2px; }
+  .missing{ display:flex; flex-wrap:wrap; gap: 6px; padding: 12px 14px 14px; border-top: 1px solid var(--border); }
+  .missing-label{ width:100%; font-size: 11.5px; color: var(--ink-soft); margin-bottom: 2px; }
+  .missing span.tag{ font-size: 12px; padding: 4px 10px; border-radius: 20px; border: 1px dashed var(--border-strong); color: var(--ink-soft); }
+
+  /* odds and ends */
+  .fun-grid{ display:grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 8px; }
+  .fun{ padding: 12px 14px; }
+  .fun .fl{ font-size: 11px; font-weight:600; color: var(--ink-soft); }
+  .fun .fb{ font-size: 19px; font-weight:700; margin-top: 3px; line-height:1.2; overflow-wrap:anywhere; }
+  .fun .fd{ font-size: 11.5px; color: var(--ink-soft); margin-top: 3px; line-height:1.4; }
+
+  footer{ text-align:center; font-size: 11.5px; color: var(--ink-faint); padding: 6px 20px 10px; }
+
+  @media (max-width: 560px){
+    .page{ padding: calc(20px + env(safe-area-inset-top)) 16px 0; }
+    .year-tabs{ padding: 8px 16px; margin-bottom: 14px; }
+    .stats-strip{ margin: 0 -16px; padding: 0 16px; scroll-padding-inline: 16px; }
+    .months{ gap: 5px; padding: 10px; }
+    .fun-grid{ grid-template-columns: 1fr 1fr; }
+    .fun{ padding: 10px 12px; }
+    .fun .fb{ font-size: 16px; }
+    .fun .fd{ font-size: 11px; }
+    .genre-row{ grid-template-columns: minmax(0, 1fr) 64px 24px; gap: 8px; padding: 9px 12px; }
+    .genre-row .gn{ font-size: 13px; white-space: normal; line-height: 1.25; }
   }
 
-  .page{ max-width: 1060px; margin:0 auto; }
-
-  /* header */
-  header{
-    text-align:center;
-    margin-bottom: 44px;
-  }
-  header .eyebrow{
-    font-family:'Space Mono', monospace;
-    letter-spacing: 0.28em;
-    font-size: 11px;
-    text-transform: uppercase;
-    color: var(--brass);
-    margin-bottom: 10px;
-  }
-  header h1{
-    font-family:'Fraunces', serif;
-    font-optical-sizing:auto;
-    font-weight:600;
-    font-size: clamp(34px, 5vw, 54px);
-    margin: 0 0 8px;
-    color: var(--card);
-  }
-  header p{
-    font-size: 15px;
-    color: #f0c9dc;
-    margin:0;
-  }
-
-  /* generic index card */
-  .card{
-    background: var(--card);
-    color: var(--ink);
-    border-radius: 3px;
-    box-shadow: 0 10px 0 -4px var(--card-shadow), 0 14px 24px rgba(0,0,0,0.35);
-    position: relative;
-  }
-  .card::before{
-    content:"";
-    position:absolute; left:0; right:0; top: 46px;
-    height:1px;
-    background: repeating-linear-gradient(to bottom, transparent, transparent 27px, rgba(43,33,24,0.12) 27px, rgba(43,33,24,0.12) 28px);
-    bottom: 16px;
-    pointer-events:none;
-    opacity: 0.5;
-  }
-  .card .card-inner{ position:relative; z-index:1; }
-
-  /* HERO: due date card */
-  .hero-card{ padding: 34px 32px 30px; margin-bottom: 30px; }
-  .hero-top{
-    display:flex; justify-content:space-between; align-items:flex-start;
-    flex-wrap: wrap; gap: 16px;
-    border-bottom: 2px solid var(--ink);
-    padding-bottom: 14px; margin-bottom: 20px;
-  }
-  .hero-title{
-    font-family:'Space Mono', monospace;
-    text-transform: uppercase;
-    letter-spacing: 0.12em;
-    font-size: 13px;
-    font-weight: 700;
-  }
-  .hero-title span{ display:block; font-size:10px; font-weight:400; letter-spacing:0.1em; color: var(--ink-soft); margin-top:3px; }
-  .hero-count{ text-align:right; }
-  .hero-count .num{
-    font-family:'Fraunces', serif;
-    font-weight: 700;
-    font-size: 46px;
-    line-height: 1;
-  }
-  .hero-count .num small{ font-family:'Space Mono',monospace; font-size:20px; font-weight:400; color: var(--ink-soft); }
-  .hero-count .lbl{ font-family:'Space Mono', monospace; font-size: 10px; letter-spacing:0.15em; text-transform:uppercase; color: var(--ink-soft); }
-
-  .stamp-grid{
-    display:grid;
-    grid-template-columns: repeat(12, 1fr);
-    gap: 8px;
-    margin-bottom: 22px;
-  }
-  .month-slot{
-    aspect-ratio: 1;
-    border: 1.5px dashed rgba(43,33,24,0.3);
-    border-radius: 50%;
-    display:flex; align-items:center; justify-content:center;
-    position: relative;
-  }
-  .month-slot .mlabel{
-    position:absolute; bottom:-18px; left:0; right:0; text-align:center;
-    font-family:'Space Mono',monospace; font-size:9px; letter-spacing:0.05em; color: var(--ink-soft);
-  }
-  .month-slot.stamped{
-    border-style: solid;
-    border-color: var(--stamp);
-  }
-  .month-slot .stamp-mark{
-    font-family:'Space Mono', monospace;
-    font-weight:700;
-    font-size: 14px;
-    color: var(--stamp);
-    transform: rotate(-11deg);
-    line-height:1;
-  }
-  .month-slot .stamp-mark small{ display:block; font-size:8px; letter-spacing:0.06em; text-align:center; }
-  .month-slot.clickable{ cursor:pointer; transition: transform .15s ease-out; }
-  .month-slot.clickable:hover{ transform: scale(1.08); }
-  .month-slot.clickable:focus-visible{ outline:2px solid var(--stamp); outline-offset:3px; }
-
-  .hero-foot{
-    display:flex; gap: 24px; flex-wrap:wrap;
-    margin-top: 28px;
-    padding-top: 16px;
-    border-top: 1px dashed rgba(43,33,24,0.25);
-  }
-  .hero-foot .stat{ flex:1; min-width:150px; }
-  .hero-foot .stat .v{ font-family:'Fraunces',serif; font-weight:600; font-size:22px; }
-  .hero-foot .stat .l{ font-family:'Space Mono',monospace; font-size:10px; text-transform:uppercase; letter-spacing:0.1em; color: var(--ink-soft); }
-  .stretch-goal{ margin-top:20px; padding-top:18px; border-top:1.5px dashed var(--brass); }
-  .stretch-goal-title{ font-family:'Space Mono',monospace; font-size:11px; text-transform:uppercase; letter-spacing:0.12em; color: var(--ink-soft); margin-bottom:12px; }
-  .stretch-goal-title span{ margin-left:8px; color: var(--stamp); font-weight:600; text-transform:none; letter-spacing:0.02em; }
-
-  /* two column stat charts */
-  .grid-2{ display:grid; grid-template-columns: 1fr 1fr; gap: 22px; margin-bottom: 30px; }
-  @media (max-width: 720px){ .grid-2{ grid-template-columns: 1fr; } }
-
-  @media (max-width: 640px){
-    body{ padding: calc(28px + env(safe-area-inset-top)) 12px 60px; }
-    .hero-card{ padding: 22px 16px 20px; }
-    .hero-top{ padding-bottom: 12px; margin-bottom: 16px; }
-    .hero-count{ text-align:left; }
-    .stamp-grid{
-      grid-template-columns: repeat(6, 1fr);
-      gap: 30px 8px;
-      margin-bottom: 30px;
-    }
-    .month-slot .stamp-mark{ font-size: 12px; }
-    .month-slot .stamp-mark small{ font-size: 7px; }
-    .month-slot .mlabel{ font-size: 8px; bottom: -16px; }
-    .panel{ padding: 20px 18px 22px; }
-    .shelf-panel{ padding: 22px 18px 24px; }
-    .spine-name{ width: 110px; font-size: 12px; }
-    .missing-panel{ padding: 20px 18px; }
-  }
-
-  .panel{ padding: 24px 26px 26px; }
-  .panel h2{
-    font-family:'Fraunces', serif;
-    font-size: 19px;
-    font-weight:600;
-    margin: 0 0 3px;
-  }
-  .panel .sub{
-    font-family:'Space Mono', monospace;
-    font-size: 10px;
-    text-transform:uppercase;
-    letter-spacing: 0.1em;
-    color: var(--ink-soft);
-    margin-bottom: 18px;
-  }
-
-  .bar-row{ display:flex; align-items:center; gap:10px; margin-bottom: 9px; }
-  .bar-row .m-label{ width: 34px; font-family:'Space Mono',monospace; font-size:10px; color: var(--ink-soft); flex-shrink:0; }
-  .bar-track{ flex:1; background: rgba(43,33,24,0.08); border-radius: 2px; height: 16px; position:relative; overflow:hidden; }
-  .bar-fill{ height:100%; border-radius: 2px; }
-  .bar-val{ width: 30px; text-align:right; font-family:'Space Mono',monospace; font-size:11px; font-weight:700; flex-shrink:0; }
-
-  /* genre shelf */
-  .shelf-panel{ padding: 28px 30px 30px; margin-bottom: 30px; }
-  .shelf-panel h2{ font-family:'Fraunces',serif; font-weight:600; font-size:22px; margin:0 0 3px; }
-  .shelf-panel .sub{ font-family:'Space Mono',monospace; font-size:10px; text-transform:uppercase; letter-spacing:0.1em; color:var(--ink-soft); margin-bottom:22px; }
-
-  .spine-row{ display:flex; align-items:center; gap: 14px; margin-bottom: 10px; cursor:pointer; transition:transform .15s ease-out; border-radius:4px; }
-  .spine-row:hover{ transform: translateX(4px); }
-  .spine-row:hover .spine-name{ text-decoration:underline; text-decoration-thickness:1.5px; }
-  .spine-row:focus-visible{ outline:2px solid var(--stamp); outline-offset:3px; }
-  .spine-subhead{
-    font-family:'Space Mono',monospace; font-size:10px; text-transform:uppercase;
-    letter-spacing:0.14em; color:var(--ink-soft);
-    margin: 20px 0 12px; padding-top: 14px;
-    border-top: 1px dashed rgba(43,33,24,0.22);
-  }
-
-  /* genre detail modal */
+  /* pop-ups */
   .modal-overlay{
-    display:none;
-    position:fixed; inset:0; z-index:500;
-    background: rgba(51,25,44,0.72);
-    align-items:flex-start; justify-content:center;
-    padding: 60px 20px;
-    overflow-y:auto;
+    position:fixed; inset:0; z-index: 500; display:none; align-items:center; justify-content:center;
+    background: rgba(36,32,24,0.45); padding: calc(20px + env(safe-area-inset-top)) 16px calc(20px + env(safe-area-inset-bottom));
+    overflow-y:auto; -webkit-overflow-scrolling: touch;
   }
   .modal-overlay.open{ display:flex; }
   .modal-panel{
-    background: var(--card);
-    color: var(--ink);
-    border-radius: 10px;
-    max-width: 780px;
-    width: 100%;
-    padding: 32px 32px 36px;
-    position: relative;
-    box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+    position:relative; background: var(--surface); border-radius: 14px; width:100%; max-width: 640px;
+    padding: 22px 18px 20px; margin: auto; box-shadow: 0 20px 50px rgba(36,32,24,0.25);
   }
   .modal-close{
-    position:absolute; top:18px; right:18px;
-    background: rgba(92,58,74,0.08);
-    border:0; border-radius:50%;
-    width:34px; height:34px;
-    font-size:18px; line-height:1;
-    cursor:pointer; color:var(--ink);
-    display:flex; align-items:center; justify-content:center;
+    position:absolute; top:10px; right:10px; width:34px; height:34px; border-radius:50%;
+    border: 0; background: var(--surface-alt); color: var(--ink-soft); font-size: 14px; cursor:pointer;
   }
-  .modal-close:hover{ background: rgba(92,58,74,0.16); }
-  .modal-eyebrow{
-    font-family:'Space Mono',monospace; font-size:10px; text-transform:uppercase;
-    letter-spacing:0.15em; color: var(--stamp); margin-bottom:6px;
+  .modal-eyebrow{ font-size: 11px; font-weight:700; text-transform:uppercase; letter-spacing:.08em; color: var(--accent); margin-bottom: 4px; padding-right: 40px; }
+  .modal-title{ font-size: 21px; font-weight:700; margin: 0 0 2px; padding-right: 40px; }
+  .modal-sub{ font-size: 12.5px; color: var(--ink-soft); margin-bottom: 14px; }
+  .book-grid{ display:grid; grid-template-columns: repeat(auto-fill, minmax(92px, 1fr)); gap: 14px 10px; }
+  .gbook{ text-align:left; background:none; border:0; padding:0; font-family:'Inter',sans-serif; color: var(--ink); cursor:pointer; }
+  .gbook:focus-visible{ outline:2px solid var(--accent); outline-offset:3px; border-radius:4px; }
+  .cover{
+    width:100%; aspect-ratio: 2/3; border-radius: 5px; overflow:hidden; position:relative;
+    background: var(--surface-alt); border: 1px solid var(--border); margin-bottom: 6px;
+    display:flex; align-items:center; justify-content:center; padding: 6px;
+    font-size: 10px; font-weight:600; line-height:1.25; color: var(--ink-soft); text-align:center; overflow-wrap:anywhere;
   }
-  .modal-title{
-    font-family:'Fraunces',serif; font-weight:700; font-size:28px; margin:0 0 4px;
-  }
-  .modal-sub{ font-size:13px; color:var(--ink-soft); margin-bottom:24px; }
-  .modal-book-grid{
-    display:grid;
-    grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
-    gap: 20px;
-  }
-  .modal-subgroups{ display:flex; flex-direction:column; }
-  .modal-book{ text-align:center; }
-  .modal-book-cover{
-    width:100%; aspect-ratio: 2/3;
-    border-radius: 3px 8px 8px 3px/2px;
-    box-shadow: 0 6px 14px rgba(0,0,0,0.25);
-    position:relative;
-    overflow:hidden;
-    display:flex; align-items:center; justify-content:center;
-    margin-bottom:8px;
-    padding: 10px;
-    font-family:'Fraunces',serif; font-weight:600; font-size:12px; line-height:1.25;
-    color: rgba(0,0,0,0.7);
-    text-shadow: 0 1px 0 rgba(255,255,255,0.25);
-  }
-  .modal-book-cover img{
-    position:absolute; inset:0;
-    width:100%; height:100%; object-fit:cover;
-    border-radius: inherit;
-    display:block;
-  }
-  /* spicy sticker, bottom-left corner of the cover */
-  .modal-book-spicy{
-    position:absolute; bottom:5px; left:5px; z-index:2;
-    width:22px; height:22px; border-radius:50%;
-    background:#fff5f2; border:1.5px solid rgba(255,255,255,0.7);
-    box-shadow:0 2px 4px rgba(0,0,0,0.35);
-    display:flex; align-items:center; justify-content:center;
-    font-size:13px; line-height:1; transform:rotate(8deg);
-  }
-  .modal-book-title{ font-size:11.5px; font-weight:600; line-height:1.3; margin-bottom:2px; }
-  .modal-book-author{ font-size:10.5px; color:var(--ink-soft); }
-  .modal-book-date{ font-family:'Space Mono',monospace; font-size:9.5px; color:var(--ink-soft); margin-top:2px; }
-  .modal-book-rating{ font-size:15px; color:var(--stamp); margin-top:3px; letter-spacing:0.03em; }
-  /* number + single star rating widget: the numeric rating followed by
-     one solid star icon using currentColor, so it matches whatever
-     color/size the wrapping element (.modal-book-rating) sets. */
-  .star-rating{ display:inline-flex; align-items:center; vertical-align:middle; white-space:nowrap; }
-  .star-rating-num{ font-weight:700; }
-  .modal-subgroup-heading{
-    font-family:'Space Mono',monospace; font-size:10px; text-transform:uppercase;
-    letter-spacing:0.12em; color:var(--stamp); margin:20px 0 12px;
-  }
-  .modal-subgroup-heading:first-child{ margin-top:0; }
-  .modal-book{ cursor:pointer; }
-  .modal-book:focus-visible{ outline:2px solid var(--stamp); outline-offset:3px; border-radius:4px; }
+  .cover img{ position:absolute; inset:0; width:100%; height:100%; object-fit:cover; }
+  .gbook .t{ font-size: 11.5px; font-weight:600; line-height:1.3;
+    display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
+  .gbook .a{ font-size: 10.5px; color: var(--ink-soft); margin-top: 1px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .gbook .r{ font-size: 12px; color: var(--star); margin-top: 2px; }
+  .group-head{ grid-column: 1 / -1; font-size: 11px; font-weight:700; text-transform:uppercase; letter-spacing:.06em; color: var(--ink-soft); margin-top: 6px; }
+  .group-head:first-child{ margin-top: 0; }
 
-  /* book note popup, nested above the genre modal */
-  #bookNoteModalOverlay{ z-index:600; }
-  .modal-panel.book-note-panel{
-    max-width:360px; display:flex; flex-direction:column; align-items:center; text-align:center;
-    padding:30px 30px 32px;
-  }
-  .book-note-cover{
-    width:100%; max-width:220px; aspect-ratio: 2/3; margin: 0 auto 16px; border-radius:6px; overflow:hidden;
-    box-shadow:0 10px 24px rgba(0,0,0,0.35); position:relative; background: var(--wood-dark, #3a2a30);
-  }
-  .book-note-cover img{ position:absolute; inset:0; width:100%; height:100%; object-fit:contain; }
-  .book-note-title{ font-family:'Fraunces',serif; font-weight:700; font-size:19px; margin:0 0 3px; line-height:1.2; }
-  .book-note-author{ font-size:12.5px; color:var(--ink-soft); margin-bottom:8px; }
-  .book-note-genres{ display:flex; flex-wrap:wrap; justify-content:center; gap:5px; margin-bottom:8px; }
-  .book-note-genre-pill{
-    display:inline-block; font-size:10.5px; letter-spacing:0.02em; font-style:italic;
-    padding:3px 11px; border-radius:20px; background: rgba(226,120,154,0.16); color: var(--ink);
-  }
-  .book-note-meta{ font-size:11.5px; color:var(--stamp); letter-spacing:0.02em; margin-bottom:10px; }
-  .book-note-text{ font-size:12.5px; font-style:italic; color:var(--ink-soft); line-height:1.5; border-left:2px solid var(--stamp); padding-left:10px; text-align:left; }
-  .spine-name{ width: 150px; flex-shrink:0; font-size: 13px; font-weight:600; }
-  .spine-track{ flex:1; height: 26px; background: rgba(43,33,24,0.06); border-radius: 2px; position:relative; }
-  .spine-fill{
-    height:100%;
-    border-radius: 2px 6px 6px 2px;
-    display:flex; align-items:center; justify-content:flex-end;
-    padding-right:8px;
-    min-width: 30px;
-  }
-  .spine-fill span{ font-family:'Space Mono',monospace; font-size:11px; font-weight:700; color:#4a2740; }
-
-  /* missing genres */
-  .missing-panel{ padding: 26px 30px; margin-bottom: 30px; }
-  .missing-panel h2{ font-family:'Fraunces',serif; font-weight:600; font-size:20px; margin:0 0 3px; }
-  .missing-panel .sub{ font-family:'Space Mono',monospace; font-size:10px; text-transform:uppercase; letter-spacing:0.1em; color:var(--ink-soft); margin-bottom:18px; }
-  .missing-tags{ display:flex; flex-wrap:wrap; gap: 10px; }
-  .missing-tag{
-    font-family:'Space Mono', monospace;
-    font-size: 11px;
-    padding: 7px 12px;
-    border: 1.5px dashed var(--ink-soft);
-    border-radius: 3px;
-    color: var(--ink-soft);
-    background: repeating-linear-gradient(45deg, transparent, transparent 6px, rgba(43,33,24,0.03) 6px, rgba(43,33,24,0.03) 12px);
-  }
-  .missing-empty{ font-size:13px; color:var(--ink-soft); font-style:italic; }
-
-  /* fun stats */
-  .fun-grid{
-    display:grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 18px;
-  }
-  @media (max-width: 780px){ .fun-grid{ grid-template-columns: repeat(2,1fr); } }
-  @media (max-width: 500px){ .fun-grid{ grid-template-columns: 1fr; } }
-
-  .fun-card{ padding: 20px 20px 18px; }
-  .fun-cover-wrap{
-    width: 48px; height: 72px;
-    border-radius: 0 4px 4px 0/2px;
-    float:right; margin: -4px 0 8px 10px;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-    position:relative; overflow:hidden;
-    display:flex; align-items:center; justify-content:center;
-    font-size: 18px;
-  }
-  .fun-cover-wrap img{ position:absolute; inset:0; width:100%; height:100%; object-fit:cover; }
-  .fun-card .icon-label{ font-family:'Space Mono',monospace; font-size: 10px; text-transform:uppercase; letter-spacing:0.1em; color: var(--stamp); margin-bottom:8px; }
-  .fun-card .big{ font-family:'Fraunces',serif; font-weight:700; font-size: 26px; line-height:1.15; margin-bottom:6px; }
-  .fun-card .desc{ font-size: 12.5px; color: var(--ink-soft); line-height:1.4; }
-
-  section.section-head{ margin: 0 0 16px; }
-  section.section-head h2{ font-family:'Fraunces',serif; font-size:24px; font-weight:600; margin:0; color:var(--card); }
-  section.section-head p{ margin: 4px 0 0; font-size:13px; color:#d8c8b0; }
-
-  footer{
-    text-align:center;
-    margin-top: 50px;
-    font-family:'Space Mono', monospace;
-    font-size: 11px;
-    color: #e3aec9;
-    letter-spacing: 0.05em;
-  }
+  .detail-panel{ max-width: 380px; text-align:center; }
+  .detail-cover{ width: 130px; margin: 4px auto 12px; }
+  .detail-title{ font-size: 19px; font-weight:700; margin: 0 0 3px; }
+  .detail-author{ font-size: 13px; color: var(--ink-soft); }
+  .detail-pills{ display:flex; flex-wrap:wrap; justify-content:center; gap: 5px; margin-top: 10px; }
+  .detail-pills span{ font-size: 11px; font-weight:600; padding: 3px 9px; border-radius: 20px; background: var(--accent-soft); color: var(--accent); }
+  .detail-meta{ font-size: 12.5px; color: var(--ink-soft); margin-top: 10px; }
+  .detail-meta .star-rating{ color: var(--star); }
+  .detail-note{ font-size: 12.5px; font-style:italic; color: var(--ink-soft); line-height:1.5; text-align:left;
+    border-left: 2px solid var(--accent); padding-left: 10px; margin-top: 12px; white-space: pre-line; }
 </style>
-<script src="library-tabbar.js" data-theme="plum"></script>
+<script src="library-tabbar.js" data-theme="paper"></script>
 </head>
 <body>
 
 <div class="page">
-
-
   <header>
-    <h1>The Reading Record</h1>
-    <p id="headerSub">Loading your shelf...</p>
+    <h1 id="heroTitle">Reading Stats</h1>
+    <p id="heroSub">Loading…</p>
   </header>
+</div>
 
-  <!-- HERO -->
-  <div class="card hero-card">
-    <div class="card-inner">
-      <div class="hero-top">
-        <div class="hero-title">Checkout History<span id="dateRange">Jan 2026 to present</span></div>
-        <div class="hero-count">
-          <div class="num" id="heroCount">0<small>/80</small></div>
-          <div class="lbl">Books Borrowed From Your Own Shelf</div>
-        </div>
-      </div>
+<nav class="year-tabs" aria-label="Pick a year"><div class="year-tabs-inner" id="yearTabs"></div></nav>
 
-      <div class="stamp-grid" id="stampGrid"></div>
+<div class="page page-body">
+  <section class="block" id="goalBlock"></section>
+  <section class="block"><div class="stats-strip" id="statsStrip"></div></section>
 
-      <div class="hero-foot" id="heroFoot"></div>
-
-      <div class="stretch-goal">
-        <div class="stretch-goal-title">🚀 Stretch Goal — 100 Books<span id="stretchProgress"></span></div>
-        <div class="hero-foot" id="stretchFoot"></div>
-      </div>
-    </div>
-  </div>
-
-  <!-- BOOKS / PAGES PER MONTH -->
-  <div class="grid-2">
-    <div class="card panel">
-      <div class="card-inner">
-        <h2>Books Per Month</h2>
-        <div class="sub">How many you finished, month by month</div>
-        <div id="booksChart"></div>
-      </div>
-    </div>
-    <div class="card panel">
-      <div class="card-inner">
-        <h2>Pages Per Month</h2>
-        <div class="sub">Total pages turned, month by month</div>
-        <div id="pagesChart"></div>
-      </div>
-    </div>
-  </div>
-
-  <!-- GENRE SHELF -->
-  <div class="card shelf-panel">
-    <div class="card-inner">
-      <h2>Your Shelf, By Genre</h2>
-      <div class="sub">Sorted by how much shelf space each genre has earned</div>
-      <div id="genreShelf"></div>
-    </div>
-  </div>
-
-  <!-- MISSING GENRES -->
-  <div class="card missing-panel">
-    <div class="card-inner">
-      <h2>Not Yet Checked Out</h2>
-      <div class="sub">Genres with zero appearances on your 2026 shelf</div>
-      <div class="missing-tags" id="missingGenres"></div>
-    </div>
-  </div>
-
-  <!-- FUN STATS -->
-  <section class="section-head">
-    <h2>Odds and Ends</h2>
-    <p>A few numbers with no practical use whatsoever</p>
+  <section class="block">
+    <div class="section-label">Books per month</div>
+    <div class="card"><div class="months" id="months"></div><div class="months-foot">Tap a month to see what you read.</div></div>
   </section>
-  <div class="fun-grid" id="funGrid"></div>
 
-  <footer id="dataNote">🌙 Built from your 2026 Goodreads reading challenge export.</footer>
+  <section class="block" id="pagesBlock">
+    <div class="section-label">Pages per month</div>
+    <div class="card bars" id="pagesChart"></div>
+  </section>
 
+  <section class="block">
+    <div class="section-label">By genre</div>
+    <div class="card" id="genreCard"></div>
+  </section>
+
+  <section class="block">
+    <div class="section-label">Odds and ends</div>
+    <div class="fun-grid" id="funGrid"></div>
+  </section>
+
+  <footer id="pageFoot"></footer>
 </div>
 
-<!-- GENRE DETAIL MODAL -->
-<div class="modal-overlay" id="genreModalOverlay">
-  <div class="modal-panel" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
-    <button class="modal-close" id="modalClose" aria-label="Close">✕</button>
-    <div class="modal-eyebrow" id="modalEyebrow">On This Shelf</div>
-    <h2 class="modal-title" id="modalTitle"></h2>
-    <div class="modal-sub" id="modalSub"></div>
-    <div class="modal-book-grid" id="modalBookGrid"></div>
+<!-- list of books (a month or a genre) -->
+<div class="modal-overlay" id="listOverlay">
+  <div class="modal-panel" role="dialog" aria-modal="true" aria-labelledby="listTitle">
+    <button class="modal-close" id="listClose" aria-label="Close">✕</button>
+    <div class="modal-eyebrow" id="listEyebrow"></div>
+    <h2 class="modal-title" id="listTitle"></h2>
+    <div class="modal-sub" id="listSub"></div>
+    <div class="book-grid" id="listGrid"></div>
   </div>
 </div>
 
-<!-- BOOK NOTE MODAL (nested on top of the genre modal) -->
-<div class="modal-overlay" id="bookNoteModalOverlay">
-  <div class="modal-panel book-note-panel" role="dialog" aria-modal="true" aria-labelledby="bookNoteTitle">
-    <button class="modal-close" id="bookNoteClose" aria-label="Close">✕</button>
-    <div class="book-note-cover" id="bookNoteCover"></div>
-    <h3 class="book-note-title" id="bookNoteTitle"></h3>
-    <div class="book-note-author" id="bookNoteAuthor"></div>
-    <div class="book-note-genres" id="bookNoteGenres"></div>
-    <div class="book-note-meta" id="bookNoteMeta"></div>
-    <div class="book-note-text" id="bookNoteText"></div>
+<!-- one book, on top of the list -->
+<div class="modal-overlay" id="detailOverlay">
+  <div class="modal-panel detail-panel" role="dialog" aria-modal="true" aria-labelledby="detailTitle">
+    <button class="modal-close" id="detailClose" aria-label="Close">✕</button>
+    <div class="detail-cover"><div class="cover" id="detailCover"></div></div>
+    <h3 class="detail-title" id="detailTitle"></h3>
+    <div class="detail-author" id="detailAuthor"></div>
+    <div class="detail-pills" id="detailPills"></div>
+    <div class="detail-meta" id="detailMeta"></div>
+    <div class="detail-note" id="detailNote"></div>
   </div>
 </div>
 
 <script src="reading-data.js"></script>
 <script>
-/* GOAL, books, SERIES, and formatRating come from reading-data.js */
+/* GOAL, books, pastReads, SERIES, parseLocalDate, formatRating and
+   starRatingHTML come from reading-data.js.
 
-/* Master list used only to figure out what's missing from the shelf.
-   Fiction genres first, then nonfiction. Young Adult / Middle Grade are
-   age categories (shown apart from the genres), not part of this list. */
+   Pick a year at the top. This year's books have exact finish dates and
+   page counts, so it gets the goal card, pages chart and pace stats.
+   Earlier years (pastReads) only record the month, so those parts hide. */
+
 const MASTER_GENRES = [
   "Fantasy","Science Fiction","Suspense","Horror","Romance","Literary/Contemporary Fiction",
-  "Classic Literature","Historical Fiction","Mythology","Graphic Novel",
-  "Nonfiction","Memoir/Biography"
+  "Classic Literature","Historical Fiction","Mythology","Graphic Novel","Nonfiction","Memoir/Biography"
 ];
-
-/* Age categories — filter like a genre but tracked separately from the
-   genre shelf above. */
 const AGE_TAGS = ["Young Adult", "Middle Grade"];
-
-/* Palette cycled across genre bars */
-const SPINE_COLORS = ["#e2789a","#b8c4e8","#a8d5ba","#f0c987","#c9a0c9","#e8a87c","#8fc9ce","#d9a4c0"];
-
-/* Emoji per genre, for a little levity on the shelf */
 const GENRE_EMOJI = {
   "Fantasy":"🐉","Science Fiction":"🚀","Suspense":"🔪","Horror":"🎃","Romance":"💛",
   "Literary/Contemporary Fiction":"📖","Classic Literature":"🕰️","Historical Fiction":"🏛️",
   "Mythology":"🏺","Graphic Novel":"🎨","Nonfiction":"🧠","Memoir/Biography":"🪞",
   "Young Adult":"🎒","Middle Grade":"🧸","Spicy":"🌶️"
 };
-
-/* ---------------- date helpers ---------------- */
-const TODAY = new Date();
-const YEAR = 2026;
-const MONTH_LABELS = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
-
-function monthIndex(dateStr){ return parseLocalDate(dateStr).getMonth(); } // 0-11
-
-/* ---------------- aggregate ---------------- */
+const MONTHS = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+const MONTHS_LONG = ["January","February","March","April","May","June","July","August","September","October","November","December"];
 const STRETCH_GOAL = 100;
-const totalRead = books.length;
-const remaining = Math.max(GOAL - totalRead, 0);
-const remainingStretch = Math.max(STRETCH_GOAL - totalRead, 0);
+const GOAL_YEAR = 2026;           // GOAL in reading-data.js is this year's goal
+const MIN_BOOKS_FOR_YEAR = 5;     // years with fewer dated books don't get a button
+const TODAY = new Date();
 
-const booksByMonth = new Array(12).fill(0);
-const pagesByMonth = new Array(12).fill(0);
+const esc = t => String(t == null ? "" : t).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/"/g,"&quot;");
+const asList = g => (Array.isArray(g) ? g : [g]).filter(Boolean);
+
+/* ---------- one list of every dated book ---------- */
+const seriesAuthor = new Map();
+SERIES.forEach(s => s.books.forEach(b => seriesAuthor.set(b.title, s.author)));
+
+const ALL = [];
+const seen = new Set();
 books.forEach(b => {
-  const m = monthIndex(b.dateFinished);
-  booksByMonth[m]++;
-  pagesByMonth[m] += b.pages;
+  const d = parseLocalDate(b.dateFinished);
+  seen.add(b.title);
+  ALL.push({ title: b.title, author: b.author, genres: asList(b.genre), subgenre: b.subgenre, cover: b.cover,
+    rating: b.rating, spicy: !!b.spicy, note: b.note, pages: b.pages || null, date: d, exact: true,
+    year: d.getFullYear(), month: d.getMonth() });
+});
+let undated = 0;
+pastReads.forEach(b => {
+  if(seen.has(b.title)) return;
+  const m = (b.readDate || "").match(/^(\w+)\s+(\d{4})$/);
+  const d = m ? new Date(`${m[1]} 1, ${m[2]}`) : null;
+  if(!d || isNaN(d)){ undated++; return; }
+  ALL.push({ title: b.title, author: b.author || seriesAuthor.get(b.title) || "Unknown", genres: asList(b.genre),
+    subgenre: b.subgenre, cover: b.cover, rating: b.rating, spicy: !!b.spicy, note: b.note, pages: null,
+    date: d, exact: false, year: d.getFullYear(), month: d.getMonth() });
 });
 
-const currentMonth = TODAY.getMonth(); // 0-indexed, July = 6
+const yearCounts = {};
+ALL.forEach(b => { yearCounts[b.year] = (yearCounts[b.year] || 0) + 1; });
+const YEARS = Object.keys(yearCounts).map(Number)
+  .filter(y => yearCounts[y] >= MIN_BOOKS_FOR_YEAR || y === TODAY.getFullYear())
+  .sort((a, b) => b - a);
 
-const endOfYear = new Date(YEAR, 11, 31);
-const daysLeftInYear = Math.round((endOfYear - TODAY) / 86400000);
-const daysPerBookNeeded = remaining > 0 ? (daysLeftInYear / remaining) : 0;
+let year = Number(new URLSearchParams(location.search).get("year"));
+if(!YEARS.includes(year)) year = YEARS.includes(TODAY.getFullYear()) ? TODAY.getFullYear() : YEARS[0];
 
-// "Books per month needed" = books left / whole calendar months left.
-// Whole months left = full months still ahead, NOT counting the current
-// (already in-progress) month — e.g. on any day in September, that's
-// Oct + Nov + Dec = 3. Floored at 1 so December never divides by zero.
-// This is deliberately NOT the same number as daysLeftInYear used in
-// daysPerBookNeeded above (that one is fractional/day-based on purpose,
-// for "finish one every N days"). Do not "fix" this into agreement —
-// they're answering two different questions on purpose.
-const monthsLeft = Math.max(11 - currentMonth, 1);
-const paceNeededPerMonth = remaining > 0 ? (remaining / monthsLeft) : 0;
-
-const paceNeededPerMonthStretch = remainingStretch > 0 ? (remainingStretch / monthsLeft) : 0;
-const daysPerBookNeededStretch = remainingStretch > 0 ? (daysLeftInYear / remainingStretch) : 0;
-
-function bookGenres(b){ return Array.isArray(b.genre) ? b.genre : [b.genre]; }
-
-const genreCounts = {};
-books.forEach(b => { bookGenres(b).forEach(g => { genreCounts[g] = (genreCounts[g] || 0) + 1; }); });
-/* real genres on the shelf, age categories broken out into their own rows */
-const genreList = Object.entries(genreCounts)
-  .filter(([g]) => !AGE_TAGS.includes(g))
-  .sort((a,b) => b[1]-a[1]);
-const ageTagList = AGE_TAGS
-  .map(t => [t, genreCounts[t] || 0])
-  .filter(([, c]) => c > 0)
-  .sort((a,b) => b[1]-a[1]);
-const spicyBooks = books.filter(b => b.spicy);
-const missingGenres = MASTER_GENRES.filter(g => !genreCounts[g]);
-
-const totalPages = books.reduce((s,b) => s + b.pages, 0);
-const avgPages = Math.round(totalPages / totalRead);
-/* days elapsed this year, counting today as day 1 of Jan 1 */
-const daysElapsed = Math.floor((new Date(TODAY.getFullYear(), TODAY.getMonth(), TODAY.getDate()) - new Date(TODAY.getFullYear(), 0, 1)) / 86400000) + 1;
-const pagesPerDay = totalPages / daysElapsed;
-const longest = books.reduce((a,b) => b.pages > a.pages ? b : a, books[0]);
-const shortest = books.reduce((a,b) => b.pages < a.pages ? b : a, books[0]);
-
-const authorCounts = {};
-books.forEach(b => { authorCounts[b.author] = (authorCounts[b.author]||0)+1; });
-const topAuthor = Object.entries(authorCounts).sort((a,b)=>b[1]-a[1])[0];
-
-const sortedByDate = [...books].sort((a,b) => parseLocalDate(a.dateFinished) - parseLocalDate(b.dateFinished));
-let fastestGap = Infinity, slowestGap = 0, gapSum = 0, gapCount = 0;
-for(let i=1;i<sortedByDate.length;i++){
-  const gap = (parseLocalDate(sortedByDate[i].dateFinished) - parseLocalDate(sortedByDate[i-1].dateFinished)) / 86400000;
-  fastestGap = Math.min(fastestGap, gap);
-  slowestGap = Math.max(slowestGap, gap);
-  gapSum += gap; gapCount++;
+/* ---------- year chips ---------- */
+const yearTabs = document.getElementById("yearTabs");
+function renderYearTabs(){
+  yearTabs.innerHTML = YEARS.map(y =>
+    `<button type="button" class="year-chip" data-year="${y}" aria-pressed="${y === year}">${y}<span class="n">${yearCounts[y] || 0}</span></button>`
+  ).join("");
 }
-const avgGap = gapCount ? (gapSum/gapCount) : 0;
-
-const bestMonthIdx = booksByMonth.indexOf(Math.max(...booksByMonth));
-const stackHeightInches = totalPages * 0.0018 * 25.4 === 0 ? 0 : totalPages * 0.045; // rough avg page thickness in mm converted, simplified below
-/* simpler: assume ~0.1mm per page average, convert total to feet */
-const stackFeet = (totalPages * 0.1) / 304.8;
-
-/* ---------------- render header ---------------- */
-document.getElementById("headerSub").textContent =
-  `${totalRead} of ${GOAL} books, ${totalPages.toLocaleString()} pages, as of ${TODAY.toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'})}`;
-
-/* ---------------- render hero ---------------- */
-document.getElementById("heroCount").innerHTML = `${totalRead}<small>/${GOAL}</small>`;
-
-const stampGrid = document.getElementById("stampGrid");
-MONTH_LABELS.forEach((label, i) => {
-  const count = booksByMonth[i];
-  const isFuture = i > currentMonth;
-  const slot = document.createElement("div");
-  slot.className = "month-slot" + (count > 0 ? " stamped" : "");
-  slot.innerHTML = count > 0
-    ? `<div class="stamp-mark">${count}<small>${isFuture ? "" : "read"}</small></div>`
-    : "";
-  const lab = document.createElement("div");
-  lab.className = "mlabel";
-  lab.textContent = label;
-  slot.appendChild(lab);
-  if(count > 0){
-    slot.classList.add("clickable");
-    slot.setAttribute("tabindex", "0");
-    slot.setAttribute("role", "button");
-    slot.setAttribute("aria-label", `View ${count} book${count === 1 ? "" : "s"} read in ${label}`);
-    const open = () => openMonthModal(i, label);
-    slot.addEventListener("click", open);
-    slot.addEventListener("keydown", (e) => { if(e.key === "Enter" || e.key === " "){ e.preventDefault(); open(); } });
+yearTabs.addEventListener("click", e => {
+  const chip = e.target.closest(".year-chip");
+  if(!chip) return;
+  year = Number(chip.dataset.year);
+  const url = new URL(location.href);
+  if(year === TODAY.getFullYear()) url.searchParams.delete("year"); else url.searchParams.set("year", year);
+  history.replaceState(null, "", url);
+  render();
+  const tabs = document.querySelector(".year-tabs");
+  if(tabs.getBoundingClientRect().top <= parseFloat(getComputedStyle(tabs).top) + 1){
+    window.scrollTo({ top: tabs.offsetTop - parseFloat(getComputedStyle(tabs).top), behavior: "instant" });
   }
-  stampGrid.appendChild(slot);
 });
 
-const heroFoot = document.getElementById("heroFoot");
-// once the goal is hit, one "Goal met" tile replaces the three pace tiles
-const footStats = remaining <= 0 ? [{v: "Goal met", l: totalRead > GOAL ? `${totalRead - GOAL} book${totalRead - GOAL === 1 ? "" : "s"} past ${GOAL}` : `Right on ${GOAL}`}] : [
-  {v: remaining, l: "Books left to hit goal"},
-  {v: remaining > 0 ? paceNeededPerMonth.toFixed(1) : "Goal met", l: "Books per month needed"},
-  {v: remaining > 0 ? daysPerBookNeeded.toFixed(0) + " days" : "Goal met", l: "Finish one every..."}
-];
-footStats.forEach(s => {
-  const el = document.createElement("div");
-  el.className = "stat";
-  el.innerHTML = `<div class="v">${s.v}</div><div class="l">${s.l}</div>`;
-  heroFoot.appendChild(el);
-});
+/* ---------- render one year ---------- */
+function stat(v, l, small){ return `<div class="stat"><div class="v${small ? " small" : ""}">${esc(v)}</div><div class="l">${esc(l)}</div></div>`; }
+function fun(label, big, desc){ return `<div class="card fun"><div class="fl">${label}</div><div class="fb">${esc(big)}</div>${desc ? `<div class="fd">${esc(desc)}</div>` : ""}</div>`; }
+const perMonth = x => { const r = Math.round(x * 10) / 10; return Number.isInteger(r) ? String(r) : r.toFixed(1); };
+function topOf(counts){ return Object.entries(counts).sort((a, b) => b[1] - a[1])[0]; }
 
-document.getElementById("stretchProgress").textContent =
-  `${totalRead}/${STRETCH_GOAL} (${Math.round((totalRead/STRETCH_GOAL)*100)}%)`;
+function render(){
+  renderYearTabs();
+  const list = ALL.filter(b => b.year === year).sort((a, b) => a.date - b.date);
+  const n = list.length;
+  const isCurrent = year === TODAY.getFullYear();
+  const exact = list.length > 0 && list.every(b => b.exact);
+  const paged = list.filter(b => b.pages);
+  const totalPages = paged.reduce((s, b) => s + b.pages, 0);
+  const lastMonth = isCurrent ? TODAY.getMonth() : 11;
 
-const stretchFoot = document.getElementById("stretchFoot");
-const stretchFootStats = remainingStretch <= 0 ? [{v: "Goal met", l: totalRead > STRETCH_GOAL ? `${totalRead - STRETCH_GOAL} book${totalRead - STRETCH_GOAL === 1 ? "" : "s"} past ${STRETCH_GOAL}` : `Right on ${STRETCH_GOAL}`}] : [
-  {v: remainingStretch, l: "Books left to hit 100"},
-  {v: remainingStretch > 0 ? paceNeededPerMonthStretch.toFixed(1) : "Goal met", l: "Books per month needed"},
-  {v: remainingStretch > 0 ? daysPerBookNeededStretch.toFixed(0) + " days" : "Goal met", l: "Finish one every..."}
-];
-stretchFootStats.forEach(s => {
-  const el = document.createElement("div");
-  el.className = "stat";
-  el.innerHTML = `<div class="v">${s.v}</div><div class="l">${s.l}</div>`;
-  stretchFoot.appendChild(el);
-});
+  document.title = `${year} Stats · Megan's Library`;
+  document.getElementById("heroTitle").textContent = `${year} in Books`;
+  document.getElementById("heroSub").textContent = [
+    `${n} book${n === 1 ? "" : "s"}`,
+    totalPages ? `${totalPages.toLocaleString()} pages` : null,
+    isCurrent ? `as of ${TODAY.toLocaleDateString("en-US", {month: "long", day: "numeric"})}` : null
+  ].filter(Boolean).join(", ") + ".";
 
-/* ---------------- books / pages per month bars ---------------- */
-function renderBarChart(containerId, values, colorVar, formatVal){
-  const container = document.getElementById(containerId);
-  const max = Math.max(...values, 1);
-  MONTH_LABELS.forEach((label, i) => {
-    if(i > currentMonth) return; // skip future months
-    const row = document.createElement("div");
-    row.className = "bar-row";
-    const pct = (values[i] / max) * 100;
-    row.innerHTML = `
-      <div class="m-label">${label}</div>
-      <div class="bar-track"><div class="bar-fill" style="width:${pct}%; background:${colorVar};"></div></div>
-      <div class="bar-val">${formatVal(values[i])}</div>
-    `;
-    container.appendChild(row);
-  });
-}
-renderBarChart("booksChart", booksByMonth, "var(--sage)", v => v);
-renderBarChart("pagesChart", pagesByMonth, "var(--slate-blue)", v => v.toLocaleString());
-
-/* ---------------- genre shelf ---------------- */
-const shelfContainer = document.getElementById("genreShelf");
-const maxGenreCount = genreList.length ? genreList[0][1] : 1;
-
-function addSpineRow(label, count, spineColor, onOpen){
-  const pct = Math.max((count / maxGenreCount) * 100, 12);
-  const row = document.createElement("div");
-  row.className = "spine-row";
-  row.setAttribute("tabindex", "0");
-  row.setAttribute("role", "button");
-  row.setAttribute("aria-label", `View ${count} ${label} books`);
-  row.innerHTML = `
-    <div class="spine-name">${label}</div>
-    <div class="spine-track">
-      <div class="spine-fill" style="width:${pct}%; background:${spineColor};">
-        <span>${count}</span>
-      </div>
-    </div>
-  `;
-  row.addEventListener("click", onOpen);
-  row.addEventListener("keydown", (e) => {
-    if(e.key === "Enter" || e.key === " "){ e.preventDefault(); onOpen(); }
-  });
-  shelfContainer.appendChild(row);
-}
-
-function addSubhead(text){
-  const h = document.createElement("div");
-  h.className = "spine-subhead";
-  h.textContent = text;
-  shelfContainer.appendChild(h);
-}
-
-genreList.forEach(([genre, count], i) => {
-  const spineColor = SPINE_COLORS[i % SPINE_COLORS.length];
-  addSpineRow(`${GENRE_EMOJI[genre] || "📚"} ${genre}`, count, spineColor,
-    () => openGenreModal(genre, spineColor));
-});
-
-if(ageTagList.length || spicyBooks.length){
-  addSubhead("Also tracked");
-}
-ageTagList.forEach(([tag, count], i) => {
-  const spineColor = SPINE_COLORS[(genreList.length + i) % SPINE_COLORS.length];
-  addSpineRow(`${GENRE_EMOJI[tag] || "📚"} ${tag}`, count, spineColor,
-    () => openGenreModal(tag, spineColor));
-});
-if(spicyBooks.length){
-  const spineColor = "#d1495b";
-  addSpineRow(`🌶️ Spicy Reads`, spicyBooks.length, spineColor,
-    () => openGenreModal("Spicy", spineColor));
-}
-
-/* ---------------- genre detail modal ---------------- */
-const modalOverlay = document.getElementById("genreModalOverlay");
-const modalEyebrow = document.getElementById("modalEyebrow");
-const modalTitle = document.getElementById("modalTitle");
-const modalSub = document.getElementById("modalSub");
-const modalBookGrid = document.getElementById("modalBookGrid");
-const modalClose = document.getElementById("modalClose");
-
-function renderBookGrid(bookList, container, spineColor){
-  bookList.forEach(b => {
-    const item = document.createElement("div");
-    item.className = "modal-book";
-    item.setAttribute("tabindex", "0");
-    item.setAttribute("role", "button");
-    item.setAttribute("aria-label", `View details for ${b.title}`);
-    const coverHtml = `<div class="modal-book-cover" style="background:${spineColor};"><span>${b.title}</span>${b.cover ? `<img src="${b.cover}" alt="Cover of ${b.title}" loading="lazy" onerror="this.remove()">` : ""}${b.spicy ? `<div class="modal-book-spicy" title="Spicy">🌶️</div>` : ""}</div>`;
-    const niceDate = parseLocalDate(b.dateFinished).toLocaleDateString('en-US', {month:'short', day:'numeric'});
-    item.innerHTML = `
-      ${coverHtml}
-      <div class="modal-book-title">${b.title}</div>
-      <div class="modal-book-author">${b.author}</div>
-      <div class="modal-book-date">Finished ${niceDate}</div>
-      ${b.rating ? `<div class="modal-book-rating">${starRatingHTML(b.rating)}</div>` : ""}
-    `;
-    const open = () => openBookNoteModal(b, niceDate);
-    item.addEventListener("click", open);
-    item.addEventListener("keydown", (e) => { if(e.key === "Enter" || e.key === " "){ e.preventDefault(); open(); } });
-    container.appendChild(item);
-  });
-}
-
-/* ---------------- book note popup (nested above the genre modal) ---------------- */
-const bookNoteModalOverlay = document.getElementById("bookNoteModalOverlay");
-const bookNoteCover = document.getElementById("bookNoteCover");
-const bookNoteTitle = document.getElementById("bookNoteTitle");
-const bookNoteAuthor = document.getElementById("bookNoteAuthor");
-const bookNoteGenres = document.getElementById("bookNoteGenres");
-const bookNoteMeta = document.getElementById("bookNoteMeta");
-const bookNoteText = document.getElementById("bookNoteText");
-const bookNoteClose = document.getElementById("bookNoteClose");
-
-function openBookNoteModal(b, niceDate){
-  bookNoteTitle.textContent = b.title;
-  bookNoteAuthor.textContent = b.author;
-  const genres = bookGenres(b).filter(Boolean);
-  bookNoteGenres.innerHTML = genres.map(g => `<span class="book-note-genre-pill">${g}</span>`).join("");
-  bookNoteGenres.style.display = genres.length ? "flex" : "none";
-  bookNoteMeta.textContent = [`Finished ${niceDate}`, b.rating ? formatRating(b.rating) : null].filter(Boolean).join(" · ");
-  bookNoteText.textContent = b.note || "";
-  bookNoteText.style.display = b.note ? "block" : "none";
-  bookNoteCover.innerHTML = `<span style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;padding:10px;font-family:'Fraunces',serif;font-size:12px;text-align:center;color:#fff;">${b.title}</span>${b.cover ? `<img src="${b.cover}" alt="Cover of ${b.title}" loading="lazy" onerror="this.remove()">` : ""}`;
-  bookNoteModalOverlay.classList.add("open");
-  bookNoteClose.focus();
-}
-function closeBookNoteModal(){ bookNoteModalOverlay.classList.remove("open"); }
-bookNoteClose.addEventListener("click", closeBookNoteModal);
-bookNoteModalOverlay.addEventListener("click", (e) => { if(e.target === bookNoteModalOverlay) closeBookNoteModal(); });
-document.addEventListener("keydown", (e) => { if(e.key === "Escape" && bookNoteModalOverlay.classList.contains("open")) closeBookNoteModal(); });
-
-function openGenreModal(genre, spineColor){
-  const isSpicy = genre === "Spicy";
-  const genreBooks = books
-    .filter(b => isSpicy ? b.spicy : bookGenres(b).includes(genre))
-    .sort((a,b) => a.author.localeCompare(b.author) || parseLocalDate(a.dateFinished) - parseLocalDate(b.dateFinished));
-
-  modalEyebrow.textContent = isSpicy ? "Bring A Fan" : "On This Shelf";
-  modalTitle.textContent = isSpicy ? "🌶️ Spicy Reads" : `${GENRE_EMOJI[genre] || "📚"} ${genre}`;
-  modalSub.textContent = `${genreBooks.length} book${genreBooks.length === 1 ? "" : "s"} finished in 2026`;
-
-  modalBookGrid.innerHTML = "";
-
-  const hasSubgenres = genreBooks.some(b => b.subgenre);
-  if(hasSubgenres){
-    modalBookGrid.className = "modal-subgroups";
-    const bySubgenre = {};
-    genreBooks.forEach(b => {
-      const key = b.subgenre || "Other";
-      (bySubgenre[key] = bySubgenre[key] || []).push(b);
-    });
-    Object.keys(bySubgenre)
-      .sort((a,b) => bySubgenre[b].length - bySubgenre[a].length || a.localeCompare(b))
-      .forEach(key => {
-        const group = bySubgenre[key];
-        const heading = document.createElement("div");
-        heading.className = "modal-subgroup-heading";
-        heading.textContent = `${key} · ${group.length}`;
-        modalBookGrid.appendChild(heading);
-        const grid = document.createElement("div");
-        grid.className = "modal-book-grid";
-        renderBookGrid(group, grid, spineColor);
-        modalBookGrid.appendChild(grid);
-      });
+  /* goal (only the year the goal is for) */
+  const goalBlock = document.getElementById("goalBlock");
+  if(year === GOAL_YEAR && typeof GOAL === "number"){
+    const pct = Math.min(100, Math.round(n / GOAL * 100));
+    const left = GOAL - n;
+    const monthsLeft = Math.max(11 - TODAY.getMonth(), 1);
+    const badge = left <= 0
+      ? `<span class="goal-badge">Goal met${n > GOAL ? ` · ${n - GOAL} past` : ""}</span>`
+      : `<span class="goal-badge behind">${left} to go</span>`;
+    const caption = left <= 0
+      ? `You hit ${GOAL} for ${year}.`
+      : `About ${perMonth(left / monthsLeft)} books a month to get there.`;
+    const sLeft = STRETCH_GOAL - n;
+    goalBlock.innerHTML = `
+      <div class="section-label">Goal</div>
+      <div class="card goal-card">
+        <div class="goal-top"><div class="goal-num">${n}<small>/ ${GOAL}</small></div>${badge}</div>
+        <div class="bar"><div style="width:${pct}%"></div></div>
+        <div class="goal-caption">${caption}</div>
+        <div class="stretch">
+          <div class="stretch-row"><span>🚀 Stretch goal: <b>${STRETCH_GOAL}</b></span><span><b>${n}</b> / ${STRETCH_GOAL}</span></div>
+          <div class="bar"><div style="width:${Math.min(100, Math.round(n / STRETCH_GOAL * 100))}%"></div></div>
+          <div class="goal-caption">${sLeft <= 0 ? "Stretch goal met too." : `${sLeft} to go, about ${perMonth(sLeft / monthsLeft)} a month.`}</div>
+        </div>
+      </div>`;
+    goalBlock.style.display = "";
   } else {
-    modalBookGrid.className = "modal-book-grid";
-    renderBookGrid(genreBooks, modalBookGrid, spineColor);
+    goalBlock.innerHTML = "";
+    goalBlock.style.display = "none";
   }
 
-  modalOverlay.classList.add("open");
-  modalClose.focus();
+  /* months */
+  const byMonth = Array.from({length: 12}, () => []);
+  list.forEach(b => byMonth[b.month].push(b));
+  const max = Math.max(1, ...byMonth.map(m => m.length));
+  const bestIdx = byMonth.reduce((best, m, i) => m.length > byMonth[best].length ? i : best, 0);
+  document.getElementById("months").innerHTML = byMonth.map((m, i) => {
+    if(i > lastMonth) return `<div class="month future" aria-hidden="true"><div class="c">0</div><div class="m">${MONTHS[i]}</div></div>`;
+    const cls = "month" + (m.length ? "" : " empty") + (m.length && i === bestIdx ? " best" : "");
+    const inner = `<div class="fill" style="height:${Math.round(m.length / max * 100)}%"></div><div class="c">${m.length}</div><div class="m">${MONTHS[i]}</div>`;
+    return m.length
+      ? `<button type="button" class="${cls}" data-month="${i}" aria-label="${m.length} books in ${MONTHS_LONG[i]}">${inner}</button>`
+      : `<div class="${cls}">${inner}</div>`;
+  }).join("");
+
+  /* pages per month (only when page counts exist) */
+  const pagesBlock = document.getElementById("pagesBlock");
+  if(totalPages){
+    const pages = byMonth.map(m => m.reduce((s, b) => s + (b.pages || 0), 0));
+    const pmax = Math.max(1, ...pages);
+    document.getElementById("pagesChart").innerHTML = pages.slice(0, lastMonth + 1).map((p, i) =>
+      `<div class="bar-row"><div class="ml">${MONTHS[i]}</div><div class="track"><div style="width:${p / pmax * 100}%"></div></div><div class="bv">${p.toLocaleString()}</div></div>`
+    ).join("");
+    pagesBlock.style.display = "";
+  } else {
+    pagesBlock.style.display = "none";
+  }
+
+  /* quick stats */
+  const rated = list.filter(b => b.rating != null);
+  const avgRating = rated.length ? rated.reduce((s, b) => s + b.rating, 0) / rated.length : null;
+  const authorCounts = {};
+  list.forEach(b => { if(b.author !== "Unknown") authorCounts[b.author] = (authorCounts[b.author] || 0) + 1; });
+  const topAuthor = topOf(authorCounts);
+  const fiveStar = rated.filter(b => b.rating >= 5).length;
+  document.getElementById("statsStrip").innerHTML = [
+    stat(n, "Books"),
+    totalPages ? stat(totalPages.toLocaleString(), "Pages") : "",
+    avgRating != null ? stat(formatRating(avgRating), "Average rating") : "",
+    stat(fiveStar, "5★ and up"),
+    n ? stat(MONTHS_LONG[bestIdx], `Best month · ${byMonth[bestIdx].length}`) : "",
+    topAuthor ? stat(topAuthor[0], `Top author · ${topAuthor[1]}`, true) : ""
+  ].join("");
+
+  /* genres */
+  const genreCounts = {};
+  list.forEach(b => b.genres.forEach(g => { genreCounts[g] = (genreCounts[g] || 0) + 1; }));
+  const genres = Object.entries(genreCounts).filter(([g]) => !AGE_TAGS.includes(g)).sort((a, b) => b[1] - a[1]);
+  const extras = AGE_TAGS.map(t => [t, genreCounts[t] || 0]).filter(([, c]) => c);
+  const spicy = list.filter(b => b.spicy).length;
+  if(spicy) extras.push(["Spicy", spicy]);
+  const gmax = genres.length ? genres[0][1] : 1;
+  const row = ([g, c]) => `<li><button type="button" class="genre-row" data-genre="${esc(g)}">
+      <span class="gn">${GENRE_EMOJI[g] || "📚"} ${esc(g)}</span>
+      <span class="gt"><div style="width:${Math.max(6, c / gmax * 100)}%"></div></span>
+      <span class="gc">${c}</span></button></li>`;
+  const missing = MASTER_GENRES.filter(g => !genreCounts[g]);
+  document.getElementById("genreCard").innerHTML = n ? `
+    <ul class="genre-list">${genres.map(row).join("")}</ul>
+    ${extras.length ? `<div class="genre-sub">Also tracked</div><ul class="genre-list">${extras.map(row).join("")}</ul>` : ""}
+    ${missing.length ? `<div class="missing"><div class="missing-label">Not read in ${year}</div>${missing.map(g => `<span class="tag">${GENRE_EMOJI[g] || "📚"} ${esc(g)}</span>`).join("")}</div>` : ""}
+  ` : `<div class="missing" style="border:0">Nothing logged for ${year} yet.</div>`;
+
+  /* odds and ends */
+  const cards = [];
+  if(totalPages){
+    const longest = paged.reduce((a, b) => b.pages > a.pages ? b : a);
+    const shortest = paged.reduce((a, b) => b.pages < a.pages ? b : a);
+    const startOfYear = new Date(year, 0, 1);
+    const endPoint = isCurrent ? new Date(TODAY.getFullYear(), TODAY.getMonth(), TODAY.getDate()) : new Date(year, 11, 31);
+    const days = Math.floor((endPoint - startOfYear) / 86400000) + 1;
+    cards.push(fun("📏 Average book", `${Math.round(totalPages / paged.length)} pages`));
+    cards.push(fun("📖 Pages per day", (totalPages / days).toFixed(1), `Across ${days} days of ${year}.`));
+    cards.push(fun("🐘 Longest", `${longest.pages} pages`, longest.title));
+    cards.push(fun("🐁 Shortest", `${shortest.pages} pages`, shortest.title));
+    cards.push(fun("📚 Stack height", `${(totalPages * 0.1 / 304.8).toFixed(1)} ft`, "Every page, stacked."));
+  }
+  if(exact && list.length > 1){
+    const gaps = list.slice(1).map((b, i) => Math.round((b.date - list[i].date) / 86400000));
+    cards.push(fun("⚡ Fastest finish", `${Math.min(...gaps)} days`, "Shortest gap between two books."));
+    cards.push(fun("🐢 Slowest stretch", `${Math.max(...gaps)} days`, "Longest gap between two books."));
+    cards.push(fun("🎯 Average pace", `${(gaps.reduce((s, g) => s + g, 0) / gaps.length).toFixed(1)} days`, "Per book."));
+  }
+  if(isCurrent && n){
+    const monthsIn = TODAY.getMonth() + TODAY.getDate() / 30;
+    cards.push(fun("🔮 On pace for", Math.round(n / monthsIn * 12), "Books by Dec 31 at this rate."));
+  }
+  const series = new Set(list.map(b => (SERIES.find(s => s.books.some(sb => sb.title === b.title)) || {}).name).filter(Boolean));
+  if(series.size) cards.push(fun("🔗 Series touched", series.size, "Series with at least one book read."));
+  const prev = yearCounts[year - 1];
+  if(prev && n) cards.push(fun(`↕️ vs ${year - 1}`, `${n >= prev ? "+" : "−"}${Math.abs(n - prev)}`, `${prev} books the year before.`));
+  document.getElementById("funGrid").innerHTML = cards.join("") || `<div class="card fun"><div class="fd">More stats show up once there's more to count.</div></div>`;
+  document.getElementById("funGrid").parentElement.style.display = cards.length ? "" : "none";
+
+  document.getElementById("pageFoot").textContent = exact
+    ? "📊 Pulled live from reading-data.js."
+    : `📊 Before ${GOAL_YEAR}, only the month each book was finished was logged, so page and pace stats start in ${GOAL_YEAR}.${undated ? ` ${undated} older books have no date and aren't counted in any year.` : ""}`;
+
+  current = { list, byMonth };
 }
+let current = { list: [], byMonth: [] };
 
-function closeGenreModal(){
-  modalOverlay.classList.remove("open");
+/* ---------- pop-ups ---------- */
+const listOverlay = document.getElementById("listOverlay");
+const detailOverlay = document.getElementById("detailOverlay");
+function syncScrollLock(){ document.documentElement.classList.toggle("modal-open", !!document.querySelector(".modal-overlay.open")); }
+
+function coverHTML(b){
+  return `<span>${esc(b.title)}</span>${b.cover ? `<img src="${esc(b.cover)}" alt="" loading="lazy" onerror="this.remove()">` : ""}`;
 }
-
-function openMonthModal(monthIdx, label){
-  const monthBooks = books
-    .filter(b => monthIndex(b.dateFinished) === monthIdx)
-    .sort((a,b) => parseLocalDate(a.dateFinished) - parseLocalDate(b.dateFinished));
-
-  modalEyebrow.textContent = "Checked Out This Month";
-  modalTitle.textContent = `📅 ${label}`;
-  modalSub.textContent = `${monthBooks.length} book${monthBooks.length === 1 ? "" : "s"} finished in ${label} 2026, in the order you read them`;
-
-  modalBookGrid.className = "modal-book-grid";
-  modalBookGrid.innerHTML = "";
-  renderBookGrid(monthBooks, modalBookGrid, "var(--stamp)");
-
-  modalOverlay.classList.add("open");
-  modalClose.focus();
+function dateText(b){
+  return b.exact ? `Finished ${b.date.toLocaleDateString("en-US", {month: "short", day: "numeric"})}` : `Read ${MONTHS_LONG[b.month]} ${b.year}`;
 }
-
-modalClose.addEventListener("click", closeGenreModal);
-modalOverlay.addEventListener("click", (e) => {
-  if(e.target === modalOverlay) closeGenreModal();
-});
-document.addEventListener("keydown", (e) => {
-  if(e.key === "Escape" && modalOverlay.classList.contains("open")) closeGenreModal();
-});
-
-/* ---------------- missing genres ---------------- */
-const missingContainer = document.getElementById("missingGenres");
-if(missingGenres.length === 0){
-  missingContainer.innerHTML = `<div class="missing-empty">Every genre on the list has at least one entry. Impressively well rounded. 🌟</div>`;
-} else {
-  missingGenres.forEach(g => {
-    const tag = document.createElement("div");
-    tag.className = "missing-tag";
-    tag.textContent = `${GENRE_EMOJI[g] || "📚"} ${g}`;
-    missingContainer.appendChild(tag);
+function openList(eyebrow, title, sub, groups){
+  document.getElementById("listEyebrow").textContent = eyebrow;
+  document.getElementById("listTitle").textContent = title;
+  document.getElementById("listSub").textContent = sub;
+  const grid = document.getElementById("listGrid");
+  grid.innerHTML = "";
+  const shown = [];
+  groups.forEach(([label, booksIn]) => {
+    if(label) grid.insertAdjacentHTML("beforeend", `<div class="group-head">${esc(label)} · ${booksIn.length}</div>`);
+    booksIn.forEach(b => {
+      shown.push(b);
+      grid.insertAdjacentHTML("beforeend", `<button type="button" class="gbook" data-i="${shown.length - 1}">
+        <div class="cover">${coverHTML(b)}</div>
+        <div class="t">${esc(b.title)}</div><div class="a">${esc(b.author)}</div>
+        ${b.rating ? `<div class="r">${starRatingHTML(b.rating)}</div>` : ""}</button>`);
+    });
   });
+  grid.onclick = e => { const el = e.target.closest(".gbook"); if(el) openDetail(shown[+el.dataset.i]); };
+  listOverlay.scrollTop = 0;
+  listOverlay.classList.add("open");
+  syncScrollLock();
+  document.getElementById("listClose").focus({ preventScroll: true });
 }
-
-/* ---------------- fun stats ---------------- */
-const funStats = [
-  {label:"📄 Total Pages", big: totalPages.toLocaleString(), desc:"That is a lot of eye movement."},
-  {label:"📏 Average Book", big: avgPages + " pages", desc:"Your typical read this year, give or take a chapter."},
-  {label:"📖 Pages Per Day", big: pagesPerDay.toFixed(1) + " pages", desc:`Your daily average across all ${daysElapsed} days of 2026 so far.`},
-  {label:"🐘 Longest Read", big: longest.pages + " pg", desc:`"${longest.title}" by ${longest.author}, your biggest commitment of 2026.`, cover: longest.cover},
-  {label:"🐁 Shortest Read", big: shortest.pages + " pg", desc:`"${shortest.title}" by ${shortest.author}, a nice palate cleanser.`, cover: shortest.cover},
-  {label:"⭐ Most Read Author", big: topAuthor ? topAuthor[0] : "N/A", desc: topAuthor ? `${topAuthor[1]} books so far, basically a subscription at this point.` : ""},
-  {label:"⚡ Fastest Finish", big: (fastestGap === Infinity ? "N/A" : Math.round(fastestGap) + " days"), desc:"Shortest gap between two finished books. A binge, essentially."},
-  {label:"🐢 Slowest Stretch", big: slowestGap + " days", desc:"Longest gap between two finished books. Life happens."},
-  {label:"🎯 Average Pace", big: avgGap.toFixed(1) + " days/book", desc:"Your typical turnaround time, averaged across the year."},
-  {label:"🏆 Best Month", big: MONTH_LABELS[bestMonthIdx], desc:`${booksByMonth[bestMonthIdx]} books finished, your strongest showing of the year.`},
-  {label:"📚 Stack Height", big: stackFeet.toFixed(1) + " ft", desc:"Roughly how tall your 2026 books would be, stacked spine down."},
-  {label:"🔮 On Pace For", big: Math.round(totalRead / (currentMonth + (TODAY.getDate()/30)) * 12), desc:"Projected year end total, if you keep your current pace exactly."},
-  {label:"🎉 Percent To Goal", big: Math.round((totalRead/GOAL)*100) + "%", desc:`${remaining} books stand between you and ${GOAL}.`}
-];
-
-const funGrid = document.getElementById("funGrid");
-funStats.forEach(s => {
-  const el = document.createElement("div");
-  el.className = "card fun-card";
-  const coverWrap = s.cover
-    ? `<div class="fun-cover-wrap" style="background:${SPINE_COLORS[0]};">📕<img src="${s.cover}" alt="" loading="lazy" onerror="this.remove()"></div>`
-    : "";
-  el.innerHTML = `<div class="card-inner">${coverWrap}<div class="icon-label">${s.label}</div><div class="big">${s.big}</div><div class="desc">${s.desc}</div></div>`;
-  funGrid.appendChild(el);
+function openDetail(b){
+  document.getElementById("detailCover").innerHTML = coverHTML(b);
+  document.getElementById("detailTitle").textContent = b.title;
+  document.getElementById("detailAuthor").textContent = b.author;
+  document.getElementById("detailPills").innerHTML = b.genres.map(g => `<span>${esc(g)}</span>`).join("") + (b.spicy ? "<span>🌶️ Spicy</span>" : "");
+  document.getElementById("detailMeta").innerHTML = [dateText(b), b.pages ? `${b.pages} pages` : "", b.rating ? starRatingHTML(b.rating) : ""].filter(Boolean).join(" · ");
+  const note = document.getElementById("detailNote");
+  note.textContent = b.note || "";
+  note.style.display = b.note ? "" : "none";
+  detailOverlay.classList.add("open");
+  syncScrollLock();
+  document.getElementById("detailClose").focus({ preventScroll: true });
+}
+function close(el){ el.classList.remove("open"); syncScrollLock(); }
+document.getElementById("listClose").onclick = () => close(listOverlay);
+document.getElementById("detailClose").onclick = () => close(detailOverlay);
+[listOverlay, detailOverlay].forEach(o => o.addEventListener("click", e => { if(e.target === o) close(o); }));
+document.addEventListener("keydown", e => {
+  if(e.key !== "Escape") return;
+  if(detailOverlay.classList.contains("open")) close(detailOverlay);
+  else if(listOverlay.classList.contains("open")) close(listOverlay);
 });
-</script>
 
+document.getElementById("months").addEventListener("click", e => {
+  const el = e.target.closest("[data-month]");
+  if(!el) return;
+  const i = +el.dataset.month;
+  const m = current.byMonth[i];
+  openList("Books per month", `${MONTHS_LONG[i]} ${year}`, `${m.length} book${m.length === 1 ? "" : "s"}${m.every(b => b.exact) ? ", in the order you finished them" : ""}`, [["", m]]);
+});
+document.getElementById("genreCard").addEventListener("click", e => {
+  const el = e.target.closest("[data-genre]");
+  if(!el) return;
+  const g = el.dataset.genre;
+  const inGenre = current.list.filter(b => g === "Spicy" ? b.spicy : b.genres.includes(g))
+    .sort((a, b) => a.author.localeCompare(b.author) || a.date - b.date);
+  let groups = [["", inGenre]];
+  if(inGenre.some(b => b.subgenre)){
+    const by = {};
+    inGenre.forEach(b => (by[b.subgenre || "Other"] = by[b.subgenre || "Other"] || []).push(b));
+    groups = Object.entries(by).sort((a, b) => b[1].length - a[1].length || a[0].localeCompare(b[0]));
+  }
+  openList(`Read in ${year}`, `${GENRE_EMOJI[g] || "📚"} ${g}`, `${inGenre.length} book${inGenre.length === 1 ? "" : "s"}`, groups);
+});
+
+render();
+</script>
 </body>
 </html>
