@@ -1,8 +1,9 @@
 /* Megan's Library: the shared app frame.
    Load it in <head> on every Library page:
      <script src="library-tabbar.js" data-theme="paper"></script>
-   It adds the bottom tab bar, room for it at the bottom of the page, and a soft fade
-   between pages. Themes: night, paper, plum. */
+   It adds the bottom tab bar, room for it at the bottom of the page, a frosted strip
+   behind the iPhone status bar (so sticky bars can sit just under it instead of padding
+   for it), and a soft fade between pages. Themes: night, paper, plum. */
 (function () {
   const me = document.currentScript;
   const base = new URL('.', me.src);                 // site root, wherever the page lives
@@ -13,6 +14,8 @@
       icon: '<path d="M4 5.5C6.5 4 9.5 4 12 6c2.5-2 5.5-2 8-.5V19c-2.5-1.5-5.5-1.5-8 .5-2.5-2-5.5-2-8-.5z"/><path d="M12 6v13.5"/>' },
     { href: 'all-books.html?view=series', label: 'Series',
       icon: '<rect x="4" y="4" width="7" height="7" rx="1.5"/><rect x="13" y="4" width="7" height="7" rx="1.5"/><rect x="4" y="13" width="7" height="7" rx="1.5"/><rect x="13" y="13" width="7" height="7" rx="1.5"/>' },
+    { href: 'all-books.html?view=favorites', label: 'Favorites',
+      icon: '<path d="M12 20s-7.5-4.6-7.5-10.2A4.3 4.3 0 0 1 12 7.2a4.3 4.3 0 0 1 7.5 2.6C19.5 15.4 12 20 12 20z"/>' },
     { href: '2026-reading-stats.html', label: 'Stats',
       icon: '<path d="M5 20V12M10 20V6M15 20v-9M20 20V9"/>' },
     { href: 'book-club.html', label: 'Club',
@@ -40,6 +43,11 @@
     view-transition-name: lib-tabbar;
   }
   .lib-tabbar-inner{ display: flex; width: 100%; max-width: 560px; }
+  .lib-statusbar{
+    position: fixed; top: 0; left: 0; right: 0; height: env(safe-area-inset-top); z-index: 401;
+    background: ${t.bg}; pointer-events: none;
+    -webkit-backdrop-filter: saturate(160%) blur(18px); backdrop-filter: saturate(160%) blur(18px);
+  }
   .lib-tabbar .lib-tab{
     flex: 1; height: var(--tabbar-h); display: flex; flex-direction: column;
     align-items: center; justify-content: center; gap: 3px;
@@ -53,7 +61,7 @@
   .lib-tab[aria-current="page"] svg{ stroke-width: 2.1; }
   .lib-tab:active{ transform: scale(0.92); }
   .lib-tab:focus-visible{ outline: 2px solid ${t.on}; outline-offset: -6px; border-radius: 10px; }
-  @media print{ .lib-tabbar{ display: none; } }
+  @media print{ .lib-tabbar, .lib-statusbar{ display: none; } }
   @media (prefers-reduced-motion: reduce){
     ::view-transition-group(*), ::view-transition-old(*), ::view-transition-new(*){ animation: none !important; }
   }`;
@@ -63,21 +71,26 @@
 
   function build() {
     const here = location.pathname.split('/').pop() || 'all-books.html';
+    // Books, Series and Favorites are one page: ?view= picks the tab (old #series links too)
+    const params = new URLSearchParams(location.search);
+    const view = params.get('view') || (location.hash === '#series' ? 'series' : '');
     const nav = document.createElement('nav');
     nav.className = 'lib-tabbar';
     nav.setAttribute('aria-label', 'Library');
     nav.innerHTML = '<div class="lib-tabbar-inner">' + TABS.map(tab => {
       const url = new URL(tab.href, base).href;
-      // Books and Series are the same page: ?view=series (or an old #series link) is the Series tab
-      const seriesView = new URLSearchParams(location.search).get('view') === 'series' || location.hash === '#series';
       const [tabPage, tabQuery] = tab.href.split('?');
       const samePage = location.href.split(/[?#]/)[0] === new URL(tabPage, base).href ||
         (here === tabPage && location.href.startsWith(base.href));
-      const current = samePage && (tabQuery === 'view=series') === (tabPage === 'all-books.html' && seriesView);
+      const current = samePage && (new URLSearchParams(tabQuery || '').get('view') || '') === view;
       return `<a class="lib-tab" href="${url}"${current ? ' aria-current="page"' : ''}>` +
         `<svg viewBox="0 0 24 24" aria-hidden="true">${tab.icon}</svg><span>${tab.label}</span></a>`;
     }).join('') + '</div>';
     document.body.appendChild(nav);
+    const bar = document.createElement('div');
+    bar.className = 'lib-statusbar';
+    bar.setAttribute('aria-hidden', 'true');
+    document.body.appendChild(bar);
   }
   if (document.body) build(); else document.addEventListener('DOMContentLoaded', build);
 })();

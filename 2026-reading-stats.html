@@ -657,7 +657,8 @@ MONTH_LABELS.forEach((label, i) => {
 });
 
 const heroFoot = document.getElementById("heroFoot");
-const footStats = [
+// once the goal is hit, one "Goal met" tile replaces the three pace tiles
+const footStats = remaining <= 0 ? [{v: "Goal met", l: totalRead > GOAL ? `${totalRead - GOAL} book${totalRead - GOAL === 1 ? "" : "s"} past ${GOAL}` : `Right on ${GOAL}`}] : [
   {v: remaining, l: "Books left to hit goal"},
   {v: remaining > 0 ? paceNeededPerMonth.toFixed(1) : "Goal met", l: "Books per month needed"},
   {v: remaining > 0 ? daysPerBookNeeded.toFixed(0) + " days" : "Goal met", l: "Finish one every..."}
@@ -673,7 +674,7 @@ document.getElementById("stretchProgress").textContent =
   `${totalRead}/${STRETCH_GOAL} (${Math.round((totalRead/STRETCH_GOAL)*100)}%)`;
 
 const stretchFoot = document.getElementById("stretchFoot");
-const stretchFootStats = [
+const stretchFootStats = remainingStretch <= 0 ? [{v: "Goal met", l: totalRead > STRETCH_GOAL ? `${totalRead - STRETCH_GOAL} book${totalRead - STRETCH_GOAL === 1 ? "" : "s"} past ${STRETCH_GOAL}` : `Right on ${STRETCH_GOAL}`}] : [
   {v: remainingStretch, l: "Books left to hit 100"},
   {v: remainingStretch > 0 ? paceNeededPerMonthStretch.toFixed(1) : "Goal met", l: "Books per month needed"},
   {v: remainingStretch > 0 ? daysPerBookNeededStretch.toFixed(0) + " days" : "Goal met", l: "Finish one every..."}

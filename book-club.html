@@ -46,10 +46,11 @@
   }
 
   a{ color:inherit; }
-  .page{ max-width: 1100px; margin:0 auto; padding: 36px 20px 0; }
+  .page{ max-width: 1100px; margin:0 auto; padding: calc(36px + env(safe-area-inset-top)) 20px 0; }
+  .page.page-body{ padding-top: 0; }
   @media (max-width: 560px){
-    .page{ padding: 24px 16px 0; }
-    header{ margin-bottom: 24px; }
+    .page{ padding: calc(20px + env(safe-area-inset-top)) 16px 0; }
+    header{ margin-bottom: 18px; }
   }
 
   .topnav{ text-align:center; margin-bottom: 26px; font-size: 12px; letter-spacing: 0.04em; }
@@ -72,7 +73,7 @@
 
   .stats-strip{
     display:flex; flex-wrap:wrap; gap: 22px; justify-content:center;
-    padding: 22px 26px; margin-bottom: 32px;
+    padding: 22px 26px; margin-bottom: 12px;
   }
   .stat{ text-align:center; min-width: 100px; }
   .stat .v{ font-weight:700; font-size: 21px; color: var(--ink); }
@@ -85,7 +86,7 @@
 
   .picks-strip{
     display:flex; flex-wrap:wrap; align-items:center; gap: 10px;
-    padding: 16px 22px; margin-bottom: 32px;
+    padding: 16px 22px; margin-bottom: 24px;
   }
   .picks-strip .picks-label{
     font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em;
@@ -99,11 +100,11 @@
   .pick-badge .count{ color: var(--ink-soft); }
 
   .filter-bar{
-    position: sticky; top:0; z-index: 40;
+    position: sticky; top: env(safe-area-inset-top); z-index: 40;
     background: rgba(247,244,239,0.92);
-    backdrop-filter: blur(8px);
-    padding: calc(14px + env(safe-area-inset-top)) 0 14px;
-    margin: 0 -20px 30px;
+    -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px);
+    padding: 14px 0;
+    margin: 0 0 24px;
     border-bottom: 1px solid var(--border);
   }
   .filter-bar-inner{ max-width:1100px; margin:0 auto; padding:0 20px; }
@@ -127,7 +128,8 @@
   .pill.active{ background: var(--accent); color: #fff; border-color: var(--accent); font-weight:600; }
   .pill .count{ opacity:0.65; font-size:11px; }
   @media (max-width: 700px){
-    .filter-bar{ padding: calc(11px + env(safe-area-inset-top)) 0 11px; }
+    .filter-bar{ padding: 11px 0; margin-bottom: 18px; }
+    .filter-bar-inner{ padding: 0 16px; }
     .search-input{ padding: 11px 14px; margin-bottom: 9px; }
     .pills{
       flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none;
@@ -256,7 +258,7 @@
   </div>
 </div>
 
-<div class="page">
+<div class="page page-body">
   <div class="catalog-count" id="clubCount"></div>
   <div class="month-grid" id="monthGrid"></div>
   <div class="no-results" id="noResults" style="display:none;">No meetups match that search.</div>

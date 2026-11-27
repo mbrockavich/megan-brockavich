@@ -80,13 +80,17 @@
     font-size: clamp(28px, 4.4vw, 42px); margin: 0 0 8px; color: var(--ink);
   }
   header p{ font-size: 14px; color: var(--ink-soft); margin:0; }
-  .top-gap{ height: 32px; }
+  .top-gap{ height: 24px; }
+  .page.page-body{ padding-top: 0; }
+  body.fav-view .filter-bar, body.fav-view #statsStrip, body.fav-view #catalogSection,
+  body.fav-view .top-gap{ display:none; }
+  body.fav-view .rating-card{ margin: 0 0 16px; }
   @media (max-width: 560px){
     header{ margin-bottom: 18px; }
     header .eyebrow{ font-size: 12px; margin-bottom: 6px; }
     header h1{ font-size: 27px; margin-bottom: 4px; }
     header p{ font-size: 13px; }
-    .top-gap{ height: 14px; }
+    .top-gap{ height: 12px; }
   }
 
   /* generic card */
@@ -132,10 +136,10 @@
 
   /* filter bar */
   .filter-bar{
-    position: sticky; top:0; z-index: 40;
+    position: sticky; top: env(safe-area-inset-top); z-index: 40;
     background: rgba(247,244,239,0.92);
-    backdrop-filter: blur(8px);
-    padding: calc(14px + env(safe-area-inset-top)) 0 14px;
+    -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px);
+    padding: 14px 0;
     margin: 0 0 34px;
     border-bottom: 1px solid var(--border);
   }
@@ -174,7 +178,7 @@
   .filter-select:focus{ border-color: var(--accent); outline:none; }
 
   @media (max-width: 700px){
-    .filter-bar{ padding: calc(11px + env(safe-area-inset-top)) 0 11px; }
+    .filter-bar{ padding: 11px 0; }
     .filter-bar-inner{ padding: 0 16px; }
     .search-input{ padding: 11px 14px; margin-bottom: 0; font-size: 16px; }
     .filter-toggle{
@@ -194,25 +198,6 @@
     .filter-bar{ margin-bottom: 20px; }
     .filter-field{ flex: 0 0 auto; }
     .filter-select{ font-size: 16px; padding: 12px 14px; }
-  }
-
-  /* fade mask hints that the favorites carousel has more content
-     off-screen, instead of an abrupt cut-off edge. Toggled by JS based
-     on actual scroll position. */
-  .fav-grid{ -webkit-mask-image: none; mask-image: none; }
-  @media (max-width: 700px){
-    .fav-grid.fade-right{
-      -webkit-mask-image: linear-gradient(to right, black calc(100% - 28px), transparent 100%);
-      mask-image: linear-gradient(to right, black calc(100% - 28px), transparent 100%);
-    }
-    .fav-grid.fade-left{
-      -webkit-mask-image: linear-gradient(to left, black calc(100% - 28px), transparent 100%);
-      mask-image: linear-gradient(to left, black calc(100% - 28px), transparent 100%);
-    }
-    .fav-grid.fade-left.fade-right{
-      -webkit-mask-image: linear-gradient(to right, transparent 0%, black 28px, black calc(100% - 28px), transparent 100%);
-      mask-image: linear-gradient(to right, transparent 0%, black 28px, black calc(100% - 28px), transparent 100%);
-    }
   }
 
   /* series-tab stacked cards: status chip instead of genre tag */
@@ -245,27 +230,55 @@
     font-family: ui-monospace, monospace; font-size: 12px; color: var(--accent);
   }
 
-  /* favorites */
-  .fav-genre-panel{ padding: 26px 24px 26px; margin-bottom: 22px; }
-  .fav-panel-head{ text-align:left; margin-bottom:18px; }
-  .fav-eyebrow{ font-size: 11px; font-weight:700; text-transform:uppercase; letter-spacing:0.08em; color: var(--accent); margin-bottom:4px; }
-  .fav-panel-title{ font-size: 21px; font-weight:700; color: var(--ink); line-height:1.25; }
-  .fav-panel-sub{ font-size: 12.5px; color: var(--ink-soft); margin-top:4px; }
-
-  .fav-grid{
-    display:flex; gap: 14px; overflow-x:auto; scroll-snap-type: x mandatory;
-    padding: 2px 2px 6px; margin: 0 -2px;
-    -webkit-overflow-scrolling: touch; scrollbar-width: none;
+  /* favorites tab: genre chips + a ranked list */
+  .fav-tabs{
+    position: sticky; top: env(safe-area-inset-top); z-index: 40;
+    display:flex; gap: 7px; overflow-x:auto; scrollbar-width:none; -webkit-overflow-scrolling: touch;
+    margin: 0 -20px 18px; padding: 12px 20px;
+    background: rgba(247,244,239,0.92); -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px);
+    border-bottom: 1px solid var(--border);
   }
-  .fav-grid::-webkit-scrollbar{ display:none; }
-  .fav-scroll-hint{
-    text-align:left; margin-top: 4px;
-    font-size: 11px; color: var(--ink-faint);
+  .fav-tabs::-webkit-scrollbar{ display:none; }
+  .fav-chip{
+    flex: 0 0 auto; font: 500 13px 'Inter', sans-serif; padding: 8px 13px; border-radius: 20px;
+    border: 1px solid var(--border-strong); background: var(--surface); color: var(--ink-soft);
+    cursor:pointer; white-space:nowrap; -webkit-tap-highlight-color: transparent;
   }
-  @media (max-width: 640px){ .fav-genre-panel{ padding: 20px 16px 22px; } }
-  .fav-item{ cursor:pointer; flex: 0 0 auto; width: 118px; scroll-snap-align: start; }
-  @media (max-width: 640px){ .fav-item{ width: 98px; } .fav-grid{ gap: 11px; } }
-  .fav-item:focus-visible{ outline:2px solid var(--accent); outline-offset:3px; border-radius:4px; }
+  .fav-chip[aria-pressed="true"]{ background: var(--accent); border-color: var(--accent); color:#fff; font-weight:600; }
+  .fav-chip:focus-visible{ outline:2px solid var(--accent); outline-offset:2px; }
+  .fav-list-head{ display:flex; align-items:baseline; justify-content:space-between; gap:12px; margin: 0 2px 10px; }
+  .fav-list-head h2{ font-size: 19px; font-weight:700; margin:0; }
+  .fav-list-head span{ font-size: 12px; color: var(--ink-soft); white-space:nowrap; }
+  .fav-list{ list-style:none; margin:0; padding: 4px 0; }
+  @media (min-width: 760px){ .fav-list{ columns: 2; column-gap: 0; } }
+  .fav-list li{ break-inside: avoid; }
+  .fav-row{
+    width:100%; display:flex; align-items:center; gap: 14px; text-align:left;
+    padding: 10px 16px; background:none; border:0; border-bottom: 1px solid var(--border);
+    font-family:'Inter', sans-serif; color: var(--ink); cursor:pointer; -webkit-tap-highlight-color: transparent;
+  }
+  .fav-list li:last-child .fav-row{ border-bottom:0; }
+  @media (min-width: 760px){ .fav-list li .fav-row{ border-bottom: 1px solid var(--border); } }
+  .fav-row:active{ background: var(--surface-alt); }
+  .fav-row:focus-visible{ outline:2px solid var(--accent); outline-offset:-2px; border-radius: 10px; }
+  .fav-rank{ flex: 0 0 26px; text-align:center; font-size: 17px; font-weight:700; color: var(--ink-faint);
+    font-variant-numeric: tabular-nums; }
+  .fav-rank.top{ color: var(--accent); }
+  .fav-thumb{ flex: 0 0 52px; }
+  .fav-thumb .fav-cover-slot{ padding: 3px; font-size: 7px; border-radius: 4px; }
+  .fav-thumb .fav-stack-behind{ border-radius: 4px; }
+  .fav-text{ flex:1; min-width:0; display:flex; flex-direction:column; gap: 2px; }
+  .fav-kicker{ font-size: 10px; font-weight:700; letter-spacing:.06em; text-transform:uppercase; color: var(--accent); }
+  .fav-name{ font-size: 14.5px; font-weight:600; line-height:1.3; }
+  .fav-by{ font-size: 12px; color: var(--ink-soft); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .fav-meta{ font-size: 12px; color: var(--ink-soft); display:flex; align-items:center; gap: 6px; margin-top: 1px; }
+  .fav-meta .stars{ color: var(--star); font-size: 13px; letter-spacing: .03em; }
+  .fav-empty{ padding: 22px 18px; font-size: 13.5px; color: var(--ink-soft); text-align:center; }
+  @media (max-width: 560px){
+    .fav-tabs{ margin: 0 -16px 14px; padding: 10px 16px; }
+    .fav-row{ padding: 10px 12px; gap: 12px; }
+    .fav-thumb{ flex-basis: 46px; }
+  }
   .fav-stack-wrap{ position:relative; margin-bottom: 10px; transition: transform 0.15s ease; }
   .fav-item:hover .fav-stack-wrap, .fav-item:focus-visible .fav-stack-wrap{ transform: translateY(-4px); }
   .fav-cover-slot{
@@ -583,15 +596,15 @@
   </div>
 </div>
 
-<div class="page">
+<div class="page page-body">
 
-  <!-- FAVORITES -->
+  <!-- FAVORITES (Favorites tab only) -->
   <section class="block" id="favoritesSection">
     <div id="favoritesContainer"></div>
   </section>
 
   <!-- MASTER CATALOG -->
-  <section class="block">
+  <section class="block" id="catalogSection">
     <div class="section-head">
       <div class="label" id="listLabel">The Master List</div>
       <h2 id="listTitle">Every Book, All Time</h2>
@@ -860,6 +873,15 @@ let activeStatus = "All";   // Series tab only: progress / caughtup / complete /
    (old #series links and series-tracker.html land here too). It shows one
    stacked card per series, and the "Show" dropdown filters by status. */
 const SERIES_VIEW = new URLSearchParams(location.search).get("view") === "series" || location.hash === "#series";
+/* The Favorites tab is all-books.html?view=favorites: ranked favorites per
+   genre (and for series), instead of the browse shelf. */
+const FAV_VIEW = new URLSearchParams(location.search).get("view") === "favorites";
+if(FAV_VIEW){
+  document.title = "Favorites · Megan's Library";
+  document.getElementById("heroTitle").textContent = "Favorites";
+  document.getElementById("heroSub").textContent = "My top-rated reads, ranked by genre.";
+  document.body.classList.add("fav-view");
+}
 if(SERIES_VIEW){
   document.title = "Series Tracker · Megan's Library";
   document.getElementById("heroTitle").textContent = "Series Tracker";
@@ -879,25 +901,6 @@ function matchesGenreFilter(b){
   if(activeGenre === "Spicy") return !!b.spicy;
   return b.genres.includes(activeGenre);
 }
-
-/* ---------------- scroll-fade affordance for horizontally-scrolling rows
-   (filter pills, favorites carousel) — hints there's more to swipe to
-   instead of an abrupt cut-off edge. ---------------- */
-function updateScrollFade(el){
-  if(!el) return;
-  const scrollable = el.scrollWidth > el.clientWidth + 2;
-  el.classList.toggle("fade-right", scrollable && el.scrollLeft < el.scrollWidth - el.clientWidth - 2);
-  el.classList.toggle("fade-left", scrollable && el.scrollLeft > 2);
-}
-function refreshScrollFades(){
-  document.querySelectorAll(".fav-grid").forEach(updateScrollFade);
-}
-document.addEventListener("scroll", (e) => {
-  if(e.target && e.target.nodeType === 1 && e.target.classList.contains("fav-grid")){
-    updateScrollFade(e.target);
-  }
-}, true);
-window.addEventListener("resize", refreshScrollFades);
 
 /* ---------------- genre filter (dropdown) ---------------- */
 const genreSelect = document.getElementById("genreSelect");
@@ -924,7 +927,7 @@ function selectStatus(value){
 function selectFilter(value){
   activeGenre = value;
   try{ localStorage.setItem("activeGenre", value); }catch(e){}
-  renderPills(); renderShelf(); renderStats(); renderFavorites(); updateFilterCount();
+  renderPills(); renderShelf(); renderStats(); updateFilterCount();
 }
 
 /* ---------------- owned-format filter (dropdown: Kindle / Audible / Physical) ----------------
@@ -1414,163 +1417,85 @@ function shortFavTitle(title){
   return idx > 0 ? title.slice(0, idx).trim() : title;
 }
 
-function makeFavItem(entry, genreLabel){
-  const item = document.createElement("div");
-  item.className = "fav-item";
-  item.setAttribute("tabindex", "0");
-  item.setAttribute("role", "button");
-
-  const genreLabelHTML = genreLabel ? `<div class="fav-genre-label">#1 ${genreLabel}</div>` : "";
-
-  if(entry.kind === "book"){
-    const b = entry.book;
-    item.setAttribute("aria-label", `View details for ${b.title}, ${formatRating(entry.avg)}${genreLabel ? `, #1 ${genreLabel}` : ""}`);
-    item.innerHTML = `
-      <div class="fav-stack-wrap">
-        ${coverSlotHTML(b)}
-      </div>
-      ${genreLabelHTML}
-      <div class="fav-title">${shortFavTitle(b.title)}</div>
-      <div class="fav-author">${b.author}</div>
-      <div class="fav-rating">${starRatingHTML(entry.avg)}</div>
-    `;
-    const open = () => openBookModal(b, "Favorite");
-    item.addEventListener("click", open);
-    item.addEventListener("keydown", (e) => { if(e.key === "Enter" || e.key === " "){ e.preventDefault(); open(); } });
-  } else {
-    const top = entry.books[0];
-    const behindLayers = Math.min(entry.books.length - 1, 2);
-    let behindHTML = "";
-    for(let L = behindLayers; L >= 1; L--){
-      behindHTML += `<div class="fav-stack-behind" style="transform: translate(${L*5}px, ${L*5}px);"></div>`;
-    }
-    item.setAttribute("aria-label", `Open ${entry.name} series, ${formatRating(entry.avg)}${genreLabel ? `, #1 ${genreLabel}` : ""}`);
-    item.innerHTML = `
-      <div class="fav-stack-wrap">
-        ${behindHTML}
-        ${coverSlotHTML(top)}
-        <div class="fav-count-badge">${entry.books.length} books</div>
-      </div>
-      ${genreLabelHTML}
-      <div class="fav-title">${entry.name}</div>
-      <div class="fav-author">${entry.author}</div>
-      <div class="fav-rating">${starRatingHTML(entry.avg)}</div>
-    `;
-    const open = () => openSeriesModal(entry, null);
-    item.addEventListener("click", open);
-    item.addEventListener("keydown", (e) => { if(e.key === "Enter" || e.key === " "){ e.preventDefault(); open(); } });
-  }
-  return item;
-}
-
+/* ---------------- Favorites tab ----------------
+   One chip per genre with at least MIN_BOOKS_FOR_FAVORITES reads, plus
+   "Top Picks" (the #1 from each of those genres) and "Series" (every
+   4+ star series). Each chip shows a ranked list; tap a row for details. */
 const favoritesSection = document.getElementById("favoritesSection");
-function renderFavorites(){
-  renderFavoritesInner();
-  favoritesSection.style.display = favoritesContainer.children.length === 0 ? "none" : "";
-  refreshScrollFades();
-}
 
-function renderNotEnoughCard(genre, count){
-  const remaining = Math.max(MIN_BOOKS_FOR_FAVORITES - count, 0);
-  const pct = Math.min(100, Math.round((count / MIN_BOOKS_FOR_FAVORITES) * 100));
-  const panel = document.createElement("div");
-  panel.className = "card fav-genre-panel not-enough-card";
-  panel.innerHTML = `
-    <div class="card-inner">
-      <div class="label" style="text-align:center;">Favorites Locked</div>
-      <h2 style="font-size:22px; font-weight:700; margin:0;">Must read ${MIN_BOOKS_FOR_FAVORITES} ${genre} books before your Favorites unlock</h2>
-      <p>You've read ${count} of ${MIN_BOOKS_FOR_FAVORITES} so far — ${remaining} more and your Favorites shelf unlocks.</p>
-      <div class="not-enough-progress"><div class="not-enough-progress-bar" style="width:${pct}%;"></div></div>
-    </div>
-  `;
-  favoritesContainer.appendChild(panel);
-}
-
-function renderFavoritesPanel(container, {title, sub, resolved}){
-  const panel = document.createElement("div");
-  panel.className = "card fav-genre-panel";
-  panel.innerHTML = `
-    <div class="card-inner">
-      <div class="fav-panel-head">
-        <div class="fav-eyebrow">Favorites</div>
-        <div class="fav-panel-title">${title}</div>
-        <div class="fav-panel-sub">${sub}</div>
-      </div>
-      <div class="fav-grid"></div>
-      <div class="fav-scroll-hint">Scroll for more →</div>
-    </div>
-  `;
-  container.appendChild(panel);
-  const gridEl = panel.querySelector(".fav-grid");
-  resolved.forEach(entry => gridEl.appendChild(makeFavItem(entry)));
-}
-
-function rankedSub(resolved){
-  return `${resolved.length} ${resolved.length === 1 ? "favorite" : "favorites"}, ranked`;
-}
-
-function renderFavoritesInner(){
-  favoritesContainer.innerHTML = "";
-
-  // "Spicy" is a flag-based filter, not a genre — no Favorites shelf for it.
-  if(activeGenre === "Spicy") return;
-
-  if(activeGenre === "Series"){
-    // Favorite Series carousel: every 5-star series across the whole
-    // library, ranked by average rating (see computeFavorites). Replaces
-    // the old hand-set "Currently Reading" spotlight.
-    const resolved = computeFavorites(null, {seriesOnly: true});
-    if(resolved.length === 0) return;
-    renderFavoritesPanel(favoritesContainer, {
-      title: "Favorite Series",
-      sub: rankedSub(resolved),
-      resolved,
-    });
-    return;
+function favRowHTML(entry, {rank, kicker}){
+  const isSeries = entry.kind === "series";
+  const lead = isSeries ? entry.books[0] : entry.book;
+  const name = isSeries ? entry.name : shortFavTitle(entry.book.title);
+  const by = isSeries ? entry.author : entry.book.author;
+  let behind = "";
+  if(isSeries){
+    for(let L = Math.min(entry.books.length - 1, 2); L >= 1; L--){
+      behind += `<div class="fav-stack-behind" style="transform: translate(${L*3}px, ${L*3}px);"></div>`;
+    }
   }
+  return `
+    ${rank ? `<span class="fav-rank${rank <= 3 ? " top" : ""}">${rank}</span>` : ""}
+    <span class="fav-thumb"><span class="fav-stack-wrap" style="display:block;margin:0;">${behind}${coverSlotHTML(lead)}</span></span>
+    <span class="fav-text">
+      ${kicker ? `<span class="fav-kicker">${kicker}</span>` : ""}
+      <span class="fav-name">${name}</span>
+      <span class="fav-by">${by}</span>
+      <span class="fav-meta"><span class="stars">${starRatingHTML(entry.avg)}</span>${isSeries ? `<span>· ${entry.books.length} book${entry.books.length === 1 ? "" : "s"}</span>` : ""}</span>
+    </span>`;
+}
 
-  // a genre only gets a Favorites shelf once you've actually read enough of it
-  const eligibleGenres = genreList.map(([genre]) => genre).filter(genre => (genreCounts[genre] || 0) >= MIN_BOOKS_FOR_FAVORITES);
-
-  if(activeGenre === "All"){
-    // condensed overview: just the #1 pick from each eligible genre
-    const picks = eligibleGenres
-      .map(genre => ({ genre, entry: computeFavorites(genre)[0] }))
-      .filter(p => p.entry);
-    if(picks.length === 0) return;
-    const panel = document.createElement("div");
-    panel.className = "card fav-genre-panel";
-    panel.innerHTML = `
-      <div class="card-inner">
-        <div class="fav-panel-head">
-          <div class="fav-eyebrow">One Favorite Per Genre</div>
-          <div class="fav-panel-title">Most Recent Favorites</div>
-          <div class="fav-panel-sub">Pick a genre above to see its full Favorites shelf.</div>
-        </div>
-        <div class="fav-grid"></div>
-        <div class="fav-scroll-hint">Scroll for more →</div>
-      </div>
-    `;
-    favoritesContainer.appendChild(panel);
-    const gridEl = panel.querySelector(".fav-grid");
-    picks.forEach(({genre, entry}) => gridEl.appendChild(makeFavItem(entry, genre)));
-    return;
-  }
-
-  // a specific genre is selected
-  const count = genreCounts[activeGenre] || 0;
-  if(count < MIN_BOOKS_FOR_FAVORITES){
-    renderNotEnoughCard(activeGenre, count);
-    return;
-  }
-
-  const resolved = computeFavorites(activeGenre);
-  renderFavoritesPanel(favoritesContainer, {
-    title: activeGenre,
-    sub: rankedSub(resolved),
-    resolved,
+function renderFavList(title, rows){
+  const n = rows.length;
+  favoritesContainer.insertAdjacentHTML("beforeend", `
+    <div class="fav-list-head"><h2>${title}</h2><span>${n} ${n === 1 ? "favorite" : "favorites"}</span></div>
+    <div class="card"><ul class="fav-list"></ul></div>`);
+  const list = favoritesContainer.querySelector(".fav-list");
+  if(!n){ list.innerHTML = `<li class="fav-empty">No favorites here yet.</li>`; return; }
+  rows.forEach(({entry, rank, kicker}) => {
+    const li = document.createElement("li");
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "fav-row";
+    btn.innerHTML = favRowHTML(entry, {rank, kicker});
+    btn.addEventListener("click", () => entry.kind === "series" ? openSeriesModal(entry, rank) : openBookModal(entry.book, rank ? `Favorite #${rank}` : "Favorite"));
+    li.appendChild(btn);
+    list.appendChild(li);
   });
 }
+
+let activeFavShelf = "Top Picks";
+function renderFavorites(){
+  if(!FAV_VIEW){ favoritesSection.style.display = "none"; return; }
+  const eligible = genreList.map(([g]) => g).filter(g => (genreCounts[g] || 0) >= MIN_BOOKS_FOR_FAVORITES);
+  const shelves = ["Top Picks", ...eligible, "Series"];
+  if(!shelves.includes(activeFavShelf)) activeFavShelf = "Top Picks";
+
+  favoritesContainer.innerHTML = `<div class="fav-tabs" role="toolbar" aria-label="Favorites shelves">${shelves.map(name => {
+    const emoji = name === "Top Picks" ? "🏆" : name === "Series" ? "📚" : (GENRE_EMOJI[name] || "📚");
+    return `<button type="button" class="fav-chip" data-shelf="${name}" aria-pressed="${name === activeFavShelf}">${emoji} ${name}</button>`;
+  }).join("")}</div>`;
+  favoritesContainer.querySelectorAll(".fav-chip").forEach(chip => chip.addEventListener("click", () => {
+    activeFavShelf = chip.dataset.shelf;
+    try{ localStorage.setItem("favShelf", activeFavShelf); }catch(e){}
+    const scroller = favoritesContainer.querySelector(".fav-tabs").scrollLeft;
+    renderFavorites();
+    const tabs = favoritesContainer.querySelector(".fav-tabs");
+    tabs.scrollLeft = scroller;
+    const stuck = tabs.getBoundingClientRect().top <= parseFloat(getComputedStyle(tabs).top) + 1;
+    if(stuck) window.scrollTo({ top: favoritesSection.offsetTop - parseFloat(getComputedStyle(tabs).top), behavior: "instant" });
+  }));
+
+  if(activeFavShelf === "Top Picks"){
+    const rows = eligible.map(g => ({ entry: computeFavorites(g)[0], kicker: `${GENRE_EMOJI[g] || "📚"} #1 ${g}` })).filter(r => r.entry);
+    renderFavList("The best of each genre", rows);
+  } else if(activeFavShelf === "Series"){
+    renderFavList("Favorite series", computeFavorites(null, {seriesOnly: true}).map((entry, i) => ({ entry, rank: i + 1 })));
+  } else {
+    renderFavList(activeFavShelf, computeFavorites(activeFavShelf).map((entry, i) => ({ entry, rank: i + 1 })));
+  }
+}
+try{ activeFavShelf = localStorage.getItem("favShelf") || activeFavShelf; }catch(e){}
 renderFavorites();
 
 /* ---------------- book detail modal ---------------- */
