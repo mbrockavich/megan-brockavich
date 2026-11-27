@@ -78,10 +78,21 @@
   .stat{ text-align:center; min-width: 100px; }
   .stat .v{ font-weight:700; font-size: 21px; color: var(--ink); }
   .stat .l{ font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--ink-soft); margin-top: 3px; }
+  /* phone: one swipeable row of small stat cards, same as the Books tab */
   @media (max-width: 560px){
-    .stats-strip{ gap: 12px 18px; padding: 18px 14px; }
-    .stat{ min-width: 40%; }
-    .stat .v{ font-size: 18px; }
+    .stats-strip{
+      flex-wrap:nowrap; justify-content:flex-start; overflow-x:auto; gap: 8px;
+      background: none; border: 0; border-radius: 0; margin: 0 -16px 12px; padding: 0 16px;
+      scroll-snap-type: x proximity; scroll-padding-inline: 16px; scrollbar-width: none; -webkit-overflow-scrolling: touch;
+    }
+    .stats-strip::-webkit-scrollbar{ display:none; }
+    .stat{
+      flex: 0 0 auto; min-width: 0; max-width: 220px; scroll-snap-align: start;
+      background: var(--surface); border:1px solid var(--border); border-radius: 10px;
+      padding: 10px 14px; text-align:left; display:flex; flex-direction:column; justify-content:center;
+    }
+    .stat .v{ font-size: 18px; line-height:1.2; }
+    .stat .l{ font-size: 10px; margin-top: 2px; white-space: nowrap; }
   }
 
   .picks-strip{
