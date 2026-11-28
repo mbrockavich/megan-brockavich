@@ -251,6 +251,13 @@
   .chip-row{ display:flex; gap: 7px; overflow-x:auto; scrollbar-width:none; -webkit-overflow-scrolling: touch;
     margin: 10px -20px 0; padding: 0 20px; }
   .chip-row::-webkit-scrollbar{ display:none; }
+  .tag-row{ margin-top: 7px; }
+  .tag-row:empty{ display:none; }
+  .tag-chip{ flex: 0 0 auto; font: 500 12px 'Inter', sans-serif; padding: 5px 11px; border-radius: 20px;
+    border: 1px dashed var(--border-strong); background: transparent; color: var(--ink-soft); cursor:pointer;
+    white-space:nowrap; -webkit-tap-highlight-color: transparent; }
+  .tag-chip[aria-pressed="true"]{ border-style: solid; border-color: var(--ink); background: var(--ink); color: #fff; font-weight:600; }
+  .tag-chip:focus-visible{ outline:2px solid var(--accent); outline-offset:2px; }
   #genreSelect, #formatSelect, .filter-field:has(#genreSelect), #formatField{ display:none !important; }
   body.no-sort .filter-toggle, body.no-sort .filter-selects{ display:none !important; }
   .fav-chip[aria-pressed="true"]{ background: var(--accent); border-color: var(--accent); color:#fff; font-weight:600; }
@@ -460,6 +467,12 @@
     font-size: 9.5px; font-weight:700; text-transform: uppercase; letter-spacing: 0.02em;
     padding: 3px 7px; border-radius: 5px; color: #fff; background: var(--accent);
   }
+  .master-tags{ position:absolute; top:6px; right:6px; z-index:2; display:flex; flex-direction:column; align-items:flex-end; gap:3px; }
+  .master-tag{ font-size: 9px; font-weight:700; letter-spacing:.03em; line-height:1; padding: 3px 5px; border-radius: 4px;
+    background: var(--surface); color: var(--ink); box-shadow: 0 1px 3px rgba(36,32,24,0.18); white-space:nowrap; }
+  .master-tag.tag-ya{ color: var(--slate); }
+  .master-tag.tag-mg{ color: var(--sage); }
+  .master-tag.tag-club{ color: var(--accent); }
   .master-badges{ position:absolute; bottom:6px; left:6px; z-index:2; display:flex; gap:4px; align-items:flex-end; }
   .master-spicy-badge{
     font-size: 11px; line-height:1;
@@ -612,6 +625,7 @@
       </button>
     </div>
     <div class="chip-row" id="chipRow" role="toolbar" aria-label="Show"></div>
+    <div class="chip-row tag-row" id="tagRow" role="toolbar" aria-label="Tags"></div>
     <div class="filter-selects" id="filterSelects">
       <div class="filter-field">
         <label for="genreSelect">Show</label>
@@ -833,7 +847,6 @@ ALL_BOOKS.forEach(b => { b.genres.forEach(g => { genreCounts[g] = (genreCounts[g
 const genreList = Object.entries(genreCounts)
   .filter(([g]) => !AGE_TAGS.includes(g))
   .sort((a,b) => b[1]-a[1]);
-const spicyCount = ALL_BOOKS.filter(b => b.spicy).length;
 
 const datedBooks = ALL_BOOKS.filter(b => b.dateLabel !== "Undated");
 const oldest = datedBooks[datedBooks.length-1];
@@ -849,7 +862,7 @@ document.getElementById("pageFoot").textContent =
 const statsStrip = document.getElementById("statsStrip");
 function renderStats(){
   // Book Club has four stats: one row of four on phones instead of three plus one
-  if(!OWNED_VIEW && activeGenre === "Book Club") statsStrip.dataset.cols = "4"; else delete statsStrip.dataset.cols;
+  if(!OWNED_VIEW && !SERIES_VIEW && activeTag === "club") statsStrip.dataset.cols = "4"; else delete statsStrip.dataset.cols;
   if(activeGenre === "Series"){
     const seriesScope = SERIES.filter(seriesMatchesFormat);
     const count = cls => seriesScope.filter(s => seriesStatus(s).cls === cls).length;
@@ -881,7 +894,7 @@ function renderStats(){
     statsStrip.innerHTML = stats.map(s => `<div class="stat"><div class="v">${s.v}</div><div class="l">${s.l}</div></div>`).join("");
     return;
   }
-  if(activeGenre === "Book Club"){
+  if(!SERIES_VIEW && activeTag === "club"){
     const meetups = typeof BOOK_CLUB !== "undefined" ? BOOK_CLUB : [];
     const rated = ALL_BOOKS.filter(b => CLUB_BY_TITLE.has(b.title) && b.rating != null);
     const avg = rated.length ? rated.reduce((sum, b) => sum + b.rating, 0) / rated.length : null;
@@ -904,7 +917,7 @@ function renderStats(){
     return;
   }
   const scoped = ALL_BOOKS.filter(b => {
-    const genreMatch = matchesGenreFilter(b);
+    const genreMatch = matchesGenreFilter(b) && matchesTagFilter(b);
     const formatMatch = activeFormat === "All" || (hasOwnedLookup && findOwnedFormats(b.title).includes(activeFormat));
     return genreMatch && formatMatch;
   });
@@ -915,7 +928,7 @@ function renderStats(){
 
   const seriesInScope = SERIES.filter(s => s.books.some(sb => {
     const b = ALL_BOOKS_BY_TITLE.get(sb.title);
-    const genreMatch = b && matchesGenreFilter(b);
+    const genreMatch = b && matchesGenreFilter(b) && matchesTagFilter(b);
     const formatMatch = activeFormat === "All" || (hasOwnedLookup && findOwnedFormats(sb.title).includes(activeFormat));
     return b && genreMatch && formatMatch;
   })).length;
@@ -928,7 +941,7 @@ function renderStats(){
   const shortestBook = pagedScoped.length ? pagedScoped.reduce((a, b) => b.pages < a.pages ? b : a) : null;
 
   const stats = [
-    {v: scoped.length, l: activeGenre === "All" ? "Total Books" : activeGenre === "Spicy" ? "Spicy Reads" : `${activeGenre} Books`},
+    {v: scoped.length, l: [activeGenre === "All" ? "" : activeGenre, activeTag ? TAG_BY_KEY[activeTag].label.replace(/^\S+\s/, "") : ""].filter(Boolean).join(" · ") + (activeGenre === "All" && !activeTag ? "Total Books" : " Books")},
     {v: seriesInScope, l: "Series"},
     {v: topAuthor ? topAuthor[0] : "N/A", l: "Most Read Author", full: true},
     {v: longestBook ? longestBook.title : "N/A", l: longestBook ? `Longest Read · ${longestBook.pages}p` : "Longest Read", isTitle: !!longestBook},
@@ -953,7 +966,6 @@ const CLUB_BY_TITLE = new Map();
   if(!CLUB_BY_TITLE.has(e.title)) CLUB_BY_TITLE.set(e.title, []);
   CLUB_BY_TITLE.get(e.title).push(e);
 });
-const clubCount = ALL_BOOKS.filter(b => CLUB_BY_TITLE.has(b.title)).length;
 
 /* ---------------- owned books ----------------
    One entry per title across every format, using the read copy from
@@ -1022,6 +1034,23 @@ let searchTerm = "";
 /* The genre pill can also be one of the computed filters: "All" (no genre
    constraint) or "Spicy" (only books flagged spicy: true). Age tags and
    real genres both just check membership in b.genres. */
+/* Tags: not genres, but things a book also is. Each one gets a small
+   label on the cover and its own toggle under the genre chips, and
+   combines with a genre (Fantasy + Young Adult). */
+const TAGS = [
+  {key: "ya",    label: "🎒 Young Adult",  badge: "YA",      test: b => b.genres.includes("Young Adult")},
+  {key: "mg",    label: "🧸 Middle Grade", badge: "MG",      test: b => b.genres.includes("Middle Grade")},
+  {key: "club",  label: "☕ Book Club",    badge: "☕ Club", test: b => CLUB_BY_TITLE.has(b.title)},
+  {key: "spicy", label: "🌶️ Spicy",       badge: null,      test: b => !!b.spicy},   // keeps its 🌶️ sticker
+];
+const TAG_BY_KEY = Object.fromEntries(TAGS.map(t => [t.key, t]));
+let activeTag = "";
+function matchesTagFilter(b){ return !activeTag || TAG_BY_KEY[activeTag].test(b); }
+function tagBadgesHTML(booksIn){
+  const on = TAGS.filter(t => t.badge && booksIn.some(b => b && t.test(b)));
+  return on.length ? `<div class="master-tags">${on.map(t => `<span class="master-tag tag-${t.key}">${t.badge}</span>`).join("")}</div>` : "";
+}
+
 function matchesGenreFilter(b){
   if(activeGenre === "All") return true;
   if(activeGenre === "Spicy") return !!b.spicy;
@@ -1051,6 +1080,14 @@ function updateFilterCount(){
    Books: All, Book Club, Spicy and every genre. Series: by status.
    Owned: All, Not read yet, then each format. Each chip shows its count. */
 const chipRow = document.getElementById("chipRow");
+const tagRow = document.getElementById("tagRow");
+tagRow.addEventListener("click", e => {
+  const chip = e.target.closest(".tag-chip");
+  if(!chip) return;
+  activeTag = activeTag === chip.dataset.tag ? "" : chip.dataset.tag;
+  try{ localStorage.setItem("activeTag", activeTag); }catch(err){}
+  renderShelf(); renderStats(); updateFilterCount();
+});
 function chipHTML(value, label, count, on){
   return `<button type="button" class="fav-chip" data-v="${value.replace(/"/g, "&quot;")}" aria-pressed="${on}">${label}<span class="chip-n">${count}</span></button>`;
 }
@@ -1075,6 +1112,11 @@ function renderChips(){
   }
   chipRow.innerHTML = html;
   chipRow.scrollLeft = keep;
+  // Books tab: a second row of tag toggles (tap again to turn off)
+  tagRow.innerHTML = (SERIES_VIEW || OWNED_VIEW) ? "" : TAGS.map(t => {
+    const n = ALL_BOOKS.filter(t.test).length;
+    return n ? `<button type="button" class="tag-chip" data-tag="${t.key}" aria-pressed="${activeTag === t.key}">${t.label}<span class="chip-n">${n}</span></button>` : "";
+  }).join("");
   if(!chipsShown){  // first time: bring a saved pick (say, Fantasy) into view
     chipsShown = true;
     const on = chipRow.querySelector('[aria-pressed="true"]');
@@ -1166,21 +1208,10 @@ function renderPills(){
     return;
   }
   addOption(genreSelect, "All", `All (${ALL_BOOKS.length})`, activeGenre === "All");
-  if(clubCount > 0){
-    addOption(genreSelect, "Book Club", `☕ Book Club (${clubCount})`, activeGenre === "Book Club");
-  }
-  if(spicyCount > 0){
-    addOption(genreSelect, "Spicy", `🌶️ Spicy (${spicyCount})`, activeGenre === "Spicy");
-  }
   genreList.forEach(([genre, count]) => {
     addOption(genreSelect, genre, `${GENRE_EMOJI[genre] || "📚"} ${genre} (${count})`, activeGenre === genre);
   });
-  // age categories (YA / Middle Grade), kept visually after the genres
-  AGE_TAGS.forEach(tag => {
-    const count = genreCounts[tag] || 0;
-    if(!count) return;
-    addOption(genreSelect, tag, `${GENRE_EMOJI[tag] || "📚"} ${tag} (${count})`, activeGenre === tag);
-  });
+  // Young Adult, Middle Grade, Book Club and Spicy are tags, not genres: see TAGS
 }
 let savedGenre = null;
 try{ savedGenre = localStorage.getItem("activeGenre"); }catch(e){}
@@ -1190,8 +1221,14 @@ const hashSlug = location.hash.replace("#", "");
 const showParam = new URLSearchParams(location.search).get("show");
 if(SERIES_VIEW) activeGenre = "Series";
 else if(OWNED_VIEW) activeGenre = "All";
-else if(showParam === "club") activeGenre = "Book Club";
-else if(savedGenre && savedGenre !== "Series") activeGenre = savedGenre;
+else if(showParam === "club") activeTag = "club";
+else {
+  // older saves may hold a tag in the genre slot ("Spicy", "Young Adult"...)
+  const oldTag = {"Spicy": "spicy", "Book Club": "club", "Young Adult": "ya", "Middle Grade": "mg"}[savedGenre];
+  if(oldTag) activeTag = oldTag;
+  else if(savedGenre && savedGenre !== "Series") activeGenre = savedGenre;
+  try{ const t = localStorage.getItem("activeTag"); if(!oldTag && TAG_BY_KEY[t]) activeTag = t; }catch(e){}
+}
 // The format filter only lives on the Owned tab now. Old #kindle-style
 // links to the Books tab land there instead.
 if(!OWNED_VIEW && FORMAT_INFO[hashSlug]) location.replace("all-books.html?view=owned#" + hashSlug);
@@ -1354,7 +1391,7 @@ function renderShelf(){
 
   const masterSorted = [...ALL_BOOKS].sort(compareBooks);
   const filtered = masterSorted.filter(b => {
-    const genreMatch = matchesGenreFilter(b);
+    const genreMatch = matchesGenreFilter(b) && matchesTagFilter(b);
     const formatMatch = activeFormat === "All" || (hasOwnedLookup && findOwnedFormats(b.title).includes(activeFormat));
     const searchMatch = !searchTerm ||
       b.title.toLowerCase().includes(searchTerm) ||
@@ -1365,7 +1402,7 @@ function renderShelf(){
   // The Spicy filter lists each flagged book on its own so the 🌶️ books
   // are all visible — series stacks would hide non-spicy siblings and only
   // show the top cover.
-  const collapseSeries = activeGenre !== "Spicy" && activeGenre !== "Book Club";
+  const collapseSeries = !activeTag;
 
   // collapse every book that belongs to a series (2+ books read) into one
   // stacked card, in the order its first-appearing book was sorted
@@ -1400,7 +1437,7 @@ function renderShelf(){
   // get grouped into labeled sections instead of one flat grid, mirroring
   // the 2026 stats page's genre pop-up. Only kicks in for a specific genre,
   // not "All" (mixing subgenres across every genre wouldn't mean anything).
-  const showSubgroups = activeGenre !== "All" && activeGenre !== "Spicy" && activeGenre !== "Book Club" && filtered.some(b => b.subgenre);
+  const showSubgroups = activeGenre !== "All" && !activeTag && filtered.some(b => b.subgenre);
 
   if(showSubgroups){
     const bySubgenre = {};
@@ -1460,6 +1497,7 @@ function buildMasterCard(item){
     card.innerHTML = `
       <div class="master-cover">
         ${item.seriesInfo ? `<div class="master-series-tag">📚 Series</div>` : ""}
+        ${tagBadgesHTML([b])}
         ${b.spicy ? `
           <div class="master-badges">
             <div class="master-spicy-badge">🌶️</div>
@@ -1509,6 +1547,7 @@ function buildMasterCard(item){
       ${behindHTML}
       <div class="master-cover">
         <div class="master-series-tag">📚 Series</div>
+        ${tagBadgesHTML(item.books)}
         ${top.spicy ? `
           <div class="master-badges">
             <div class="master-spicy-badge">🌶️</div>
