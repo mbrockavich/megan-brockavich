@@ -34,4 +34,5 @@ const BOOK_CLUB = [
   {year: 2026, month: 8, title: "Funny Story", location: "Beach day at Hammonasset Beach State Park", pick: "Sue's pick", note: "Everyone really liked it. Sue and I gave it 5 stars, and Rachel + Alyssa gave it 4.5 stars."},
   {year: 2026, month: 9, title: "Sharp Objects", location: "Sayulita Restaurant"},
   {year: 2026, month: 11, title: "A Pair of Aces", location: "Apple wood fire pit at Long View Ciderhouse Orchard Bar", pick: "Rachel's pick", note: "Bonfire book club! The book was well written with great themes, but slow. 3 stars from me."},
+  {year: 2026, month: 12, title: "The Gift", pick: "Megan's pick"},
 ];
