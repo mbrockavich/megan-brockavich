@@ -466,7 +466,7 @@ const RATING_LEGEND = [
    "ongoing" = more entries are announced or expected.
    `dnf: true` is a manual flag for a series you've decided not to continue
    (most likely won't read more of it). Shows a "DNF" status on
-   the Series tab with its own filter, sorts to the bottom, and its
+   the Series tab with its own filter, and its
    unread books no longer count toward "Books To Go". Remove it to undo. */
 const SERIES = [
   {

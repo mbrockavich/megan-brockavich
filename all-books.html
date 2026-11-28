@@ -1014,7 +1014,7 @@ if(SERIES_VIEW){
   document.getElementById("heroSub").textContent = "Where I am in every series, and what's coming next.";
   document.getElementById("listLabel").textContent = "Every Series";
   document.getElementById("listTitle").textContent = "Series, All Time";
-  document.getElementById("listSub").textContent = "Every series I've started, in progress first. Tap one to see the books.";
+  document.getElementById("listSub").textContent = "Every series I've started, by author, then oldest series first. Tap one to see the books.";
   document.getElementById("searchInput").placeholder = "Search by series or author...";
 }
 let searchTerm = "";
@@ -1245,19 +1245,6 @@ const shelfGrid = document.getElementById("shelfGrid");
 const shelfCount = document.getElementById("shelfCount");
 const noResults = document.getElementById("noResults");
 
-function seriesLastReadTime(s){
-  let max = -Infinity;
-  s.books.forEach(b => {
-    const m = findRead(b.title);
-    if(!m) return;
-    const t = m.dateFinished ? parseLocalDate(m.dateFinished).getTime()
-      : m.readDate ? new Date(m.readDate).getTime()
-      : 0;
-    if(t > max) max = t;
-  });
-  return max;
-}
-
 function seriesMatchesFormat(s){
   if(activeFormat === "All") return true;
   return hasOwnedLookup && s.books.some(b => findOwnedFormats(b.title).includes(activeFormat));
@@ -1266,19 +1253,6 @@ function seriesMatchesFormat(s){
 function seriesIsCaughtUp(s){
   const released = s.books.filter(b => !b.comingSoon);
   return released.length > 0 && released.every(b => findRead(b.title));
-}
-
-function seriesBooksRemaining(s){
-  const released = s.books.filter(b => !b.comingSoon);
-  const readCount = released.filter(b => findRead(b.title)).length;
-  return released.length - readCount;
-}
-
-function seriesNextReleaseTime(s){
-  const upcoming = s.books.find(b => b.comingSoon);
-  if(!upcoming) return Infinity;
-  const d = typeof upcoming.comingSoon === "string" ? parsePastDate(upcoming.comingSoon) : null;
-  return d ? d.getTime() : Infinity;
 }
 
 function seriesStatus(s){
@@ -1293,7 +1267,18 @@ function seriesStatus(s){
    same visual language as a genre shelf but the top-left tag shows
    completion status instead of genre, and the count badge is always
    read/total (not just when partially read). */
-const SERIES_STATUS_RANK = {progress: 0, caughtup: 1, complete: 2, dnf: 3};
+
+/* Year a series started: the earliest publish year among its books
+   (from the book's pubYear, or the series entry's pubDate). Unknown sorts last. */
+function seriesStartYear(s){
+  const years = s.books.map(sb => {
+    const b = ALL_BOOKS_BY_TITLE.get(sb.title);
+    if(b && b.pubYear != null) return b.pubYear;
+    const m = String(sb.pubDate || "").match(/\d{4}/);
+    return m ? Number(m[0]) : null;
+  }).filter(y => y != null);
+  return years.length ? Math.min(...years) : 99999;
+}
 
 function renderSeriesGrid(){
   const term = searchTerm;
@@ -1301,14 +1286,11 @@ function renderSeriesGrid(){
     (activeStatus === "All" || seriesStatus(s).cls === activeStatus) && (!term ||
     s.name.toLowerCase().includes(term) ||
     s.author.toLowerCase().includes(term))
-  ).sort((a, b) => {
-    const clsA = seriesStatus(a).cls, clsB = seriesStatus(b).cls;
-    const rankDiff = SERIES_STATUS_RANK[clsA] - SERIES_STATUS_RANK[clsB];
-    if(rankDiff !== 0) return rankDiff;
-    if(clsA === "progress") return seriesBooksRemaining(a) - seriesBooksRemaining(b);
-    if(clsA === "caughtup") return seriesNextReleaseTime(a) - seriesNextReleaseTime(b);
-    return seriesLastReadTime(b) - seriesLastReadTime(a);
-  });
+  ).sort((a, b) =>
+    // author A to Z, then the series that came out first (same author, oldest series first)
+    a.author.localeCompare(b.author) ||
+    seriesStartYear(a) - seriesStartYear(b) ||
+    a.name.localeCompare(b.name));
 
   shelfCount.textContent = `Showing ${matching.length} of ${SERIES.length} series`;
   shelfGrid.innerHTML = "";
