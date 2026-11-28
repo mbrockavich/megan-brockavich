@@ -439,6 +439,7 @@
   .master-tag.tag-mg{ color: var(--sage); }
   .master-tag.tag-club{ color: var(--accent); }
   .master-tag.tag-reread{ color: var(--star); }
+  .master-tag.tag-short{ color: var(--ink-soft); }
   .master-badges{ position:absolute; bottom:6px; left:6px; z-index:2; display:flex; gap:4px; align-items:flex-end; }
   .master-spicy-badge{
     font-size: 11px; line-height:1;
@@ -676,11 +677,11 @@ const GENRE_EMOJI = {
   "Fantasy":"🐉","Science Fiction":"🚀","Suspense":"🔪","Horror":"🎃","Romance":"💛",
   "Literary/Contemporary Fiction":"📖","Classic Literature":"🕰️","Historical Fiction":"🏛️",
   "Mythology":"🏺","Graphic Novel":"🎨","Nonfiction":"🧠","Memoir/Biography":"🪞",
-  "Young Adult":"🎒","Middle Grade":"🧸","Spicy":"🌶️"
+  "Young Adult":"🎒","Middle Grade":"🧸","Short Stories":"📄","Spicy":"🌶️"
 };
 /* Young Adult & Middle Grade are age categories, not genres — they filter
    like a genre but show in their own pill group, apart from the list above. */
-const AGE_TAGS = ["Young Adult", "Middle Grade"];
+const AGE_TAGS = ["Young Adult", "Middle Grade", "Short Stories"];   // tags, not genres
 const SUBGENRE_EMOJI = {
   "Self-Development":"💪","Spirituality":"🔮","Essays":"🖋️","True Crime":"🔪","Poetry":"📜","Dogs":"🐾","Other":"📚"
 };
@@ -984,6 +985,7 @@ let searchTerm = "";
 const TAGS = [
   {key: "ya",    label: "🎒 Young Adult",  badge: "YA",      test: b => b.genres.includes("Young Adult")},
   {key: "mg",    label: "🧸 Middle Grade", badge: "MG",      test: b => b.genres.includes("Middle Grade")},
+  {key: "short", label: "📄 Short Stories", badge: "Short",  test: b => b.genres.includes("Short Stories")},
   {key: "club",  label: "☕ Book Club",    badge: "☕ Club", test: b => CLUB_BY_TITLE.has(b.title)},
   {key: "spicy", label: "🌶️ Spicy",       badge: null,      test: b => !!b.spicy},   // keeps its 🌶️ sticker
   {key: "reread", label: "🔁 Reread",      badge: "Reread",  test: b => REREAD_TITLES.has(b.title)},
