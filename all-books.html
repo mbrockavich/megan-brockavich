@@ -40,7 +40,7 @@
   }
 
   *{ box-sizing:border-box; }
-  html{ overflow-x:hidden; }
+  html{ overflow-x:clip; }
 
   body{
     margin:0;
@@ -48,7 +48,7 @@
     font-family:'Inter', sans-serif;
     color: var(--ink);
     padding: 0 0 calc(70px + env(safe-area-inset-bottom));
-    overflow-x: hidden;
+    overflow-x: clip;
     -webkit-tap-highlight-color: transparent;
   }
 
@@ -246,6 +246,13 @@
     border: 1px solid var(--border-strong); background: var(--surface); color: var(--ink-soft);
     cursor:pointer; white-space:nowrap; -webkit-tap-highlight-color: transparent;
   }
+  .chip-n{ font-weight:500; font-size: 11px; opacity: .6; margin-left: 4px; font-variant-numeric: tabular-nums; }
+  /* Books / Series / Owned: the same chips as Favorites, under the search box */
+  .chip-row{ display:flex; gap: 7px; overflow-x:auto; scrollbar-width:none; -webkit-overflow-scrolling: touch;
+    margin: 10px -20px 0; padding: 0 20px; }
+  .chip-row::-webkit-scrollbar{ display:none; }
+  #genreSelect, #formatSelect, .filter-field:has(#genreSelect), #formatField{ display:none !important; }
+  body.no-sort .filter-toggle, body.no-sort .filter-selects{ display:none !important; }
   .fav-chip[aria-pressed="true"]{ background: var(--accent); border-color: var(--accent); color:#fff; font-weight:600; }
   .fav-chip:focus-visible{ outline:2px solid var(--accent); outline-offset:2px; }
   .fav-list-head{ display:flex; align-items:baseline; justify-content:space-between; gap:12px; margin: 0 2px 10px; }
@@ -281,6 +288,7 @@
   @media (max-width: 560px){
     .fav-tabs{ margin: 0 -16px 10px; padding: 8px 16px; gap: 6px; }
     .fav-chip{ padding: 6px 11px; font-size: 12.5px; }
+    .chip-row{ margin: 9px -16px 0; padding: 0 16px; gap: 6px; }
     .fav-list-head{ margin-bottom: 8px; }
     .fav-list-head h2{ font-size: 17px; }
     .fav-row{ padding: 7px 12px; gap: 11px; }
@@ -600,9 +608,10 @@
       <input type="search" class="search-input" id="searchInput" placeholder="Search by title or author..." enterkeyhint="search">
       <button type="button" class="filter-toggle" id="filterToggle" aria-expanded="false" aria-controls="filterSelects">
         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16M7 12h10M10 18h4"/></svg>
-        <span>Filters</span><span class="filter-count" id="filterCount" hidden></span>
+        <span>Sort</span><span class="filter-count" id="filterCount" hidden></span>
       </button>
     </div>
+    <div class="chip-row" id="chipRow" role="toolbar" aria-label="Show"></div>
     <div class="filter-selects" id="filterSelects">
       <div class="filter-field">
         <label for="genreSelect">Show</label>
@@ -1032,10 +1041,62 @@ filterToggle.addEventListener("click", () => {
   filterToggle.setAttribute("aria-expanded", open);
 });
 function updateFilterCount(){
-  const n = ((SERIES_VIEW || OWNED_VIEW) ? activeStatus !== "All" : activeGenre !== "All") + (activeFormat !== "All");
-  filterCount.hidden = !n;
-  filterCount.textContent = n;
+  // the chips show what's picked, so the Sort button needs no badge
+  filterCount.hidden = true;
+  document.body.classList.toggle("no-sort", SERIES_VIEW || OWNED_VIEW);
+  renderChips();
 }
+
+/* ---------------- chips (same look as the Favorites tab) ----------------
+   Books: All, Book Club, Spicy and every genre. Series: by status.
+   Owned: All, Not read yet, then each format. Each chip shows its count. */
+const chipRow = document.getElementById("chipRow");
+function chipHTML(value, label, count, on){
+  return `<button type="button" class="fav-chip" data-v="${value.replace(/"/g, "&quot;")}" aria-pressed="${on}">${label}<span class="chip-n">${count}</span></button>`;
+}
+function renderChips(){
+  const keep = chipRow.scrollLeft;
+  let html = "";
+  if(OWNED_VIEW){
+    const unread = OWNED_LIST.filter(o => !o.read).length;
+    html += chipHTML("all", "All", OWNED_LIST.length, activeFormat === "All" && activeStatus === "All");
+    html += chipHTML("unread", "📖 Not read yet", unread, activeFormat === "All" && activeStatus === "unread");
+    ["kindle","audible","physical","kindleUnlimited"].forEach(fmt => {
+      const n = OWNED_LIST.filter(o => o.formats.includes(fmt)).length;
+      if(n) html += chipHTML(fmt, `${FORMAT_INFO[fmt].emoji} ${FORMAT_INFO[fmt].label}`, n, activeFormat === fmt);
+    });
+  } else {
+    // mirror the Show options renderPills() built: "🐉 Fantasy (22)" -> label + count
+    Array.from(genreSelect.options).forEach(o => {
+      const m = o.textContent.match(/^(.*?)\s*\((\d+)\)$/);
+      const label = m ? m[1] : o.textContent;
+      html += chipHTML(o.value, label.replace(/^All Series$/, "All"), m ? m[2] : "", o.selected);
+    });
+  }
+  chipRow.innerHTML = html;
+  chipRow.scrollLeft = keep;
+  if(!chipsShown){  // first time: bring a saved pick (say, Fantasy) into view
+    chipsShown = true;
+    const on = chipRow.querySelector('[aria-pressed="true"]');
+    if(on && on.offsetLeft + on.offsetWidth > chipRow.clientWidth) chipRow.scrollLeft = on.offsetLeft - 16;
+  }
+}
+let chipsShown = false;
+chipRow.addEventListener("click", e => {
+  const chip = e.target.closest(".fav-chip");
+  if(!chip) return;
+  const v = chip.dataset.v;
+  if(OWNED_VIEW){
+    activeStatus = v === "unread" ? "unread" : "All";
+    activeFormat = FORMAT_INFO[v] ? v : "All";
+    try{ localStorage.setItem("activeFormat", activeFormat); }catch(err){}
+    renderShelf(); updateFilterCount();
+  } else if(SERIES_VIEW){
+    selectStatus(v);
+  } else {
+    selectFilter(v);
+  }
+});
 
 function selectStatus(value){
   activeStatus = value;
@@ -1652,7 +1713,10 @@ function renderFavorites(){
 
   favoritesContainer.innerHTML = `<div class="fav-tabs" role="toolbar" aria-label="Favorites shelves">${shelves.map(name => {
     const emoji = name === "Top Picks" ? "🏆" : name === "Series" ? "📚" : (GENRE_EMOJI[name] || "📚");
-    return `<button type="button" class="fav-chip" data-shelf="${name}" aria-pressed="${name === activeFavShelf}">${emoji} ${name}</button>`;
+    const count = name === "Top Picks" ? eligible.filter(g => computeFavorites(g).length).length
+      : name === "Series" ? computeFavorites(null, {seriesOnly: true}).length
+      : computeFavorites(name).length;
+    return `<button type="button" class="fav-chip" data-shelf="${name}" aria-pressed="${name === activeFavShelf}">${emoji} ${name}<span class="chip-n">${count}</span></button>`;
   }).join("")}</div>`;
   favoritesContainer.querySelectorAll(".fav-chip").forEach(chip => chip.addEventListener("click", () => {
     activeFavShelf = chip.dataset.shelf;

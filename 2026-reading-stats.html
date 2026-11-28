@@ -33,11 +33,11 @@
     --slate: #6b7aa1;
   }
   *{ box-sizing:border-box; }
-  html{ overflow-x:hidden; }
+  html{ overflow-x:clip; }
   html.modal-open, html.modal-open body{ overflow:hidden; }
   body{
     margin:0; background: var(--bg); color: var(--ink);
-    font-family:'Inter', sans-serif; overflow-x:hidden; -webkit-tap-highlight-color: transparent;
+    font-family:'Inter', sans-serif; overflow-x:clip; -webkit-tap-highlight-color: transparent;
   }
   .page{ max-width: 900px; margin: 0 auto; padding: calc(36px + env(safe-area-inset-top)) 20px 0; }
   .page.page-body{ padding-top: 0; }
