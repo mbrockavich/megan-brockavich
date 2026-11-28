@@ -327,6 +327,9 @@
   .series-modal-eyebrow{ font-size:11px; text-transform:uppercase; letter-spacing:0.08em; color: var(--accent); margin-bottom:6px; font-weight:700; }
   .series-modal-title{ font-weight:700; font-size:23px; margin:0 0 4px; }
   .series-modal-sub{ font-size:13px; color:var(--ink-soft); }
+  .series-modal-note{ font-size:12.5px; font-style:italic; color:var(--ink-soft); line-height:1.5; margin-top:10px;
+    border-left:2px solid var(--accent); padding-left:10px; white-space:pre-line; }
+  .series-modal-note:empty{ display:none; }
   .series-book-grid{ display:grid; grid-template-columns: repeat(auto-fill, minmax(108px, 1fr)); gap: 18px; }
   .series-book{ text-align:center; }
   .series-book[tabindex]{ cursor:pointer; }
@@ -660,6 +663,7 @@
         <div class="series-modal-eyebrow" id="seriesModalRank"></div>
         <h3 class="series-modal-title" id="seriesModalTitle"></h3>
         <div class="series-modal-sub" id="seriesModalSub"></div>
+        <div class="series-modal-note" id="seriesModalNote"></div>
       </div>
       <div class="series-book-grid" id="seriesModalGrid"></div>
     </div>
@@ -1851,6 +1855,7 @@ function openSeriesModal(entry, rank){
   seriesModalRank.textContent = rank ? `Favorite #${rank}` : "Series";
   seriesModalTitle.textContent = entry.name;
   seriesModalSub.textContent = `${entry.author} · ${entry.books.length} of ${allBooks.length} book${allBooks.length===1?"":"s"} read${avg != null ? ` · ${formatRating(avg)}` : ""}`;
+  document.getElementById("seriesModalNote").textContent = (full && full.note) || "";
   seriesModalGrid.innerHTML = seriesBookGridHTML(allBooks, entry.best);
   wireSeriesBookGrid(seriesModalGrid);
   seriesModalOverlay.scrollTop = 0;
