@@ -85,8 +85,6 @@
   body.fav-view .filter-bar, body.fav-view #statsStrip, body.fav-view #catalogSection,
   body.fav-view .top-gap{ display:none; }
   body.fav-view header{ margin-bottom: 12px; }
-  body.fav-view .rating-card{ margin: 0 0 8px; }
-  body.fav-view .rating-card-heading{ padding: 11px 16px; }
   @media (max-width: 560px){
     header{ margin-bottom: 18px; }
     header .eyebrow{ font-size: 12px; margin-bottom: 6px; }
@@ -102,39 +100,6 @@
     position: relative;
   }
   .card .card-inner{ position:relative; z-index:1; }
-
-  /* rating key: a tap-to-open disclosure */
-  .rating-card{ padding: 0; margin-top: 12px; }
-  .rating-card-heading{
-    font-size: 12.5px; font-weight:600; letter-spacing:0.06em; text-transform:uppercase;
-    color: var(--ink-soft); margin: 0; padding: 13px 18px; cursor:pointer;
-    list-style:none; display:flex; align-items:center; gap:8px; -webkit-tap-highlight-color: transparent;
-  }
-  .rating-card-heading::-webkit-details-marker{ display:none; }
-  .rating-card-heading::after{
-    content:""; margin-left:auto; width:8px; height:8px; border-right:1.8px solid var(--ink-faint);
-    border-bottom:1.8px solid var(--ink-faint); transform: translateY(-2px) rotate(45deg); transition: transform .2s;
-  }
-  .rating-card[open] .rating-card-heading::after{ transform: translateY(2px) rotate(-135deg); }
-  .rk-star{ color: var(--star); font-size: 14px; }
-  .rating-rows{ padding: 2px 18px 16px; }
-  .legend-row{
-    display:flex; align-items:center; gap: 16px; padding: 8px 0;
-    border-bottom: 1px solid var(--border);
-  }
-  .legend-row:last-child{ border-bottom:none; padding-bottom:0; }
-  .legend-row:first-child{ padding-top:0; }
-  .legend-row .stars{
-    flex: 0 0 84px; font-size: 15px; letter-spacing:1px; color: var(--star);
-  }
-  .legend-row .stars .dim{ color: var(--border-strong); }
-  .legend-row .legend-text{
-    font-size: 13.5px; color: var(--ink); font-weight:500;
-  }
-  @media (max-width: 560px){
-    .legend-row .stars{ flex-basis: 70px; font-size: 13px; }
-    .legend-row .legend-text{ font-size: 12.5px; }
-  }
 
   /* filter bar */
   .filter-bar{
@@ -473,6 +438,7 @@
   .master-tag.tag-ya{ color: var(--slate); }
   .master-tag.tag-mg{ color: var(--sage); }
   .master-tag.tag-club{ color: var(--accent); }
+  .master-tag.tag-reread{ color: var(--star); }
   .master-badges{ position:absolute; bottom:6px; left:6px; z-index:2; display:flex; gap:4px; align-items:flex-end; }
   .master-spicy-badge{
     font-size: 11px; line-height:1;
@@ -607,10 +573,6 @@
 
   <div class="card stats-strip" id="statsStrip"></div>
 
-  <details class="card rating-card" id="ratingKey">
-    <summary class="rating-card-heading"><span class="rk-star">★</span> What my stars mean</summary>
-    <div class="card-inner rating-rows" id="ratingKeyRows"></div>
-  </details>
   <div class="top-gap"></div>
 
 </div>
@@ -662,11 +624,6 @@
 
   <!-- MASTER CATALOG -->
   <section class="block" id="catalogSection">
-    <div class="section-head">
-      <div class="label" id="listLabel">The Master List</div>
-      <h2 id="listTitle">Every Book, All Time</h2>
-      <p id="listSub">2026 reads and everything before it, in one place. Add a book to your 2026 list and it shows up here automatically.</p>
-    </div>
     <div class="catalog-count" id="shelfCount"></div>
     <div class="master-grid" id="shelfGrid"></div>
     <div class="no-results" id="noResults" style="display:none;">Nothing matches that search. Try a different title, author, or genre.</div>
@@ -714,13 +671,6 @@
 <script>
 /* books, pastReads, SERIES, findRead, formatRating come from reading-data.js */
 
-if(typeof RATING_LEGEND !== "undefined"){
-  document.getElementById("ratingKeyRows").innerHTML = RATING_LEGEND.map(r => {
-    const dim = 5 - r.n;
-    const stars = "★".repeat(r.n) + (dim > 0 ? `<span class="dim">${"★".repeat(dim)}</span>` : "");
-    return `<div class="legend-row"><div class="stars">${stars}</div><div class="legend-text">${r.text}</div></div>`;
-  }).join("");
-}
 
 const GENRE_EMOJI = {
   "Fantasy":"🐉","Science Fiction":"🚀","Suspense":"🔪","Horror":"🎃","Romance":"💛",
@@ -1010,9 +960,6 @@ if(OWNED_VIEW){
   document.getElementById("heroSub").textContent = `${OWNED_LIST.length} books on my shelves, ${unreadOwned} not read yet.`;
   document.getElementById("searchInput").placeholder = "Search what I own...";
   document.body.classList.add("owned-view");
-  document.getElementById("listLabel").textContent = "My Shelves";
-  document.getElementById("listTitle").textContent = "Every Book I Own";
-  document.getElementById("listSub").textContent = "Grouped by format. A book I own in two formats shows up in both.";
 }
 if(FAV_VIEW){
   document.title = "Favorites · Megan's Library";
@@ -1024,9 +971,6 @@ if(SERIES_VIEW){
   document.title = "Series Tracker · Megan's Library";
   document.getElementById("heroTitle").textContent = "Series Tracker";
   document.getElementById("heroSub").textContent = "Where I am in every series, and what's coming next.";
-  document.getElementById("listLabel").textContent = "Every Series";
-  document.getElementById("listTitle").textContent = "Series, All Time";
-  document.getElementById("listSub").textContent = "Every series I've started, by author, then oldest series first. Tap one to see the books.";
   document.getElementById("searchInput").placeholder = "Search by series or author...";
 }
 let searchTerm = "";
@@ -1042,6 +986,7 @@ const TAGS = [
   {key: "mg",    label: "🧸 Middle Grade", badge: "MG",      test: b => b.genres.includes("Middle Grade")},
   {key: "club",  label: "☕ Book Club",    badge: "☕ Club", test: b => CLUB_BY_TITLE.has(b.title)},
   {key: "spicy", label: "🌶️ Spicy",       badge: null,      test: b => !!b.spicy},   // keeps its 🌶️ sticker
+  {key: "reread", label: "🔁 Reread",      badge: "Reread",  test: b => REREAD_TITLES.has(b.title)},
 ];
 const TAG_BY_KEY = Object.fromEntries(TAGS.map(t => [t.key, t]));
 let activeTag = "";
@@ -1288,7 +1233,7 @@ function seriesMatchesFormat(s){
 }
 
 function seriesIsCaughtUp(s){
-  const released = s.books.filter(b => !b.comingSoon);
+  const released = s.books.filter(b => !isComingSoon(b));
   return released.length > 0 && released.every(b => findRead(b.title));
 }
 
@@ -1581,7 +1526,7 @@ function coverSlotHTML(b, extraClass){
   `;
 }
 
-const MIN_BOOKS_FOR_FAVORITES = 20;
+const MIN_BOOKS_FOR_FAVORITES = 10;
 
 /* A book counts as part of a "series" for ranking purposes only once that
    series actually has 2+ tracked books — a lone book with a sequel that
@@ -1856,9 +1801,9 @@ function seriesBookGridHTML(allBooks, best){
     const num = sb.number || (i + 1);
     const b = ALL_BOOKS_BY_TITLE.get(sb.title);
     if(!b){
-      const comingLabel = sb.comingSoon
+      const comingLabel = isComingSoon(sb)
         ? (typeof sb.comingSoon === "string" ? `Coming ${sb.comingSoon}` : "Coming Soon")
-        : (sb.pubDate ? `Released ${sb.pubDate}` : "Not read yet");
+        : (sb.pubDate || typeof sb.comingSoon === "string") ? `Released ${sb.pubDate || sb.comingSoon}` : "Not read yet";
       return `
         <div class="series-book">
           <div class="series-book-cover unread">

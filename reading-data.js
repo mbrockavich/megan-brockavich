@@ -405,6 +405,21 @@ function parseLocalDate(dateStr) {
   return new Date(y, m - 1, d);
 }
 
+/* True while a series entry is still unreleased. `comingSoon:"Month YYYY"`
+   counts as released from the 1st of that month, so a book that has come
+   out flips to "Released" on its own without editing it here. */
+function isComingSoon(sb) {
+  if (!sb.comingSoon) return false;
+  if (sb.comingSoon === true) return true;
+  const d = new Date(`${String(sb.comingSoon).replace(/^(\w+)\s+(\d{4})$/, "$1 1, $2")}`);
+  return isNaN(d) || d > new Date();
+}
+
+/* Titles read more than once: logged in `books` this year and also in
+   `pastReads` from an earlier year. Each read counts in its own year on
+   the stats page, and the book gets a "Reread" label on its cover. */
+const REREAD_TITLES = new Set(books.map(b => b.title).filter(t => pastReads.some(p => p.title === t)));
+
 /* Looks a title up in this year's `books` first, then in `pastReads`.
    Returns the matching object (with .cover, and either .readDate or
    .dateFinished) or null if the book hasn't been logged as read anywhere. */
@@ -494,7 +509,7 @@ const SERIES = [
       {title:"Lore Olympus: Volume Eight", pubDate:"May 2025"},
       {title:"Lore Olympus: Volume Nine", pubDate:"October 2025"},
       {title:"Lore Olympus: Volume Ten", pubDate:"June 2026"},
-      {title:"Lore Olympus: Volume Eleven", comingSoon:"October 2026"}
+      {title:"Lore Olympus: Volume Eleven", pubDate:"October 2026"}
     ]
   },
   {
@@ -566,7 +581,7 @@ const SERIES = [
     status: "ongoing",
     books: [
       {title:"Elphie: A Wicked Childhood", cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1722577882i/199743711.jpg", pubDate:"2025"},
-      {title:"Galinda: A Charmed Childhood", comingSoon:"September 2026"},
+      {title:"Galinda: A Charmed Childhood", pubDate:"September 2026"},
       {title:"Wicked: Everyone Deserves the Chance to Fly"},
       {title:"Son of a Witch", cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1370992595i/13521.jpg", pubDate:"2005"},
       {title:"A Lion Among Men", cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1370992593i/3124249.jpg", pubDate:"October 2008"},
@@ -581,7 +596,7 @@ const SERIES = [
       {title:"Assistant to the Villain"},
       {title:"Apprentice to the Villain", cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1730881672i/203147386.jpg", pubDate:"August 2024"},
       {title:"Accomplice to the Villain", cover:"https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1765013612i/219209774.jpg", pubDate:"August 2025"},
-      {title:"Adversary to the Villain", comingSoon:"August 2026"}
+      {title:"Adversary to the Villain", pubDate:"August 2026"}
     ]
   },
   {
@@ -1155,7 +1170,7 @@ const SERIES = [
       {title:"Brisingr", pubDate:"September 2008"},
       {title:"Inheritance", pubDate:"November 2011"},
       {title:"Murtagh", pubDate:"November 2023"},
-      {title:"The Book of Remembrance", number:"Bonus", comingSoon:"September 2026"},
+      {title:"The Book of Remembrance", number:"Bonus", pubDate:"September 2026"},
       {title:"The Inheritance Cycle Book 6", comingSoon:true}
     ]
   },

@@ -314,18 +314,16 @@ const asList = g => (Array.isArray(g) ? g : [g]).filter(Boolean);
 const seriesAuthor = new Map();
 SERIES.forEach(s => s.books.forEach(b => seriesAuthor.set(b.title, s.author)));
 
+// A reread is logged in both `books` and `pastReads`; each read counts in its own year.
 const ALL = [];
-const seen = new Set();
 books.forEach(b => {
   const d = parseLocalDate(b.dateFinished);
-  seen.add(b.title);
   ALL.push({ title: b.title, author: b.author, genres: asList(b.genre), subgenre: b.subgenre, cover: b.cover,
     rating: b.rating, spicy: !!b.spicy, note: b.note, pages: b.pages || null, date: d, exact: true,
     year: d.getFullYear(), month: d.getMonth() });
 });
 let undated = 0;
 pastReads.forEach(b => {
-  if(seen.has(b.title)) return;
   const m = (b.readDate || "").match(/^(\w+)\s+(\d{4})$/);
   const d = m ? new Date(`${m[1]} 1, ${m[2]}`) : null;
   if(!d || isNaN(d)){ undated++; return; }
@@ -559,7 +557,7 @@ function openDetail(b){
   document.getElementById("detailTitle").textContent = b.title;
   document.getElementById("detailAuthor").textContent = b.author;
   document.getElementById("detailPills").innerHTML = b.genres.map(g => `<span>${esc(g)}</span>`).join("") + (b.spicy ? "<span>🌶️ Spicy</span>" : "");
-  document.getElementById("detailMeta").innerHTML = [dateText(b), b.pages ? `${b.pages} pages` : "", b.rating ? starRatingHTML(b.rating) : ""].filter(Boolean).join(" · ");
+  document.getElementById("detailMeta").innerHTML = [dateText(b), b.pages ? `${b.pages} pages` : "", b.rating ? starRatingHTML(b.rating) : "", REREAD_TITLES.has(b.title) ? "🔁 Reread" : ""].filter(Boolean).join(" · ");
   const note = document.getElementById("detailNote");
   note.textContent = b.note || "";
   note.style.display = b.note ? "" : "none";

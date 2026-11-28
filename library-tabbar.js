@@ -3,7 +3,9 @@
      <script src="library-tabbar.js" data-theme="paper"></script>
    It adds the bottom tab bar, room for it at the bottom of the page, a frosted strip
    behind the iPhone status bar (so sticky bars can sit just under it instead of padding
-   for it), and a soft fade between pages. Themes: night, paper, plum. */
+   for it), a floating ★ button that opens "What my stars mean" (from RATING_LEGEND
+   in reading-data.js, on pages that load it), and a soft fade between pages.
+   Themes: night, paper, plum. */
 (function () {
   const me = document.currentScript;
   const base = new URL('.', me.src);                 // site root, wherever the page lives
@@ -23,9 +25,12 @@
   ];
 
   const THEMES = {
-    night:     { bg: 'rgba(10,13,24,0.82)',   line: 'rgba(139,144,168,0.18)', fg: '#7d829b', on: '#e2bf83' },
-    paper:     { bg: 'rgba(247,244,239,0.86)', line: '#e4ddd2',               fg: '#8f8778', on: '#b5502f' },
-    plum:      { bg: 'rgba(51,25,44,0.86)',    line: 'rgba(217,164,192,0.22)', fg: '#c49ab2', on: '#fdf1f5' },
+    night:     { bg: 'rgba(10,13,24,0.82)',   line: 'rgba(139,144,168,0.18)', fg: '#7d829b', on: '#e2bf83',
+                 card: '#12172a', ink: '#e9e7dd', soft: '#8b90a8' },
+    paper:     { bg: 'rgba(247,244,239,0.86)', line: '#e4ddd2',               fg: '#8f8778', on: '#b5502f',
+                 card: '#ffffff', ink: '#242018', soft: '#6b6455' },
+    plum:      { bg: 'rgba(51,25,44,0.86)',    line: 'rgba(217,164,192,0.22)', fg: '#c49ab2', on: '#fdf1f5',
+                 card: '#fdf1f5', ink: '#33192c', soft: '#6b3a52' },
   };
   const t = THEMES[theme] || THEMES.paper;
 
@@ -61,7 +66,35 @@
   .lib-tab[aria-current="page"] svg{ stroke-width: 2.1; }
   .lib-tab:active{ transform: scale(0.92); }
   .lib-tab:focus-visible{ outline: 2px solid ${t.on}; outline-offset: -6px; border-radius: 10px; }
-  @media print{ .lib-tabbar, .lib-statusbar{ display: none; } }
+  /* floating ★: opens the rating guide */
+  .lib-starbtn{
+    position: fixed; right: max(14px, env(safe-area-inset-right)); z-index: 390;
+    bottom: calc(var(--tabbar-h) + env(safe-area-inset-bottom) + 14px);
+    width: 44px; height: 44px; border-radius: 50%; border: 1px solid ${t.line};
+    background: ${t.card}; color: #c8963f; font-size: 21px; line-height: 1; cursor: pointer;
+    box-shadow: 0 4px 14px rgba(0,0,0,0.16); -webkit-tap-highlight-color: transparent;
+    display: flex; align-items: center; justify-content: center; padding: 0 0 2px;
+  }
+  .lib-starbtn:active{ transform: scale(0.92); }
+  .lib-starbtn:focus-visible{ outline: 2px solid ${t.on}; outline-offset: 2px; }
+  .lib-stars-overlay{
+    position: fixed; inset: 0; z-index: 600; display: none; align-items: flex-end; justify-content: center;
+    background: rgba(0,0,0,0.38); padding: 16px 12px calc(var(--tabbar-h) + env(safe-area-inset-bottom) + 12px);
+  }
+  .lib-stars-overlay.open{ display: flex; }
+  .lib-stars-panel{
+    position: relative; width: 100%; max-width: 420px; background: ${t.card}; color: ${t.ink};
+    border-radius: 16px; padding: 18px 18px 12px; box-shadow: 0 20px 50px rgba(0,0,0,0.25);
+    font-family: -apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', sans-serif;
+  }
+  .lib-stars-panel h2{ font-size: 16px; font-weight: 700; margin: 0 0 8px; padding-right: 40px; }
+  .lib-stars-close{ position: absolute; top: 10px; right: 10px; width: 32px; height: 32px; border-radius: 50%;
+    border: 0; background: rgba(127,127,127,0.14); color: ${t.soft}; font-size: 13px; cursor: pointer; }
+  .lib-stars-row{ display: flex; align-items: center; gap: 12px; padding: 8px 0; border-top: 1px solid ${t.line}; }
+  .lib-stars-row .s{ flex: 0 0 92px; color: #c8963f; font-size: 14px; letter-spacing: 1px; }
+  .lib-stars-row .s .dim{ color: ${t.line}; }
+  .lib-stars-row .x{ font-size: 13px; line-height: 1.35; }
+  @media print{ .lib-tabbar, .lib-statusbar, .lib-starbtn{ display: none; } }
   @media (prefers-reduced-motion: reduce){
     ::view-transition-group(*), ::view-transition-old(*), ::view-transition-new(*){ animation: none !important; }
   }`;
@@ -91,6 +124,31 @@
     bar.className = 'lib-statusbar';
     bar.setAttribute('aria-hidden', 'true');
     document.body.appendChild(bar);
+    buildStars();
+  }
+  function buildStars() {
+    if (typeof RATING_LEGEND === 'undefined') return;
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'lib-starbtn';
+    btn.setAttribute('aria-label', 'What my stars mean');
+    btn.setAttribute('aria-haspopup', 'dialog');
+    btn.textContent = '★';
+    const overlay = document.createElement('div');
+    overlay.className = 'lib-stars-overlay';
+    overlay.innerHTML = '<div class="lib-stars-panel" role="dialog" aria-modal="true" aria-labelledby="libStarsTitle">' +
+      '<button type="button" class="lib-stars-close" aria-label="Close">✕</button>' +
+      '<h2 id="libStarsTitle">★ What my stars mean</h2>' +
+      RATING_LEGEND.map(r => {
+        const dim = Math.max(5 - r.n, 0);
+        return `<div class="lib-stars-row"><div class="s">${'★'.repeat(r.n)}${dim ? `<span class="dim">${'★'.repeat(dim)}</span>` : ''}</div><div class="x">${r.text}</div></div>`;
+      }).join('') + '</div>';
+    const close = () => { overlay.classList.remove('open'); btn.focus({ preventScroll: true }); };
+    btn.addEventListener('click', () => { overlay.classList.add('open'); overlay.querySelector('.lib-stars-close').focus({ preventScroll: true }); });
+    overlay.addEventListener('click', e => { if (e.target === overlay || e.target.closest('.lib-stars-close')) close(); });
+    document.addEventListener('keydown', e => { if (e.key === 'Escape' && overlay.classList.contains('open')) close(); });
+    document.body.appendChild(btn);
+    document.body.appendChild(overlay);
   }
   if (document.body) build(); else document.addEventListener('DOMContentLoaded', build);
 })();
